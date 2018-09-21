@@ -1,9 +1,3 @@
-# Name:         grid_pull_USBRIrrAcres.py
-# Purpose:      Pulls Daily GRIDMET data and calculates ETr for ETDemands model input
-# Author:       Chris Pearson
-# Created       2017-01-10
-# Python:       2.7
-#--------------------------------
 import pandas as pd
 import datetime as dt
 import ee
@@ -14,71 +8,19 @@ import sys
 import os
 
 ee.Initialize()
-    
-if len(sys.argv) < 2:
-    print('Please Specify Username Input Argument. Example Command: python grid_ee_pull_USBRIrrAcres.py Chris')
-    sys.exit()
 
-user=str(sys.argv[1])  
-if user == 'Chris':
-    start = 0
-    end = 1
-elif user == 'Chris2':
-    start = 401
-    end = 700
-elif user == 'Chris3':
-    start = 701
-    end = 1000
-elif user == 'Britta':
-    start = 1001
-    end = 1500
-elif user == 'Charles':
-    start = 1501
-    end = 2000 
-elif user == 'Dan':
-    start = 2001
-    end = 2500
-elif user == 'Justin':
-    start = 2501
-    end = 3000
-elif user == 'Matt':
-    start = 3000
-    end = 3693
-elif user == 'test':
-    start = 0
-    end = 0
-elif user == 'all':
-    start = 0
-    end = 4000
-else:
-    print('Username Not Found. Check Spelling. Possible Options: Britta, Charles, Chris, Dan, Justin, Matt, test')
-    sys.exit()
-    
-#Run RefET on imported dataset
-RefET_flag = True
-if RefET_flag: 
-    import refet
-    
+os.chdir('C:\etr-biascorrect')
+
 #Input .csv containing GRIDMET_ID, LAT, LON,ELEV_M
 #Create input .csv from: GIS-DATA\Shapefiles\gridmet_4km\gridmet_4km_dd_pts_full.shp 
-input_df = pd.read_csv('gridmet_4km_USBRIrrAcresIntersect_UPDATE.txt')
+input_df = pd.read_csv('C:\etr-biascorrect\gridmet_testlist.txt')
 
 #Specify column order for output .csv Variables: 'Date','Year','Month','Day','Tmax','Tmin','Srad','Ws_10m','q','Prcp','ETo'
-output_order = ['Date','Year','Month','Day','Tmax_C','Tmin_C','Srad','Ws_2m','q','Prcp','ETo']
+output_order = ['Date', 'Year', 'Month', 'Day', 'Tmax_C', 'Tmin_C', 'Srad',
+                'Ws_2m', 'q', 'Prcp', 'ETo']
 
-# Date Range to Retrieve Values (start=inclusive, end=exclusive)
-# start_date = '1979-01-01'
-# end_date = '2018-01-01'
-
-start_date = '1979-01-01'
-end_date = '2018-01-01'
-
-if user == 'test':
-    start_date = '1979-01-01'
-    end_date = '1984-01-01'
-        
 #List of ee GRIDMET varibles to retrieve
-met_bands = ['tmmx', 'tmmn', 'srad', 'vs', 'sph', 'pr','eto']
+met_bands = ['tmmx', 'tmmn', 'srad', 'vs', 'sph', 'pr','etr']
 #The GRIDMET dataset contains the following bands:
 #pr: precipitation amount (mm, daily total)
 #rmax: maximum relative humidity (%)
@@ -98,7 +40,7 @@ met_bands = ['tmmx', 'tmmn', 'srad', 'vs', 'sph', 'pr','eto']
 #vpd: Mean vapor pressure deficit (kPa)
 
 #Rename GRIDMET variables during ee export
-met_names= ['Tmax', 'Tmin', 'Srad', 'Ws_10m', 'q', 'Prcp','ETo']
+met_names= ['Tmax', 'Tmin', 'Srad', 'Ws_10m', 'q', 'Prcp','ETr']
 
 #Exponential getinfo call from ee-tools/utils.py
 def ee_getinfo(ee_obj, n=30):
@@ -115,34 +57,63 @@ def ee_getinfo(ee_obj, n=30):
             break
     return output
 #%%
-#Loop through dataframe row by row and grab desired met data from GRID collections based on Lat/Lon and Start/End dates#
+# Loop through dataframe row by row and grab desired met data from
+# GRID collections based on Lat/Lon and Start/End dates#
 for index, row in input_df.iterrows():
     start_time = timeit.default_timer()
-    #Limit iteration during development#
-    if index < start:
-        continue
-    if index > end:
-        break
+    # #Limit iteration during development#
+    # if index < start:
+    #     continue
+    # if index > end:
+    #     break
     lat = row.LAT
     lon = row.LON
-
     GRIDMET_ID_str=str(row.GRIDMET_ID)
     print(['Cell Loop Counter',index+1])
     print(['GRIDMET ID:',row.GRIDMET_ID])
 
-    output_name = ['gridmet_historical_' + GRIDMET_ID_str + '.csv']
+    # determine end date of data collection
+    current_date = dt.datetime.today()
+ 
+    provisional_flag = False
 
-    if os.path.isfile(output_name[0]):
-        print('{} Exists. Skipping.').format(output_name)
-        continue
+    # gridMET data is provision for approx. 2 months
+    # remove provisional data unless provisional flag is set to TRUE
+    if provisional_flag:
+        end_date = current_date
+    else:
+        end_date = dt.date(current_date.year, current_date.month-2,
+                                 current_date.day)
 
-    point = ee.Geometry.Point(lon,lat);
+    output_name = 'gridmet_historical_' + GRIDMET_ID_str + '.csv'
+    output_file = os.path.join('C:\etr-biascorrect', output_name)
+    if os.path.isfile(output_file):
+        print('{} Exists. Updating file.').format(output_name)
+        original_df = pd.read_csv(output_file)
+    else:
+        print('{} Does Not Exists. Creating file.').format(output_name)
+        # Inclusive
+        start_date = dt.datetime.strptime('1979-01-01','%Y-%m-%d')
+    # Create List of all dates
+    def daterange(date1, date2):
+        for n in range(int ((date2 - date1).days)+1):
+            yield dt.datetime.strptime(date1 + dt.timedelta(n))
+    full_date_list = daterange(start_date, end_date)
+
+    # Find missing dates in DF
+    missing_dates = full_date_list - original_df['Date']
+
+    # Min and Max of Missing Dates
+    start_date = missing_dates.min()
+
+    # Create ee point from lat and lon
+    point = ee.Geometry.Point(lon, lat);
     
     #Loop through ee pull by year (max 5000 records for getInfo())
     #Append each new year on end of dataframe
     #Process dataframe units and output after                        
-    start_date_yr = dt.datetime.strptime(start_date,'%Y-%m-%d').year
-    end_date_yr=dt.datetime.strptime(end_date,'%Y-%m-%d').year                             
+    start_date_yr = start_date.year
+    end_date_yr = end_date.year                             
     for iter_year in range(start_date_yr, end_date_yr+1, 1):
         print(iter_year)                               
     #Filter Collection by Start/End Date and Lat/Lon Point#
@@ -197,59 +168,12 @@ for index, row in input_df.iterrows():
     export_df.Tmin = export_df.Tmin-273.15; #K to C
     export_df.rename(columns = {'Tmax': 'Tmax_C','Tmin':'Tmin_C'}, inplace=True)
       
-    if RefET_flag: 
-        #Create RefET Specific Dataframe
-        ref_df = pd.DataFrame()
-        ref_df['Date'] = export_df.Date
-        ref_df['DOY'] = export_df.DOY      
-        #Temperature Min/Max (C)
-        ref_df['Tmin'] = export_df['Tmin_C']
-        ref_df['Tmax'] = export_df['Tmax_C']
-        
-        #Pressure from elevation (ASCE Eqn. 34) kPa
-        P= 101.3*((293-0.0065*row.ELEV_M)/293)**5.26
-            
-        #Specific Humidity and elevation to Vapor Pressure (kPa)
-        ref_df['ea'] = export_df.q*P/(0.622+0.378*export_df.q)      
-              
-        #Srad to MJ m-2 day-1
-        ref_df['Srad_MJ'] = 0.0864*export_df.Srad
-              
-        #Windspeed Sensor Ht (m)      
-        ref_df['Ws_10m'] = export_df.Ws_10m
-#        ref_df['Ws_2m'] = export_df.Ws_2m
-              
-        #Windspeed Sensor Ht (m)      
-        ref_df['Sensor_Ht'] = zw     
-        
-        #Elevation (m)                
-        ref_df['ELEV_M'] = row.ELEV_M
-                
-        #Latitude (Radians)
-        ref_df['LAT_rad'] = lat*np.pi/180
-               
-        #Run RefET code on ref_df dataframe
-        ref_df['ETr_ASCE'] = refet.daily(ref_df.Tmin, ref_df.Tmax, ref_df.ea, ref_df.Srad_MJ, ref_df.Ws_10m, ref_df.Sensor_Ht, ref_df.ELEV_M, ref_df.LAT_rad, ref_df.DOY, ref_type='etr',
-              rso_type='full', rso=None, asce_flag=True)
-#        ref_df['ETo_ASCE']= RefET.daily(ref_df.Tmin, ref_df.Tmax, ref_df.ea, ref_df.Srad_MJ, ref_df.Ws_10m, ref_df.Sensor_Ht, ref_df.ELEV_M, ref_df.LAT_rad, ref_df.DOY, ref_type='eto',
-#              rso_type='full', rso=None, asce_flag=True)
 
-        #Remove all negative evaporation estimates
-        ref_df.ETr_ASCE = ref_df.ETr_ASCE.clip(lower=0)
-        #Copy ETr_ASCE data to export_df
-        export_df['ETr_ASCE'] = ref_df.ETr_ASCE
-        #RefET Flag Output Order
-        output_order = ['Date','Year','Month','Day','Tmax_C','Tmin_C','Srad','Ws_2m','q','Prcp','ETo','ETr_ASCE']
-    
-    #Output Filename with GRIDMET ID
-    # output_name = ['gridmet_historical_'+GRIDMET_ID_str+'ee_test'+'.csv']
+    # Update files with new data???
+    export_df = original_df.update(export_df).drop_duplicates().reset_index(drop=1).to_frame()
 
-    # # Update files with new data???
-    # original_df = pd.read_csv(output_name)
-    # update_df = original_df.update(export_df)
-
-    #Write csv files to working directory
-    export_df.to_csv(output_name[0],columns=output_order)
+    # Write csv files to working directory
+    export_df.to_csv(output_name[0], columns=output_order)
     elapsed = timeit.default_timer() - start_time
     print(elapsed)   
    
