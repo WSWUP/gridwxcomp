@@ -4,47 +4,28 @@ import ee
 import numpy as np
 from time import sleep
 import timeit
-#import sys
 import os
 
 ee.Initialize()
 
 os.chdir('D:\etr-biascorrect')
 
-#Input .csv containing GRIDMET_ID, LAT, LON,ELEV_M
-#Create input .csv from: GIS-DATA\Shapefiles\gridmet_4km\gridmet_4km_dd_pts_full.shp 
+# Input .csv containing GRIDMET_ID, LAT, LON,ELEV_M
 input_df = pd.read_csv('D:\etr-biascorrect\gridmet_testlist.txt')
 
-
-
-#List of ee GRIDMET varibles to retrieve
+#  of ee GRIDMET varibles to retrieve
+# https://explorer.earthengine.google.com/#detail/IDAHO_EPSCOR%2FGRIDMET
 met_bands = ['tmmx', 'tmmn', 'srad', 'vs', 'sph', 'pr','etr']
-#The GRIDMET dataset contains the following bands:
-#pr: precipitation amount (mm, daily total)
-#rmax: maximum relative humidity (%)
-#rmin: minimum relative humidity (%)
-#sph: specific humidity (kg/kg)
-#srad: surface downward shortwave radiation (W/m^2)
-#th: wind direction (degrees clockwise from north)
-#tmmn: minimum temperature (K)
-#tmmx: maximum temperature (K)
-#vs: wind velocity at 10 m (m/s)
-#erc: energy release component (NFDRS fire danger index)
-#eto: Daily reference evapotranspiration (grass, mm)
-#bi: burning index (NFDRS fire danger index)
-#fm100: 100-hour dead fuel moisture (%)
-#fm1000: 1000-hour dead fuel moisture (%)
-#etr: Daily reference evapotranspiration (alfalfa, mm)
-#vpd: Mean vapor pressure deficit (kPa)
 
-#Rename GRIDMET variables during ee export
+# Rename GRIDMET variables during ee export
 met_names= ['Tmax', 'Tmin', 'Srad', 'Ws_10m', 'q', 'Prcp','ETr']
 
-#Specify column order for output .csv Variables: 'Date','Year','Month','Day','Tmax','Tmin','Srad','Ws_10m','q','Prcp','ETo'
+# Specify column order for output .csv Variables: 'Date','Year','Month','Day',
+# 'Tmax','Tmin','Srad','Ws_10m','q','Prcp','ETo'
 output_order = ['Date', 'Year', 'Month', 'Day', 'Tmax_C', 'Tmin_C', 'Srad',
                 'Ws_2m', 'q', 'Prcp', 'ETr']
 
-#Exponential getinfo call from ee-tools/utils.py
+# Exponential getinfo call from ee-tools/utils.py
 def ee_getinfo(ee_obj, n=30):
     """Make an exponential backoff getInfo call on the Earth Engine object"""
     output = None
@@ -60,11 +41,12 @@ def ee_getinfo(ee_obj, n=30):
     return output
 
 # Loop through dataframe row by row and grab desired met data from
-# GRID collections based on Lat/Lon and Start/End dates#
+# GRID collections based on Lat/Lon and Start/End dates
 for index, row in input_df.iterrows():
     start_time = timeit.default_timer()
     # Reset original_df
     original_df = None
+    export_df = None
     
     GRIDMET_ID_str=str(row.GRIDMET_ID)
     # print(['Cell Loop Counter',index+1])
@@ -72,7 +54,6 @@ for index, row in input_df.iterrows():
 
     # determine end date of data collection
     current_date = dt.datetime.today()
- 
     end_date = dt.date(current_date.year, current_date.month,
                                  current_date.day-1)
     # Create List of all dates
@@ -91,7 +72,6 @@ for index, row in input_df.iterrows():
         print('No missing data found. Skipping')
         continue
     
-
     # Min and Max of Missing Dates (Start: Inclusive; End: Exclusive)
     start_date = min(missing_dates)
     end_date = max(missing_dates)
@@ -99,21 +79,29 @@ for index, row in input_df.iterrows():
     # Create ee point from lat and lon
     point = ee.Geometry.Point(row.LON, row.LAT);
     
-    #Loop through ee pull by year (max 5000 records for getInfo())
-    #Append each new year on end of dataframe
-    #Process dataframe units and output after                        
+    # Loop through ee pull by year (max 5000 records for getInfo())
+    # Append each new year on end of dataframe
+    # Process dataframe units and output after                        
     start_date_yr = start_date.year
     end_date_yr = end_date.year                             
     for iter_year in range(start_date_yr, end_date_yr+1, 1):
         print(iter_year)                               
-    #Filter Collection by Start/End Date and Lat/Lon Point
-    #Should image status be an input argument ('early', 'provisional', or 'permanent')
+    # Filter Collection by Start/End Date and Lat/Lon Point
+    # Should image status be an input argument: 'early', 'provisional', 'permanent'
         gridmet_coll = ee.ImageCollection('IDAHO_EPSCOR/GRIDMET') \
                 .filterDate(start_date, end_date+1) \
                 .filter(ee.Filter.calendarRange(iter_year, iter_year, 'year')) \
                 .filter(ee.Filter.eq('status', 'permanent')) \
                 .select(met_bands,met_names)
-       
+        # Check if collection is empty        
+        image_count = ee.Number(gridmet_coll.limit(1). \
+                               reduceColumns('count', ['system:index']).get('count'))
+        empty = ee.Algorithms.If(image_count.neq(1), 'True', 'False');
+        if empty:       
+            print('No new "permanent" data found. Skipping.')
+            export_df = None
+            continue
+
         def get_values(image):
             #Pull out Date from Image
             dateStr = image.date();
@@ -125,10 +113,10 @@ for index, row in input_df.iterrows():
                 .reduceRegion(
                         reducer = ee.Reducer.mean(), geometry=point, scale = 4000)
             return ee.Feature(None, input_mean)   
-        #Run get_values fuction over all images in gridmet collection
+        # Run get_values fuction over all images in gridmet collection
         data = gridmet_coll.map(get_values)
     
-    #Export dictionary to pandas dataframe using expornential getInfo fnc
+    # Export dictionary to pandas dataframe using expornential getInfo fnc
         if iter_year == start_date_yr:
                 export_df = pd.DataFrame([
                         ftr['properties']
@@ -138,6 +126,9 @@ for index, row in input_df.iterrows():
                 ftr['properties']
                 for ftr in ee_getinfo(data)['features']])
                 export_df = export_df.append(export_df2)    
+    # If export_df is None (skip to next ID)
+    if export_df is None:
+        continue
     # Reset Index
     export_df = export_df.reset_index(drop=False)
 
@@ -166,6 +157,7 @@ for index, row in input_df.iterrows():
     # Add new data to original dataframe, remove duplicates
     export_df = pd.concat([original_df, export_df], sort = True)
     export_df = export_df[output_order].drop_duplicates().reset_index(drop=False)
+    
     # Write csv files to working directory
     export_df.to_csv(output_name, columns=output_order)
     elapsed = timeit.default_timer() - start_time
