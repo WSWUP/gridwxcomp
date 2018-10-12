@@ -13,12 +13,12 @@ os.chdir('D:\etr-biascorrect')
 # Input .csv containing GRIDMET_ID, LAT, LON,ELEV_M
 input_df = pd.read_csv('D:\etr-biascorrect\gridmet_testlist.txt')
 
-#  of ee GRIDMET varibles to retrieve
+# List of ee GRIDMET varibles to retrieve
 # https://explorer.earthengine.google.com/#detail/IDAHO_EPSCOR%2FGRIDMET
-met_bands = ['tmmx', 'tmmn', 'srad', 'vs', 'sph', 'pr','etr']
+met_bands = ['tmmx', 'tmmn', 'srad', 'vs', 'sph', 'pr', 'etr']
 
 # Rename GRIDMET variables during ee export
-met_names= ['Tmax', 'Tmin', 'Srad', 'Ws_10m', 'q', 'Prcp','ETr']
+met_names= ['Tmax', 'Tmin', 'Srad', 'Ws_10m', 'q', 'Prcp', 'ETr']
 
 # Specify column order for output .csv Variables: 'Date','Year','Month','Day',
 # 'Tmax','Tmin','Srad','Ws_10m','q','Prcp','ETo'
@@ -40,6 +40,7 @@ def ee_getinfo(ee_obj, n=30):
             break
     return output
 
+
 # Loop through dataframe row by row and grab desired met data from
 # GRID collections based on Lat/Lon and Start/End dates
 for index, row in input_df.iterrows():
@@ -50,14 +51,15 @@ for index, row in input_df.iterrows():
     
     GRIDMET_ID_str=str(row.GRIDMET_ID)
     # print(['Cell Loop Counter',index+1])
-    print('Processing GRIDMET ID: {}',format(GRIDMET_ID_str))
+    print('Processing GRIDMET ID: {}', format(GRIDMET_ID_str))
 
     # determine end date of data collection
     current_date = dt.datetime.today()
     end_date = dt.date(current_date.year, current_date.month,
-                                 current_date.day-1)
+                       current_date.day-1)
     # Create List of all dates
-    full_date_list = pd.date_range(dt.datetime.strptime('1979-01-01','%Y-%m-%d'), end_date)    
+    full_date_list = pd.date_range(dt.datetime.strptime('1979-01-01',
+                                                        '%Y-%m-%d'), end_date)
     output_name = 'gridmet_historical_' + GRIDMET_ID_str + '.csv'
     output_file = os.path.join('D:\etr-biascorrect', output_name)
     
@@ -77,7 +79,7 @@ for index, row in input_df.iterrows():
     end_date = max(missing_dates)
 
     # Create ee point from lat and lon
-    point = ee.Geometry.Point(row.LON, row.LAT);
+    point = ee.Geometry.Point(row.LON, row.LAT)
     
     # Loop through ee pull by year (max 5000 records for getInfo())
     # Append each new year on end of dataframe
@@ -89,34 +91,34 @@ for index, row in input_df.iterrows():
     # Filter Collection by Start/End Date and Lat/Lon Point
     # Should image status be an input argument: 'early', 'provisional', 'permanent'
         gridmet_coll = ee.ImageCollection('IDAHO_EPSCOR/GRIDMET') \
-                .filterDate(start_date, end_date+1) \
-                .filter(ee.Filter.calendarRange(iter_year, iter_year, 'year')) \
-                .filter(ee.Filter.eq('status', 'permanent')) \
-                .select(met_bands,met_names)
+            .filterDate(start_date, end_date+1) \
+            .filter(ee.Filter.calendarRange(iter_year, iter_year, 'year')) \
+            .filter(ee.Filter.eq('status', 'permanent')) \
+            .select(met_bands, met_names)
         # Check if collection is empty        
-        image_count = ee.Number(gridmet_coll.limit(1). \
-                               reduceColumns('count', ['system:index']).get('count'))
-        empty = ee.Algorithms.If(image_count.neq(1), 'True', 'False');
+        image_count = ee.Number(gridmet_coll.limit(1).
+                                reduceColumns('count', ['system:index']).get('count'))
+        empty = ee.Algorithms.If(image_count.neq(1), 'True', 'False')
         if empty:       
             print('No new "permanent" data found. Skipping.')
             export_df = None
             continue
 
         def get_values(image):
-            #Pull out Date from Image
-            dateStr = image.date();
-            dateNum = ee.Image.constant(ee.Number.parse(dateStr.format("YYYYMMdd"))).rename(['Date'])
-            #Add DateNum Band to Image
-            image = image.addBands([dateNum])      
-            #Reduce image taking mean of all pixels in geometry (4km resolution)
+            # Pull out Date from Image
+            datestr = image.date()
+            datenum = ee.Image.constant(ee.Number.parse(datestr.format("YYYYMMdd"))).rename(['Date'])
+            # Add DateNum Band to Image
+            image = image.addBands([datenum])
+            # Reduce image taking mean of all pixels in geometry (4km resolution)
             input_mean = ee.Image(image) \
                 .reduceRegion(
-                        reducer = ee.Reducer.mean(), geometry=point, scale = 4000)
+                        reducer=ee.Reducer.mean(), geometry=point, scale=4000)
             return ee.Feature(None, input_mean)   
-        # Run get_values fuction over all images in gridmet collection
+        # Run get_values function over all images in gridmet collection
         data = gridmet_coll.map(get_values)
     
-    # Export dictionary to pandas dataframe using expornential getInfo fnc
+    # Export dictionary to pandas dataframe using exponential getInfo fnc
         if iter_year == start_date_yr:
                 export_df = pd.DataFrame([
                         ftr['properties']
@@ -149,17 +151,15 @@ for index, row in input_df.iterrows():
     export_df['Ws_2m'] = export_df.Ws_10m*((4.87/np.log(67.8*zw-5.42)))
 
     # Unit Conversions
-    export_df.Tmax = export_df.Tmax-273.15; #K to C
-    export_df.Tmin = export_df.Tmin-273.15; #K to C
+    export_df.Tmax = export_df.Tmax-273.15  #K to C
+    export_df.Tmin = export_df.Tmin-273.15  #K to C
     export_df.rename(columns = {'Tmax': 'Tmax_C','Tmin':'Tmin_C'}, inplace=True)
-      
 
     # Add new data to original dataframe, remove duplicates
-    export_df = pd.concat([original_df, export_df], sort = True)
+    export_df = pd.concat([original_df, export_df], sort=True)
     export_df = export_df[output_order].drop_duplicates().reset_index(drop=False)
     
     # Write csv files to working directory
     export_df.to_csv(output_name, columns=output_order)
     elapsed = timeit.default_timer() - start_time
     print(elapsed)   
-   
