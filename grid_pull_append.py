@@ -61,7 +61,7 @@ for index, row in input_df.iterrows():
     end_date = dt.date(current_date.year, current_date.month,
                        current_date.day-1)
     # Create List of all dates
-    full_date_list = pd.date_range(dt.datetime.strptime('1979-01-01',
+    full_date_list = pd.date_range(dt.datetime.strptime('2016-01-01',
                                                         '%Y-%m-%d'), end_date)
     output_name = 'gridmet_historical_' + GRIDMET_ID_str + '.csv'
     output_file = os.path.join('D:\etr-biascorrect', output_name)
@@ -71,6 +71,9 @@ for index, row in input_df.iterrows():
         original_df = pd.read_csv(output_file, parse_dates=True)
         missing_dates = list(set(full_date_list) - set(pd.to_datetime(
             original_df['Date'])))
+        original_df.Date = pd.to_datetime(original_df.Date.astype(str),
+                                        format='%Y%m%d')
+        original_df.Date.apply(lambda x: x.strftime('%Y-%m-%d'))
     else:
         print('{} does not exists. Creating file.'.format(output_name))
         missing_dates = list(set(full_date_list))
@@ -82,12 +85,11 @@ for index, row in input_df.iterrows():
     start_date = min(missing_dates)
     end_date = max(missing_dates)
 
-
     # Create ee point from lat and lon
     point = ee.Geometry.Point(row.LON, row.LAT)
 
-    # gridmet elevation image
-    # (ee.Image('projects/climate-engine/gridmet/elevation'))
+    # gridmet elevation image:
+    # ee.Image('projects/climate-engine/gridmet/elevation')
     elev = ee.Image('projects/climate-engine/gridmet/elevation') \
         .reduceRegion(reducer=ee.Reducer.mean(), geometry=point,
                       scale=4000)
@@ -158,7 +160,8 @@ for index, row in input_df.iterrows():
     # export_df['DOY'] = export_df['Date'].dt.dayofyear
     # Format Date for export
     export_df['Date'] = export_df.Date.apply(lambda x: x.strftime('%Y-%m-%d'))
-             
+    print(export_df.Date[1])
+    print(type(export_df.Date[1]))
     # Remove all negative Prcp values (GRIDMET Bug)
     export_df.Prcp_mm = export_df.Prcp_mm.clip(lower=0)
 
@@ -186,11 +189,12 @@ for index, row in input_df.iterrows():
     export_df['RH_avg'] = (export_df.RH_max + export_df.RH_min)/2
 
     # Add new data to original dataframe, remove duplicates
-    export_df = pd.concat([original_df, export_df], sort=True)
-    export_df = export_df[output_order].drop_duplicates().reset_index(drop=False)
+    export_df = pd.concat([original_df, export_df], ignore_index=True, sort=True)
+    export_df = export_df[output_order].drop_duplicates('Date')
+    export_df = export_df.sort_values(by=['Year', 'Month', 'Day'])
     
     # Write csv files to working directory
-    export_df.to_csv(output_name, columns = output_order)
+    export_df.to_csv(output_name, columns = output_order, index=False)
     elapsed = timeit.default_timer() - start_time
     print(elapsed)   
 
