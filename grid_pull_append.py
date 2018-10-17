@@ -10,10 +10,10 @@ import timeit
 
 ee.Initialize()
 
-os.chdir('C:\etr-biascorrect')
+os.chdir('D:\etr-biascorrect')
 
 # Input .csv containing GRIDMET_ID, LAT, LON
-input_df = pd.read_csv('C:\etr-biascorrect\gridmet_testlist.txt')
+input_df = pd.read_csv('D:\etr-biascorrect\gridmet_testlist.txt')
 
 # List of ee GRIDMET varibles to retrieve
 # https://explorer.earthengine.google.com/#detail/IDAHO_EPSCOR%2FGRIDMET
@@ -25,9 +25,9 @@ met_names= ['Tmax', 'Tmin', 'Srad_wm2', 'Ws_10m', 'q_kgkg', 'RH_min', 'RH_max',
             'Prcp_mm', 'ETr_mm', 'ETo_mm']
 
 # Specify column order for output .csv Variables:
-output_order = ['Date', 'Year', 'Month', 'Day', 'Elev_m', 'pair_kPa', 'Ws2m_ms',
-                'Tmin_C', 'Tmax_C', 'Tavg_C', 'Srad_wm2', 'q_kgkg', 'ea_kPa', 'RH_min',
-                'RH_max', 'RH_avg', 'Prcp_mm', 'ETr_mm', 'ETo_mm']
+output_order = ['Date', 'Year', 'Month', 'Day', 'Centroid_Lat', 'Centroid_Lon',
+                'Elev_m', 'Ws2m_ms', 'Tmin_C', 'Tmax_C', 'Srad_wm2', 'ea_kPa',
+                'Prcp_mm', 'ETr_mm', 'ETo_mm']
 
 # Exponential getinfo call from ee-tools/utils.py
 def ee_getinfo(ee_obj, n=30):
@@ -61,7 +61,7 @@ for index, row in input_df.iterrows():
     end_date = dt.date(current_date.year, current_date.month,
                        current_date.day-1)
     # Create List of all dates
-    full_date_list = pd.date_range(dt.datetime.strptime('2014-01-01',
+    full_date_list = pd.date_range(dt.datetime.strptime('2018-01-01',
                                                         '%Y-%m-%d'), end_date)
     output_name = 'gridmet_historical_' + GRIDMET_ID_str + '.csv'
     output_file = os.path.join('C:\etr-biascorrect', output_name)
@@ -95,11 +95,27 @@ for index, row in input_df.iterrows():
 
     # gridmet elevation image:
     # ee.Image('projects/climate-engine/gridmet/elevation')
-    elev = ee.Image('projects/climate-engine/gridmet/elevation') \
+    elev= ee.Image('projects/climate-engine/gridmet/elevation') \
         .reduceRegion(reducer=ee.Reducer.mean(), geometry=point,
                       scale=4000)
     elev = ee_getinfo(elev)['b1']
 
+    grid_centroid =ee.Image('projects/climate-engine/gridmet/elevation') \
+        .clip(point).geometry().centroid()
+    grid_lon, grid_lat = grid_centroid.getInfo()['coordinates']
+    # print(grid_lat)
+    # print(grid_lon)
+
+    # GRIDMET lower left corner coordinates
+    # gridmet_lon = -124.791666666667
+    # gridmet_lat = 25.0416666666667
+    # gridmet_lon = -124.78749996666667
+    # gridmet_cs = 0.041666666666666664
+    # new_lat = int(abs(row.LAT - gridmet_lat) / gridmet_cs) * gridmet_cs + gridmet_lat + gridmet_cs/2
+    # new_lon = int(abs(row.LON - gridmet_lon) / gridmet_cs) * gridmet_cs + gridmet_lon + gridmet_cs/2
+    # print(new_lat)
+    # print(new_lon)
+    # sys.exit()
     # Loop through ee pull by year (max 5000 records for getInfo())
     # Append each new year on end of dataframe
     # Process dataframe units and output after                        
@@ -174,6 +190,8 @@ for index, row in input_df.iterrows():
     export_df['Ws2m_ms'] = refet.calcs._wind_height_adjust(export_df.Ws_10m, zw)
     # elevation from gridMET elevation layer
     export_df['Elev_m'] = elev
+    export_df['Centroid_Lat'] = grid_lat
+    export_df['Centroid_Lon'] = grid_lon
 
     # air pressure from gridmet elevation using refet module
     export_df['pair_kPa'] = refet.calcs._air_pressure(export_df.Elev_m,

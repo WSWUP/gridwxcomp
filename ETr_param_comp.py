@@ -83,7 +83,7 @@ for index, row in station_attribute.iterrows():
             monthly = result.groupby([lambda x: x.year, lambda x: x.month]).agg(['mean','count'])
               
             # Remove Totals with Less Than XX Days
-            day_limit = 15
+            day_limit = 10
             monthly = monthly[monthly['Windspeed (m/s)','count']>=day_limit]
             
             #Rebuild Index DateTime
