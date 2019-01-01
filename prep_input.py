@@ -88,16 +88,37 @@ def read_station_list(station_path):
 
     Returns:
         station_list (:class:`pandas.DataFrame`): ``Pandas.DataFrame`` that
-            contains only FID, lattitude, longitude, and elevation for
+            contains FID, lattitude, longitude, elevation, and full file path 
+            to each corresponding climate station time series file for
             later joining with gridMET cell information.
     """
     station_list = pd.read_csv(station_path)
-    cols = ['FID','LATDECDEG','LONGDECDEG','Elev_m']
+    cols = ['FID','LATDECDEG','LONGDECDEG','Elev_m','FileName']
     station_list = station_list[cols]
     station_list.rename(columns={'LATDECDEG':'STATION_LAT',
                             'LONGDECDEG':'STATION_LON',
-                            'Elev_m':'STATION_ELEV_M'},
+                            'Elev_m':'STATION_ELEV_M',
+                            'FileName':'STATION_FILE_PATH'},
                    inplace=True)
+    # get station name only for matching to file name
+    station_list.STATION_FILE_PATH =\
+            station_list.STATION_FILE_PATH.str.split('_').str.get(0)
+    # look at path for station CSV, look for time series files in same directory
+    station_path_tuple = os.path.split(station_path)
+    path_root = station_path_tuple[0]
+    file_name = station_path_tuple[1]
+    # look in child directory that contains station CSV file
+    if path_root != '' and file_name != '':
+        file_names = os.listdir(path_root)   
+    # if station CSV file is in same directory look there
+    else:
+        file_names = os.listdir(os.getcwd())
+    # match station name with time series excel files full path,
+    # assumes no other files in the directory have station names in their name
+    for station in station_list.STATION_FILE_PATH:
+        match = [s for s in file_names if station in s][0]
+        station_list.loc[station_list.STATION_FILE_PATH == station,\
+                'STATION_FILE_PATH'] = os.path.abspath(match)
     return station_list
 
 def join_station_to_gridmet(station_list, gridmet_meta_path, out_path):
@@ -153,7 +174,8 @@ def join_station_to_gridmet(station_list, gridmet_meta_path, out_path):
                                      'FID',
                                      'STATION_LAT',
                                      'STATION_LON',
-                                     'STATION_ELEV_M'])
+                                     'STATION_ELEV_M',
+                                     'STATION_FILE_PATH'])
     # if no out_path given save to current working directory
     if not out_path:
         out_df.to_csv('merged_input.csv', index=False)
