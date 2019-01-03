@@ -32,7 +32,7 @@ def main(station_file, gridmet_meta_file, out_path):
         raise FileNotFoundError('GridMET file path was not given and '\
                 +'gridmet_cell_data.csv was not found in the current '\
                 +'directory. Please assign the correct path or put '\
-                +'gridmet_cell_data.csv in the current directory.')
+                +'gridmet_cell_data.csv in the current directory.\n')
     if not out_path:
         out_path='merged_input.csv'
 
@@ -115,10 +115,19 @@ def read_station_list(station_path):
         file_names = os.listdir(os.getcwd())
     # match station name with time series excel files full path,
     # assumes no other files in the directory have station names in their name
+    # will accept files of any extension, e.g. xlx, csv, txt
     for station in station_list.STATION_FILE_PATH:
         match = [s for s in file_names if station in s][0]
-        station_list.loc[station_list.STATION_FILE_PATH == station,\
-                'STATION_FILE_PATH'] = os.path.abspath(match)
+        if match:
+            station_list.loc[station_list.STATION_FILE_PATH == station,\
+                'STATION_FILE_PATH'] = os.path.abspath(
+                                       os.path.join(path_root,match))
+        else:
+            print('No file was found that matches station: ', station,
+                    '\nin directory: ', os.path.abspath(path_root),
+                    '\nskipping.\n')
+            continue
+
     return station_list
 
 def join_station_to_gridmet(station_list, gridmet_meta_path, out_path):
@@ -164,7 +173,7 @@ def join_station_to_gridmet(station_list, gridmet_meta_path, out_path):
             stations.loc[index,'GRIDMET_ID'] = ind
         except:
             print('Failed to find matching gridMET info for climate '\
-                    +'station with FID = ', row.FID)  
+                    +'station with FID = ', row.FID,'\n')  
     stations.GRIDMET_ID = stations.GRIDMET_ID.astype(int)
     out_df = stations.merge(gridmet_meta,on='GRIDMET_ID')
     out_df = out_df.reindex(columns=['GRIDMET_ID',
