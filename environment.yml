@@ -49,6 +49,7 @@ dependencies:
     - pycparser==2.19
     - pycrypto==2.6.1
     - pyopenssl==18.0.0
+    - refet==0.3.7
     - rsa==4.0
     - uritemplate==3.0.0
 prefix: /home/john/anaconda3/envs/etr_bias

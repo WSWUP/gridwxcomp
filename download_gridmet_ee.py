@@ -110,6 +110,10 @@ def main(input_csv, out_folder, year_filter=''):
             missing_dates = list(set(date_list))
         if not missing_dates:
             logging.info('No missing data found. Skipping')
+            # Add gridMET file path to input table if not already there
+            input_df.loc[input_df.GRIDMET_ID == row.GRIDMET_ID,\
+                'GRIDMET_FILE_PATH'] = os.path.abspath(output_file)
+            input_df.to_csv(input_csv, index=False)
             continue
 
         # Min and Max of Missing Dates (Start: Inclusive; End: Exclusive)
@@ -251,6 +255,11 @@ def main(input_csv, out_folder, year_filter=''):
         export_df = export_df[output_order].drop_duplicates('date')
         export_df = export_df.sort_values(by=['year', 'month', 'day'])
         export_df = export_df.dropna()
+
+        # Add gridMET file path to input table
+        input_df.loc[input_df.GRIDMET_ID == row.GRIDMET_ID,\
+                'GRIDMET_FILE_PATH'] = os.path.abspath(output_file)
+        input_df.to_csv(input_csv, index=False)
 
         # Write csv files to working directory
         export_df.to_csv(output_file, columns=output_order, index=False)
