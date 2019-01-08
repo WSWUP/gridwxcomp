@@ -107,7 +107,7 @@ def read_station_list(station_path):
     station_path_tuple = os.path.split(station_path)
     path_root = station_path_tuple[0]
     file_name = station_path_tuple[1]
-    # look in child directory that contains station CSV file
+    # look in parent directory that contains station CSV file
     if path_root != '' and file_name != '':
         file_names = os.listdir(path_root)   
     # if station CSV file is in same directory look there
@@ -130,15 +130,15 @@ def read_station_list(station_path):
 
     return station_list
 
-def join_station_to_gridmet(station_list, gridmet_meta_path, out_path):
+def join_station_to_gridmet(station_path, gridmet_meta_path, out_path):
     """
     Read list of climate stations and match each with its
     closest GridMET cell, save CSV with information from both.
 
     Arguments:
-        station_list (:class:`pandas.DataFrame`): ``Pandas.DataFrame``
-            containing a list of climate stations with latitude, longitude,
-            elevation, and ID fields.
+        station_path (str): path to CSV file containing list of climate
+            stations that will later be used to calculate monthly
+            bias rations to GridMET reference ET.
         gridmet_meta_path (str): path to metadata CSV file that contains
             all gridMET cells for the contiguous United States. Can be
             found at ``etr-biascorrect/gridmet_cell_data.csv``.
@@ -155,7 +155,7 @@ def join_station_to_gridmet(station_list, gridmet_meta_path, out_path):
         to the climate station are prefixed with "STATION_" and those refering
         to gridMET have no prefix.
     """
-    stations = read_station_list(station_list)
+    stations = read_station_list(station_path)
     gridmet_meta = pd.read_csv(gridmet_meta_path)
     gridmet_pts = list(zip(gridmet_meta.LAT,gridmet_meta.LON))
     # calculate centroids, doesn't seem to work on GridMET meta file

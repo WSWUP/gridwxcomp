@@ -1,4 +1,7 @@
+# -*- coding: utf-8 -*-
 """
+Calculate monthly bias ratios for each climate station given or select
+gridMET cells and write to CSV.
 """
 
 import pandas as pd
@@ -71,8 +74,13 @@ def calc_bias_ratios(input_path, out_dir, gridmet_ID=None):
             continue
             
         # load station and gridMET time series files
-        station_df = pd.read_excel(row.STATION_FILE_PATH,
-                                     sheet_name='Corrected Data')
+        try:
+            station_df = pd.read_excel(row.STATION_FILE_PATH,
+                                       sheet_name='Corrected Data')
+        except:
+            print('Station time series file: ', row.STATION_FILE_PATH, 
+                  '\nwas not found, skipping.')
+            continue
         gridmet_df = pd.read_csv(row.GRIDMET_FILE_PATH, parse_dates=True, 
                                  index_col='date')
         # merge both datasets drop missing days
