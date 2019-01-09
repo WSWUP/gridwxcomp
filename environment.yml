@@ -167,6 +167,7 @@ dependencies:
   - sqlite=3.26.0=h7b6447c_0
   - tk=8.6.8=hbc83047_0
   - util-linux=2.21=0
+  - xlrd=0.9.0=py27_0
   - xz=5.2.4=h14c3975_4
   - zlib=1.2.11=h7b6447c_3
   - pip:
