@@ -3,6 +3,7 @@ channels:
   - conda-forge
   - defaults
 dependencies:
+  - asn1crypto=0.24.0=py27_1003
   - attrs=18.2.0=py_0
   - backports=1.0=py_2
   - backports.shutil_get_terminal_size=1.0.0=py_3
@@ -10,12 +11,15 @@ dependencies:
   - bleach=3.0.2=py_1
   - boost-cpp=1.68.0=h3a22d5f_0
   - ca-certificates=2018.11.29=ha4d7672_0
+  - cachetools=2.1.0=py_0
   - cairo=1.14.12=he6fea26_5
   - certifi=2018.11.29=py27_1000
+  - cffi=1.11.5=py27h5e8e0c9_1
   - click=7.0=py_0
   - click-plugins=1.0.4=py_0
   - configparser=3.5.0=py27_1001
   - decorator=4.3.0=py_0
+  - earthengine-api=0.1.164=py_0
   - entrypoints=0.2.3=py27_1002
   - enum34=1.1.6=py27_1001
   - fiona=1.7.13=py27hb00a9d7_3
@@ -27,7 +31,12 @@ dependencies:
   - gettext=0.19.8.1=h5e8e0c9_1
   - glib=2.55.0=h464dc38_2
   - gmp=6.1.2=hfc679d8_0
-  - hdf5=1.10.2=hc401514_3
+  - google-api-python-client=1.7.7=py_0
+  - google-auth=1.6.2=py_0
+  - google-auth-httplib2=0.0.3=py_2
+  - hdf5=1.10.2=0
+  - httplib2=0.12.0=py27_1000
+  - idna=2.8=py27_1000
   - ipaddress=1.0.22=py_1
   - ipykernel=4.10.0=py27_1
   - ipython=5.8.0=py27_0
@@ -44,7 +53,6 @@ dependencies:
   - kealib=1.4.9=h0bee7d0_2
   - libdap4=3.19.1=0
   - libgdal=2.2.4=h25f9fa3_7
-  - libgfortran=3.0.0=1
   - libiconv=1.15=h470a237_3
   - libkml=1.3.0=he469717_9
   - libnetcdf=4.6.1=h628ed10_200
@@ -58,6 +66,7 @@ dependencies:
   - nbconvert=5.3.1=py_1
   - nbformat=4.4.0=py_1
   - notebook=5.7.4=py27_1000
+  - oauth2client=4.1.2=py_1
   - pandas=0.23.4=py27hf8a1672_0
   - pandoc=2.5=0
   - pandocfilters=1.4.2=py_1
@@ -70,17 +79,23 @@ dependencies:
   - prometheus_client=0.5.0=py_0
   - prompt_toolkit=1.0.15=py_1
   - ptyprocess=0.6.0=py27_1000
+  - pyasn1=0.4.4=py_1
+  - pyasn1-modules=0.2.3=py_0
+  - pycparser=2.19=py_0
   - pygments=2.3.1=py_0
+  - pyopenssl=18.0.0=py27_1000
   - pyqt=4.11.4=py27_3
   - pyrsistent=0.14.9=py27h470a237_0
   - python-dateutil=2.7.5=py_0
   - pytz=2018.9=py_0
   - pyzmq=17.1.2=py27hae99301_1
   - qtconsole=4.4.3=py_0
+  - rsa=3.4.2=py_1
   - scandir=1.9.0=py27h470a237_0
   - send2trash=1.5.0=py_0
   - setuptools=40.6.3=py27_0
   - simplegeneric=0.8.1=py_1
+  - simplejson=3.16.1=py27h470a237_0
   - singledispatch=3.4.0.3=py27_1000
   - sip=4.18=py27_1
   - six=1.12.0=py27_1000
@@ -89,6 +104,7 @@ dependencies:
   - tornado=5.1.1=py27h470a237_0
   - traitlets=4.3.2=py27_1000
   - tzcode=2018g=h470a237_1
+  - uritemplate=3.0.0=py_1
   - wcwidth=0.1.7=py_1
   - webencodings=0.5.1=py_1
   - wheel=0.32.3=py27_0
@@ -107,6 +123,7 @@ dependencies:
   - blas=1.0=mkl
   - bzip2=1.0.6=h14c3975_5
   - cligj=0.2.0=py27_0
+  - cryptography=2.4.2=py27h1ba5d50_0
   - curl=7.63.0=hbc83047_1000
   - expat=2.2.6=he6710b0_0
   - fontconfig=2.13.0=h9420a91_0
@@ -122,6 +139,7 @@ dependencies:
   - libedit=3.1.20170329=h6b74fdf_2
   - libffi=3.2.1=hd88cf55_4
   - libgcc-ng=8.2.0=hdf63c60_1
+  - libgfortran=1.0=0
   - libgfortran-ng=7.3.0=hdf63c60_0
   - libpng=1.6.35=hbc83047_0
   - libpq=11.1=h20c2e04_0
@@ -152,24 +170,7 @@ dependencies:
   - xz=5.2.4=h14c3975_4
   - zlib=1.2.11=h7b6447c_3
   - pip:
-    - asn1crypto==0.24.0
-    - cachetools==3.0.0
-    - cffi==1.11.5
-    - cryptography==2.4.2
-    - earthengine-api==0.1.164
-    - google-api-python-client==1.7.7
-    - google-auth==1.6.2
-    - google-auth-httplib2==0.0.3
-    - httplib2==0.12.0
-    - idna==2.8
-    - oauth2client==4.1.3
-    - pyasn1==0.4.5
-    - pyasn1-modules==0.2.3
-    - pycparser==2.19
     - pycrypto==2.6.1
-    - pyopenssl==18.0.0
     - refet==0.3.7
-    - rsa==4.0
-    - uritemplate==3.0.0
 prefix: /home/john/anaconda3/envs/etr_bias
 

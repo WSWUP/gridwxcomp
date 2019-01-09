@@ -88,16 +88,19 @@ def read_station_list(station_path):
 
     Returns:
         station_list (:class:`pandas.DataFrame`): ``Pandas.DataFrame`` that
-            contains FID, lattitude, longitude, elevation, and full file path 
-            to each corresponding climate station time series file for
-            later joining with gridMET cell information.
+            contains station ID, lattitude, longitude, elevation, and others 
+            for each climate station.
     """
     station_list = pd.read_csv(station_path)
-    cols = ['FID','LATDECDEG','LONGDECDEG','Elev_m','FileName']
+    cols = ['FID','LATDECDEG','LONGDECDEG','Elev_m','FileName',
+            'Station_ID','Elev_FT','State','Source','Station',
+            'Website','Comments','Irrigation']
     station_list = station_list[cols]
     station_list.rename(columns={'LATDECDEG':'STATION_LAT',
                             'LONGDECDEG':'STATION_LON',
                             'Elev_m':'STATION_ELEV_M',
+                            'Elev_FT':'STATION_ELEV_FT',
+                            'Station_ID':'STATION_ID',
                             'FileName':'STATION_FILE_PATH'},
                    inplace=True)
     # get station name only for matching to file name
@@ -151,9 +154,11 @@ def join_station_to_gridmet(station_path, gridmet_meta_path, out_path):
 
     Note:
         The CSV file that is saved contains latitude, longitude, and elevation
-        fields for both the station and nearest gridMET cell. Those refering
-        to the climate station are prefixed with "STATION_" and those refering
-        to gridMET have no prefix.
+        fields for both the station and nearest gridMET cell. Fields that may 
+        refer to both gridMET and station data have prefixes to distinguish,
+        the climate station data are prefixed with "STATION_" and those refering
+        to gridMET have no prefix. Other fields without a prefix are not in all
+        capital letters and refer to the climate station, e.g. Website. 
     """
     stations = read_station_list(station_path)
     gridmet_meta = pd.read_csv(gridmet_meta_path)
@@ -176,15 +181,27 @@ def join_station_to_gridmet(station_path, gridmet_meta_path, out_path):
                     +'station with FID = ', row.FID,'\n')  
     stations.GRIDMET_ID = stations.GRIDMET_ID.astype(int)
     out_df = stations.merge(gridmet_meta,on='GRIDMET_ID')
-    out_df = out_df.reindex(columns=['GRIDMET_ID',
-                                     'LAT',
-                                     'LON',
-                                     'ELEV_M',
-                                     'FID',
-                                     'STATION_LAT',
-                                     'STATION_LON',
-                                     'STATION_ELEV_M',
-                                     'STATION_FILE_PATH'])
+    out_df['ELEV_FT'] = out_df.ELEV_M * 3.28084 # m to ft
+    out_df = out_df.reindex(
+             columns=['GRIDMET_ID',
+                      'LAT',
+                      'LON',
+                      'ELEV_M',
+                      'ELEV_FT',
+                      'STATION_ID',
+                      'FID',
+                      'STATION_LAT',
+                      'STATION_LON',
+                      'STATION_ELEV_M',
+                      'STATION_ELEV_FT',
+                      'STATION_FILE_PATH',
+                      'State',
+                      'Source',
+                      'Station',
+                      'Website',
+                      'Comments',
+                      'Irrigation'
+            ])
     # if no out_path given save to current working directory
     if not out_path:
         out_df.to_csv('merged_input.csv', index=False)
