@@ -5,7 +5,7 @@ cell information. Produce a CSV file that will be used for input for main
 bias correction workflow.
 
 TODO:
-    add logging and example for docs.
+    add logging 
 """
 
 import os                                                                       
@@ -20,32 +20,40 @@ def main(station_file, gridmet_meta_file, out_path):
     Take list of climate stations and merge each with overlapping gridMET cell
     information, write new CSV for next step in bias correction workflow.
 
-    Raises:
-        FileNotFoundError: if the gridmet_cell_data.csv file is not 
-            passed as a command line argument and it is not in the current
-            working directory.
-    """
-    # check if paths to input and output files were given, assign defaults
-    if not gridmet_meta_file:
-        gridmet_meta_file = 'gridmet_cell_data.csv'
-    if not os.path.exists(gridmet_meta_file):
-        raise FileNotFoundError('GridMET file path was not given and '\
-                +'gridmet_cell_data.csv was not found in the current '\
-                +'directory. Please assign the correct path or put '\
-                +'gridmet_cell_data.csv in the current directory.\n')
-    if not out_path:
-        out_path='merged_input.csv'
+    Arguments:
+        station_file (str): path to CSV file containing list of climate
+            stations that will later be used to calculate monthly
+            bias rations to GridMET reference ET.
+        gridmet_meta_file (str): path to metadata CSV file that contains
+            all gridMET cells for the contiguous United States. Can be
+            found at ``etr-biascorrect/gridmet_cell_data.csv``.
+        out_path (str): path to save output CSV, default is to save as 
+            "merged_input.csv" to current working directory if not passed
+            at command line to script.
 
-    print('station list CSV: ', 
-          os.path.join(os.getcwd(),station_file), 
-          '\ngridMET cell info CSV: ', 
-          os.path.join(os.getcwd(),gridmet_meta_file),
-          '\nmerged CSV will be saved to: ', 
-          os.path.join(os.getcwd(),out_path))
-   
-    # read climate station data, rename columns and condence then merge 
+    Example:
+        From the command line interface,
+
+        .. code::
+            $ python prep_input.py -i ETrBias_DataPackage/Station_Data.txt -g gridmet_cell_data.csv
+
+        To use within Python,
+
+        >>> from prep_input import prep_input 
+        >>> prep_input(
+                'ETrBias_DataPackage/Station_Data.txt',
+                'gridmet_cell_data.csv',
+                'outfile.csv'
+            )
+
+        Both methods result in "outfile.csv" being created in the working 
+        directory which contains metadata from climate staions as well as the 
+        lat, long, and gridMET ID of the nearest gridMET cell. 
+
+    """
+
     # station info with overlapping gridMET and save CSV
-    join_station_to_gridmet(station_file, 
+    prep_input(station_file, 
             gridmet_meta_file, 
             out_path)
 
@@ -90,7 +98,9 @@ def read_station_list(station_path):
         station_list (:class:`pandas.DataFrame`): ``Pandas.DataFrame`` that
             contains station ID, lattitude, longitude, elevation, and others 
             for each climate station.
+
     """
+
     station_list = pd.read_csv(station_path)
     cols = ['FID','LATDECDEG','LONGDECDEG','Elev_m','FileName',
             'Station_ID','Elev_FT','State','Source','Station',
@@ -133,7 +143,7 @@ def read_station_list(station_path):
 
     return station_list
 
-def join_station_to_gridmet(station_path, gridmet_meta_path, out_path):
+def prep_input(station_path, gridmet_meta_path, out_path):
     """
     Read list of climate stations and match each with its
     closest GridMET cell, save CSV with information from both.
@@ -152,6 +162,11 @@ def join_station_to_gridmet(station_path, gridmet_meta_path, out_path):
     Returns:
         None
 
+    Raises:
+        FileNotFoundError: if the ``gridmet_meta_path`` is not passed as a 
+        command line argument and it is not in the current working directory
+        and named "gridmet_cell_data.csv".
+
     Note:
         The CSV file that is saved contains latitude, longitude, and elevation
         fields for both the station and nearest gridMET cell. Fields that may 
@@ -159,7 +174,27 @@ def join_station_to_gridmet(station_path, gridmet_meta_path, out_path):
         the climate station data are prefixed with "STATION_" and those refering
         to gridMET have no prefix. Other fields without a prefix are not in all
         capital letters and refer to the climate station, e.g. Website. 
+
     """
+
+    # check if paths to input and output files were given, assign defaults
+    if not gridmet_meta_path:
+        gridmet_meta_path = 'gridmet_cell_data.csv'
+    if not os.path.exists(gridmet_meta_path):
+        raise FileNotFoundError('GridMET file path was not given and '\
+                +'gridmet_cell_data.csv was not found in the current '\
+                +'directory. Please assign the correct path or put '\
+                +'gridmet_cell_data.csv in the current directory.\n')
+    if not out_path:
+        out_path='merged_input.csv'
+
+    print('station list CSV: ',
+          os.path.abspath(station_path),
+          '\ngridMET cell info CSV: ',
+          os.path.abspath(gridmet_meta_path),
+          '\nmerged CSV will be saved to: ',
+          os.path.abspath(out_path))
+
     stations = read_station_list(station_path)
     gridmet_meta = pd.read_csv(gridmet_meta_path)
     gridmet_pts = list(zip(gridmet_meta.LAT,gridmet_meta.LON))

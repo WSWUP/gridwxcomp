@@ -246,6 +246,7 @@ def calc_bias_ratios(input_path, out_dir, gridmet_ID=None, comp=False):
             'count_days': 0,
             'April_to_oct_mean': 2,
             'June_to_aug_mean': 2,
+            'Annual_mean': 2,
             'LAT': 10,
             'LON': 10,
             'ELEV_M': 0,
@@ -296,9 +297,7 @@ def calc_bias_ratios(input_path, out_dir, gridmet_ID=None, comp=False):
                     'month', 
                     'mean_ratio',
                     'median_ratio',
-                    'count_days',
-                    'April_to_oct_mean',
-                    'Annual_mean'
+                    'count_days'
             ]]
 
             comp_out = comp_out.merge(
@@ -309,11 +308,14 @@ def calc_bias_ratios(input_path, out_dir, gridmet_ID=None, comp=False):
 
             # no longer need GRIDMET_ID in short summary 
             out.drop(columns='GRIDMET_ID', inplace=True)
+        # if comp False
+        else:
+            comp_out = comp
         # save output depending on options
         _save_output(out, comp_out, out_dir, gridmet_ID)
         
     print(
-        'Summary file(s) for bias ratios saved to: ', 
+        '\nSummary file(s) for bias ratios saved to: ', 
          os.path.abspath(out_dir)
          )
 
