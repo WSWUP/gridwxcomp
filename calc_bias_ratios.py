@@ -33,6 +33,9 @@ def main(input_file_path, out_dir, gridmet_id=None, comp=False):
             output CSV file that contains additional station metadata
             and statistics in addition to the mean monthly ratios.
 
+    Returns:
+        None
+
     Example:
         From the command line interface,
 
@@ -44,12 +47,19 @@ def main(input_file_path, out_dir, gridmet_id=None, comp=False):
             $ # for all gridMET cells and output comprehensive summary
             $ python calc_bias_ratios.py -i merged_input.csv -o monthly_ratios -c 
 
-    Raises:
-        FileNotFoundError: if input file is invalid or not found.
+        To use within Python for all station data and comprehensive output,
+        
+        >>> from calc_bias_ratios import calc_bias_ratios
+        >>> input_path = 'merged_input.csv'
+        >>> out_dir = 'test_out_ratios'
+        >>> comp = True
+        >>> calc_bias_ratios(input_path, out_dir, comp=comp)
+        
+        This will produce two CSV files in ``out_dir`` named summary.csv
+        and summary_comp.csv.
         
     """
-    if not os.path.isfile(input_file_path):
-        raise FileNotFoundError('Input CSV file given was invalid or not found')
+
     if not os.path.isdir(out_dir):
         print('{} does not exist, creating directory'.format(out_dir))
         os.mkdir(out_dir)
@@ -150,23 +160,12 @@ def calc_bias_ratios(input_path, out_dir, gridmet_ID=None, comp=False):
         comp (bool): optional flag to save a "comprehensive" summary
             output CSV file that contains additional station metadata
             and statistics in addition to the mean monthly ratios.
-        
-    Example:            
-        Use within Python for all station data and comprehensive output,
-        
-        >>> from calc_bias_ratios import calc_bias_ratios
-        >>> input_path = 'merged_input.csv'
-        >>> out_dir = 'test_out_ratios'
-        >>> comp = True
-        >>> calc_bias_ratios(input_path, out_dir, comp=comp)
-        
-        This will produce two CSV files in ``out_dir`` named summary.csv
-        and summary_comp.csv.
-            
+                    
     Returns:
         None
         
     Raises:
+        FileNotFoundError: if input file is invalid or not found.
         KeyError: if the input file does not contain file paths to
             the climate station and gridMET time series files. This
             occurs if, for example, the :mod:`prep_input.py` and/or 
@@ -176,10 +175,14 @@ def calc_bias_ratios(input_path, out_dir, gridmet_ID=None, comp=False):
     Note:
         If an existing summary file contains a climate station that
         is being processed its monthly bias ratios and other data
-        will be overwritten.
+        will be overwritten. Also, to proceed with spatial analysis
+        scripts, the "-c" or comprehensive keyword argument must be 
+        True.
         
     """
-    
+    if not os.path.isfile(input_path):
+        raise FileNotFoundError('Input CSV file given was invalid or not found')
+
     input_df = pd.read_csv(input_path)
     # loop through each station and calculate monthly ratio
     for index, row in input_df.iterrows():
