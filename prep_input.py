@@ -59,19 +59,17 @@ def main(station_file, gridmet_meta_file, out_path):
 
 def gridMET_centroid(lat,lon):
     """
-    Calculate the centroid lattitude and longitude for an arbitrary
-    gridMET cell given its lower left corner coordinates. Used for
-    finding closest neighboring climate station locations.
+    Calculate the nearest centroid lattitude and longitude for an arbitrary
+    coordinate. Used for finding closest neighboring grdiMET cell to a climate 
+    station.
     
     Arguments:
-        lat (float): decimal degree latitude of lower left corner 
-            of a gridMET cell
-        lon (float): decimal degree longitude of lower left corner 
-            of a gridMET cell
+        lat (float): decimal degree latitude of location
+        lon (float): decimal degree longitude of location 
             
     Returns:
         gridcell_lat,gridcell_lon (tuple): tuple of latitude and 
-            longitude of gridMET cell centroid location.
+            longitude of nearest gridMET cell centroid location.
     """
     gridmet_lon = -124.78749996666667
     gridmet_lat = 25.04583333333334
@@ -143,7 +141,7 @@ def read_station_list(station_path):
 
     return station_list
 
-def prep_input(station_path, gridmet_meta_path, out_path):
+def prep_input(station_path, out_path, gridmet_meta_path=None):
     """
     Read list of climate stations and match each with its
     closest GridMET cell, save CSV with information from both.
@@ -152,12 +150,14 @@ def prep_input(station_path, gridmet_meta_path, out_path):
         station_path (str): path to CSV file containing list of climate
             stations that will later be used to calculate monthly
             bias rations to GridMET reference ET.
-        gridmet_meta_path (str): path to metadata CSV file that contains
-            all gridMET cells for the contiguous United States. Can be
-            found at ``etr-biascorrect/gridmet_cell_data.csv``.
         out_path (str): path to save output CSV, default is to save as 
             "merged_input.csv" to current working directory if not passed
             at command line to script.
+
+    Keyword Arguments:
+        gridmet_meta_path (str): path to metadata CSV file that contains
+            all gridMET cells for the contiguous United States. If None
+            it is looked for at ``etr-biascorrect/gridmet_cell_data.csv``.
 
     Returns:
         None
@@ -169,11 +169,12 @@ def prep_input(station_path, gridmet_meta_path, out_path):
 
     Note:
         The CSV file that is saved contains latitude, longitude, and elevation
-        fields for both the station and nearest gridMET cell. Fields that may 
-        refer to both gridMET and station data have prefixes to distinguish,
-        the climate station data are prefixed with "STATION_" and those refering
-        to gridMET have no prefix. Other fields without a prefix are not in all
-        capital letters and refer to the climate station, e.g. Website. 
+        fields for both the station and nearest gridMET cell centroid. Fields 
+        that may refer to both gridMET and station data have prefixes to 
+        distinguish, the climate station data are prefixed with "STATION_" and 
+        those refering to gridMET have no prefix. Other fields without a 
+        prefix are not in all capital letters and refer to the climate station, 
+        e.g. "Website". 
 
     """
 
@@ -198,8 +199,6 @@ def prep_input(station_path, gridmet_meta_path, out_path):
     stations = read_station_list(station_path)
     gridmet_meta = pd.read_csv(gridmet_meta_path)
     gridmet_pts = list(zip(gridmet_meta.LAT,gridmet_meta.LON))
-    # calculate centroids, doesn't seem to work on GridMET meta file
-    gridmet_pts = [gridMET_centroid(pt[0],pt[1]) for pt in gridmet_pts]
     # scipy KDTree to find nearest neighbor between station and centroids
     tree = spatial.KDTree(gridmet_pts)
     # loop through each station find closest GridMET
