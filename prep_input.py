@@ -15,7 +15,7 @@ import pandas as pd
 import numpy as np        
 from scipy import spatial
 
-def main(station_file, gridmet_meta_file, out_path):
+def main(station_file, out_path, gridmet_meta_file):
     """
     Take list of climate stations and merge each with overlapping gridMET cell
     information, write new CSV for next step in bias correction workflow.
@@ -46,16 +46,18 @@ def main(station_file, gridmet_meta_file, out_path):
                 'outfile.csv'
             )
 
-        Both methods result in "outfile.csv" being created in the working 
+        Both methods result in "merged_input.csv" being created in the working 
         directory which contains metadata from climate staions as well as the 
-        lat, long, and gridMET ID of the nearest gridMET cell. 
+        lat, long, and gridMET ID of the nearest gridMET cell centroid. 
 
     """
 
     # station info with overlapping gridMET and save CSV
-    prep_input(station_file, 
-            gridmet_meta_file, 
-            out_path)
+    prep_input(
+        station_file, 
+        out_path,
+        gridmet_meta_path=gridmet_meta_file 
+    )
 
 def gridMET_centroid(lat,lon):
     """
@@ -85,7 +87,8 @@ def gridMET_centroid(lat,lon):
 
 def read_station_list(station_path):
     """
-    Read station list CSV file and return condensed version.
+    Read station list CSV file and return modified version as a Pandas
+    DataFrame that includes file paths to each station time series file.
 
     Arguments:
         station_path (str): path to CSV file containing list of climate
@@ -259,7 +262,7 @@ def arg_parse():
              'etr-biascorrect at etr-biascorrect/gridmet_cell_data.csv '+\
              'if not given it needs to be located in the currect directory')
     parser.add_argument(
-        '-o', '--out', metavar='PATH', required=False,
+        '-o', '--out', metavar='PATH', required=False, default=False,
         help='Optional output path for CSV with merged climate/gridMET data')
 #    parser.add_argument(
 #        '--debug', default=logging.INFO, const=logging.DEBUG,
@@ -271,5 +274,6 @@ if __name__ == '__main__':
     args = arg_parse()
 
     main(station_file=args.input, 
-         gridmet_meta_file=args.gridmet,
-         out_path=args.out)
+         out_path=args.out,
+         gridmet_meta_file=args.gridmet
+         )
