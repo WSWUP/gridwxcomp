@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-Calculate monthly bias ratios of climate station to gridMET cell 
-for each station given or a select gridMET cell, write 
-summary statistics to CSV file(s).
+Calculate monthly bias ratios of etr of climate station to gridMET cell. 
 """
 
 import pandas as pd
@@ -15,8 +13,9 @@ def main(input_file_path, out_dir, gridmet_id=None, comp=False):
     """
     Calculate monthly bias ratios between station climate and gridMET
     cells that correspond with each other geographically. Save data
-    to CSV files in the given output directory. Does not overwrite 
-    previously calculated data.
+    to CSV files in the given output directory. If run later with
+    new station data, bias ratios for new stations will be appended
+    to existing output summary CSV.
     
     Arguments:
         input_file_path (str): path to input CSV file containing
@@ -55,8 +54,8 @@ def main(input_file_path, out_dir, gridmet_id=None, comp=False):
         >>> comp = True
         >>> calc_bias_ratios(input_path, out_dir, comp=comp)
         
-        This will produce two CSV files in ``out_dir`` named summary.csv
-        and summary_comp.csv.
+        This will produce two CSV files in ``out_dir`` named "summary.csv"
+        and "summary_comp.csv".
         
     """
 
@@ -155,7 +154,7 @@ def calc_bias_ratios(input_path, out_dir, gridmet_ID=None, comp=False):
             monthly bias ratios of etr.
             
     Keyword Arguments:
-        gridmet_ID (str): optional gridMET ID number if user wants
+        gridmet_ID (int): optional gridMET ID number if user wants
             to only calculate bias ratios for a single gridMET cell.
         comp (bool): optional flag to save a "comprehensive" summary
             output CSV file that contains additional station metadata
@@ -164,6 +163,9 @@ def calc_bias_ratios(input_path, out_dir, gridmet_ID=None, comp=False):
     Returns:
         None
         
+    Example:
+        See :func:`main`
+
     Raises:
         FileNotFoundError: if input file is invalid or not found.
         KeyError: if the input file does not contain file paths to
