@@ -16,16 +16,17 @@ Todo:
 """
 
 import os
-import pandas as pd
 import fiona
 import ogr
 import argparse
+import pandas as pd
+import numpy as np
 from math import ceil
 from shapely.geometry import Point, Polygon, mapping
 from fiona import collection
 from fiona.crs import from_epsg
-from numpy import isclose
 
+# decimal degrees gridMET cell size
 CELL_SIZE = 0.041666666666666664
 
 OPJ = os.path.join
@@ -138,8 +139,7 @@ def make_points_file(in_path):
     )
     in_df = pd.read_csv(in_path, index_col='STATION_ID')
     # save shapefile to "spatial" subdirectory of in_path
-    path_tuple = os.path.split(in_path)
-    path_root = path_tuple[0]
+    path_root = os.path.split(in_path)[0]
 
     out_dir = OPJ(path_root, 'spatial')
     out_file = OPJ(out_dir, 'summary_pts.shp')
@@ -216,7 +216,7 @@ def make_points_file(in_path):
             }
         )
 
-def get_subgrid_bounds(in_path, buffer=25):
+def get_subgrid_bounds(in_path, buffer):
     """
     Calculate bounding box for spatial interpolation grid from 
     comprehensive summary CSV file containing monthly bias ratios
@@ -225,8 +225,6 @@ def get_subgrid_bounds(in_path, buffer=25):
     Arguments:
         in_path (str): path to comprehensive summary file containing
             monthly bias ratios, created by :mod:`etr_biascorrect.calc_bias_ratios.py`.
-        
-    Keyword Arguments:
         buffer (int): number of gridMET cells to expand the rectangular extent
             of the subgrid fishnet (default=25). 
         
@@ -280,7 +278,6 @@ def make_grid(out_path, bounds):
     
     Arguments:
         out_path (str): file path to save subgrid fishnet shapefile. 
-            ``out_path`` should not contain directories that do not exist.
         bounds (tuple): tuple of bounding coordinates in the following order
             (min long, max long, min lat, max lat) which need to be in 
             decimal degrees.
@@ -326,11 +323,9 @@ def make_grid(out_path, bounds):
     """
     
     xmin, xmax, ymin, ymax = bounds
-    
-    path_tuple = os.path.split(out_path)
-    path_root = path_tuple[0]
-    file_name = path_tuple[1]
-    
+    # read path and make parent directories if they don't exist
+    path_root = os.path.split(out_path)[0]
+
     if not os.path.isdir(path_root):
         print(
             os.path.abspath(path_root), 
@@ -436,8 +431,8 @@ def get_cell_ID(coords, cell_data):
     
     # use centroid of cell and centroid coords in cell_data
     row = cell_data.loc[
-            (isclose(cell_data.LON, lon_c)) & (isclose(cell_data.LAT, lat_c))
-            ]
+        (np.isclose(cell_data.LON, lon_c)) & (np.isclose(cell_data.LAT, lat_c))
+    ]
     
     # if cell falls outside of master gridMET fishnet assign -999 id
     if len(row.GRIDMET_ID.values) == 1:
@@ -492,7 +487,7 @@ def update_subgrid(grid_path, gridmet_meta_path=None):
         If cells in the existing fishnet grid lie outside of the
         gridMET master fishnet, the GRIDMET_ID will be assigned
         the value of -999. Also, if the existing fishnet polygons
-        do not exactly align with the gridMET dataset cells this method 
+        do not exactly align with the gridMET dataset cells this function 
         will assign -999 for GRIDMET_ID.
     
     """
@@ -606,8 +601,7 @@ def build_subgrid(in_path, gridmet_meta_path=None, buffer=25):
         raise FileNotFoundError('Input summary CSV file given'+\
                                 ' was invalid or not found')
     # save grid to "spatial" subdirectory of in_path
-    path_tuple = os.path.split(in_path)
-    path_root = path_tuple[0]
+    path_root = os.path.split(in_path)[0]
 
     out_dir = OPJ(path_root, 'spatial')
     grid_file = OPJ(out_dir, 'grid.shp')
