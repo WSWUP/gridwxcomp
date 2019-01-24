@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-Tools to estimate the spatial surface of monthly ratios between climate station
-and gridMET estimated reference evapotranspiration. 
+Perform multiple workflows needed to estimate the spatial surface of monthly
+bias ratios between climate station and gridMET estimated of reference 
+evapotranspiration. The input file is first created by :mod:`calc_bias_ratios`.
 
 Attributes:
     CELL_SIZE (float): constant gridMET cell size in decimal degrees.
@@ -11,27 +12,30 @@ Note:
     *ESRI Shapefile* file format. 
 
 Todo:
-    * add spatial interpolation, logging 
+    * add extraction of zonal stats to gridMET cells
+    * logging 
 
 """
 
 import os
 import fiona
-import ogr
 import argparse
-import pandas as pd
+import copy
 import numpy as np
+import pandas as pd
 from math import ceil
 from shapely.geometry import Point, Polygon, mapping
 from fiona import collection
 from fiona.crs import from_epsg
+from scipy.interpolate import Rbf
+from osgeo import gdal, osr, ogr
 
-# decimal degrees gridMET cell size
 CELL_SIZE = 0.041666666666666664
 
 OPJ = os.path.join
 
-def main(input_file_path, gridmet_meta_path=None, buffer=25):
+def main(input_file_path, gridmet_meta_path=None, 
+         buffer=25, scale_factor=0.1, function='inverse'):
     """
     Create point shapefile of monthly mean bias ratios from comprehensive
     CSV file created by :mod:`calc_bias_ratios`. Build fishnet grid around
@@ -46,12 +50,26 @@ def main(input_file_path, gridmet_meta_path=None, buffer=25):
             named "spatial".
 
     Keyword Arguments:
-        gridmet_meta_path (str): path to metadata CSV file that contains
-            all gridMET cells for the contiguous United States. If None
-            it is looked for at ``etr-biascorrect/gridmet_cell_data.csv``.
+        gridmet_meta_path (str): default None. Path to metadata CSV file 
+            that contains all gridMET cells for the contiguous United 
+            States. If None it is looked for at 
+            ``etr-biascorrect/gridmet_cell_data.csv``.
         buffer (int): number of gridMET cells to expand the rectangular extent
             of the subgrid fishnet (default=25). 
-
+        scale_factor (float, int): scaling factor to apply to original
+            gridMET fishnet to create resampling fishnet. For example,
+            if scale_factor = 0.1, the resolution will be one tenth of 
+            the original girdMET resolution resulting in a 400 m resolution.
+        function (str): default 'inverse', radial basis function to use 
+            for interpolation. Options include 
+            * 'multiquadric'
+            * 'inverse'
+            * 'gaussian'
+            * 'linear'
+            * 'cubic'
+            * 'quintic'
+            * 'thin_plate'
+            
     Returns:
         None
 
@@ -65,19 +83,35 @@ def main(input_file_path, gridmet_meta_path=None, buffer=25):
         "spatial" where the shapefile will be saved as "summary_pts.shp".
         It will also create a spatially referenced fishnet of gridMET
         cells (at "monthly_ratios/spatial/grid.shp") with a buffer of 25 
-        gridMET cells added around the encompassed climate stations. 
-
-        Alternatively, to make a larger buffer zone on the fishnet grid 
-        used for interpolation, use the -b or --buffer option
+        gridMET cells added around the encompassed climate stations. Next
+        a 2-dimensional surface is interpolated from the point data of each
+        mean bias ratio in summary_comp.csv which includes monthly as well 
+        as growing season and annual means. The surfaces are saved to
+        "monthly_ratios/spatial" with file names of the form::
+        
+            [time_period]_[resolution]m.tiff
+            
+        where time_period refers to the bias ratio time aggregate e.g.
+        Apr_mean or Annual_mean. Resolution is the pixel size in meters
+        of the spatially interpolated surface. 
+            
+        Alternatively, to use a smaller buffer zone on the fishnet grid 
+        used for interpolation if, for example, extrapolation is not needed, 
+        use the -b or --buffer option
 
         .. code::
             $ python spatial.py -i monthly_ratios/summary_comp.csv -g gridmet_cell_data.csv -b 30
 
-        For use within Python see examples of :func:`make_points_file` 
-        and :func:`build_subgrid`.
+        Or if we wanted to interpolate to a 200 m resolution 
+        (i.e. scale_factor = 0.05, 0.05 x 4 km = 200 m) using the 'linear'
+        radial basis function, assuming "gridmet_cell_data.csv" is in the 
+        current working directory
+        
+        .. code::
+            $ python spatial.py -i monthly_ratios/summary_comp.csv -s 0.05 -f 'linear'        
 
-    Note:
-        The input file is first created by :mod:`calc_bias_ratios`.
+        For use within Python see examples of :func:`make_points_file`, 
+        :func:`build_subgrid`, and :func:`interpolate`.
 
     """
     # build point shapefile 
@@ -88,6 +122,19 @@ def main(input_file_path, gridmet_meta_path=None, buffer=25):
         gridmet_meta_path=gridmet_meta_path,
         buffer=buffer
     )
+    # get column names from summary csv for interpolation (mean ratios)
+    in_df = pd.read_csv(input_file_path)
+    cols = [c for c in in_df.columns if '_mean' in c and not 'June_to' in c]
+    # 2D interpolate using RBF, save geoTIFFs for each mean ratio
+    for v in cols:
+        interpolate(
+            input_file_path,                 
+            var_name=v, 
+            scale_factor=scale_factor, 
+            function=function, 
+            gridmet_meta_path=gridmet_meta_path,
+            buffer=buffer
+        ) 
 
 def make_points_file(in_path):
     """
@@ -132,7 +179,6 @@ def make_points_file(in_path):
     if not os.path.isfile(in_path):
         raise FileNotFoundError('Input summary CSV file given'+\
                                 ' was invalid or not found')
-    
     print(
         '\nMapping point data for climate stations in: \n',
         in_path, '\n'
@@ -140,7 +186,6 @@ def make_points_file(in_path):
     in_df = pd.read_csv(in_path, index_col='STATION_ID')
     # save shapefile to "spatial" subdirectory of in_path
     path_root = os.path.split(in_path)[0]
-
     out_dir = OPJ(path_root, 'spatial')
     out_file = OPJ(out_dir, 'summary_pts.shp')
     print(            
@@ -226,7 +271,7 @@ def get_subgrid_bounds(in_path, buffer):
         in_path (str): path to comprehensive summary file containing
             monthly bias ratios, created by :mod:`etr_biascorrect.calc_bias_ratios.py`.
         buffer (int): number of gridMET cells to expand the rectangular extent
-            of the subgrid fishnet (default=25). 
+            of the subgrid fishnet. 
         
     Returns:
         bounds (tuple): tuple with coordinates in decimal degrees that
@@ -238,8 +283,8 @@ def get_subgrid_bounds(in_path, buffer):
 
     Note:
         By expanding the grid to a larger area encompassing the climate 
-        stations of interest spatial interpolation is less skewed by the 
-        boundary values.
+        stations of interest :func:`interpolate` can be used to extrapolate
+        passed the bounds of the outer station locations.
         
     """
     if not os.path.isfile(in_path):
@@ -325,7 +370,7 @@ def make_grid(out_path, bounds):
     xmin, xmax, ymin, ymax = bounds
     # read path and make parent directories if they don't exist
     path_root = os.path.split(out_path)[0]
-
+    
     if not os.path.isdir(path_root):
         print(
             os.path.abspath(path_root), 
@@ -431,8 +476,8 @@ def get_cell_ID(coords, cell_data):
     
     # use centroid of cell and centroid coords in cell_data
     row = cell_data.loc[
-        (np.isclose(cell_data.LON, lon_c)) & (np.isclose(cell_data.LAT, lat_c))
-    ]
+            (np.isclose(cell_data.LON, lon_c)) & (np.isclose(cell_data.LAT, lat_c))
+            ]
     
     # if cell falls outside of master gridMET fishnet assign -999 id
     if len(row.GRIDMET_ID.values) == 1:
@@ -456,9 +501,10 @@ def update_subgrid(grid_path, gridmet_meta_path=None):
             gridMET cells which contain climate stations.
             
     Keyword Arguments:
-        gridmet_meta_path (str): path to metadata CSV file that contains
-            all gridMET cells for the contiguous United States. If None
-            it is looked for at ``etr-biascorrect/gridmet_cell_data.csv``.
+        gridmet_meta_path (str): default None. Path to metadata CSV file 
+            that contains all gridMET cells for the contiguous United 
+            States. If None it is looked for at 
+            ``etr-biascorrect/gridmet_cell_data.csv``.
             
     Returns:
         None
@@ -553,14 +599,17 @@ def build_subgrid(in_path, gridmet_meta_path=None, buffer=25):
     
     Arguments:
         in_path (str): path to summary_comp.csv file containing monthly
-            bias ratios, lat, long, and other data.
+            bias ratios, lat, long, and other data. Created by 
+            :mod:`etr_biascorrect.calc_bias_ratios.py`.
             
     Keyword Arguments:
-        gridmet_meta_path (str): path to metadata CSV file that contains
-            all gridMET cells for the contiguous United States. If None
-            it is looked for at ``etr-biascorrect/gridmet_cell_data.csv``.
-        buffer (int): number of gridMET cells to expand the rectangular extent
-            of the subgrid fishnet (default=25). 
+        gridmet_meta_path (str): default None. Path to metadata CSV file 
+            that contains all gridMET cells for the contiguous United 
+            States. If None it is looked for at 
+            ``etr-biascorrect/gridmet_cell_data.csv``.
+        buffer (int): default 25. Number of gridMET cells to expand 
+            the rectangular extent of the subgrid fishnet and interpolated
+            output raster.
             
     Returns:
         None
@@ -596,13 +645,11 @@ def build_subgrid(in_path, gridmet_meta_path=None, buffer=25):
         using :func:`update_subgrid`.
         
     """
-    
     if not os.path.isfile(in_path):
         raise FileNotFoundError('Input summary CSV file given'+\
                                 ' was invalid or not found')
     # save grid to "spatial" subdirectory of in_path
     path_root = os.path.split(in_path)[0]
-
     out_dir = OPJ(path_root, 'spatial')
     grid_file = OPJ(out_dir, 'grid.shp')
     
@@ -620,6 +667,208 @@ def build_subgrid(in_path, gridmet_meta_path=None, buffer=25):
     make_grid(grid_file, bnds) 
     # add gridMET_IDs and WGS 84 projection
     update_subgrid(grid_file, gridmet_meta_path)
+    
+# add to argparse "method" for rbf, scale_factor
+
+def interpolate(in_path, var_name, scale_factor=0.1, 
+                function='inverse', gridmet_meta_path=None, buffer=25):
+    """
+    Use a radial basis function to interpolate 2-dimensional surface of
+    calculated bias ratios for climate stations in input summary CSV. 
+    Options allow for modifying (down/up scaling) the resolution of the 
+    resampling grid and to select from multiple radial basis functions. 
+    Interploated surface is saved as a GeoTIFF raster.
+    
+    Arguments:
+        in_path (str): path to summary_comp.csv file containing monthly
+            bias ratios, lat, long, and other data. Created by 
+            :mod:`etr_biascorrect.calc_bias_ratios.py`.
+        var_name (str): name of variable in ``in_path`` to conduct 2-D
+            interpolation. e.g. "Annual_mean" that is found in summary
+            input CSV (``in_path``).
+    
+    Keyword Arguments:
+        scale_factor (float, int): scaling factor to apply to original
+            gridMET fishnet to create resampling fishnet. For example,
+            if scale_factor = 0.1, the resolution will be one tenth of 
+            the original girdMET resolution resulting in a 400 m resolution.
+        function (str): default 'inverse', radial basis function to use 
+            for interpolation. Options include 
+            * 'multiquadric'
+            * 'inverse'
+            * 'gaussian'
+            * 'linear'
+            * 'cubic'
+            * 'quintic'
+            * 'thin_plate'
+        gridmet_meta_path (str): default None. Path to metadata CSV file 
+            that contains all gridMET cells for the contiguous United 
+            States. If None it is looked for at 
+            ``etr-biascorrect/gridmet_cell_data.csv``. 
+        buffer (int): default 25. Number of gridMET cells to expand 
+            the rectangular extent of the subgrid fishnet and interpolated
+            output raster.
+            
+    Returns:
+        None
+        
+    Example:
+        Let's say we wanted to interpolate the "Annual_mean" bias 
+        ratio in an input CSV first created by :mod:`calc_bias_ratios.py`.
+        This example uses the gaussian radial basis function to interpolate 
+        to a 400 m resolution surface. The result is a GeoTIFF raster that 
+        has an extent that encompasses station locations in the input file 
+        plus an additional optional buffer of outer gridMET cells.
+        
+        >>> from etr_biascorrect import spatial
+        >>> # assign input paths
+        >>> summary_file = 'monthly_ratios/summary_comp.csv'
+        >>> gridmet_metadata_path = 'gridmet_cell_data.csv'
+        >>> buffer = 10
+        >>> var_name = 'Annual_mean'
+        >>> interpolate(summary_file, var_name, scale_factor=0.1, 
+                    function='gaussian', gridmet_meta_path=gridmet_metadata_path, 
+                    buffer=buffer)
+                    
+        The raster will be saved to "monthly_ratios/spatial/Annual_mean_400m.tiff"
+        where the file name is based on the variable being interpolated 
+        followed by the raster resolution. In the case the original gridMET
+        resolution is 4 km therefore the scale facter of 0.1 results in 
+        a 400 m resolution. 
+        
+    Raises:
+        FileNotFoundError: if input summary CSV file is not found. 
+        see also :func:`update_subgrid` for error with ``gridmet_meta_path``.
+        
+    Note:
+        This function can be used independently of :func:`build_subgrid`
+        however, if the buffer and input summary_comp.csv files arguments
+        differ from those used for :func:`interpolate` the raster may not
+        fully cover the fishnet which will later cause errors or gaps
+        in the final zonal extraction to gridMET cells.
+        
+    """
+    if not os.path.isfile(in_path):
+        raise FileNotFoundError('Input summary CSV file given'+\
+                                ' was invalid or not found')
+    if not gridmet_meta_path:
+        gridmet_meta_path = 'gridmet_cell_data.csv'
+    if not os.path.isfile(gridmet_meta_path):
+        raise FileNotFoundError('GridMET file path was not given and '\
+                +'gridmet_cell_data.csv was not found in the current '\
+                +'directory. Please assign the correct path or put '\
+                +'gridmet_cell_data.csv in the current directory.\n')
+    # calc raster resolution in meters (as frac of 4 km)
+    res = 4 * scale_factor * 1000
+    print(
+        'Interpolating point bias ratios for: {}\n'.format(var_name),
+        'Using the "{}" radial basis function\n'.format(function),
+        'Resolution (pixel size) of output raster: {} m'.format(res)
+    )
+    # path to save raster of interpolated grid scaled by scale_factor
+    path_root = os.path.split(in_path)[0]
+
+    out_dir = OPJ(path_root, 'spatial')
+    out_file = OPJ(out_dir, '{name}_{res}m.tiff'.format(name=var_name, res=int(res)))
+    # create output directory if does not exist
+    if not os.path.isdir(out_dir):
+        print(
+            os.path.abspath(out_dir), 
+            ' does not exist, creating directory.\n'
+        )
+        os.mkdir(out_dir)
+    
+    print(            
+        'GeoTIFF raster will be saved to: \n',
+        os.path.abspath(out_file),
+        '\n'
+    )
+    
+    in_df = pd.read_csv(in_path)
+
+    lon_pts, lat_pts = in_df.STATION_LON.values, in_df.STATION_LAT.values
+    values = in_df[var_name].values
+    
+
+    # get bounding area from summary CSV
+    bnds = get_subgrid_bounds(in_path, buffer=buffer)
+    lon_min, lon_max, lat_min, lat_max = bnds
+    
+    nx_cells = int(np.round(np.abs((lon_min - lon_max) / CELL_SIZE)))
+    ny_cells = int(np.round(np.abs((lat_min - lat_max) / CELL_SIZE)))
+    # rbf requires uniform grid (n X n) so 
+    # extend short dimension and clip later 
+    nx_cells_out = copy.copy(nx_cells)
+    ny_cells_out = copy.copy(ny_cells)
+    # gdal requires "upper left" corner coordinates
+    lat_max_out = copy.copy(lat_max)
+    lon_max_out = copy.copy(lon_max)
+    
+    if not nx_cells == ny_cells:
+        diff = np.abs(nx_cells - ny_cells)
+        if nx_cells > ny_cells:
+            lat_max += diff * CELL_SIZE
+            ny_cells += diff
+        else:
+            lon_max += diff * CELL_SIZE
+            nx_cells += diff
+
+            
+    # make finer/coarse grid by scale factor
+    lons = np.linspace(lon_min, lon_max, int(np.round(nx_cells/scale_factor))+1)
+    lats = np.linspace(lat_min, lat_max, int(np.round(ny_cells/scale_factor))+1)
+    # extent for original created by spatial.build_subgrid
+    # add one to make sure raster covers full extent
+    lons_out = np.linspace(lon_min, lon_max_out, int(np.round(nx_cells_out/scale_factor))+1)
+    lats_out = np.linspace(lat_min, lat_max_out, int(np.round(ny_cells_out/scale_factor))+1)
+
+    XI, YI = np.meshgrid(lons, lats)
+    # apply rbf interpolation
+    rbf = Rbf(lon_pts, lat_pts, values, function=function)
+    ZI = rbf(XI, YI)
+    # clip to original extent, rbf array flips axes... 
+    ZI_out = ZI[0:len(lats_out),0:len(lons_out)]
+    
+    #### save interpolated data as raster 
+    pixel_size = CELL_SIZE * scale_factor
+    # number of pixels in each direction
+    x_size = len(lons_out)
+    y_size = len(lats_out)
+    # set geotransform info
+    gt = [
+            lon_min,
+            pixel_size,
+            0,
+            lat_max_out,
+            0,
+            -pixel_size
+    ]
+    # make geotiff raster
+    driver = gdal.GetDriverByName('GTiff')
+    ds = driver.Create(
+        out_file,
+        x_size, 
+        y_size, 
+        1, 
+        gdal.GDT_Float32, 
+    )
+
+    # set projection geographic lat/lon WGS 84
+    srs = osr.SpatialReference()
+    srs.ImportFromEPSG(4326)
+    ds.SetProjection(srs.ExportToWkt())
+    # assign spatial dimensions 
+    ds.SetGeoTransform(gt)
+    outband=ds.GetRasterBand(1)
+    outband.SetStatistics(
+        np.min(ZI_out), 
+        np.max(ZI_out), 
+        np.average(ZI_out), 
+        np.std(ZI_out)
+    )
+    # save rbf interpolated array as geotff raster close
+    outband.WriteArray(ZI_out)
+    ds = None
 
 def arg_parse():
     """
@@ -644,7 +893,15 @@ def arg_parse():
     parser.add_argument(
         '-b', '--buffer', required=False, default=25, type=int,
         help='Number of gridMET cells to expand outer bounds of fishnet '+\
-             'in order to avoid skewing of interpolation values by boundary')
+             'which can be used for extrapolation')
+    parser.add_argument(
+        '-s', '--scale', required=False, default=0.1, type=float,
+        help='Scale facter used on gridMET resolution to down/upscale '+\
+             'interpolation output which is applied to the gridMET cell '+\
+             'size of 4 km, default 400 m')
+    parser.add_argument(
+        '-f', '--function', required=False, default='inverse', type=str,
+        help='Radial basis function to use for interpolation')
 #    parser.add_argument(
 #        '--debug', default=logging.INFO, const=logging.DEBUG,
 #        help='Debug level logging', action="store_const", dest="loglevel")
@@ -657,5 +914,7 @@ if __name__ == '__main__':
     main(
         input_file_path=args.input, 
         gridmet_meta_path=args.gridmet, 
-        buffer=args.buffer
+        buffer=args.buffer,
+        scale_factor=args.scale,
+        function=args.function
     )
