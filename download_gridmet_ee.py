@@ -302,22 +302,30 @@ def parse_int_set(nputstr=""):
 
 
 def arg_parse():
-    """"""
+    """
+    Command line usage of download_gridmet_ee.py for downloading
+    gridMET time series of reference evapotranspiration using google 
+    earth engine API.
+    """
     parser = argparse.ArgumentParser(
-        description='Downloading historical gridMET timeseries.',
+        description=arg_parse.__doc__,
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument(
+    optional = parser._action_groups.pop() # optionals listed second
+    required = parser.add_argument_group('required arguments')
+    required.add_argument(
         '-i', '--input', metavar='PATH', required=True,
-        help='Input file')
-    parser.add_argument(
+        help='Input file containing station and gridMET IDs created by '+\
+            'prep_input.py')
+    required.add_argument(
         '-o', '--out', metavar='PATH', required=True,
-        help='Output folder')
-    parser.add_argument(
+        help='Output folder to save time series CSVs of gridMET etr')
+    optional.add_argument(
         '-y', '--years', default=None, type=str,
         help='Year(s) to download, single year (YYYY) or range (YYYY-YYYY)')
-    parser.add_argument(
+    optional.add_argument(
         '--debug', default=logging.INFO, const=logging.DEBUG,
         help='Debug level logging', action="store_const", dest="loglevel")
+    parser._action_groups.append(optional)# to avoid optionals listed first
     args = parser.parse_args()
     return args
 

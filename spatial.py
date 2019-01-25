@@ -872,39 +872,44 @@ def interpolate(in_path, var_name, scale_factor=0.1,
 
 def arg_parse():
     """
-    Parse command line arguments for creating shapefile of all stations
+    Command line usage of spatial.py for creating shapefile of all stations
     found in comprehensive summary CSV file, build fishnet around stations
     and perform spatial interpolation for gridMET cells.
     """
     parser = argparse.ArgumentParser(
-        description='Perform spatial analysis to estimate spatial'+\
-                ' distribution of etr bias ratios.',
+        description=arg_parse.__doc__,
+        #formatter_class=argparse.RawDescriptionHelpFormatter)
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument(
+    optional = parser._action_groups.pop() # optionals listed second
+    required = parser.add_argument_group('required arguments')
+    required.add_argument(
         '-i', '--input', metavar='PATH', required=True,
         help='Input CSV file of merged climate/gridMET data that '+\
              'was created by running prep_input.py, download_gridmet_ee.py'+\
              ', and calc_bias_ratios.py')
-    parser.add_argument(
+    optional.add_argument(
         '-g', '--gridmet', metavar='PATH', required=False,
         help='GridMET master CSV file with cell data, packaged with '+\
              'etr-biascorrect at etr-biascorrect/gridmet_cell_data.csv '+\
              'if not given it needs to be located in the currect directory')
-    parser.add_argument(
-        '-b', '--buffer', required=False, default=25, type=int,
+    optional.add_argument(
+        '-b', '--buffer', required=False, default=25, type=int, metavar='',
         help='Number of gridMET cells to expand outer bounds of fishnet '+\
              'which can be used for extrapolation')
-    parser.add_argument(
-        '-s', '--scale', required=False, default=0.1, type=float,
+    optional.add_argument(
+        '-s', '--scale', required=False, default=0.1, type=float, metavar='',
         help='Scale facter used on gridMET resolution to down/upscale '+\
              'interpolation output which is applied to the gridMET cell '+\
              'size of 4 km, default 400 m')
-    parser.add_argument(
+    optional.add_argument(
         '-f', '--function', required=False, default='inverse', type=str,
-        help='Radial basis function to use for interpolation')
-#    parser.add_argument(
+        metavar='', help='Radial basis function to use for interpolation '+\
+                'Options include: multiquadric, inverse, gaussian, linear '+\
+                'cubic, quintic, and thin_plate')
+#    optional.add_argument(
 #        '--debug', default=logging.INFO, const=logging.DEBUG,
 #        help='Debug level logging', action="store_const", dest="loglevel")
+    parser._action_groups.append(optional)# to avoid optionals listed first
     args = parser.parse_args()
     return args
 

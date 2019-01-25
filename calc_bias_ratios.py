@@ -12,7 +12,7 @@ import argparse
 def main(input_file_path, out_dir, gridmet_id=None, comp=False):
     """
     Calculate monthly bias ratios between station climate and gridMET
-    cells that correspond with each other geographically. Save data
+    cells that correspond with each other geographically. Saves data
     to CSV files in the given output directory. If run later with
     new station data, bias ratios for new stations will be appended
     to existing output summary CSV.
@@ -259,7 +259,6 @@ def calc_bias_ratios(input_path, out_dir, gridmet_ID=None, comp=False):
             'STATION_LAT': 10,
             'STATION_LON': 10,
             'STATION_ELEV_M': 0
-
         })
 
         # pivot table on monthly statistics, concatenate, merge for comp
@@ -326,32 +325,37 @@ def calc_bias_ratios(input_path, out_dir, gridmet_ID=None, comp=False):
 
 def arg_parse():
     """
-    Parse command line arguments for calculating monthly bias ratios 
-    between climate station and gridMET etr estimates.
+    Command line usage of calc_bias_ratios.py which calculates monthly bias 
+    ratios between station climate and gridMET cells that correspond with 
+    each other geographically. Saves data to CSV files in the given output 
+    directory. If run later with new station data, bias ratios for new 
+    stations will be appended to existing output summary CSV.
     """
     parser = argparse.ArgumentParser(
-        description='Calculate monthly bias ratios for gridMET cells.',
+        description=arg_parse.__doc__,
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument(
+    optional = parser._action_groups.pop() # optionals listed second
+    required = parser.add_argument_group('required arguments')
+    required.add_argument(
         '-i', '--input', metavar='PATH', required=True,
         help='Input CSV file of merged climate/gridMET data that '+\
              'was created by running prep_input.py and download_gridmet_ee.py')
-    parser.add_argument(
+    required.add_argument(
         '-o', '--out', metavar='PATH', required=True,
         help='Output directory to save CSV files containing bias ratios '+\
              'for gridMET cells')
-    parser.add_argument(
-        '-id', '--gridmet_id', metavar='INTEGER', required=False,
+    optional.add_argument(
+        '-id', '--gridmet_id', metavar='', required=False,
         help='Optional gridMET ID to calculate bias ratios for a single '+\
              'gridMET cell')
-    parser.add_argument('-c', '--comprehensive', required=False, default=False, 
-        action='store_true', dest='comprehensive', help='Optional flag '+\
-             'to save a summary file with bias ratios and extra metadata '+\
-             'and statistics with the suffix "_comp" (default=False when '+\
-             'flag ommitted)')
+    optional.add_argument('-c', '--comprehensive', required=False, 
+        default=False, action='store_true', dest='comprehensive', 
+        help='Flag to save a summary file with bias ratios and extra '+\
+            'metadata and statistics with the suffix "_comp"')
 #    parser.add_argument(
 #        '--debug', default=logging.INFO, const=logging.DEBUG,
 #        help='Debug level logging', action="store_const", dest="loglevel")
+    parser._action_groups.append(optional)# to avoid optionals listed first
     args = parser.parse_args()
     return args
 

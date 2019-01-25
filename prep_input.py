@@ -4,8 +4,8 @@ Read a CSV of climate station information and match each with nearest gridMET
 cell information. Produce a CSV file that will be used for input for main
 bias correction workflow.
 
-TODO:
-    add logging 
+Todo:
+    *  add logging 
 """
 
 import os                                                                       
@@ -23,7 +23,7 @@ def main(station_file, out_path, gridmet_meta_file):
     Arguments:
         station_file (str): path to CSV file containing list of climate
             stations that will later be used to calculate monthly
-            bias rations to GridMET reference ET.
+            bias ratios to GridMET reference ET.
         gridmet_meta_file (str): path to metadata CSV file that contains
             all gridMET cells for the contiguous United States. Can be
             found at ``etr-biascorrect/gridmet_cell_data.csv``.
@@ -37,18 +37,11 @@ def main(station_file, out_path, gridmet_meta_file):
         .. code::
             $ python prep_input.py -i ETrBias_DataPackage/Station_Data.txt -g gridmet_cell_data.csv
 
-        To use within Python,
-
-        >>> from prep_input import prep_input 
-        >>> prep_input(
-                'ETrBias_DataPackage/Station_Data.txt',
-                'gridmet_cell_data.csv',
-                'outfile.csv'
-            )
-
-        Both methods result in "merged_input.csv" being created in the working 
+        The result is "merged_input.csv" being created in the working 
         directory which contains metadata from climate staions as well as the 
-        lat, long, and gridMET ID of the nearest gridMET cell centroid. 
+        lat, long, and gridMET ID of the nearest gridMET cell centroid.
+        This file is used as input to :mod:`download_gridmet_ee.py`
+        followed by :mod:`calc_bias_ratios.py`.
 
     """
 
@@ -85,10 +78,12 @@ def gridMET_centroid(lat,lon):
     
     return gridcell_lat, gridcell_lon
 
-def read_station_list(station_path):
+def _read_station_list(station_path):
     """
-    Read station list CSV file and return modified version as a Pandas
-    DataFrame that includes file paths to each station time series file.
+    Helper function that reads station list CSV file and return modified 
+    version as a :obj:`Pandas.DataFrame` that includes file paths to each 
+    station time series file. Renames some columns for consistency with other 
+    ``etr-biascorrect`` functions and scripts. 
 
     Arguments:
         station_path (str): path to CSV file containing list of climate
@@ -103,17 +98,33 @@ def read_station_list(station_path):
     """
 
     station_list = pd.read_csv(station_path)
-    cols = ['FID','LATDECDEG','LONGDECDEG','Elev_m','FileName',
-            'Station_ID','Elev_FT','State','Source','Station',
-            'Website','Comments','Irrigation']
+    cols = [
+            'FID',
+            'LATDECDEG',
+            'LONGDECDEG',
+            'Elev_m',
+            'FileName',
+            'Station_ID',
+            'Elev_FT',
+            'State',
+            'Source',
+            'Station',
+            'Website',
+            'Comments',
+            'Irrigation'
+            ]
     station_list = station_list[cols]
-    station_list.rename(columns={'LATDECDEG':'STATION_LAT',
-                            'LONGDECDEG':'STATION_LON',
-                            'Elev_m':'STATION_ELEV_M',
-                            'Elev_FT':'STATION_ELEV_FT',
-                            'Station_ID':'STATION_ID',
-                            'FileName':'STATION_FILE_PATH'},
-                   inplace=True)
+    station_list.rename(
+            columns={
+                'LATDECDEG':'STATION_LAT',
+                'LONGDECDEG':'STATION_LON',
+                'Elev_m':'STATION_ELEV_M',
+                'Elev_FT':'STATION_ELEV_FT',
+                'Station_ID':'STATION_ID',
+                'FileName':'STATION_FILE_PATH'},
+                   
+            inplace=True
+            )
     # get station name only for matching to file name
     station_list.STATION_FILE_PATH =\
             station_list.STATION_FILE_PATH.str.split('_').str.get(0)
@@ -152,7 +163,7 @@ def prep_input(station_path, out_path, gridmet_meta_path=None):
     Arguments:
         station_path (str): path to CSV file containing list of climate
             stations that will later be used to calculate monthly
-            bias rations to GridMET reference ET.
+            bias ratios to GridMET reference ET.
         out_path (str): path to save output CSV, default is to save as 
             "merged_input.csv" to current working directory if not passed
             at command line to script.
@@ -165,6 +176,19 @@ def prep_input(station_path, out_path, gridmet_meta_path=None):
     Returns:
         None
 
+    Example:
+
+        >>> from prep_input import prep_input 
+        >>> prep_input(
+                'ETrBias_DataPackage/Station_Data.txt',
+                'gridmet_cell_data.csv',
+                'outfile.csv'
+            )
+        
+        outfile.csv will be created containing station and corresponding
+        gridMET cell data. This file is later used as input for 
+        :mod:`download_gridmet_ee.py` and :mod:`calc_bias_ratios.py`.
+        
     Raises:
         FileNotFoundError: if the ``gridmet_meta_path`` is not passed as a 
         command line argument and it is not in the current working directory
@@ -185,10 +209,10 @@ def prep_input(station_path, out_path, gridmet_meta_path=None):
     if not gridmet_meta_path:
         gridmet_meta_path = 'gridmet_cell_data.csv'
     if not os.path.exists(gridmet_meta_path):
-        raise FileNotFoundError('GridMET file path was not given and '\
-                +'gridmet_cell_data.csv was not found in the current '\
-                +'directory. Please assign the correct path or put '\
-                +'gridmet_cell_data.csv in the current directory.\n')
+        raise FileNotFoundError('GridMET file path was not given and '+\
+                'gridmet_cell_data.csv was not found in the current '+\
+                'directory. Please assign the correct path or put '+\
+                'gridmet_cell_data.csv in the current directory.\n')
     if not out_path:
         out_path='merged_input.csv'
 
@@ -199,7 +223,7 @@ def prep_input(station_path, out_path, gridmet_meta_path=None):
           '\nmerged CSV will be saved to: ',
           os.path.abspath(out_path))
 
-    stations = read_station_list(station_path)
+    stations = _read_station_list(station_path)
     gridmet_meta = pd.read_csv(gridmet_meta_path)
     gridmet_pts = list(zip(gridmet_meta.LAT,gridmet_meta.LON))
     # scipy KDTree to find nearest neighbor between station and centroids
@@ -215,7 +239,7 @@ def prep_input(station_path, out_path, gridmet_meta_path=None):
             stations.loc[index,'GRIDMET_ID'] = ind
         except:
             print('Failed to find matching gridMET info for climate '\
-                    +'station with FID = ', row.FID,'\n')  
+                    +'station with STATION_ID = ', row.STATION_ID,'\n')  
     stations.GRIDMET_ID = stations.GRIDMET_ID.astype(int)
     out_df = stations.merge(gridmet_meta,on='GRIDMET_ID')
     out_df['ELEV_FT'] = out_df.ELEV_M * 3.28084 # m to ft
@@ -247,23 +271,30 @@ def prep_input(station_path, out_path, gridmet_meta_path=None):
 
 def arg_parse():
     """
-    Parse command line arguments for merging climate station and gridMET
-    metadata into a single table (CSV file).
+    Command line usage for prep_input.py for merging climate station 
+    and corresponding gridMET data into a single table (CSV file).
+    The CSV file produced is used as input to download_gridmet_ee.py 
+    and calc_bias_ratios.py.
     """
     parser = argparse.ArgumentParser(
-        description='Create input table for gridMET bias correction',
+        description=arg_parse.__doc__,
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser.add_argument(
+    optional = parser._action_groups.pop() # optionals listed second
+    required = parser.add_argument_group('required arguments')
+    required.add_argument(
         '-i', '--input', metavar='PATH', required=True,
         help='Input CSV file of climate stations')
-    parser.add_argument(
+    optional.add_argument(
         '-g', '--gridmet', metavar='PATH', required=False,
+        default='gridmet_cell_data.csv',
         help='GridMET master CSV file with cell data, packaged with '+\
              'etr-biascorrect at etr-biascorrect/gridmet_cell_data.csv '+\
              'if not given it needs to be located in the currect directory')
-    parser.add_argument(
-        '-o', '--out', metavar='PATH', required=False, default=False,
+    optional.add_argument(
+        '-o', '--out', metavar='PATH', required=False, 
+        default='merged_input.csv',
         help='Optional output path for CSV with merged climate/gridMET data')
+    parser._action_groups.append(optional)# to avoid optionals listed first
 #    parser.add_argument(
 #        '--debug', default=logging.INFO, const=logging.DEBUG,
 #        help='Debug level logging', action="store_const", dest="loglevel")
