@@ -155,7 +155,8 @@ def _read_station_list(station_path):
 
     return station_list
 
-def prep_input(station_path, out_path, gridmet_meta_path=None):
+def prep_input(station_path, out_path='merged_input.csv', 
+                                                gridmet_meta_path=None):
     """
     Read list of climate stations and match each with its
     closest GridMET cell, save CSV with information from both.
@@ -164,11 +165,10 @@ def prep_input(station_path, out_path, gridmet_meta_path=None):
         station_path (str): path to CSV file containing list of climate
             stations that will later be used to calculate monthly
             bias ratios to GridMET reference ET.
-        out_path (str): path to save output CSV, default is to save as 
-            "merged_input.csv" to current working directory if not passed
-            at command line to script.
 
     Keyword Arguments:
+        out_path (str): path to save output CSV, default is to save as 
+            "merged_input.csv" to current working directory.
         gridmet_meta_path (str): path to metadata CSV file that contains
             all gridMET cells for the contiguous United States. If None
             it is looked for at ``etr-biascorrect/gridmet_cell_data.csv``.
@@ -213,8 +213,15 @@ def prep_input(station_path, out_path, gridmet_meta_path=None):
                 'gridmet_cell_data.csv was not found in the current '+\
                 'directory. Please assign the correct path or put '+\
                 'gridmet_cell_data.csv in the current directory.\n')
-    if not out_path:
-        out_path='merged_input.csv'
+
+    path_root = os.path.split(os.path.abspath(out_path))[0]
+    if not os.path.exists(path_root):
+        print(
+            'The directory: ', 
+            os.path.abspath(path_root),
+            '\ndoes not exist, creating directory'
+        )
+        os.makedirs(path_root)
 
     print('station list CSV: ',
           os.path.abspath(station_path),
@@ -263,11 +270,8 @@ def prep_input(station_path, out_path, gridmet_meta_path=None):
                       'Comments',
                       'Irrigation'
             ])
-    # if no out_path given save to current working directory
-    if not out_path:
-        out_df.to_csv('merged_input.csv', index=False)
-    else:
-        out_df.to_csv(out_path, index=False)
+    # save CSV 
+    out_df.to_csv(out_path, index=False)
 
 def arg_parse():
     """
