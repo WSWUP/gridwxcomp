@@ -3,11 +3,12 @@
 Calculate monthly bias ratios of etr of climate station to gridMET cell. 
 """
 
-import pandas as pd
-import numpy as np
 import os
 import calendar
 import argparse
+
+import pandas as pd
+import numpy as np
 
 def main(input_file_path, out_dir, gridmet_id=None, comp=False):
     """
@@ -319,7 +320,7 @@ def calc_bias_ratios(input_path, out_dir, gridmet_ID=None, comp=False):
         _save_output(out, comp_out, out_dir, gridmet_ID)
         
     print(
-        '\nSummary file(s) for bias ratios saved to: ', 
+        '\nSummary file(s) for bias ratios saved to: \n', 
          os.path.abspath(out_dir)
          )
 

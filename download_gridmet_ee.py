@@ -10,8 +10,8 @@ import ee
 import pandas as pd
 import refet
 
-ee.Initialize()
 
+ee.Initialize() 
 
 def main(input_csv, out_folder, year_filter=''):
 
@@ -24,6 +24,7 @@ def main(input_csv, out_folder, year_filter=''):
     Returns:
         None
     """
+    
     if not os.path.exists(out_folder):
         logging.info('\nCreating output folder: {}'.format(out_folder))
         os.makedirs(out_folder)

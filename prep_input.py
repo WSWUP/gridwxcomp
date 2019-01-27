@@ -10,7 +10,8 @@ Todo:
 
 import os                                                                       
 import argparse                                                                 
-import logging                                                                  
+import logging
+                                                                  
 import pandas as pd                                                             
 import numpy as np        
 from scipy import spatial
