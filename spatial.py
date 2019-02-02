@@ -22,6 +22,7 @@ import re
 import argparse
 import copy
 from math import ceil
+from shutil import move
 
 import fiona
 import numpy as np
@@ -567,6 +568,7 @@ def update_subgrid(grid_path, gridmet_meta_path=None):
     if not os.path.isfile(grid_path):
         raise FileNotFoundError('The file path for the gridMET fishnet '\
                                +'was invalid or does not exist. ')
+    tmp_out = grid_path.replace('.shp', '_tmp.shp')
     if not gridmet_meta_path:
         gridmet_meta_path = 'gridmet_cell_data.csv'
     if not os.path.isfile(gridmet_meta_path):
@@ -577,7 +579,6 @@ def update_subgrid(grid_path, gridmet_meta_path=None):
     
     # load gridMET metadata file for looking up gridMET IDs
     gridmet_meta_df = pd.read_csv(gridmet_meta_path)
-    
     # WGS 84 projection
     crs = from_epsg(4326) 
 
@@ -599,7 +600,7 @@ def update_subgrid(grid_path, gridmet_meta_path=None):
         sink_schema['properties']['GRIDMET_ID'] = 'int'
         # overwrite file add spatial reference
         with fiona.open(
-                grid_path, 
+                tmp_out, 
                 'w', 
                 crs=crs, 
                 driver=source.driver, 
@@ -611,10 +612,15 @@ def update_subgrid(grid_path, gridmet_meta_path=None):
                 gridmet_id = get_cell_ID(coords, gridmet_meta_df)
                 feature['properties']['GRIDMET_ID'] = gridmet_id
                 sink.write(feature)
+    # cannot open same file and write to it on Windows, overwrite temp
+    root_dir = os.path.split(grid_path)[0]
+    for f in os.listdir(root_dir):
+        if '_tmp' in f:
+            move(OPJ(root_dir, f), OPJ(root_dir, f.replace('_tmp', '')))
     print(
         'Completed assigning gridMET IDs to fishnet. \n'
     )
-
+	
 def build_subgrid(in_path, gridmet_meta_path=None, buffer=25):
     """
     Condenses workflow to create fishnet grid of gridMET cells 
@@ -1001,7 +1007,12 @@ def gridmet_zonal_stats(in_path, raster, function=None, res=None):
             fishnet for extracting zonal statistics do not exist.
             The fishnet should be in the subdirectory of ``in_path``
             at "/spatial/grid.shp".
-        
+
+    Note:
+        The final CSV file with gridMET zonal mean etr bias ratios
+        will *not* be overwritten after it is first created if the
+        same interpolation method and grid resolution is used subsequently.
+
     """
     if not os.path.isfile(in_path):
         raise FileNotFoundError('Input summary CSV file given'+\
@@ -1043,6 +1054,8 @@ def gridmet_zonal_stats(in_path, raster, function=None, res=None):
             var_name: means
         }
     )
+    out_df.GRIDMET_ID = out_df.GRIDMET_ID.astype(int)
+
     # save or update existing csv file
     if not os.path.isfile(out_file):
         print(
@@ -1052,11 +1065,13 @@ def gridmet_zonal_stats(in_path, raster, function=None, res=None):
         out_df.to_csv(out_file, index=False)
     else:
         existing_df = pd.read_csv(out_file)
+        existing_df.GRIDMET_ID = existing_df.GRIDMET_ID.astype(int)
         # avoid adding same column twice and duplicates
         if var_name in existing_df.columns:
             pass
         else:
             existing_df = existing_df.merge(out_df, on='GRIDMET_ID')
+            #existing_df = pd.concat([existing_df, out_df], axis=1).drop_duplicates()
             existing_df.to_csv(out_file, index=False)   
         
 def arg_parse():
