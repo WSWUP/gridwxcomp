@@ -9,7 +9,7 @@ A full documentation website is under development.
 
 ### Installation
 
-Currently ``gridwxcomp`` needs requires manual download for installation but will be available on on the Python Package Index [PyPI](https://pypi.org/) for installation with pip soon. 
+Currently ``gridwxcomp`` requires manual download for installation. However it will be available on on the Python Package Index [PyPI](https://pypi.org/) for installation with pip soon. 
 
 To download first navigate to the directory where you would like to use the software and then clone the repository using git from the command line:
 
@@ -50,7 +50,7 @@ and follow the instructions.
 
 ### Basic use from command line
 
-This workflow will use the example station data given in "gridwxcomp/gridwxcomp/ETrBias_DataPackage". It will calculate bias ratios between station and gridMET ETr, estimate spatial GeoTIFF rasters at 400m resolution, and calculate zonal statistics of mean bias ratios for each gridMET cell in the region of the stations. 
+This workflow will use the example station time series data given in "gridwxcomp/gridwxcomp/ETrBias_DataPackage". It will calculate bias ratios between station and gridMET ETr, estimate spatial GeoTIFF rasters at 400m resolution, and calculate zonal statistics of mean bias ratios for each gridMET cell in the region of the stations. 
 
 From ``gridwxcomp`` root directory run
 
