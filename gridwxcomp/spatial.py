@@ -1055,6 +1055,8 @@ def gridmet_zonal_stats(in_path, raster, function=None, res=None):
         }
     )
     out_df.GRIDMET_ID = out_df.GRIDMET_ID.astype(int)
+    # drop rows for cells outside of gridMET master grid
+    out_df = out_df.drop(out_df[out_df.GRIDMET_ID == -999].index)
 
     # save or update existing csv file
     if not os.path.isfile(out_file):
