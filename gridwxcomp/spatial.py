@@ -48,10 +48,10 @@ def main(input_file_path, gridmet_meta_path=None,
     interpolated values to gridMET cells. 
     
     Arguments:
-        input_file_path (str): path to summary_comp.CSV file containing monthly
+        input_file_path (str): path to summary_comp CSV file containing monthly
             bias ratios, lat, long, and other data. Shapefile "summary_pts.shp"
-            is saved to parent directory of ``in_path`` under a subdirectory
-            named "spatial".
+            is saved to parent directory of ``input_file_path`` under a 
+            subdirectory named "spatial".
 
     Keyword Arguments:
         gridmet_meta_path (str): default None. Path to metadata CSV file 
@@ -720,8 +720,8 @@ def interpolate(in_path, var_name, scale_factor=0.1,
             input CSV (``in_path``).
     
     Keyword Arguments:
-        scale_factor (float, int): scaling factor to apply to original
-            gridMET fishnet to create resampling fishnet. For example,
+        scale_factor (float, int): default 0.1. Scaling factor to apply to 
+            original gridMET fishnet to create resampling fishnet. For example,
             if scale_factor = 0.1, the resolution will be one tenth of 
             the original gridMET resolution resulting in a 400 m resolution.
         function (str): default 'inverse', radial basis function to use 
@@ -911,9 +911,9 @@ def interpolate(in_path, var_name, scale_factor=0.1,
     # apply rbf interpolation
     rbf = Rbf(lon_pts, lat_pts, values, function=function)
     ZI = rbf(XI, YI)
-    # clip to original extent, rbf array flips axes... 
+    # clip to original extent, rbf array flips axes, and row order... 
     ZI_out = ZI[0:len(lats_out),0:len(lons_out)]
-    
+    ZI_out = np.flip(ZI_out,axis=0)
     #### save interpolated data as raster 
     pixel_size = CELL_SIZE * scale_factor
     # number of pixels in each direction
@@ -1088,9 +1088,8 @@ def arg_parse():
     required = parser.add_argument_group('required arguments')
     required.add_argument(
         '-i', '--input', metavar='PATH', required=True,
-        help='Input CSV file of merged climate/gridMET data that '+\
-             'was created by running prep_input.py, download_gridmet_ee.py'+\
-             ', and calc_bias_ratios.py')
+        help='Input summary_comp CSV file of climate/gridMET bias ratios '+\
+             'created by first running calc_bias_ratios.py')
     optional.add_argument(
         '-g', '--gridmet', metavar='PATH', required=False,
         help='GridMET master CSV file with cell data, packaged with '+\
