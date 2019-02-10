@@ -60,6 +60,8 @@ This workflow will use the example data given in "gridwxcomp/gridwxcomp/ETrBias_
 .. image:: https://raw.githubusercontent.com/DRI-WSWUP/gridwxcomp/master/docs/source/_static/test_case.png?sanitize=true
    :align: center
 
+The same workflow can be done on climate variables other than ETr using ``gridwxcomp``, e.g. observed ET, temperature, precipitation, wind speed, short wave radiation, etc.
+
 From ``gridwxcomp`` root directory run
 
 .. code-block:: bash
@@ -77,17 +79,17 @@ In this case the years 2016-2017 are used because the test station data time cov
 
 .. code-block:: bash
 
-    $ python calc_bias_ratios.py -i merged_input.csv -o test_ratios -c
+    $ python calc_bias_ratios.py -i merged_input.csv -o test_ratios 
 
-Last, to calculate interpolated spatial surfaces of bias ratios and extract zonal means:
+Last, to calculate interpolated spatial surfaces of bias ratios and extract zonal means use the file produced from the previous step as input:
 
 .. code-block:: bash
 
-    $ python spatial.py -i test_ratios/summary_comp.csv -b 5
+    $ python spatial.py -i test_ratios/etr_mm_summary_comp.csv -b 5
 
-The ``[-b 5]`` option indicates that we want to expand the rectangular bounding area for interpolation by five gridMET cells.
+The ``[-b 5]`` option indicates that we want to expand the rectangular bounding area for interpolation by five gridMET cells (extrapolation in the outer regions).
 
-The final output file "test_ratios/gridmet_summary_inverse_400m.csv" contains monthly bias ratios for each gridMET cell in the interpolation region, similar to what is shown below. 
+The final output file "test_ratios/etr_mm_gridmet_summary_inverse_400m.csv" contains monthly bias ratios for each gridMET cell in the interpolation region, similar to what is shown below. 
 
     ========== ======== ======== ======== 
     GRIDMET_ID Apr_mean Aug_mean Dec_mean 
