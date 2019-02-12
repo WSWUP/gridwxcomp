@@ -397,23 +397,15 @@ def make_grid(in_path, gridmet_meta_path=None, bounds=None, buffer=25,
         >>> from gridwxcomp import spatial
         >>> # assign input paths
         >>> summary_file = 'monthly_ratios/etr_mm_summary_comp.csv'
-        >>> gridmet_metadata_path = 'gridmet_cell_data.csv'
         >>> # make fishnet of gridMET cells for interpolation
-        >>> spatial.make_grid(
-                summary_file,
-                gridmet_meta_path=gridmet_metadata_path
-            )
+        >>> spatial.make_grid(summary_file)
             
         The file will be saved as "grid.shp" to a newly created subdirectory
         "spatial" in the same directory as the input summary CSV file. 
         To use a smaller buffer to the extent of the grid assign the 
         ``buffer`` keyword argument
         
-        >>> spatial.make_grid(
-                summary_file,
-                gridmet_meta_path=gridmet_metadata_path,
-                buffer=5
-            )        
+        >>> spatial.make_grid(summary_file, buffer=5)        
             
         If the grid file already exists the default action is to not 
         overwrite. To overwrite an existing grid if, for example, you 
@@ -422,7 +414,6 @@ def make_grid(in_path, gridmet_meta_path=None, bounds=None, buffer=25,
         
         >>> spatial.make_grid(
                 summary_file,
-                gridmet_meta_path=gridmet_metadata_path,
                 overwrite=True,
                 buffer=5
             )       

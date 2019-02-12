@@ -11,10 +11,13 @@ Todo:
 import os                                                                       
 import argparse                                                                 
 import logging
-                                                                  
+import pkg_resources
+                                                    
 import pandas as pd                                                             
 import numpy as np        
 from scipy import spatial
+
+
 
 def main(station_file, out_path, gridmet_meta_file):
     """
@@ -123,7 +126,6 @@ def _read_station_list(station_path):
                 'Elev_FT':'STATION_ELEV_FT',
                 'Station_ID':'STATION_ID',
                 'FileName':'STATION_FILE_PATH'},
-                   
             inplace=True
             )
     # get station name only for matching to file name
@@ -143,7 +145,10 @@ def _read_station_list(station_path):
     # assumes no other files in the directory have station names in their name
     # will accept files of any extension, e.g. xlx, csv, txt
     for station in station_list.STATION_FILE_PATH:
-        match = [s for s in file_names if station in s][0]
+        try:
+            match = [s for s in file_names if station in s][0]
+        except:
+            match = None
         if match:
             station_list.loc[station_list.STATION_FILE_PATH == station,\
                 'STATION_FILE_PATH'] = os.path.abspath(
@@ -206,14 +211,21 @@ def prep_input(station_path, out_path='merged_input.csv',
 
     """
 
-    # check if paths to input and output files were given, assign defaults
+    # look for pacakged gridmet_cell_data.csv if path not given
     if not gridmet_meta_path:
-        gridmet_meta_path = 'gridmet_cell_data.csv'
+        if pkg_resources.resource_exists('gridwxcomp', "gridmet_cell_data.csv"):
+            gridmet_meta_path = pkg_resources.resource_filename(
+                    'gridwxcomp', 
+                    "gridmet_cell_data.csv"
+                    )
+        else:
+            gridmet_meta_path = 'gridmet_cell_data.csv'
     if not os.path.exists(gridmet_meta_path):
+        print(gridmet_meta_path)
         raise FileNotFoundError('GridMET file path was not given and '+\
-                'gridmet_cell_data.csv was not found in the current '+\
-                'directory. Please assign the correct path or put '+\
-                'gridmet_cell_data.csv in the current directory.\n')
+                'gridmet_cell_data.csv was not found in the gridwxcomp '+\
+                'install directory. Please assign the path or put '+\
+                '"gridmet_cell_data.csv" in the current working directory.\n')
 
     path_root = os.path.split(os.path.abspath(out_path))[0]
     if not os.path.exists(path_root):
@@ -224,12 +236,14 @@ def prep_input(station_path, out_path='merged_input.csv',
         )
         os.makedirs(path_root)
 
-    print('station list CSV: ',
+    print(
+          'station list CSV: ',
           os.path.abspath(station_path),
           '\ngridMET cell info CSV: ',
           os.path.abspath(gridmet_meta_path),
           '\nmerged CSV will be saved to: ',
-          os.path.abspath(out_path))
+          os.path.abspath(out_path)
+    )
 
     stations = _read_station_list(station_path)
     gridmet_meta = pd.read_csv(gridmet_meta_path)

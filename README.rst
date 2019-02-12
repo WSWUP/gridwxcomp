@@ -3,7 +3,7 @@ gridwxcomp
 
 Station-based bias correction of gridded weather for agricultural applications
 
-A Python module that calculates monthly bias correction factors that can be utilized to bias correct gridMET estimated ETr or other climatic variables to weather station observed data (e.g. stations within agriculture settings). The process includes spatial interpolation of correction ratios with various interpolation options and zonal extraction of mean correction ratios to gridMET cells. ``gridwxcomp`` includes a command line interface as well as a set of Python submodules.
+A Python module that calculates monthly bias correction factors that can be utilized to bias correct gridMET estimated reference evapotranspiration (ETr) or other climatic variables to weather station observed data (e.g. stations within agriculture settings). The process includes spatial interpolation of correction ratios with various interpolation options and zonal extraction of mean correction ratios to gridMET cells. ``gridwxcomp`` includes a command line interface as well as a set of Python submodules.
 
 Documentation
 -------------
@@ -52,10 +52,18 @@ Lastly, ``gridwxcomp`` uses the Google Earth Engine API to download gridMET data
 
 and follow the instructions.
 
+To make all of ``gridwxcomp`` available on your environment variable PATH install it with `pip <https://pip.pypa.io/en/stable/installing/>`_. From the root directory of the cloned or downloaded copy of ``gridwxcomp`` run
+
+.. code-block:: bash
+
+    $ pip install --editable .
+
+This will allow for importing ``gridwxcomp`` modules and functions in any Python environment on your system and also running the command line scripts, as shown below, from any directory. However you will need to know where the example data is residing on your computer if running from a different directory. 
+
 Quick start from command line
 -----------------------------
 
-This workflow will use the example data given in "gridwxcomp/gridwxcomp/ETrBias_DataPackage" which includes four climate stations. It will calculate bias ratios between station and gridMET ETr, spatially interpolate GeoTIFF rasters of bias ratios at 400m resolution, and calculate zonal statistics of mean bias ratios for each gridMET cell in the region of the stations as shown below.
+This workflow will use the example data given in "gridwxcomp/gridwxcomp/example_data" which includes four climate stations. It will calculate bias ratios between station and gridMET ETr, spatially interpolate GeoTIFF rasters of bias ratios at 400m resolution, and calculate zonal statistics of mean bias ratios for each gridMET cell in the region of the stations as shown below.
 
 .. image:: https://raw.githubusercontent.com/DRI-WSWUP/gridwxcomp/master/docs/source/_static/test_case.png?sanitize=true
    :align: center
@@ -67,7 +75,7 @@ From ``gridwxcomp`` root directory run
 .. code-block:: bash
 
     $ cd gridwxcomp
-    $ python prep_input.py -i ETrBias_DataPackage/Station_Data.txt  
+    $ python prep_input.py -i example_data/Station_Data.txt  
 
 This will result in the file "merged_input.csv". Next download matching gridMET climate time series by running
 

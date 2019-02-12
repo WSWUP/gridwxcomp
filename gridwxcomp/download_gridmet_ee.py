@@ -13,7 +13,7 @@ import refet
 
 ee.Initialize() 
 
-def main(input_csv, out_folder, year_filter=''):
+def download_gridmet_ee(input_csv, out_folder, year_filter=''):
 
     """Download gridmet ETr/ETo time series data
     Args:
@@ -342,7 +342,7 @@ if __name__ == '__main__':
     logging.info('{0:<20s} {1}'.format(
         'Script:', os.path.basename(sys.argv[0])))
 
-    main(input_csv=args.input, out_folder=args.out,
+    download_gridmet_ee(input_csv=args.input, out_folder=args.out,
          year_filter=args.years)
 
     # Saturated vapor pressure

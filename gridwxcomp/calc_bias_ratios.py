@@ -114,9 +114,6 @@ def main(input_file_path, out_dir, gridmet_var='etr_mm', station_var=None,
         
     """
 
-    if not os.path.isdir(out_dir):
-        print('{} does not exist, creating directory'.format(out_dir))
-        os.mkdir(out_dir)
     # calculate monthly bias ratios and save to CSV files
     calc_bias_ratios(
         input_file_path, 
@@ -293,6 +290,9 @@ def calc_bias_ratios(input_path, out_dir, gridmet_var='etr_mm',
         )
         raise KeyError('Invalid gridMET variable name {}'.format(gridmet_var))
         
+    if not os.path.isdir(out_dir):
+        print('{} does not exist, creating directory'.format(out_dir))
+        os.mkdir(out_dir)
     if not os.path.isfile(input_path):
         raise FileNotFoundError('Input CSV file given was invalid or not found')
 
