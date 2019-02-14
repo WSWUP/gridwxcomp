@@ -213,15 +213,16 @@ def prep_input(station_path, out_path='merged_input.csv',
 
     # look for pacakged gridmet_cell_data.csv if path not given
     if not gridmet_meta_path:
-        if pkg_resources.resource_exists('gridwxcomp', "gridmet_cell_data.csv"):
-            gridmet_meta_path = pkg_resources.resource_filename(
+        try:
+            if pkg_resources.resource_exists('gridwxcomp', 
+                    "gridmet_cell_data.csv"):
+                gridmet_meta_path = pkg_resources.resource_filename(
                     'gridwxcomp', 
                     "gridmet_cell_data.csv"
                     )
-        else:
+        except:
             gridmet_meta_path = 'gridmet_cell_data.csv'
     if not os.path.exists(gridmet_meta_path):
-        print(gridmet_meta_path)
         raise FileNotFoundError('GridMET file path was not given and '+\
                 'gridmet_cell_data.csv was not found in the gridwxcomp '+\
                 'install directory. Please assign the path or put '+\

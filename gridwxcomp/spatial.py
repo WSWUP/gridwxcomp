@@ -20,6 +20,7 @@ import os
 import re
 import argparse
 import copy
+import pkg_resources
 from math import ceil
 from shutil import move
 
@@ -33,12 +34,13 @@ from fiona.crs import from_epsg
 from osgeo import gdal, osr, ogr
 from rasterstats import zonal_stats
 
+# gridmet resolution in decimal degrees
 CELL_SIZE = 0.041666666666666664
 
 OPJ = os.path.join
 
-def main(input_file_path, gridmet_meta_path=None, buffer=25, 
-         scale_factor=0.1, function='inverse', overwrite=False):
+def main(input_file_path, overwrite=False, buffer=25, scale_factor=0.1, 
+        function='inverse', gridmet_meta_path=None):
     """
     Create point shapefile of monthly mean bias ratios from comprehensive
     CSV file created by :mod:`calc_bias_ratios`. Build fishnet grid around
@@ -74,7 +76,12 @@ def main(input_file_path, gridmet_meta_path=None, buffer=25,
             * 'thin_plate'
         overwrite (bool): default False. If True overwrite the grid 
             shapefile that already exists.
-        
+        gridmet_meta_path (str): default None. Path to metadata CSV file 
+            that contains all gridMET cells for the contiguous United 
+            States. If None it is looked for at the install directory of 
+            gridwxcomp (i.e. with pip install) or within the current directory
+            as "gridmet_cell_data.csv".
+
     Returns:
         None
 
@@ -82,7 +89,7 @@ def main(input_file_path, gridmet_meta_path=None, buffer=25,
         From the command line interface,
 
         .. code::
-            $ python spatial.py -i monthly_ratios/etr_mm_summary_comp.csv -g gridmet_cell_data.csv
+            $ python spatial.py -i monthly_ratios/etr_mm_summary_comp.csv 
 
         This will produce a subdirectory under "monthly_ratios" named
         "spatial" where the shapefile will be saved as "etr_mm_summary_pts.shp".
@@ -123,12 +130,11 @@ def main(input_file_path, gridmet_meta_path=None, buffer=25,
         use the ``[-b, --buffer]`` option
 
         .. code::
-            $ python spatial.py -i monthly_ratios/etr_mm_summary_comp.csv -g gridmet_cell_data.csv -b 5
+            $ python spatial.py -i monthly_ratios/etr_mm_summary_comp.csv -b 5
 
         Or, if we wanted to interpolate to a 200 m resolution 
         (i.e. scale_factor = 0.05, 0.05 x 4 km = 200 m) using the 'linear'
-        radial basis function, assuming "gridmet_cell_data.csv" is in the 
-        current working directory
+        radial basis function,
         
         .. code::
             $ python spatial.py -i monthly_ratios/etr_mm_summary_comp.csv -s 0.05 -f 'linear'        
@@ -350,8 +356,8 @@ def get_subgrid_bounds(in_path, buffer):
     
     return bounds
 
-def make_grid(in_path, gridmet_meta_path=None, bounds=None, buffer=25, 
-              overwrite=False):
+def make_grid(in_path, bounds=None, buffer=25, overwrite=False, 
+        gridmet_meta_path=None):
     """
     Make fishnet grid (vector file of polygon geometry) for 
     select gridMET cells based on bounding coordinates. 
@@ -368,10 +374,6 @@ def make_grid(in_path, gridmet_meta_path=None, bounds=None, buffer=25,
             :mod:`etr_biascorrect.calc_bias_ratios.py`.
     
     Keyword Arguments:
-        gridmet_meta_path (str or None): default None. Path to metadata 
-            CSV file that contains all gridMET cells for the contiguous 
-            United States. If None it is looked for at 
-            ``gridwxcomp/gridwxcomp/gridmet_cell_data.csv``.
         bounds (tuple or None): default None. Tuple of bounding coordinates 
             in the following order (min long, max long, min lat, max lat) 
             which need to be in decimal degrees. Need to align with gridMET
@@ -382,6 +384,11 @@ def make_grid(in_path, gridmet_meta_path=None, bounds=None, buffer=25,
             output raster.
         overwrite (bool): default False. If True overwrite the grid 
             shapefile at ``out_path`` if it already exists.
+        gridmet_meta_path (str): default None. Path to metadata CSV file 
+            that contains all gridMET cells for the contiguous United 
+            States. If None it is looked for at the install directory of 
+            gridwxcomp (i.e. with pip install) or within the current directory
+            as "gridmet_cell_data.csv".
 
     Returns:
         None
@@ -448,7 +455,7 @@ def make_grid(in_path, gridmet_meta_path=None, bounds=None, buffer=25,
     # print message if overwriting existing grid
     elif os.path.isfile(out_path) and overwrite:
         print(
-            'Overwriting fishnet grid at: \n',
+            '\nOverwriting fishnet grid at: \n',
             out_path,
             '\n'
         )
@@ -559,7 +566,7 @@ def get_cell_ID(coords, cell_data):
             gridMET cell. Coordinates must be acceptable as arguments to
             :class:`fiona.geometry.Polygon`.
         cell_data (:obj:`pandas.DataFrame`): pandas dataframe of the 
-            gridMET metadata CSV file, i.e. "gridmet_cell_data.csv".
+            gridMET metadata CSV file "gridmet_cell_data.csv".
         
     Returns:
         gridmet_id (int): gridMET ID value for gridMET cell that is defined
@@ -600,16 +607,18 @@ def _update_subgrid(grid_path, gridmet_meta_path=None):
     Keyword Arguments:
         gridmet_meta_path (str): default None. Path to metadata CSV file 
             that contains all gridMET cells for the contiguous United 
-            States. If None it is looked for at 
-            ``etr-biascorrect/gridmet_cell_data.csv``.
-            
+            States. If None it is looked for at the install directory of 
+            gridwxcomp (i.e. with pip install) or within the current directory
+            as "gridmet_cell_data.csv".
+
     Returns:
         None
         
     Raises:
         FileNotFoundError: if ``grid_path`` or ``gridmet_meta_path`` 
         are not found. If ``gridmet_meta_path`` is not passed as a 
-        command line argument it is not in the current working directory
+        command line argument and is not found in the gridwxcomp install
+        directory and it is not in the current working directory
         and named "gridmet_cell_data.csv".    
         
     """
@@ -617,14 +626,23 @@ def _update_subgrid(grid_path, gridmet_meta_path=None):
     if not os.path.isfile(grid_path):
         raise FileNotFoundError('The file path for the gridMET fishnet '\
                                +'was invalid or does not exist. ')
+    # look for pacakged gridmet_cell_data.csv if path not given
     if not gridmet_meta_path:
-        gridmet_meta_path = 'gridmet_cell_data.csv'
-    if not os.path.isfile(gridmet_meta_path):
-        raise FileNotFoundError('GridMET file path was not given and '\
-                +'gridmet_cell_data.csv was not found in the current '\
-                +'directory. Please assign the correct path or put '\
-                +'gridmet_cell_data.csv in the current directory.\n')
-        
+        try:
+            if pkg_resources.resource_exists('gridwxcomp', 
+                    "gridmet_cell_data.csv"):
+                gridmet_meta_path = pkg_resources.resource_filename(
+                    'gridwxcomp', 
+                    "gridmet_cell_data.csv"
+                    )
+        except:
+            gridmet_meta_path = 'gridmet_cell_data.csv'
+    if not os.path.exists(gridmet_meta_path):
+        raise FileNotFoundError('GridMET file path was not given and '+\
+                'gridmet_cell_data.csv was not found in the gridwxcomp '+\
+                'install directory. Please assign the path or put '+\
+                '"gridmet_cell_data.csv" in the current working directory.\n')
+      
     tmp_out = grid_path.replace('.shp', '_tmp.shp')
 
     # load gridMET metadata file for looking up gridMET IDs
@@ -672,8 +690,8 @@ def _update_subgrid(grid_path, gridmet_meta_path=None):
     )
 
 def interpolate(in_path, var_name, scale_factor=0.1, function='inverse', 
-                gridmet_meta_path=None, bounds=None, buffer=25, 
-                zonal_stats=True):
+                bounds=None, buffer=25, zonal_stats=True, 
+                gridmet_meta_path=None):
     """
     Use a radial basis function to interpolate 2-dimensional surface of
     calculated bias ratios for climate stations in input summary CSV. 
@@ -703,10 +721,6 @@ def interpolate(in_path, var_name, scale_factor=0.1, function='inverse',
             * 'cubic'
             * 'quintic'
             * 'thin_plate'
-        gridmet_meta_path (str): default None. Path to metadata CSV file 
-            that contains all gridMET cells for the contiguous United 
-            States. If None it is looked for at 
-            ``etr-biascorrect/gridmet_cell_data.csv``. 
         bounds (tuple or None): default None. Tuple of bounding coordinates 
             in the following order (min long, max long, min lat, max lat) 
             which need to be in decimal degrees. Need to align with gridMET
@@ -723,8 +737,12 @@ def interpolate(in_path, var_name, scale_factor=0.1, function='inverse',
             [function] is the radial basis interpolation function, and
             [res] is the resolution of the interpolated surface in meters.
             Also see :func:`gridmet_zonal_stats`.
-        bounds (tuple): 
-        
+        gridmet_meta_path (str): default None. Path to metadata CSV file 
+            that contains all gridMET cells for the contiguous United 
+            States. If None it is looked for at the install directory of 
+            gridwxcomp (i.e. with pip install) or within the current directory
+            as "gridmet_cell_data.csv".
+
     Returns:
         None
         
@@ -739,13 +757,11 @@ def interpolate(in_path, var_name, scale_factor=0.1, function='inverse',
         >>> from etr_biascorrect import spatial
         >>> # assign input paths
         >>> summary_file = 'monthly_ratios/etr_mm_summary_comp.csv'
-        >>> gridmet_metadata_path = 'gridmet_cell_data.csv'
         >>> buffer = 10
         >>> var_name = 'Annual_mean'
         >>> func = 'gaussian'
         >>> interpolate(summary_file, var_name, scale_factor=0.1, 
-                    function=func, gridmet_meta_path=gridmet_metadata_path, 
-                    buffer=buffer)
+                    function=func, buffer=buffer)
                     
         The interpolated raster will be saved to::
         
@@ -783,8 +799,7 @@ def interpolate(in_path, var_name, scale_factor=0.1, function='inverse',
         >>> var_name = 'Jul_median'
         >>> func = 'gaussian'
         >>> interpolate(summary_file, var_name, scale_factor=0.1, 
-                    function=func, gridmet_meta_path=gridmet_metadata_path, 
-                    buffer=buffer)
+                    function=func, buffer=buffer)
                     
         This will create the GeoTIFF raster::
         
@@ -821,13 +836,22 @@ def interpolate(in_path, var_name, scale_factor=0.1, function='inverse',
     if not os.path.isfile(in_path):
         raise FileNotFoundError('Input summary CSV file given'+\
                                 ' was invalid or not found')
+    # look for pacakged gridmet_cell_data.csv if path not given
     if not gridmet_meta_path:
-        gridmet_meta_path = 'gridmet_cell_data.csv'
-    if not os.path.isfile(gridmet_meta_path):
-        raise FileNotFoundError('GridMET file path was not given and '\
-                +'gridmet_cell_data.csv was not found in the current '\
-                +'directory. Please assign the correct path or put '\
-                +'gridmet_cell_data.csv in the current directory.\n')
+        try:
+            if pkg_resources.resource_exists('gridwxcomp', 
+                    "gridmet_cell_data.csv"):
+                gridmet_meta_path = pkg_resources.resource_filename(
+                    'gridwxcomp', 
+                    "gridmet_cell_data.csv"
+                    )
+        except:
+            gridmet_meta_path = 'gridmet_cell_data.csv'
+    if not os.path.exists(gridmet_meta_path):
+        raise FileNotFoundError('GridMET file path was not given and '+\
+                'gridmet_cell_data.csv was not found in the gridwxcomp '+\
+                'install directory. Please assign the path or put '+\
+                '"gridmet_cell_data.csv" in the current working directory.\n')
     # calc raster resolution in meters (as frac of 4 km)
     res = int(4 * scale_factor * 1000)
     # path to save raster of interpolated grid scaled by scale_factor
@@ -1095,11 +1119,6 @@ def arg_parse():
         help='Input summary_comp CSV file of climate/gridMET bias ratios '+\
              'created by first running calc_bias_ratios.py')
     optional.add_argument(
-        '-g', '--gridmet', metavar='PATH', required=False,
-        help='GridMET master CSV file with cell data, packaged with '+\
-             'etr-biascorrect at etr-biascorrect/gridmet_cell_data.csv '+\
-             'if not given it needs to be located in the currect directory')
-    optional.add_argument(
         '-b', '--buffer', required=False, default=25, type=int, metavar='',
         help='Number of gridMET cells to expand outer bounds of fishnet '+\
              'which can be used for extrapolation')
@@ -1116,6 +1135,11 @@ def arg_parse():
     optional.add_argument(
         '-o', '--overwrite-grid', required=False, default=False, 
         action='store_true', help='Flag to overwrite existing fishnet grid')
+    optional.add_argument(
+        '-g', '--gridmet', metavar='PATH', required=False,
+        help='GridMET master CSV file with cell data, packaged with '+\
+             'etr-biascorrect at etr-biascorrect/gridmet_cell_data.csv '+\
+             'if not given it needs to be located in the currect directory')
 #    optional.add_argument(
 #        '--debug', default=logging.INFO, const=logging.DEBUG,
 #        help='Debug level logging', action="store_const", dest="loglevel")
@@ -1128,9 +1152,9 @@ if __name__ == '__main__':
 
     main(
         input_file_path=args.input, 
-        gridmet_meta_path=args.gridmet, 
         buffer=args.buffer,
         scale_factor=args.scale,
         function=args.function,
-        overwrite=args.overwrite_grid
+        overwrite=args.overwrite_grid,
+        gridmet_meta_path=args.gridmet
     )
