@@ -43,7 +43,7 @@ GRIDMET_STATION_VARS = {
 OPJ = os.path.join
 
 def main(input_file_path, out_dir, gridmet_var='etr_mm', station_var=None,
-         gridmet_id=None, comp=True):
+         gridmet_id=None, day_limit=10, comp=True):
     """
     Calculate monthly bias ratios between station climate and gridMET
     cells that correspond with each other geographically. Saves data
@@ -68,6 +68,8 @@ def main(input_file_path, out_dir, gridmet_var='etr_mm', station_var=None,
             module attribute to :mod:`calc_bias_ratios.py`.
         gridmet_ID (str): optional gridMET ID number if user wants
             to only calculate bias ratios for a single gridMET cell.
+        day_limit (int): default 10. Threshold number of days in month
+            of missing data, if less exclude month from calculations.
         comp (bool): default True. Save a "comprehensive" summary
             output CSV file that contains additional station metadata
             and statistics in addition to the mean monthly ratios.
@@ -83,8 +85,10 @@ def main(input_file_path, out_dir, gridmet_var='etr_mm', station_var=None,
             $ python calc_bias_ratios.py -i merged_input.csv -o monthly_ratios
             $ # for all gridMET cells in input file for gridMET var "eto_mm"
             $ python calc_bias_ratios.py -i merged_input.csv -o monthly_ratios -gv eto_mm
-            $ # for a specific gridMET cell for "etr_mm"
+            $ # for a specific gridMET cell ID for "etr_mm"
             $ python calc_bias_ratios.py -i merged_input.csv -o monthly_ratios -id 509011
+            $ # to exclude any months with less than 15 days of data
+            $ python calc_bias_ratios.py -i merged_input.csv -o monthly_ratios -d 15
             
         It is also possible for the user to define their own station 
         variable name if, for example, they are using station data that was
@@ -121,6 +125,7 @@ def main(input_file_path, out_dir, gridmet_var='etr_mm', station_var=None,
         gridmet_var=gridmet_var,
         station_var=station_var, 
         gridmet_ID=gridmet_id, 
+        day_limit=day_limit,
         comp=comp
     )
 
@@ -204,7 +209,7 @@ def _save_output(out_df, comp_out_df, out_dir, gridmet_ID, var_name):
         __save_update(comp_out_df, comp_out_file)
     
 def calc_bias_ratios(input_path, out_dir, gridmet_var='etr_mm', 
-                     station_var=None, gridmet_ID=None, comp=True):
+             station_var=None, gridmet_ID=None, day_limit=10, comp=True):
     """
     Read input CSV file and calculate mean monthly bias ratios between
     station to corresponding gridMET cells for all station and gridMET 
@@ -213,8 +218,8 @@ def calc_bias_ratios(input_path, out_dir, gridmet_var='etr_mm',
     Arguments:
         input_path (str): path to input CSV file with matching
             station climate and gridMET metadata. This file is 
-            created by running prep_input.py followed by 
-            download_gridmet_ee.py.
+            created by running :mod:`prep_input.py` followed by 
+            :mod:`download_gridmet_ee.py`.
         out_dir (str): path to directory to save CSV files with
             monthly bias ratios of etr.
             
@@ -227,6 +232,8 @@ def calc_bias_ratios(input_path, out_dir, gridmet_var='etr_mm',
             module attribute to :mod:`calc_bias_ratios.py`.
         gridmet_ID (int): default None. GridMET ID number if user wants
             to only calculate bias ratios for a single gridMET cell.
+        day_limit (int): default 10. Threshold number of days in month
+            of missing data, if less exclude month from calculations.
         comp (bool): default True. Flag to save a "comprehensive" 
             summary output CSV file that contains additional station 
             metadata and statistics in addition to the mean monthly ratios.
@@ -348,43 +355,66 @@ def calc_bias_ratios(input_path, out_dir, gridmet_var='etr_mm',
                             gridmet_df[gridmet_var]], axis=1, 
                            join_axes=[station_df.index])
         result.dropna(inplace=True)
-        # calculate monthy mean, median, and counts of both datasets
-        result = result.groupby(result.index.month).\
-                agg({
-                    station_var:['sum','median','mean','count'],
-                     gridmet_var:['sum','median','mean','count']
-                     })
-        # calculate ratios of monthly mean and median values and day counts
-        result[('ratio','mean_ratio')] =\
-               result.loc[:,(station_var,'sum')]\
-               / result.loc[:,(gridmet_var,'sum')]
-        result[('ratio','median_ratio')] =\
-               result.loc[:,(station_var,'median')]\
-               / result.loc[:,(gridmet_var,'median')]
-        result[('ratio','count_days')] = result.loc[:,(gridmet_var,'count')]
-        # drop columns and multiindex
-        result.drop([gridmet_var,station_var], axis=1, inplace=True)
-        result.columns = result.columns.droplevel(0)
+        # monthly sums and day counts for each year
+        result = result.groupby([result.index.year, result.index.month]).agg(['sum','count'])
+        # Remove Totals with Less Than XX Days
+        result = result[result[gridmet_var,'count']>=day_limit]
+        ratio = pd.DataFrame(columns = ['ratio', 'count'])
+        # ratio of monthly sums for each year
+        ratio['ratio'] = (result[station_var,'sum'])/(result[gridmet_var,'sum'])
+        # monthly counts
+        ratio['count'] = result.loc[:,(gridmet_var,'count')]
+        #Rebuild Index DateTime
+        ratio['year'] = ratio.index.get_level_values(0).values.astype(int)
+        ratio['month'] = ratio.index.get_level_values(1).values.astype(int)
+        ratio.index = pd.to_datetime(ratio.year*10000+ratio.month*100+15,format='%Y%m%d') 
+        counts = ratio.groupby(ratio.index.month).sum()['count']
+        # mean of monthly means of all years, can change to median or other meth
+        final_ratio = ratio.groupby(ratio.index.month).mean()
+        final_ratio.drop(['year', 'month'], axis=1, inplace=True)
+        final_ratio['count'] = counts
         # calc mean growing season and June to August ratios
-        result['April_to_oct_mean'] = result.loc[3:10,'mean_ratio'].mean()
-        result['June_to_aug_mean'] = result.loc[5:8,'mean_ratio'].mean()
-        result['Annual_mean'] = result.loc[:,'mean_ratio'].mean()
+        grow_season = final_ratio.loc[3:10,'ratio'].mean()
+        june_to_aug = final_ratio.loc[5:8,'ratio'].mean()
+        annual = final_ratio.loc[:,'ratio'].mean()
         # get month abbreviations in a column and drop index values
-        for m in result.index:
-            result.loc[m,'month'] = calendar.month_abbr[m]
+        for m in final_ratio.index:
+            final_ratio.loc[m,'month'] = calendar.month_abbr[m]
+        # restructure as a row with station index
+        months = final_ratio.month.values
+        final_ratio = final_ratio.T
+        final_ratio.columns = months
+        final_ratio.drop('month', inplace=True)
+        # add monthy means and counts into single row dataframe
+        ratio_cols = [c + '_mean' for c in final_ratio.columns]
+        count_cols = [c + '_count' for c in final_ratio.columns]
+        out_cols = ratio_cols + count_cols
+        final_ratio = pd.concat([final_ratio.loc['ratio'], final_ratio.loc['count']])
+        final_ratio.index = out_cols
+        final_ratio = final_ratio.to_frame().T
+        final_ratio['April_to_oct_mean'] = grow_season
+        final_ratio['June_to_aug_mean'] = june_to_aug
+        final_ratio['Annual_mean'] = annual
+        # round numerical data before adding string metadata
+        for v in final_ratio:
+            if '_mean' in v:
+                final_ratio[v] = final_ratio[v].astype(float).round(3)
+            else:
+                final_ratio[v] = final_ratio[v].astype(int)
+        # set station ID as index
+        final_ratio['STATION_ID'] = row.STATION_ID
+        final_ratio.set_index('STATION_ID', inplace=True)
+        
+        out = final_ratio.copy()
+        out.drop(count_cols, axis=1, inplace=True)
+        out.drop('June_to_aug_mean', axis=1, inplace=True)
+        
         # save GRIDMET_ID for merging with input table
-        result['GRIDMET_ID'] = row.GRIDMET_ID    
-        result = result.merge(input_df, on='GRIDMET_ID')
-
+        final_ratio['GRIDMET_ID'] = row.GRIDMET_ID    
+        final_ratio = final_ratio.merge(input_df, on='GRIDMET_ID')
+    
         # round numeric columns
-        result = result.round({
-            'month': 0,
-            'mean_ratio': 3,
-            'median_ratio': 3,
-            'count_days': 0,
-            'April_to_oct_mean': 2,
-            'June_to_aug_mean': 2,
-            'Annual_mean': 2,
+        final_ratio = final_ratio.round({
             'LAT': 10,
             'LON': 10,
             'ELEV_M': 0,
@@ -394,53 +424,11 @@ def calc_bias_ratios(input_path, out_dir, gridmet_var='etr_mm',
             'STATION_ELEV_M': 0
         })
 
-        # pivot table on monthly statistics, concatenate, merge for comp
-        df_mean = result.pivot(
-            index='STATION_ID', 
-            columns='month', 
-            values='mean_ratio'
-        )
-        df_mean.columns = [c+'_mean' for c in df_mean.columns]
-
-        df_median = result.pivot(
-            index='STATION_ID', 
-            columns='month', 
-            values='median_ratio'
-        )
-        df_median.columns = [c+'_median' for c in df_median.columns]
-
-        df_count = result.pivot(
-            index='STATION_ID', 
-            columns='month', 
-            values='count_days'
-        )
-        df_count.columns = [c+'_count' for c in df_count.columns]
-
-        out = df_mean    
-        # concat only growing season and annual ratios to short summary
-        tmp = pd.DataFrame(result.loc[0,['April_to_oct_mean','Annual_mean']]).T
-        tmp.index = result.STATION_ID.unique()
-        out = pd.concat([out,tmp], axis=1)
-
         if comp:
-            out['GRIDMET_ID'] = result.GRIDMET_ID.unique()
+            out['GRIDMET_ID'] = row.GRIDMET_ID
+            out['GRIDMET_ID'] = final_ratio.GRIDMET_ID.unique()
             # build comprehensive output summary 
-            comp_out = pd.concat([df_mean,df_median,df_count], axis=1)
-            comp_out['GRIDMET_ID'] = result.GRIDMET_ID[0]
-            # add other non-monthly data by merge
-            cols = [
-                c for c in result.columns if c not in
-                [
-                    'month', 
-                    'mean_ratio',
-                    'median_ratio',
-                    'count_days'
-            ]]
-
-            comp_out = comp_out.merge(
-                    result[cols], 
-                    on='GRIDMET_ID'
-                ).drop_duplicates()
+            comp_out = final_ratio
             comp_out.set_index('STATION_ID', inplace=True)
 
             # no longer need GRIDMET_ID in short summary 
@@ -448,6 +436,7 @@ def calc_bias_ratios(input_path, out_dir, gridmet_var='etr_mm',
         # if comp False
         else:
             comp_out = comp
+            
         # save output depending on options
         _save_output(out, comp_out, out_dir, gridmet_ID, gridmet_var)
         
@@ -486,6 +475,9 @@ def arg_parse():
         '-id', '--gridmet-id', metavar='', required=False, default=None,
         help='Optional gridMET ID to calculate bias ratios for a single '+\
              'gridMET cell')
+    optional.add_argument('-d', '--day-limit', required=False, 
+        default=10, help='Number of days of valid data per month to '+\
+              'include it in bias correction calculation.')
     optional.add_argument('-c', '--comprehensive', required=False, 
         default=True, action='store_false', dest='comprehensive', 
         help='Flag, if given, to NOT save comprehensive summary file with '+\
@@ -502,4 +494,5 @@ if __name__ == '__main__':
 
     main(input_file_path=args.input, out_dir=args.out,
          gridmet_var=args.gridmet_var, station_var=args.station_var,
-         gridmet_id=args.gridmet_id, comp=args.comprehensive)
+         gridmet_id=args.gridmet_id, day_limit=args.day_limit,
+         comp=args.comprehensive)
