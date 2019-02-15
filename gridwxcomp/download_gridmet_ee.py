@@ -1,28 +1,61 @@
+# -*- coding: utf-8 -*-
+"""
+Download gridMET climatic time series for multiple variables, e.g. ETr, temp,
+wind speed 2m, swrad, etc. 
+
+"""
 import argparse
-import datetime as dt
 import logging
 import os
 import sys
 import timeit
+import datetime as dt
 from time import sleep
 
 import ee
-import pandas as pd
 import refet
+import pandas as pd
 
-
+# for connection to Earth Engine
 ee.Initialize() 
 
 def download_gridmet_ee(input_csv, out_folder, year_filter=''):
 
-    """Download gridmet ETr/ETo time series data
-    Args:
-        input_csv (str): file path of input .csv containing GRIDMET_ID, LAT, LON
-        out_folder (str): Folder path to save gridmet timeseries .csv files
-        year_filter (list): single year or range
+    """
+    Download gridMET time series data for multiple climate variables for 
+    select gridMET cells as listed in ``input_csv``.
+
+    Arguments:
+        input_csv (str): file path of input CSV produced by 
+            :mod:`prep_input.py`
+        out_folder (str): directory path to save gridmet timeseries CSV files
+        year_filter (list): single year or range to download
 
     Returns:
         None
+
+    Examples:
+        Say we wanted to download data for 2016 through 2018, from the command 
+        line,
+
+        .. code::
+            $ download_gridmet_ee.py -i merged_input.csv -o gridmet_data -y 2016-2018
+
+        note, "merged_input.csv" should have been created by first running 
+        :mod:`prep_input.py`. 
+
+        To download the same gridMET data within Python
+
+        >>> from gridwxcomp import download_gridmet_ee
+        >>> download_gridmet_ee('merged_input.csv',
+                'gridmet_data',
+                '2016-2018'
+            )
+
+        Running :func:`download_gridmet_ee.py` also updates the CSV file
+        produced from :mod:`prep_input.py` to include file paths to gridMET
+        time series files that are paired with climate stations. 
+
     """
     
     if not os.path.exists(out_folder):
@@ -48,7 +81,7 @@ def download_gridmet_ee(input_csv, out_folder, year_filter=''):
 
     # Year Filter
     if year_filter:
-            year_list = sorted(list(parse_int_set(year_filter)))
+            year_list = sorted(list(_parse_int_set(year_filter)))
             logging.info('\nDownloading Years: {0}-{1}'.format(min(year_list),
                                                                max(year_list)))
             date_list = pd.date_range(
@@ -268,7 +301,7 @@ def download_gridmet_ee(input_csv, out_folder, year_filter=''):
         logging.info('\nDownload Time: {}'.format(elapsed))
 
 
-def parse_int_set(nputstr=""):
+def _parse_int_set(nputstr=""):
     """Return list of numbers given a string of ranges
 
     http://thoughtsbyclayg.blogspot.com/2008/10/
@@ -305,7 +338,7 @@ def parse_int_set(nputstr=""):
 def arg_parse():
     """
     Command line usage of download_gridmet_ee.py for downloading
-    gridMET time series of reference evapotranspiration using google 
+    gridMET time series of several climatic variables using google 
     earth engine API.
     """
     parser = argparse.ArgumentParser(
@@ -314,14 +347,14 @@ def arg_parse():
     optional = parser._action_groups.pop() # optionals listed second
     required = parser.add_argument_group('required arguments')
     required.add_argument(
-        '-i', '--input', metavar='PATH', required=True,
+        '-i', '--input', metavar='', required=True,
         help='Input file containing station and gridMET IDs created by '+\
             'prep_input.py')
     required.add_argument(
-        '-o', '--out', metavar='PATH', required=True,
-        help='Output folder to save time series CSVs of gridMET etr')
+        '-o', '--out-dir', metavar='', required=True,
+        help='Output directory to save time series CSVs of gridMET data')
     optional.add_argument(
-        '-y', '--years', default=None, type=str,
+        '-y', '--years', metavar='', default=None, type=str,
         help='Year(s) to download, single year (YYYY) or range (YYYY-YYYY)')
     optional.add_argument(
         '--debug', default=logging.INFO, const=logging.DEBUG,
@@ -342,7 +375,7 @@ if __name__ == '__main__':
     logging.info('{0:<20s} {1}'.format(
         'Script:', os.path.basename(sys.argv[0])))
 
-    download_gridmet_ee(input_csv=args.input, out_folder=args.out,
+    download_gridmet_ee(input_csv=args.input, out_folder=args.out_dir,
          year_filter=args.years)
 
     # Saturated vapor pressure
