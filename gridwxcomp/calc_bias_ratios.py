@@ -16,7 +16,7 @@ Note:
     ``GRIDMET_STATION_VARS`` can be manually adjusted, e.g. new pairs
     can be made or removed to efficiently use :mod:`gridwxcomp` on custom
     station data that was **not** created by 
-    `pyWeatherQAQC <https://github.com/DRI-WSWUP/pyWeatherQAQC>`_.
+    `PyWeatherQAQC <https://github.com/DRI-WSWUP/pyWeatherQAQC>`_.
     
 """
 
@@ -30,7 +30,7 @@ import numpy as np
 # keys = gridMET variable name
 # values = climate station variable name
 GRIDMET_STATION_VARS = {
-    'u2_ms' : 'Windspeed (m/s)',
+    'u2_ms' : 'ws_2m (m/s)',
     'tmin_c' : 'TMin (C)',
     'tmax_c' : 'TMax (C)',
     'srad_wm2' : 'Rs (w/m2)',
@@ -92,7 +92,7 @@ def main(input_file_path, out_dir, gridmet_var='etr_mm', station_var=None,
             
         It is also possible for the user to define their own station 
         variable name if, for example, they are using station data that was
-        **not** created by `pyWeatherQAQC <https://github.com/DRI-WSWUP/pyWeatherQAQC>`_.
+        **not** created by `PyWeatherQAQC <https://github.com/DRI-WSWUP/pyWeatherQAQC>`_.
         Let's say our station time series has ETo named as 'EO' then 
         use the ``[-sv, --station-var]`` and ``[-gv, --gridmet-var]`` options
         
@@ -110,7 +110,7 @@ def main(input_file_path, out_dir, gridmet_var='etr_mm', station_var=None,
         (None), the corresponding station variable is looked up from the mapping 
         dictionary in :mod:`calc_bias_ratios.py` named ``GRIDMET_STATION_VARS``.
         To efficiently use climate data that was  **not** created by 
-        `pyWeatherQAQC <https://github.com/DRI-WSWUP/pyWeatherQAQC>`_ which
+        `PyWeatherQAQC <https://github.com/DRI-WSWUP/pyWeatherQAQC>`_ which
         is where the default names are derived we recommend manually adjusting
         ``GRIDMET_STATION_VARS`` near the top of the :mod:`calc_bias_ratios.py`
         submodule file. Alternatively, the gridMET and station variable names
@@ -166,7 +166,7 @@ def _save_output(out_df, comp_out_df, out_dir, gridmet_ID, var_name):
         if os.path.isfile(out_file):
             existing_df = pd.read_csv(out_file, index_col='STATION_ID')
             if not out_df.index.values[0] in existing_df.index.values:
-                out_df = pd.concat([existing_df, out_df])
+                out_df = pd.concat([existing_df, out_df], sort=False)
                 out_df.to_csv(out_file, index=True)
             # overwrite if station is in existing, could change to
             # allow for duplicates if values are different
@@ -475,7 +475,7 @@ def arg_parse():
         '-id', '--gridmet-id', metavar='', required=False, default=None,
         help='Optional gridMET ID to calculate bias ratios for a single '+\
              'gridMET cell')
-    optional.add_argument('-d', '--day-limit', required=False, 
+    optional.add_argument('-d', '--day-limit', metavar='', required=False, 
         default=10, help='Number of days of valid data per month to '+\
               'include it in bias correction calculation.')
     optional.add_argument('-c', '--comprehensive', required=False, 

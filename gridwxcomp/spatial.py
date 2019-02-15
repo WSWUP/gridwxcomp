@@ -894,7 +894,23 @@ def interpolate(in_path, var_name, scale_factor=0.1, function='inverse',
 
     lon_pts, lat_pts = in_df.STATION_LON.values, in_df.STATION_LAT.values
     values = in_df[var_name].values
-    
+    if np.isnan(values).any():
+        mask = ~np.isnan(values)
+        n_missing = np.sum(mask)
+        # if no data exists, i.e. all nans, exit
+        if len(mask) == n_missing:
+            print('No bias ratios for variable: {} {}'.\
+                    format(grid_var, var_name),
+                    'Skipping.')
+            return
+        print('Data missing for {} stations for variable: {} {}'.\
+                format(n_missing, grid_var, var_name),
+            '\nproceeding with interpolation.')
+        # get locations where ratio is not nan
+        values = values[mask]
+        lon_pts = lon_pts[mask]
+        lat_pts = lat_pts[mask]
+
     # get grid extent based on station locations in CSV
     if not bounds:
         bounds = get_subgrid_bounds(in_path, buffer=buffer) 
@@ -1104,9 +1120,9 @@ def gridmet_zonal_stats(in_path, raster, function=None, res=None):
         
 def arg_parse():
     """
-    Command line usage of spatial.py for creating shapefile of all stations
-    found in comprehensive summary CSV file, build fishnet around stations
-    and perform spatial interpolation for gridMET cells.
+    Command line usage of grdwxcomp spatial.py for creating shapefiles of 
+    climate station point data of bias ratios, build fishnet around stations,
+    perform spatial interpolation of ratios, and extract zonal means for gridMET    cells.
     """
     parser = argparse.ArgumentParser(
         description=arg_parse.__doc__,
@@ -1136,9 +1152,9 @@ def arg_parse():
         '-o', '--overwrite-grid', required=False, default=False, 
         action='store_true', help='Flag to overwrite existing fishnet grid')
     optional.add_argument(
-        '-g', '--gridmet', metavar='PATH', required=False,
-        help='GridMET master CSV file with cell data, packaged with '+\
-             'etr-biascorrect at etr-biascorrect/gridmet_cell_data.csv '+\
+        '-g', '--gridmet-meta', metavar='', required=False, default=None,
+        help='GridMET metadata CSV file with cell data, packaged with '+\
+             'gridwxcomp and automatically found if pip was used to install '+\
              'if not given it needs to be located in the currect directory')
 #    optional.add_argument(
 #        '--debug', default=logging.INFO, const=logging.DEBUG,
@@ -1156,5 +1172,5 @@ if __name__ == '__main__':
         scale_factor=args.scale,
         function=args.function,
         overwrite=args.overwrite_grid,
-        gridmet_meta_path=args.gridmet
+        gridmet_meta_path=args.gridmet_meta
     )

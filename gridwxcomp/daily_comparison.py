@@ -1,20 +1,33 @@
+# -*- coding: utf-8 -*-
+"""
+Create time series and scatter comparison plots between paired station and 
+gridMET climatic variables. 
+
+"""
 import argparse
-import datetime as dt
+import sys
+import os
 import logging
+import datetime as dt
+
 import pandas as pd
 import numpy as np
-import os
-import sys
-
 from bokeh.plotting import figure, output_file, show, save
 from bokeh.layouts import gridplot
 
 
-def main(input_csv, out_dir, year_filter=''):
+def daily_comparison(input_csv, out_dir, year_filter=''):
 
-    """Compare daily Wx Station Data from PyWeatherQAQC with gridMET for each
-    month in year specified above.
-    Args:
+    """
+    Compare daily Wx Station Data from 
+    `PyWeatherQAQC <https://github.com/DRI-WSWUP/pyWeatherQAQC>`_ with gridMET 
+    for each month in year specified.
+
+    :func:`daily_comparison` creates html files with time series and scatter
+    plots of station versus gridMET climate variables. It uses the :mod:`bokeh`
+    module to create plots that are interactive, e.g. they can be zoomed in/out
+    and panned. Separate plot files are created for each month of a single year. 
+    Arguments:
         input_csv (str): path to input CSV file containing
             paired station/gridMET metadata. This file is
             created by running :mod:`prep_input.py` followed by
@@ -24,6 +37,35 @@ def main(input_csv, out_dir, year_filter=''):
 
     Returns:
         None
+
+    Example:
+        The ``daily_comparison.py`` module will build HTML files with 
+        :mod:`bokeh` plots for paired climate variable, e.g. etr_mm,
+        eto_mm, u2_ms, tmin_c, tmax_c, srad_wm2, ea_kpa, and Ko (dew point). 
+        Monthly plots are created for a single year.
+        
+        From the command line for year 2016,
+
+        .. code::
+            $ python daily_comparison.py -i gridwxcomp/merged_input.csv -o comp_plots_2016 -y 2016
+
+        or within Python,
+
+        >>> from gridwxcomp import daily_comparison
+        >>> daily_comparison('gridwxcomp/merged_input.csv',
+                'comp_plots_2016',
+                '2016'
+            )
+
+        Both methods result in monthly HTML :mod:`bokeh` plots being saved
+        to "comp_plots_2016/STATION_ID/" where "STATION_ID" is the station
+        ID as found in the input CSV file. A file is saved for each month
+        with the station ID, month, and year in the file name. 
+
+    Note:
+        If there are less than five days of data in a month the plot for that
+        month will not be created.
+
     """
 
     if not os.path.isdir(out_dir):
@@ -77,7 +119,7 @@ def main(input_csv, out_dir, year_filter=''):
         grid_path = row.GRIDMET_FILE_PATH
         # Skip if GRIDMET FILE DOES NOT EXIST
         if not os.path.exists(grid_path):
-            print('SKIPPING {}. NO FILE GRIDMET FOUND.'.format(grid_path))
+            print('SKIPPING {}. NO GRIDMET FILE FOUND.'.format(grid_path))
             continue
         else:
             grid_data = pd.read_csv(grid_path, sep=',',parse_dates=True,
@@ -99,7 +141,6 @@ def main(input_csv, out_dir, year_filter=''):
                                       station_data['TDew (C)']
 
             # Combine station and gridMET dataframes (only plotting variables)
-            merged = []
             merged = pd.concat([station_data[station_vars],
                                 grid_data[gridmet_vars]], axis=1,
                                join_axes=[station_data.index])
@@ -235,7 +276,8 @@ def main(input_csv, out_dir, year_filter=''):
 
 def arg_parse():
     """
-    Command line usage
+    Create time series and scatter comparison plots between paired station and 
+    gridMET climatic variables. 
     """
     parser = argparse.ArgumentParser(
         description=arg_parse.__doc__,
@@ -245,7 +287,7 @@ def arg_parse():
     required.add_argument(
         '-i', '--input', metavar='PATH', required=True,
         help='Input file containing station and gridMET IDs created by ' + \
-             'prep_input.py')
+             'prep_input.py followed by download_gridmet_ee.py')
     required.add_argument(
         '-o', '--out', metavar='PATH', required=True,
         help='Output directory to save comparison plots')
@@ -271,5 +313,5 @@ if __name__ == '__main__':
     logging.info('{0:<20s} {1}'.format(
         'Script:', os.path.basename(sys.argv[0])))
 
-    main(input_csv=args.input, out_dir=args.out,
+    daily_comparison(input_csv=args.input, out_dir=args.out,
          year_filter=args.year)

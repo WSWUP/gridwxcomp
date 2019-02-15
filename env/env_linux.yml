@@ -8,6 +8,7 @@ dependencies:
   - attrs=18.2.0=py_0
   - backcall=0.1.0=py_0
   - bleach=3.1.0=py_0
+  - bokeh=1.0.4=py37_1000
   - boost-cpp=1.68.0=h3a22d5f_0
   - boto3=1.9.85=py_0
   - botocore=1.12.86=py_0
@@ -92,15 +93,18 @@ dependencies:
   - ncurses=6.1=hfc679d8_2
   - notebook=5.7.4=py37_1000
   - oauth2client=4.1.2=py_1
+  - olefile=0.46=py_0
   - openblas=0.3.3=ha44fe06_1
   - openjpeg=2.3.0=h0e734dc_3
   - openssl=1.0.2p=h14c3975_1002
+  - packaging=19.0=py_0
   - pandas=0.23.4=py37hf8a1672_0
   - pandoc=2.5=0
   - pandocfilters=1.4.2=py_1
   - parso=0.3.1=py_0
   - pexpect=4.6.0=py37_1000
   - pickleshare=0.7.5=py37_1000
+  - pillow=5.4.1=py37h00a061d_1000
   - pip=18.1=py37_1000
   - pixman=0.34.0=h470a237_3
   - poppler=0.67.0=hdf8a1b3_2
@@ -127,6 +131,7 @@ dependencies:
   - python=3.7.1=h5001a0f_0
   - python-dateutil=2.7.5=py_0
   - pytz=2018.9=py_0
+  - pyyaml=3.13=py37h14c3975_1001
   - pyzmq=17.1.2=py37hae99301_1
   - qtconsole=4.4.3=py_0
   - rasterio=1.0.8=py37h1b5fcde_0
@@ -161,6 +166,7 @@ dependencies:
   - xorg-libxau=1.0.8=h470a237_6
   - xorg-libxdmcp=1.1.2=h470a237_7
   - xz=5.2.4=h470a237_1
+  - yaml=0.1.7=h14c3975_1001
   - zeromq=4.2.5=hfc679d8_6
   - zlib=1.2.11=h470a237_4
   - blas=1.0=mkl

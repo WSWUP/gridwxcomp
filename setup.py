@@ -2,6 +2,7 @@ from gridwxcomp import __version__
 from setuptools import setup
 
 requires = [
+    'bokeh >= 1.0.4',
     'cryptography == 2.3.1',
     'fiona == 1.7.13',
     'earthengine-api >= 0.1.164',
@@ -49,5 +50,6 @@ setup(
     scripts=['gridwxcomp/prep_input.py',
         'gridwxcomp/download_gridmet_ee.py',
         'gridwxcomp/calc_bias_ratios.py',
-        'gridwxcomp/spatial.py']
+        'gridwxcomp/spatial.py',
+        'gridwxcomp/daily_comparison.py']
 )

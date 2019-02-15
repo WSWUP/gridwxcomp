@@ -104,7 +104,9 @@ venv.bak/
 # mypy
 .mypy_cache/
 
-# historical data folders
+# historical or test data 
+/gridwxcomp/merged_input.csv
+/gridwxcomp/test**
 /gridmet_historical
 /philip_monthly_ratios
 /gridwxcomp/test_gridmet_data

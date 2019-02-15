@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+#!/usr/bin/env python
 """
 Read a CSV of climate station information and match each with nearest gridMET
 cell information. Produce a CSV file that will be used for input for main
@@ -27,19 +28,20 @@ def main(station_file, out_path, gridmet_meta_file):
     Arguments:
         station_file (str): path to CSV file containing list of climate
             stations that will later be used to calculate monthly
-            bias ratios to GridMET reference ET.
+            bias ratios to gridMET reference ET.
         gridmet_meta_file (str): path to metadata CSV file that contains
             all gridMET cells for the contiguous United States. Can be
-            found at ``etr-biascorrect/gridmet_cell_data.csv``.
-        out_path (str): path to save output CSV, default is to save as 
-            "merged_input.csv" to current working directory if not passed
+            found at ``gridwxcomp/gridmet_cell_data.csv``.
+        out_path (str or None): path to save output CSV, default is to save 
+            as "merged_input.csv" to current working directory if not passed
             at command line to script.
 
     Example:
-        From the command line interface,
+        From the command line interface within the ``gridwxcomp/gridwxcomp``
+        directory (or replace input path with correct path),
 
         .. code::
-            $ python prep_input.py -i ETrBias_DataPackage/Station_Data.txt -g gridmet_cell_data.csv
+            $ python prep_input.py -i example_data/Station_Data.txt 
 
         The result is "merged_input.csv" being created in the working 
         directory which contains metadata from climate staions as well as the 
@@ -87,7 +89,7 @@ def _read_station_list(station_path):
     Helper function that reads station list CSV file and return modified 
     version as a :obj:`Pandas.DataFrame` that includes file paths to each 
     station time series file. Renames some columns for consistency with other 
-    ``etr-biascorrect`` functions and scripts. 
+    ``gridwxcomp`` functions and scripts. 
 
     Arguments:
         station_path (str): path to CSV file containing list of climate
@@ -162,7 +164,7 @@ def _read_station_list(station_path):
     return station_list
 
 def prep_input(station_path, out_path='merged_input.csv', 
-                                                gridmet_meta_path=None):
+                gridmet_meta_path=None):
     """
     Read list of climate stations and match each with its
     closest GridMET cell, save CSV with information from both.
@@ -177,17 +179,18 @@ def prep_input(station_path, out_path='merged_input.csv',
             "merged_input.csv" to current working directory.
         gridmet_meta_path (str): path to metadata CSV file that contains
             all gridMET cells for the contiguous United States. If None
-            it is looked for at ``etr-biascorrect/gridmet_cell_data.csv``.
+            it is looked for at the installation directory of ``gridwxcomp``
+            if not found it is looked for in the current working directory
+            as "gridmet_cell_data.csv".
 
     Returns:
         None
 
     Example:
 
-        >>> from prep_input import prep_input 
+        >>> from gridwxcomp import prep_input 
         >>> prep_input(
-                'ETrBias_DataPackage/Station_Data.txt',
-                'gridmet_cell_data.csv',
+                'gridwxcomp/example_data/Station_Data.txt',
                 'outfile.csv'
             )
         
@@ -198,7 +201,8 @@ def prep_input(station_path, out_path='merged_input.csv',
     Raises:
         FileNotFoundError: if the ``gridmet_meta_path`` is not passed as a 
         command line argument and it is not in the current working directory
-        and named "gridmet_cell_data.csv".
+        and named "gridmet_cell_data.csv" and if ``gridwxcomp`` was not 
+        installed to the user's PATH, i.e. pip or python setup.py install.
 
     Note:
         The CSV file that is saved contains latitude, longitude, and elevation
@@ -210,15 +214,14 @@ def prep_input(station_path, out_path='merged_input.csv',
         e.g. "Website". 
 
     """
-
     # look for pacakged gridmet_cell_data.csv if path not given
     if not gridmet_meta_path:
         try:
             if pkg_resources.resource_exists('gridwxcomp', 
-                    "gridmet_cell_data.csv"):
+                    'gridmet_cell_data.csv'):
                 gridmet_meta_path = pkg_resources.resource_filename(
                     'gridwxcomp', 
-                    "gridmet_cell_data.csv"
+                    'gridmet_cell_data.csv'
                     )
         except:
             gridmet_meta_path = 'gridmet_cell_data.csv'
@@ -305,10 +308,10 @@ def arg_parse():
         '-i', '--input', metavar='PATH', required=True,
         help='Input CSV file of climate stations')
     optional.add_argument(
-        '-g', '--gridmet', metavar='PATH', required=False,
-        default='gridmet_cell_data.csv',
-        help='GridMET master CSV file with cell data, packaged with '+\
-             'etr-biascorrect at etr-biascorrect/gridmet_cell_data.csv '+\
+        '-g', '--gridmet-meta', metavar='PATH', required=False,
+        default=None,
+        help='GridMET metadata CSV file with cell data, packaged with '+\
+             'gridwxcomp and automatically found if pip was used to install '+\
              'if not given it needs to be located in the currect directory')
     optional.add_argument(
         '-o', '--out', metavar='PATH', required=False, 
@@ -326,5 +329,5 @@ if __name__ == '__main__':
 
     main(station_file=args.input, 
          out_path=args.out,
-         gridmet_meta_file=args.gridmet
+         gridmet_meta_file=args.gridmet_meta
          )
