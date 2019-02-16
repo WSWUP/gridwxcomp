@@ -7,12 +7,14 @@ Version 0.0.2
 Add more robust and intuitive command line interface ``gridwxcomp`` which interfaces with all major workflows of the module as opposed to needing to access multiple submodules of ``gridwxcomp``, e.g. ``gridwxcomp.prep_input``. Also add changelog. Example use of new CLI
 
 .. code-block:: bash
-    $ gridwxcomp prep-input station_metadata_file
+
+    $ gridwxcomp prep-input <station_metadata_file>
 
 old method (still possible if ``prep_input.py`` in working directory),
 
 .. code-block:: bash
-    $ python prep-input.py -i station_metadata_file
+
+    $ python prep-input.py -i <station_metadata_file>
 
 Added dependencies:
 
@@ -33,5 +35,6 @@ First numbered version. Many changes occured for initial development under this 
 Package not yet hosted on PyPI however it is packaged and can be installed to the Python and system env PATHs with 
 
 .. code-block:: bash
+
     $ pip install --editable .
 
