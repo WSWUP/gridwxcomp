@@ -3,6 +3,7 @@ from setuptools import setup
 
 requires = [
     'bokeh >= 1.0.4',
+    'click >= 7.0',
     'cryptography == 2.3.1',
     'fiona == 1.7.13',
     'earthengine-api >= 0.1.164',
@@ -47,9 +48,8 @@ setup(
     package_data={'gridwxcomp': ['example_data/*'],
         'gridwxcomp': ['gridmet_cell_data.csv']},
     include_package_data=True,
-    scripts=['gridwxcomp/prep_input.py',
-        'gridwxcomp/download_gridmet_ee.py',
-        'gridwxcomp/calc_bias_ratios.py',
-        'gridwxcomp/spatial.py',
-        'gridwxcomp/daily_comparison.py']
+    entry_points='''
+        [console_scripts]
+        gridwxcomp=gridwxcomp.scripts.gridwxcomp:gridwxcomp
+    '''
 )

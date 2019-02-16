@@ -357,14 +357,14 @@ def calc_bias_ratios(input_path, out_dir, gridmet_var='etr_mm',
         result.dropna(inplace=True)
         # monthly sums and day counts for each year
         result = result.groupby([result.index.year, result.index.month]).agg(['sum','count'])
-        # Remove Totals with Less Than XX Days
+        # remove totals with less than XX days
         result = result[result[gridmet_var,'count']>=day_limit]
         ratio = pd.DataFrame(columns = ['ratio', 'count'])
         # ratio of monthly sums for each year
         ratio['ratio'] = (result[station_var,'sum'])/(result[gridmet_var,'sum'])
         # monthly counts
         ratio['count'] = result.loc[:,(gridmet_var,'count')]
-        #Rebuild Index DateTime
+        # rebuild Index DateTime
         ratio['year'] = ratio.index.get_level_values(0).values.astype(int)
         ratio['month'] = ratio.index.get_level_values(1).values.astype(int)
         ratio.index = pd.to_datetime(ratio.year*10000+ratio.month*100+15,format='%Y%m%d') 
