@@ -867,14 +867,12 @@ def interpolate(in_path, var_name, scale_factor=0.1, function='inverse',
         'Resolution (pixel size) of output raster: {} m'.format(res)
     )
     
-    out_dir = OPJ(path_root, 'spatial')
+    out_dir = OPJ(path_root, 
+            'spatial', 
+            '{}_{}_{}m'.format(grid_var, function, res))
     out_file = OPJ(
         out_dir, 
-        '{gv}_{time}_{res}m.tiff'.format(
-            gv=grid_var, 
-            time=var_name, 
-            res=res
-        )
+        '{time_agg}.tiff'.format(time_agg=var_name)
     )
     # create output directory if does not exist
     if not os.path.isdir(out_dir):
@@ -882,7 +880,7 @@ def interpolate(in_path, var_name, scale_factor=0.1, function='inverse',
             os.path.abspath(out_dir), 
             ' does not exist, creating directory.\n'
         )
-        os.mkdir(out_dir)
+        os.makedirs(out_dir)
     
     print(            
         'GeoTIFF raster will be saved to: \n',
@@ -1059,8 +1057,7 @@ def gridmet_zonal_stats(in_path, raster, function=None, res=None):
     # get variable name from input file prefix
     grid_var = file_name.split('_summ')[0]
     
-    out_dir = OPJ(path_root, 'spatial')
-    grid_file = OPJ(out_dir, 'grid.shp')
+    grid_file = OPJ(path_root, 'spatial', 'grid.shp')
     out_file = OPJ(path_root, '{gv}_gridmet_summary.csv'.format(gv=grid_var))
     if function and res:
         out_file = out_file.replace(
@@ -1072,13 +1069,14 @@ def gridmet_zonal_stats(in_path, raster, function=None, res=None):
             os.path.abspath(grid_file),
             '\ndoes not exist, create it using spatial.build_subgrid first'
         )
-    # get var name from raster file always before resolution 
-    # and after two underscores for gridmet variable
-    # assumes gridmet variable name has an underscore, e.g. eto_mm
-    var_match = re.compile(r'[^_]*_[^_]*_(.*)_(\d+)m.tiff')
-    raster_name = os.path.split(raster)[1]
-    var_name = var_match.match(raster_name).group(1)
-    res = var_match.match(raster_name).group(2)
+    # get info from raster file, grdimet variable, res, time agg. 
+    # example path: **/spatial/etr_mm_inverse_4000m/Jan_mean.tiff 
+    reg_exp = r"^.+{s}spatial{s}.+?([^_]+?)_(\d+)m{s}(.+)\.tiff".\
+            format(s=os.sep)
+    var_match = re.compile(reg_exp)
+    funcion = var_match.match(raster).group(1)
+    res = var_match.match(raster).group(2)
+    var_name = var_match.match(raster).group(3)
     print(
         'calculating gridMET', grid_var, 'zonal means for',
         var_name, 'from', res, 'm resolution raster'
