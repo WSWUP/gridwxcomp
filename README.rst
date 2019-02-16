@@ -3,7 +3,7 @@ gridwxcomp
 
 Station-based bias correction of gridded weather for agricultural applications
 
-A Python module that calculates monthly bias correction factors that can be utilized to bias correct gridMET estimated reference evapotranspiration (ETr) or other climatic variables to weather station observed data (e.g. stations within agriculture settings). The process includes spatial interpolation of correction ratios with various interpolation options and zonal extraction of mean correction ratios to gridMET cells. ``gridwxcomp`` includes a command line interface as well as a set of Python submodules.
+A Python package for calculating bias correction factors between climate stations and gridMET variables. Correction ratios can be used to correct gridMET estimated reference evapotranspiration (ETr) or other climatic variables to weather station observed data e.g. stations within agriculture settings. The package includes tools to pair stations locations with gridMET cells, download gridMET data using Google Earth Engine API, calculate point ratios, build geo-referenced files of point data,  conduct spatial interpolation of correction ratios with various interpolation options, and perform zonal extraction of mean correction ratios to a subset of gridMET cells around the stations. ``gridwxcomp`` includes an intuitive command line interface and set of Python functions.
 
 Documentation
 -------------
@@ -70,34 +70,33 @@ This workflow will use the example data given in "gridwxcomp/gridwxcomp/example_
 
 The same workflow can be done on climate variables other than ETr using ``gridwxcomp``, e.g. observed ET, temperature, precipitation, wind speed, short wave radiation, etc.
 
-From ``gridwxcomp`` root directory run
+After installing with pip the ``gridwxcomp`` command line interface can be used from any directory,
 
 .. code-block:: bash
 
-    $ cd gridwxcomp
-    $ python prep_input.py -i example_data/Station_Data.txt  
+    $ gridwxcomp prep-input -i <PATH_TO example_data/Station_Data.txt>  
 
 This will result in the file "merged_input.csv". Next download matching gridMET climate time series by running
 
 .. code-block:: bash
 
-    $ python download_gridmet_ee.py -i merged_input.csv -o test_gridmet_data -y 2016-2017
+    $ gridwxcomp download-gridmet-ee merged_input.csv -y 2016-2017
 
-In this case the years 2016-2017 are used because the test station data time coverage only includes recent years plus it saves time as an example run by downloading a single year. Next to calculate monthly bias ratios and save to CSV files run
+The time series of gridMET data that correpond with the stations in "merged_input.csv" will be saved to a new folder called "gridmet_data" by defualt. In this case the years 2016-2017 are used because the test station data time coverage only includes recent years plus it saves time as an example run by downloading a single year. Next to calculate monthly bias ratios and save to CSV files run
 
 .. code-block:: bash
 
-    $ python calc_bias_ratios.py -i merged_input.csv -o test_ratios 
+    $ gridwxcomp calc-bias-ratios merged_input.csv -o monthly_ratios 
 
 Last, to calculate interpolated spatial surfaces of bias ratios and extract zonal means use the file produced from the previous step as input:
 
 .. code-block:: bash
 
-    $ python spatial.py -i test_ratios/etr_mm_summary_comp.csv -b 5
+    $ gridwxcomp spatial monthly_ratios/etr_mm_summary_comp.csv -b 5
 
 The ``[-b 5]`` option indicates that we want to expand the rectangular bounding area for interpolation by five gridMET cells (extrapolation in the outer regions).
 
-The final output file "test_ratios/etr_mm_gridmet_summary_inverse_400m.csv" contains monthly bias ratios for each gridMET cell in the interpolation region, similar to what is shown below. 
+The final output file "monthly_ratios/etr_mm_gridmet_summary_inverse_400m.csv" contains monthly bias ratios for each gridMET cell in the interpolation region, similar to what is shown below. 
 
     ========== ======== ======== ======== 
     GRIDMET_ID Apr_mean Aug_mean Dec_mean 
@@ -110,6 +109,6 @@ The final output file "test_ratios/etr_mm_gridmet_summary_inverse_400m.csv" cont
     ...        ...      ...      ...
     ========== ======== ======== ========
 
-GeoTIFF rasters of interpolated ratios, a fishnet grid with gridMET id values, and a point shapefile of station ratios should all be created within the "test_ratios" directory.
+GeoTIFF rasters of interpolated ratios, a fishnet grid with gridMET id values, and a point shapefile of station ratios should all be created within the "monthly_ratios" directory.
 
 
