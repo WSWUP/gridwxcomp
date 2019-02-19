@@ -27,7 +27,8 @@ def gridwxcomp():
               help='file path to save output CSV')
 @click.option('--gridmet-meta', '-g', nargs=1, type=str, default=None,
               help='file path to gridmet_cell_data.csv metadata')
-@click.option('--quiet', default=False, is_flag=True)
+@click.option('--quiet', default=False, is_flag=True, 
+        help='supress command line output')
 def prep_input(station_meta_path, out_path, gridmet_meta, quiet):
     if quiet:
         logging.getLogger().setLevel(logging.ERROR)
@@ -46,7 +47,8 @@ def prep_input(station_meta_path, out_path, gridmet_meta, quiet):
         help='folder to save downloaded gridMET time series')
 @click.option('--years', '-y', nargs=1, type=str, default=None,
         help='Year(s) to download, single year (YYYY) or range (YYYY-YYYY)')
-@click.option('--quiet', default=False, is_flag=True)
+@click.option('--quiet', default=False, is_flag=True, 
+        help='supress command line output')
 def download_gridmet_ee(input_csv, out_dir, years, quiet):
     if quiet:
         logging.getLogger().setLevel(logging.ERROR)
@@ -70,7 +72,8 @@ def download_gridmet_ee(input_csv, out_dir, years, quiet):
         help='day threshold per month, if missing more exclude month from calc')
 @click.option('--comp', '-c', default=True, is_flag=True,
         help='flag to NOT save comprehensive output CSV')
-@click.option('--quiet', default=False, is_flag=True)
+@click.option('--quiet', default=False, is_flag=True, 
+        help='supress command line output')
 def calc_bias_ratios(input_csv, out_dir, gridmet_var, station_var, 
         gridmet_id, day_limit, comp, quiet):
     if quiet:
@@ -91,19 +94,26 @@ def calc_bias_ratios(input_csv, out_dir, gridmet_var, station_var,
 
 @gridwxcomp.command()
 @click.argument('summary_comp_csv', nargs=1)
+@click.option('--out', '-o', nargs=1, type=str, default=None,
+        help='subdirectory for saving interpolated rasters')
 @click.option('--buffer', '-b', nargs=1, type=int, default=25,
         help='buffer for expanding interpolation region (gridMET cells)')
 @click.option('--scale', '-s', nargs=1, type=float, default=0.1,
         help='scale factor for gridMET interpolation, applied to 4 km res')
-@click.option('--function', '-f', nargs=1, type=str, default='inverse',
-        help='Radial basis function for spatial interpolation')
-@click.option('--overwrite-grid', '-o', default=False, is_flag=True,
+@click.option('--function', '-f', nargs=1, type=str, default='inverse_dist',
+        help='method name for spatial interpolation')
+@click.option('--smooth', nargs=1, type=float, default=None, is_flag=False,
+        help='smoothing parameter for spatial interpolation')
+@click.option('--power', nargs=1, type=float, default=None, is_flag=False,
+        help='power parameter for inverse distance spatial interpolation')
+@click.option('--overwrite-grid', default=False, is_flag=True,
         help='flag to overwrite grid for zonal stats if already exists')
 @click.option('--gridmet-meta', '-g', nargs=1, type=str, default=None,
               help='file path to gridmet_cell_data.csv metadata')
-@click.option('--quiet', default=False, is_flag=True)
-def spatial(summary_comp_csv, buffer, scale, function, overwrite_grid, 
-        gridmet_meta, quiet):
+@click.option('--quiet', default=False, is_flag=True, 
+        help='supress command line output')
+def spatial(summary_comp_csv, out, buffer, scale, function, smooth, 
+        power, overwrite_grid, gridmet_meta, quiet):
     if quiet:
         logging.getLogger().setLevel(logging.ERROR)
     else:
@@ -111,9 +121,12 @@ def spatial(summary_comp_csv, buffer, scale, function, overwrite_grid,
     # call gridwxcomp.spatial.main
     interp(
         summary_comp_csv, 
+        out=out,
         buffer=buffer,
         scale_factor=scale,
         function=function,
+        smooth=smooth,
+        power=power,
         overwrite=overwrite_grid,
         gridmet_meta_path=gridmet_meta
     )
@@ -124,7 +137,8 @@ def spatial(summary_comp_csv, buffer, scale, function, overwrite_grid,
         help='folder to save monthly time series comparison plots')
 @click.option('--year', '-y', nargs=1, type=int, default=None,
         help='Year to plot, single year (YYYY)')
-@click.option('--quiet', default=False, is_flag=True)
+@click.option('--quiet', default=False, is_flag=True, 
+        help='supress command line output')
 def daily_comparison(input_csv, out_dir, year, quiet):
     if quiet:
         logging.getLogger().setLevel(logging.ERROR)
