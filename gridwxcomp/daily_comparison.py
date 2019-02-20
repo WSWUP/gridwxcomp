@@ -156,7 +156,7 @@ def daily_comparison(input_csv, out_dir, year_filter=''):
                                   'month.')
                      continue
                 # Output Folder
-                out_folder =  os.path.join(out_dir, 'comaprison_plots',
+                out_folder =  os.path.join(out_dir, 'daily_comparison_plots',
                                            '{}'.format(
                                                row.STATION_ID.replace(" ","")))
 
