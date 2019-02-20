@@ -40,7 +40,8 @@ def monthly_comparison(input_csv, out_dir):
     Example:
         The ``monthly_comparison.py`` module will build HTML files with
         :mod:`bokeh` plots for paired climate variable, e.g. etr_mm,
-        eto_mm, u2_ms, tmin_c, tmax_c, srad_wm2, ea_kpa, and Ko (dew point). 
+        eto_mm, u2_ms, tmin_c, tmax_c, srad_wm2, ea_kpa, and Ko (dew point
+        depression).
         Monthly plots are created for a single year.
         
         From the command line for year 2016,
@@ -62,8 +63,8 @@ def monthly_comparison(input_csv, out_dir):
         with the station ID, month, and year in the file name. 
 
     Note:
-        If there are less than five days of data in a month the plot for that
-        month will not be created.
+        If there are less than 2 months of data the plot for that
+        station will not be created.
 
     """
 
