@@ -8,8 +8,8 @@ Attributes:
 
 Note:
     All spatial files, i.e. vector and raster files, utilize the
-    *ESRI Shapefile* file format. 
-
+    *ESRI Shapefile* file or GeoTiff format. 
+    
 Todo:
     * logging 
 
@@ -21,6 +21,7 @@ import argparse
 import copy
 import pkg_resources
 from math import ceil, pow, sqrt
+from pathlib import Path
 from shutil import move
 
 import fiona
@@ -105,7 +106,7 @@ def main(input_file_path, out=None, buffer=25, scale_factor=0.1,
         gridMET cells added around the encompassed climate stations. Next
         a 2-dimensional surface is interpolated from the point data of each
         mean bias ratio in etr_mm_summary_comp.csv which includes monthly as 
-        well as growing season and annual means ubising the inverse distance
+        well as growing season and annual means using the inverse distance
         weighting method. The surfaces are saved to 
         "monthly_ratios/spatial/etr_mm_inverse_dist_400m/" with file names of 
         the form::
@@ -984,7 +985,7 @@ def interpolate(in_path, var_name, out=None, scale_factor=0.1,
     # gdal requires "upper left" corner coordinates
     lat_max_out = copy.copy(lat_max)
     lon_max_out = copy.copy(lon_max)
-    
+    # extend short dimension to make square grid
     if not nx_cells == ny_cells:
         diff = np.abs(nx_cells - ny_cells)
         if nx_cells > ny_cells:
@@ -1040,7 +1041,7 @@ def interpolate(in_path, var_name, out=None, scale_factor=0.1,
         ZI_out = ZI[0:len(lats_out),0:len(lons_out)]
         ZI_out = np.flip(ZI_out,axis=0)
     
-    #### save interpolated data as raster 
+    #### save scipy interpolated data as raster 
     pixel_size = CELL_SIZE * scale_factor
     # number of pixels in each direction
     x_size = len(lons_out)
@@ -1089,7 +1090,7 @@ def gridmet_zonal_stats(in_path, raster):
     Arguments:
         in_path (str): path to [var]_summary_comp.csv file containing 
             monthly bias ratios, lat, long, and other data. Created by 
-            :mod:`etr_biascorrect.calc_bias_ratios.py`. 
+            :mod:`gridwxcomp.calc_bias_ratios.py`. 
         raster (str): path to interpolated raster of bias ratios to
             be used for zonal stats. First created by :func:`interpolate`.
         
@@ -1100,20 +1101,18 @@ def gridmet_zonal_stats(in_path, raster):
         interpolated raster(s) have already been created without zonal
         stats then,
         
-        >>> from etr_biascorrect import spatial
+        >>> from gridwxcomp import spatial
         >>> # assign input paths
-        >>> summary_file = 'monthly_ratios/etr_mm_summary_comp.csv'        
-        >>> raster_file = 'monthly_ratios/spatial/etr_mm_Jul_med_400m.tiff'
+        >>> summary_file = 'monthly_ratios/etr_mm_summary_comp.csv'  
+        >>> raster_file = 'monthly_ratios/spatial/etr_mm_invdist_400m/Jan_mean.tiff'
         >>> spatial.gridmet_zonal_stats(
                 summary_file, 
                 raster_file, 
-                function=func,
-                res=400
             )
         
         The final result will be the creation of::
             
-            'monthly_ratios/etr_mm_gridmet_summary_gaussian_400m.csv'
+            'monthly_ratios/spatial/etr_mm_invdist_400m/gridMET_stats.csv'
             
         The resulting CSV contains the gridMET IDS and zonal means
         for each gridMET cell in the fishnet which must exist at::
@@ -1131,7 +1130,8 @@ def gridmet_zonal_stats(in_path, raster):
     Note:
         The final CSV file with gridMET zonal mean bias ratios
         will *not* be overwritten after it is first created if the
-        same interpolation method and grid resolution is used subsequently.
+        same interpolation method and grid resolution is used subsequently
+        in the same output directory.
 
     """
     if not os.path.isfile(in_path):
@@ -1140,24 +1140,15 @@ def gridmet_zonal_stats(in_path, raster):
     # look for fishnet created in 'in_path/spatial'
     path_root = os.path.split(in_path)[0]
     file_name = os.path.split(in_path)[1]
-    # get variable name from input file prefix
+    # get variable names from input file prefix
     grid_var = file_name.split('_summ')[0]
-    
+    var_name = Path(raster).name.split('.')[0]
+    # grid is always in the "spatial" subdir of in_path
     grid_file = OPJ(path_root, 'spatial', 'grid.shp')
-    out_file = OPJ(path_root, '{gv}_gridmet_summary.csv'.format(gv=grid_var))
-    # get info from raster file like, grdimet variable, res, time agg
-    # example path: **/spatial/etr_mm_inverse_4000m/Jan_mean.tiff 
-    # or: **/spatial/etr_mm_inverse_dist_4000m/custom_dir/Jan_mean.tiff
-    reg_exp = r"^.+{s}spatial{s}[^_]+_[^_]+_(.+)_(\d+)m{s}(.+{s})?(.+)\.tiff".\
-            format(s=os.sep)
-    var_match = re.compile(reg_exp)
-    function = var_match.match(raster).group(1)
-    res = var_match.match(raster).group(2)
-    var_name = var_match.match(raster).group(4)
-    # name output gridMET summary CSV with interpolation meta and var
-    out_file = out_file.replace(
-        '.csv', '_{func}_{res}m.csv'.format(func=function,res=res)
-    )
+    # save zonal stats to summary CSV in same dir as raster as of version 0.3
+    raster_root = os.path.split(raster)[0]
+    out_file = OPJ(raster_root, 'gridMET_stats.csv')
+
     # this error would only occur when using within Python 
     if not os.path.isfile(grid_file):
         raise FileNotFoundError(
@@ -1165,15 +1156,15 @@ def gridmet_zonal_stats(in_path, raster):
             '\ndoes not exist, create it using spatial.make_grid first'
         )
     print(
-        'Calculating ', grid_var, 'zonal means for',
-        var_name, 'from', res, 'm resolution raster'
+        'Calculating', grid_var, 'zonal means for', var_name
     )
+
     # calc zonal stats and open for grid IDs
     with fiona.open(grid_file, 'r') as source:
-        zs = zonal_stats(source, raster)
+        zs = zonal_stats(source, raster, all_touched=True)
         gridmet_ids = [f['properties'].get('GRIDMET_ID') for f in source]
 
-    # get just mean values, zonal_stats also calcs max, min, pixel count
+    # get just mean values, zonal_stats can do other stats...
     means = [z['mean'] for z in zs]
     out_df = pd.DataFrame(
         data={
@@ -1193,11 +1184,21 @@ def gridmet_zonal_stats(in_path, raster):
         )
         out_df.to_csv(out_file, index=False)
     else:
+        # overwrite column values if exists, else append
         existing_df = pd.read_csv(out_file)
         existing_df.GRIDMET_ID = existing_df.GRIDMET_ID.astype(int)
-        # avoid adding same column twice and duplicates
         if var_name in existing_df.columns:
-            pass
+            # may throw error if not same size as original grid
+            try:
+                existing_df.update(out_df)
+                existing_df.to_csv(out_file, index=False)   
+            except:
+                print('Zonal stats for this variable already exist but they',
+                      'appear to have been calculated with a different grid',
+                      'overwriting existing file at:\n',
+                      os.path.abspath(out_file)
+                )
+                out_df.to_csv(out_file, index=False)
         else:
             existing_df = existing_df.merge(out_df, on='GRIDMET_ID')
             #existing_df = pd.concat([existing_df, out_df], axis=1).drop_duplicates()
