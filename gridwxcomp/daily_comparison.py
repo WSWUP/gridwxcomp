@@ -41,7 +41,8 @@ def daily_comparison(input_csv, out_dir, year_filter=''):
     Example:
         The ``daily_comparison.py`` module will build HTML files with 
         :mod:`bokeh` plots for paired climate variable, e.g. etr_mm,
-        eto_mm, u2_ms, tmin_c, tmax_c, srad_wm2, ea_kpa, and Ko (dew point). 
+        eto_mm, u2_ms, tmin_c, tmax_c, srad_wm2, ea_kpa, and Ko (dew point
+        depression).
         Monthly plots are created for a single year.
         
         From the command line for year 2016,
@@ -156,7 +157,7 @@ def daily_comparison(input_csv, out_dir, year_filter=''):
                                   'month.')
                      continue
                 # Output Folder
-                out_folder =  os.path.join(out_dir, 'comaprison_plots',
+                out_folder =  os.path.join(out_dir, 'daily_comparison_plots',
                                            '{}'.format(
                                                row.STATION_ID.replace(" ","")))
 
