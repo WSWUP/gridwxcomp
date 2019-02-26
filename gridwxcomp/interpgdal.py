@@ -82,9 +82,9 @@ class InterpGdal(object):
         is the default. To use another interpolation method we would
         assign the ``interp_meth`` kwarg to :meth:`InterpGdal.gdal_grid`.
         Similarly, we could experiment with other parameters which all can be
-        seen in the class attribute ``InterpGdal.default_params``. The
-        instance variable ``InterpGdal.params`` could also be used to save
-        metadata on parameters used for each
+        found in the class attribute ``InterpGdal.default_params``. The
+        instance variable ``InterpGdal.params`` can also be used to save
+        metadata on parameters used for each run.
         
     """
     # constant gridMET cell size in degrees
@@ -213,7 +213,33 @@ class InterpGdal(object):
         with open(out_path, 'w') as outf:
             outf.write(out_xml_str)
         
-            
+    def _str_to_params(self, param_str):
+        """ 
+        Convert parameter string for gdal interpolation arguments
+        into a dictionary. 
+        
+        Example:
+        
+            >>> in_str = ":power=2:smoothing=.1:nodata=-999"
+            >>> _str_to_params(in_str)
+                {'power': '2', 'smoothing': '.1', 'nodata': '-999'}
+    
+        """
+        param_tmp = param_str.split(':')
+        param_dict = {}
+        for pair in param_tmp:
+            if pair and pair.count('=') == 1:
+                name, val = pair.split('=')[0], pair.split('=')[1]
+                param_dict[name] = val
+            elif not pair:
+                continue
+            else:
+                raise ValueError('{} is not a valid interpolation argument'\
+                        .format(param_str))
+        
+        return param_dict
+    
+
     def gdal_grid(self, layer='all', out_dir='', interp_meth='invdist', 
                   params=None, bounds=None, nx_cells=None, ny_cells=None, 
                   scale_factor=0.1, zonal_stats=True, options=None):
@@ -366,12 +392,15 @@ class InterpGdal(object):
         # look up default parameters for interpolation method
         if not params:
             params = InterpGdal.default_params.get(self.interp_meth)
+        # if run from command line, params is string to be parsed
+        if isinstance(params, str):
+            params = self._str_to_params(params)
         # avoid zero values for zonal_stats, default NA rep is -999
         if not params.get('nodata'):
             params['nodata'] = -999
         # update instance parameters for later reference
         self.params = params
-        # parameters for interpolation as :name=value:name=value ...
+        # parameters to command line input str :name=value:name=value ...
         param_str = ':'+':'.join('{!s}={!r}'.format(key,val) 
                                  for (key,val) in params.items()) 
         # get boundary info and update instance attribute
@@ -398,6 +427,14 @@ class InterpGdal(object):
                 
         def _run_gdal_grid(layer):
             """reuse if running multiple layers"""
+            existing_layers = pd.read_csv(self.summary_csv_path).columns
+            if not layer in existing_layers:
+               print('column {} does not exist in input CSV:\n {}'.format(
+                   layer, self.summary_csv_path),
+                     '\nSkipping interpolation.'
+               )
+               return
+
             # build vrt files in out_dir 
             self._make_pt_vrt(layer, out_dir)
             
@@ -405,8 +442,13 @@ class InterpGdal(object):
             tiff_file = '{}.tiff'.format(layer)
             # add raster path to instance if not already there (overwritten)
             out_file = out_dir.joinpath(tiff_file)
-            if not out_file in self.interped_rasters:
-                self.interped_rasters.append(out_file)
+            # print message to console/logging about interpolation
+            grid_var = Path(self.summary_csv_path).name.split('_summ')[0]
+            # recalculate raster resolution from bounds
+            n4km_xcells = int(round(np.abs(xmin - xmax) / InterpGdal.CELL_SIZE))
+            scale_factor = n4km_xcells / nx_cells
+            res = int(4 * scale_factor * 1000)
+            _interp_msg(grid_var, layer, self.interp_meth, res, out_file) 
             # build command line arguments
             cmd = (r'gdal_grid -a {meth}{p} -txe {xmin} {xmax} -tye {ymax}' 
                   ' {ymin} -outsize {nx} {ny} -of GTiff -ot Float64 -l {source}'
@@ -422,7 +464,10 @@ class InterpGdal(object):
             out, err = p.communicate()
             if err:
                 print(err)
-                
+            else:
+                if not out_file in self.interped_rasters:
+                    self.interped_rasters.append(out_file)
+
             p.stdout.close()
             p.stderr.close()    
             
@@ -431,7 +476,7 @@ class InterpGdal(object):
 
             os.chdir(cwd)
             
-        # run interpolation and zonal statistics depending on layers kwarg
+        # run interpolation and zonal statistics depending on layer kwarg
         if layer == 'all':
             for l in self.layers:
                 _run_gdal_grid(l)
@@ -451,3 +496,15 @@ def _prettify(elem):
     rough_string = ET.tostring(elem, 'utf-8', method='xml')
     reparsed = minidom.parseString(rough_string)
     return reparsed.toprettyxml(indent='  ')
+
+def _interp_msg(grid_var, layer, function, res, out_file):
+    print(
+        '\nInterpolating {g} point bias ratios for: {t}\n'.\
+            format(g=grid_var, t=layer),
+        'Using the "{}" method\n'.format(function),
+        'Resolution (pixel size) of output raster: {} m'.format(res)
+    )
+    print(
+        'GeoTIFF raster will be saved to: \n',
+        os.path.abspath(out_file)
+    )
