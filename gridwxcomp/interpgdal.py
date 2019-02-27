@@ -12,7 +12,7 @@ from xml.dom import minidom
 
 import numpy as np
 import pandas as pd
-from .spatial import CELL_SIZE, get_subgrid_bounds, gridmet_zonal_stats
+from .spatial import get_subgrid_bounds, gridmet_zonal_stats
 
 
 class InterpGdal(object):
@@ -88,7 +88,7 @@ class InterpGdal(object):
         
     """
     # constant gridMET cell size in degrees
-    CELL_SIZE = CELL_SIZE
+    CELL_SIZE = 0.041666666666666664
     # gdal_grid interpolation methods
     interp_methods = ('average',
                      'invdist',
@@ -447,7 +447,7 @@ class InterpGdal(object):
             # recalculate raster resolution from bounds
             n4km_xcells = int(round(np.abs(xmin - xmax) / InterpGdal.CELL_SIZE))
             scale_factor = n4km_xcells / nx_cells
-            res = int(4 * scale_factor * 1000)
+            res = round(4 * scale_factor * 1000)
             _interp_msg(grid_var, layer, self.interp_meth, res, out_file) 
             # build command line arguments
             cmd = (r'gdal_grid -a {meth}{p} -txe {xmin} {xmax} -tye {ymax}' 

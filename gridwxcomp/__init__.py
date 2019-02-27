@@ -10,6 +10,6 @@ __version__ = '0.0.3'
 from gridwxcomp.prep_input import prep_input
 from gridwxcomp.download_gridmet_ee import download_gridmet_ee
 from gridwxcomp.calc_bias_ratios import calc_bias_ratios
-from gridwxcomp.spatial import make_points_file, make_grid, interpolate
 from gridwxcomp.interpgdal import InterpGdal
+from gridwxcomp.spatial import make_points_file, make_grid, interpolate
 from gridwxcomp.daily_comparison import daily_comparison
