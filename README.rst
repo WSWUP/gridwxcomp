@@ -90,7 +90,7 @@ Next, this command calculates monthly (and annual) bias ratios for each station/
 
     $ gridwxcomp calc-bias-ratios merged_input.csv -o monthly_ratios 
 
-Last, to calculate interpolated spatial surfaces of bias ratios and extract zonal means use the file produced from the previous step as input:
+Last, to calculate interpolated surfaces of mean bias ratios and extract zonal means to gridMET cells using the default interpolation method (inverse distance weighting):
 
 .. code-block:: bash
 
@@ -98,17 +98,23 @@ Last, to calculate interpolated spatial surfaces of bias ratios and extract zona
 
 The ``[-b 5]`` option indicates that we want to expand the rectangular bounding area for interpolation by five gridMET cells (extrapolation in the outer regions).
 
-The final output file "monthly_ratios/etr_mm_gridmet_summary_inverse_dist_400m.csv" contains monthly bias ratios for each gridMET cell in the interpolation region, similar to what is shown below. 
+The final output file "monthly_ratios/spatial/etr_mm_invdist_400m/gridMET_stats.csv" contains monthly bias ratios for each gridMET cell in the interpolation region, similar to what is shown below. 
 
-    ========== ======== ======== ======== 
-    GRIDMET_ID Apr_mean Aug_mean Dec_mean 
-    ========== ======== ======== ======== 
-    515902     0.75     0.68     0.63     
-    514516     0.76     0.69     0.64     
-    513130     0.77     0.69     0.65     
-    511744     0.77     0.70     0.65     
-    510358     0.78     0.70     0.66     
-    ...        ...      ...      ...
-    ========== ======== ======== ========
+    ========== ======== ======== ======== ===
+    GRIDMET_ID Jan_mean Feb_mean Mar_mean ...
+    ========== ======== ======== ======== ===
+    515902     0.66     0.76     0.96     ...
+    514516     0.66     0.77     0.96     ...
+    513130     0.67     0.77     0.97     ...
+    511744     0.67     0.78     0.97     ...
+    510358     0.68     0.79     0.97     ...
+    ...        ...      ...      ...      ...
+    ========== ======== ======== ======== ===
 
-GeoTIFF rasters of interpolated ratios, a fishnet grid with gridMET id values, and a point shapefile of station ratios should all be created in the "monthly_ratios" directory within subdirectories that follow an intuitive naming convention.
+GeoTIFF rasters of interpolated ratios will be saved to "monthly_ratios/spatial/etr_mm_invdist_400m/". Note, the gridMET variable name (etr_mm), the interpolation method (invdist), and the raster resolution (400m) are specified in the output directory. A fishnet grid with gridMET id values and a point shapefile of station ratios should all be created and saved in the "monthly_ratios/spatial/" directory.
+
+To get help with any of the above ``gridwxcomp`` commands use the ``[--help]`` option, e.g.
+
+.. code-block:: bash
+
+    $ gridwxcomp spatial --help
