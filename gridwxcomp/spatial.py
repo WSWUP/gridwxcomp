@@ -712,8 +712,9 @@ def _update_subgrid(grid_path, gridmet_meta_path=None):
 
     
 def interpolate(in_path, layer='all', out=None, scale_factor=0.1, 
-                function='inverse_dist', smooth=0, params=None, bounds=None, 
-                buffer=25, zonal_stats=True, options=None, gridmet_meta_path=None):
+                function='invdist', smooth=0, params=None, bounds=None, 
+                buffer=25, zonal_stats=True, options=None, 
+                gridmet_meta_path=None):
     """
     Use various methods to interpolate a 2-dimensional surface of
     calculated bias ratios or other statistics for station/gridMET
@@ -916,7 +917,7 @@ def interpolate(in_path, layer='all', out=None, scale_factor=0.1,
             os.path.abspath(out_dir), 
             ' does not exist, creating directory.\n'
         )
-        os.makedirs(out_dir)
+        Path(out_dir).mkdir(parents=True, exist_ok=True)
     
     
     def _run_rbf_interpolation(layer, bounds, function, smooth):
@@ -1052,9 +1053,6 @@ def interpolate(in_path, layer='all', out=None, scale_factor=0.1,
         if not bounds:
             bounds = get_subgrid_bounds(in_path, buffer=buffer) 
         lon_min, lon_max, lat_min, lat_max = bounds
-        p = Path(out_dir)
-        # remove first root dir because InterpGdal already adds it to out dir
-        out_dir = str(Path(*p.parts[1:])) 
         gg = InterpGdal(in_path)
         gg.gdal_grid(layer=layer, out_dir=out_dir, interp_meth=function,
                     params=params, bounds=bounds, scale_factor=scale_factor,
@@ -1239,14 +1237,14 @@ def arg_parse():
                 ' and linear. Radial basis functions include: multiquadric,'+\
                 ' inverse, gaussian, linear_rbf, cubic, quintic, thin_plate.') 
     optional.add_argument(
-        '--smooth', required=False, default=None, type=float, metavar='',
+        '--smooth', required=False, default=0, type=float, metavar='',
         help='Smooth parameter for radial basis func interpolation methods')
     optional.add_argument(
         '-p', '--params', required=False, default=None, type=str, metavar='',
         help='Parameter string e.g. ":power=2:smoothing=.1:nodata=-999" for'+\
             ' gdal_grid spatial interpolation methods')
     optional.add_argument(
-        '--zonal-stats', required=False, default=True, 
+        'z', '--zonal-stats', required=False, default=True, 
         action='store_false', help='Flag to NOT extract zonal means of'+\
             ' interpolated rasters to gridMET cells.')
     optional.add_argument(

@@ -378,8 +378,10 @@ class InterpGdal(object):
         """
         
         cwd = os.getcwd()
-        # join out_dir with root path, works with relative or abs path
-        out_dir = self.summary_csv_path.parent / Path(out_dir)
+        
+        out_dir = Path(out_dir)
+        if not out_dir.is_dir():
+            out_dir.mkdir(parents=True, exist_ok=True)
 
         source_file = Path(self.summary_csv_path).name
         source = source_file.replace('.csv', '')
@@ -395,7 +397,7 @@ class InterpGdal(object):
         # if run from command line, params is string to be parsed
         if isinstance(params, str):
             params = self._str_to_params(params)
-        # avoid zero values for zonal_stats, default NA rep is -999
+        # avoid zero NA values for zonal_stats, set default NA rep to -999
         if not params.get('nodata'):
             params['nodata'] = -999
         # update instance parameters for later reference
@@ -434,7 +436,9 @@ class InterpGdal(object):
                      '\nSkipping interpolation.'
                )
                return
-
+            
+            # move to out_dir to run gdal command
+            os.chdir(out_dir)
             # build vrt files in out_dir 
             self._make_pt_vrt(layer, out_dir)
             
@@ -456,8 +460,6 @@ class InterpGdal(object):
                       xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax, nx=nx_cells, 
                       ny=ny_cells, source=source, vrt=vrt_file, out=tiff_file, 
                       options=options))
-            # move to out_dir to run gdal command
-            os.chdir(out_dir)
             # run gdal_grid with arguments, x-platform
             p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE,
                                  stderr=subprocess.PIPE)

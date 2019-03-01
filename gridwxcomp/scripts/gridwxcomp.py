@@ -104,7 +104,7 @@ def calc_bias_ratios(input_csv, out_dir, gridmet_var, station_var,
         help='scale factor for gridMET interpolation, applied to 4 km res')
 @click.option('--function', '-f', nargs=1, type=str, default='invdist',
         help='algorithm name for spatial interpolation')
-@click.option('--smooth', nargs=1, type=float, default=None, is_flag=False,
+@click.option('--smooth', nargs=1, type=float, default=0, is_flag=False,
         help='smoothing parameter for radial basis funciton interpolation')
 @click.option('--params', '-p', nargs=1, type=str, default=None, is_flag=False,
         help='parameters for gdal_grid interpolation e.g. :power=2:smooth=0')
