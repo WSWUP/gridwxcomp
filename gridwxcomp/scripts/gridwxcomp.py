@@ -6,11 +6,11 @@ import click
 import os
 import logging
 
-from ..calc_bias_ratios import calc_bias_ratios as calc_ratios
-from ..daily_comparison import daily_comparison as daily_comp
-from ..download_gridmet_ee import download_gridmet_ee as download
-from ..prep_input import prep_input as prep
-from ..spatial import main as interp #make_points_file, make_grid, interpolate
+from gridwxcomp.calc_bias_ratios import calc_bias_ratios as calc_ratios
+from gridwxcomp.daily_comparison import daily_comparison as daily_comp
+from gridwxcomp.download_gridmet_ee import download_gridmet_ee as download
+from gridwxcomp.prep_input import prep_input as prep
+from gridwxcomp.spatial import main as interp 
 
 logging.basicConfig(level=logging.INFO, format='%(message)s')
 
@@ -108,7 +108,7 @@ def calc_bias_ratios(input_csv, out_dir, gridmet_var, station_var,
         help='smoothing parameter for radial basis funciton interpolation')
 @click.option('--params', '-p', nargs=1, type=str, default=None, is_flag=False,
         help='parameters for gdal_grid interpolation e.g. :power=2:smooth=0')
-@click.option('--zonal-stats', default=True, is_flag=True,
+@click.option('--zonal-stats', '-z', default=True, is_flag=True,
         help='flag to NOT extract zonal means of interpolated results')
 @click.option('--overwrite-grid', default=False, is_flag=True,
         help='flag to overwrite grid for zonal stats if already exists')

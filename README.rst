@@ -12,24 +12,26 @@ A full documentation website is under development.
 Installation
 ------------
 
-Currently ``gridwxcomp`` requires manual download for installation. However it will be available on the Python Package Index `PyPI <https://pypi.org/>`_ for installation with pip soon. 
-
-To download first navigate to the directory where you would like to use the software and then clone the repository using git from the command line:
+We recommend installing ``gridwxcomp`` with `pip <https://pip.pypa.io/en/stable/installing/>`_, 
 
 .. code-block:: bash
 
-    $ git clone https://github.com/DRI-WSWUP/gridwxcomp.git
+    $ pip install gridwxcomp 
+
+Alternatively you can install manually. First navigate to the directory where you would like to use the software and then clone the repository using git from the command line:
+
+.. code-block:: bash
+
+    $ git clone https://github.com/WSWUP/gridwxcomp.git
 
 
-If you do not have git, `get it here <https://git-scm.com/book/en/v2/Getting-Started-Installing-Git>`_. Alternatively, you can download the repository using the download option near the top this page on GitHub.
-
-Next, to install dependencies we recommend using `conda <https://conda.io/projects/conda/en/latest/user-guide/install/index.html>`_ and the provided virtual environment for ``gridwxcomp``. 
+If you do not have git, `get it here <https://git-scm.com/book/en/v2/Getting-Started-Installing-Git>`_. Alternatively, you can download the repository on GitHub or on `PyPI <https://pypi.org/project/gridwxcomp/>`_. Next, to install dependencies manually use `conda <https://conda.io/projects/conda/en/latest/user-guide/install/index.html>`_ and the provided virtual environment for ``gridwxcomp``. 
 
 Once conda is installed move to the ``env`` directory and create the ``gridwxcomp`` virtual environment using the appropriate environment file included, e.g. on Windows:
 
 .. code-block:: bash
 
-    $ cd env
+    $ cd gridwxcomp/env
     $ conda env create -f env_windows.yml
 
 To activate the environment whenever you need to use ``gridwxcomp`` just run
@@ -52,7 +54,7 @@ Lastly, ``gridwxcomp`` uses the Google Earth Engine API to download gridMET data
 
 and follow the instructions.
 
-To make all of ``gridwxcomp`` available on your environment variable PATH install it with `pip <https://pip.pypa.io/en/stable/installing/>`_. From the root directory of the cloned or downloaded copy of ``gridwxcomp`` run
+If you installed manually, you can make all of ``gridwxcomp`` available on your environment variable PATH with `pip <https://pip.pypa.io/en/stable/installing/>`_. From the root directory of the cloned or downloaded copy of ``gridwxcomp`` run
 
 .. code-block:: bash
 
@@ -63,7 +65,13 @@ This will allow for running the ``gridwxcomp`` command line interface from any d
 Quick start from command line
 -----------------------------
 
-This workflow will use the example data given in "gridwxcomp/gridwxcomp/example_data" which includes four climate stations. It will calculate bias ratios between station and gridMET ETr, spatially interpolate GeoTIFF rasters of bias ratios at 400m resolution, and calculate zonal statistics of mean bias ratios for each gridMET cell in the region of the stations, similar to what is shown below.
+This workflow will use the example data given in "gridwxcomp/gridwxcomp/example_data" which includes four climate stations. To find the location of this data from the command line type
+
+.. code-block:: bash
+
+    $ python -c "import pkg_resources; print(pkg_resources.resource_filename('gridwxcomp', 'example_data/Station_Data.txt'))"
+
+Once complete, this example workflow will calculate bias ratios between station and gridMET ETr, spatially interpolate GeoTIFF rasters of bias ratios at 400m resolution, and calculate zonal statistics of mean bias ratios for each gridMET cell in the region of the stations, similar to what is shown below.
 
 .. image:: https://raw.githubusercontent.com/DRI-WSWUP/gridwxcomp/master/docs/source/_static/test_case.png?sanitize=true
    :align: center
@@ -110,6 +118,8 @@ The final output file "monthly_ratios/spatial/etr_mm_invdist_400m/gridMET_stats.
     510358     0.68     0.79     0.97     ...
     ...        ...      ...      ...      ...
     ========== ======== ======== ======== ===
+
+Note ``GRIDMET_ID`` is the index of the master gridMET dataset 4 km fishnet grid starting at 0 in the upper left corner and moving across rows and down columns. This value can be joined with previously created data to relate the ID values to centroid locations of cells. 
 
 GeoTIFF rasters of interpolated ratios will be saved to "monthly_ratios/spatial/etr_mm_invdist_400m/". Note, the gridMET variable name (etr_mm), the interpolation method (invdist), and the raster resolution (400m) are specified in the output directory. A fishnet grid with gridMET id values and a point shapefile of station ratios should all be created and saved in the "monthly_ratios/spatial/" directory.
 
