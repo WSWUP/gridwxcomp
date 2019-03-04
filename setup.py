@@ -13,7 +13,7 @@ requires = [
     'cryptography==2.3.1',
     'fiona==1.7.13',
     'earthengine-api>=0.1.164',
-    'gdal',
+    'gdal==2.2.4',
     'google-api-python-client>=1.7.7',
     'numpy>=1.15.4',
     'oauth2client>=4.1.2', 

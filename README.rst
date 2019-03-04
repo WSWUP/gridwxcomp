@@ -12,39 +12,41 @@ A full documentation website is under development.
 Installation
 ------------
 
-We recommend installing ``gridwxcomp`` with `pip <https://pip.pypa.io/en/stable/installing/>`_, 
+Currently we recommend using the provided `conda environment files <https://github.com/WSWUP/gridwxcomp/tree/master/env>`_ to install dependencies. Download the appropriate ``.yml`` file e.g. on Windows ``env_windows.yml`` and then install and activate it. If you don't have conda `get it here <https://conda.io/projects/conda/en/latest/user-guide/install/index.html>`_. To install dependencies in a virtual environment run 
 
 .. code-block:: bash
 
-    $ pip install gridwxcomp 
-
-Alternatively you can install manually. First navigate to the directory where you would like to use the software and then clone the repository using git from the command line:
-
-.. code-block:: bash
-
-    $ git clone https://github.com/WSWUP/gridwxcomp.git
-
-
-If you do not have git, `get it here <https://git-scm.com/book/en/v2/Getting-Started-Installing-Git>`_. Alternatively, you can download the repository on GitHub or on `PyPI <https://pypi.org/project/gridwxcomp/>`_. Next, to install dependencies manually use `conda <https://conda.io/projects/conda/en/latest/user-guide/install/index.html>`_ and the provided virtual environment for ``gridwxcomp``. 
-
-Once conda is installed move to the ``env`` directory and create the ``gridwxcomp`` virtual environment using the appropriate environment file included, e.g. on Windows:
-
-.. code-block:: bash
-
-    $ cd gridwxcomp/env
     $ conda env create -f env_windows.yml
 
-To activate the environment whenever you need to use ``gridwxcomp`` just run
+To activate the environment before using ``gridwxcomp`` run
 
 .. code-block:: bash
 
     $ activate gridwxcomp
 
-or, on Linux
+on windows, or on Linux, Mac
 
 .. code-block:: bash
 
     $ source activate gridwxcomp
+
+Next install using `pip <https://pip.pypa.io/en/stable/installing/>`_,
+
+.. code-block:: bash
+
+    $ pip install gridwxcomp
+
+Due to dependency conflicts you may have issues directly installing with pip before activating the conda environment.
+
+Alternatively, or if there are installation issues, you can manually install. First activate the ``gridwxcomp`` conda environment (above). Next, clone or download the package from `GitHub <https://github.com/WSWUP/gridwxcomp>`_ or `PyPI <https://pypi.org/project/gridwxcomp/>`_ and then install locally with pip in "editable" mode. For example with cloning,
+
+.. code-block:: bash
+
+    $ git clone https://github.com/WSWUP/gridwxcomp.git
+    $ cd gridwxcomp
+    $ pip install -e .
+
+If you downloaded the source distribution then run ``pip install -e .`` in the root directory where the setup.py file is located. This installation method is ideal if you want to be able to modifying the source code.
 
 Lastly, ``gridwxcomp`` uses the Google Earth Engine API to download gridMET data, therefore you will need a Google account and before the first use on a machine you will need to verify your account. From the command line type:
 
@@ -54,13 +56,6 @@ Lastly, ``gridwxcomp`` uses the Google Earth Engine API to download gridMET data
 
 and follow the instructions.
 
-If you installed manually, you can make all of ``gridwxcomp`` available on your environment variable PATH with `pip <https://pip.pypa.io/en/stable/installing/>`_. From the root directory of the cloned or downloaded copy of ``gridwxcomp`` run
-
-.. code-block:: bash
-
-    $ pip install --editable .
-
-This will allow for running the ``gridwxcomp`` command line interface from any directory and aslo for importing ``gridwxcomp`` modules and functions in any Python environment on your system. However, for the example below, you will need to know where the example data is residing on your computer. 
 
 Quick start from command line
 -----------------------------
@@ -73,7 +68,7 @@ This workflow will use the example data given in "gridwxcomp/gridwxcomp/example_
 
 Once complete, this example workflow will calculate bias ratios between station and gridMET ETr, spatially interpolate GeoTIFF rasters of bias ratios at 400m resolution, and calculate zonal statistics of mean bias ratios for each gridMET cell in the region of the stations, similar to what is shown below.
 
-.. image:: https://raw.githubusercontent.com/DRI-WSWUP/gridwxcomp/master/docs/source/_static/test_case.png?sanitize=true
+.. image:: https://raw.githubusercontent.com/WSWUP/gridwxcomp/master/docs/source/_static/test_case.png?sanitize=true
    :align: center
 
 The same workflow can be done on climate variables other than ETr using ``gridwxcomp``, e.g. observed ET, temperature, precipitation, wind speed, short wave radiation, etc.
