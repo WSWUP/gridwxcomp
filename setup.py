@@ -1,9 +1,11 @@
-import io
-from gridwxcomp import __version__
+import io, re
 from setuptools import setup
 
 with io.open("README.rst", "rt", encoding="utf8") as f:
     readme = f.read()
+
+with io.open("gridwxcomp/__init__.py", "rt", encoding="utf8") as f:
+    version = re.search(r"__version__ = \'(.*?)\'", f.read()).group(1)
 
 requires = [
     'bokeh>=1.0.4',
@@ -11,7 +13,7 @@ requires = [
     'cryptography==2.3.1',
     'fiona==1.7.13',
     'earthengine-api>=0.1.164',
-    'gdal==2.2.4',
+    'gdal',
     'google-api-python-client>=1.7.7',
     'numpy>=1.15.4',
     'oauth2client>=4.1.2', 
@@ -41,7 +43,7 @@ setup(
     author='John Volk and Chris Pearson',
     author_email='jmvolk@unr.edu',
     license='Apache',
-    version=__version__,
+    version=version,
     url='https://github.com/DRI-WSWUP/gridwxcomp',
     platforms=['Windows','Linux','Mac OS X'],
     classifiers=classifiers,
