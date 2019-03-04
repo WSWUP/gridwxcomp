@@ -12,7 +12,7 @@ A full documentation website is under development.
 Installation
 ------------
 
-Currently we recommend using the provided `conda environment files <https://github.com/WSWUP/gridwxcomp/tree/master/env>`_ to install dependencies. Download the appropriate ``.yml`` file e.g. on Windows ``env_windows.yml`` and then install and activate it. If you don't have conda `get it here <https://conda.io/projects/conda/en/latest/user-guide/install/index.html>`_. To install dependencies in a virtual environment run 
+Currently we recommend using the provided `conda environment files <https://github.com/WSWUP/gridwxcomp/tree/master/gridwxcomp/env>`_ to install dependencies. Download the appropriate ``.yml`` file e.g. on Windows ``env_windows.yml`` and then install and activate it. If you don't have conda `get it here <https://conda.io/projects/conda/en/latest/user-guide/install/index.html>`_. To install dependencies in a virtual environment run 
 
 .. code-block:: bash
 
