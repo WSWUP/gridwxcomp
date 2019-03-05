@@ -15,7 +15,6 @@ requires = [
     'fiona>=1.7.13',
     'gdal',
     'google-api-python-client>=1.7.7',
-    'libgdal>=2.3',
     'numpy>=1.15',
     'oauth2client>=4.1.2', 
     'pandas==0.23.4',

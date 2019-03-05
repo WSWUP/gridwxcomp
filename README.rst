@@ -46,7 +46,7 @@ Alternatively, or if there are installation issues, you can manually install. Fi
     $ cd gridwxcomp
     $ pip install -e .
 
-If you downloaded the source distribution then run ``pip install -e .`` in the root directory where the setup.py file is located. This installation method is ideal if you want to be able to modifying the source code.
+If you downloaded the source distribution then run ``pip install -e .`` in the root directory where the setup.py file is located. This installation method is ideal if you want to be able to modify the source code.
 
 Lastly, ``gridwxcomp`` uses the Google Earth Engine API to download gridMET data, therefore you will need a Google account and before the first use on a machine you will need to verify your account. From the command line type:
 
@@ -60,34 +60,34 @@ and follow the instructions.
 Quick start from command line
 -----------------------------
 
-This workflow will use the example data given in "gridwxcomp/gridwxcomp/example_data" which includes four climate stations. To find the location of this data from the command line type
+This example workflow uses data provided with ``gridwxcomp`` including climate variable time series data for four climate stations. After installation you can find the location of the data needed for the example by typing the following at the command line,
 
 .. code-block:: bash
 
     $ python -c "import pkg_resources; print(pkg_resources.resource_filename('gridwxcomp', 'example_data/Station_Data.txt'))"
 
-Once complete, this example workflow will calculate bias ratios between station and gridMET ETr, spatially interpolate GeoTIFF rasters of bias ratios at 400m resolution, and calculate zonal statistics of mean bias ratios for each gridMET cell in the region of the stations, similar to what is shown below.
+Once complete, this example will calculate bias ratios between station and gridMET ETr (reference evapotranspiration), spatially interpolate GeoTIFF rasters of bias ratios at 400m resolution, and calculate zonal statistics of mean bias ratios for each gridMET cell in the region of the stations, similar to what is shown in the figure below.
 
 .. image:: https://raw.githubusercontent.com/WSWUP/gridwxcomp/master/docs/source/_static/test_case.png?sanitize=true
    :align: center
 
-The same workflow can be done on climate variables other than ETr using ``gridwxcomp``, e.g. observed ET, temperature, precipitation, wind speed, short wave radiation, etc.
+The same procedure can be done for climate variables other than ETr, e.g. observed evapotranspiration, temperature, precipitation, wind speed, short wave radiation, etc.
 
-After installing with pip the ``gridwxcomp`` command line interface can be used from any directory,
+After installing with pip the ``gridwxcomp`` command line interface can be used from any directory, the first step pairs climate station data with their nearest gridMET cell and produces a CSV file used in the following steps,
 
 .. code-block:: bash
 
-    $ gridwxcomp prep-input -i <PATH_TO example_data/Station_Data.txt>  
+    $ gridwxcomp prep-input <PATH_TO example_data/Station_Data.txt>  
 
-This will result in the file "merged_input.csv". Next download matching gridMET climate time series by running
+This will result in the file "merged_input.csv". Next download matching gridMET climate time series with Google Earth Engine by running
 
 .. code-block:: bash
 
     $ gridwxcomp download-gridmet-ee merged_input.csv -y 2016-2017
 
-The time series of gridMET data that correpond with the stations in "merged_input.csv" will be saved to a new folder called "gridmet_data" by defualt. In this case only the years 2016-2017 are used because the test station data time coverage only includes recent years plus it saves time. 
+The time series of gridMET data that correpond with the stations in "merged_input.csv" will be saved to a new folder called "gridmet_data" by defualt. In this case only the years 2016-2017 are used. 
 
-Next, this command calculates monthly (and annual) bias ratios for each station/gridMET pair and saves them to CSV files 
+Next, to calculate mean monthly and annual bias ratios for each station/gridMET pair along with other statistics and metadata and save to CSV files, 
 
 .. code-block:: bash
 
@@ -114,7 +114,7 @@ The final output file "monthly_ratios/spatial/etr_mm_invdist_400m/gridMET_stats.
     ...        ...      ...      ...      ...
     ========== ======== ======== ======== ===
 
-Note ``GRIDMET_ID`` is the index of the master gridMET dataset 4 km fishnet grid starting at 0 in the upper left corner and moving across rows and down columns. This value can be joined with previously created data to relate the ID values to centroid locations of cells. 
+Note ``GRIDMET_ID`` is the index of the master gridMET dataset 4 km fishnet grid starting at 0 in the upper left corner and moving across rows and down columns. This value can be joined with previously created data, e.g. the ID values can be joined to centroid coordinates of gridMET cells. 
 
 GeoTIFF rasters of interpolated ratios will be saved to "monthly_ratios/spatial/etr_mm_invdist_400m/". Note, the gridMET variable name (etr_mm), the interpolation method (invdist), and the raster resolution (400m) are specified in the output directory. A fishnet grid with gridMET id values and a point shapefile of station ratios should all be created and saved in the "monthly_ratios/spatial/" directory.
 
