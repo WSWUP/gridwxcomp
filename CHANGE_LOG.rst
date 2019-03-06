@@ -4,6 +4,10 @@ Change log
 Version 0.0.4
 =============
 
+new function: ``spatial.calc_pt_error`` which
+* calculates interpolated point ratios and residuals betwen station data
+  * updates summary CSV and point shapefile, copies to directory with rasters
+
 Change calculations of annual, growing season, and summer bias ratios to use period sum of data as opposed to mean of monthly ratios. Same for standard deviation calculations and coefficient of variation. Results in slightly more accurate values. Also add total day accounts for these time periods, add all of these fields to georeferenced point shapefile as opposed to only bias ratios in previous versions.
 
 Version 0.0.3

@@ -28,6 +28,7 @@ from shutil import move
 import fiona
 import numpy as np
 import pandas as pd
+import rasterio
 from scipy.interpolate import Rbf
 from shapely.geometry import Point, Polygon, mapping
 from fiona import collection
@@ -222,9 +223,9 @@ def make_points_file(in_path):
     
     Example:
         Create shapefile containing point data for all climate stations
-        in input summary file created by :mod:`etr_biascorrect`
+        in input summary file created by :mod:`calc_bias_ratios.py`
         
-        >>> from etr_biascorrect import spatial
+        >>> from gridwxcomp import spatial
         >>> # path to comprehensive summary CSV
         >>> summary_file = 'monthly_ratios/etr_mm_summary_comp.csv'
         >>> spatial.make_points_file(summary_file)
@@ -287,13 +288,58 @@ def make_points_file(in_path):
             'Oct': 'float',
             'Nov': 'float',
             'Dec': 'float',
-            'grow_season': 'float',
+            'summer': 'float',
+            'growseason': 'float',
             'annual': 'float',
+            'Jan_cnt': 'int',
+            'Feb_cnt': 'int',
+            'Mar_cnt': 'int',
+            'Apr_cnt': 'int',
+            'May_cnt': 'int',
+            'Jun_cnt': 'int',
+            'Jul_cnt': 'int',
+            'Aug_cnt': 'int',
+            'Sep_cnt': 'int',
+            'Oct_cnt': 'int',
+            'Nov_cnt': 'int',
+            'Dec_cnt': 'int',
+            'summer_cnt': 'int',
+            'grow_cnt': 'int',
+            'annual_cnt': 'int',
+            'Jan_std': 'float',
+            'Feb_std': 'float',
+            'Mar_std': 'float',
+            'Apr_std': 'float',
+            'May_std': 'float',
+            'Jun_std': 'float',
+            'Jul_std': 'float',
+            'Aug_std': 'float',
+            'Sep_std': 'float',
+            'Oct_std': 'float',
+            'Nov_std': 'float',
+            'Dec_std': 'float',
+            'summer_std': 'float',
+            'grow_std': 'float',
+            'annual_std': 'float',
+            'Jan_cv': 'float',
+            'Feb_cv': 'float',
+            'Mar_cv': 'float',
+            'Apr_cv': 'float',
+            'May_cv': 'float',
+            'Jun_cv': 'float',
+            'Jul_cv': 'float',
+            'Aug_cv': 'float',
+            'Sep_cv': 'float',
+            'Oct_cv': 'float',
+            'Nov_cv': 'float',
+            'Dec_cv': 'float',
+            'summer_cv': 'float',
+            'grow_cv': 'float',
+            'annual_cv': 'float',
             'STATION_ID': 'str',
             'GRIDMET_ID': 'int'
-
         }}
-    
+
     # create shapefile from points, overwrite if exists
     with collection(
         out_file, 'w', 
@@ -321,8 +367,54 @@ def make_points_file(in_path):
                     'Oct': row['Oct_mean'],
                     'Nov': row['Nov_mean'],
                     'Dec': row['Dec_mean'],
-                    'grow_season': row['April_to_oct_mean'],
-                    'annual': row['Annual_mean'],
+                    'summer': row['summer_mean'],
+                    'growseason': row['growseason_mean'],
+                    'annual': row['annual_mean'],
+                    'Jan_cnt': row['Jan_count'],
+                    'Feb_cnt': row['Feb_count'],
+                    'Mar_cnt': row['Mar_count'],
+                    'Apr_cnt': row['Apr_count'],
+                    'May_cnt': row['May_count'],
+                    'Jun_cnt': row['Jun_count'],
+                    'Jul_cnt': row['Jul_count'],
+                    'Aug_cnt': row['Aug_count'],
+                    'Sep_cnt': row['Sep_count'],
+                    'Oct_cnt': row['Oct_count'],
+                    'Nov_cnt': row['Nov_count'],
+                    'Dec_cnt': row['Dec_count'],
+                    'summer_cnt': row['summer_count'],
+                    'grow_cnt': row['growseason_count'],
+                    'annual_cnt': row['annual_count'],
+                    'Jan_std': row['Jan_stdev'],
+                    'Feb_std': row['Feb_stdev'],
+                    'Mar_std': row['Mar_stdev'],
+                    'Apr_std': row['Apr_stdev'],
+                    'May_std': row['May_stdev'],
+                    'Jun_std': row['Jun_stdev'],
+                    'Jul_std': row['Jul_stdev'],
+                    'Aug_std': row['Aug_stdev'],
+                    'Sep_std': row['Sep_stdev'],
+                    'Oct_std': row['Oct_stdev'],
+                    'Nov_std': row['Nov_stdev'],
+                    'Dec_std': row['Dec_stdev'],
+                    'summer_std': row['summer_stdev'],
+                    'grow_std': row['growseason_stdev'],
+                    'annual_std': row['annual_stdev'],
+                    'Jan_cv': row['Jan_cv'],
+                    'Feb_cv': row['Feb_cv'],
+                    'Mar_cv': row['Mar_cv'],
+                    'Apr_cv': row['Apr_cv'],
+                    'May_cv': row['May_cv'],
+                    'Jun_cv': row['Jun_cv'],
+                    'Jul_cv': row['Jul_cv'],
+                    'Aug_cv': row['Aug_cv'],
+                    'Sep_cv': row['Sep_cv'],
+                    'Oct_cv': row['Oct_cv'],
+                    'Nov_cv': row['Nov_cv'],
+                    'Dec_cv': row['Dec_cv'],
+                    'summer_cv': row['summer_cv'],
+                    'grow_cv': row['growseason_cv'],
+                    'annual_cv': row['annual_cv'],
                     'STATION_ID': index,
                     'GRIDMET_ID': row['GRIDMET_ID']
                 },
@@ -902,11 +994,11 @@ def interpolate(in_path, layer='all', out=None, scale_factor=0.1,
     grid_var = file_name.split('_summ')[0]
     
     if not out: 
-        out_dir = OPJ(path_root, 
+        out_dir = OPJ(path_root,
                       'spatial', 
                       '{}_{}_{}m'.format(grid_var, function, res))
     else:
-        out_dir = OPJ(path_root, 
+        out_dir = OPJ(path_root,
                       'spatial',
                       '{}_{}_{}m'.format(grid_var, function, res),
                       out)
@@ -1043,10 +1135,13 @@ def interpolate(in_path, layer='all', out=None, scale_factor=0.1,
         # save rbf interpolated array as geotiff raster close
         outband.WriteArray(ZI_out)
         ds = None
+
+        # calc residuals add to shapefile and in_path CSV, move shapefile to out_dir
+        calc_pt_error(in_path, out_dir, layer, grid_var)
         # calculate zonal statistics save means for each gridMET cell
         if zonal_stats:
             gridmet_zonal_stats(in_path, out_file)
-        
+
         
     # run gdal_grid interpolation 
     if function in InterpGdal.interp_methods:
@@ -1061,7 +1156,7 @@ def interpolate(in_path, layer='all', out=None, scale_factor=0.1,
     # scipy radial basis function interpolation for now
     # run interpolation and zonal statistics depending on layer kwarg
     else: 
-        if layer == 'all':
+        if layer == 'all': # potential for multiprocessing
             for l in InterpGdal.default_layers:
                 _run_rbf_interpolation(l, bounds, function, smooth)
         # single layer option
@@ -1072,7 +1167,90 @@ def interpolate(in_path, layer='all', out=None, scale_factor=0.1,
             for l in layer:
                 _run_rbf_interpolation(l, bounds, function, smooth)
 
-        
+def calc_pt_error(in_path, out_dir, layer, grid_var):
+    """
+    Calculate point ratio estimates from interpolated raster, residuals,
+    and add to output summary CSV and point shapefile.
+    
+    """
+    raster = str(Path(out_dir)/'{}.tiff'.format(layer))
+    pt_shp = str(Path(in_path).parent/'spatial'/'etr_mm_summary_pts.shp')
+    pt_shp_out = str(Path(out_dir)/'{}_summary_pts.shp'.format(grid_var))
+    # mean fields in point shapefile does not include '_mean'
+    pt_layer = layer.replace('_mean', '')
+    if pt_layer == 'growseason':
+        pt_layer = 'grow'
+    # names of new fields for estimated and residual e.g. Jan_est, Jan_res
+    pt_est = '{}_est'.format(pt_layer)
+    pt_res = '{}_res'.format(pt_layer)
+
+    pt_err = pd.DataFrame(columns=[pt_est, pt_res])
+    # read raster for layer and get interpolated data for each point
+    with fiona.open(str(pt_shp)) as shp:
+        for feature in shp:
+            STATION_ID = feature['properties']['STATION_ID']
+            coords = feature['geometry']['coordinates']
+            # Read pixel value at the given coordinates using Rasterio
+            # sample() returns an iterable of ndarrays.
+            with rasterio.open(raster) as src:
+                value = [v for v in src.sample([coords])][0][0]
+            # store interpolated point estimates of ratios 
+            pt_err.loc[STATION_ID, pt_est] = value
+
+    # merge estimated point data with observed to calc residual
+    pt_err['STATION_ID'] = pt_err.index
+    # read summary CSV with observed ratios
+    in_df = pd.read_csv(in_path, index_col='STATION_ID')
+    in_df.loc[pt_err.index, pt_est] = pt_err.loc[:, pt_est]
+    # calculate residual estimated minus observed
+    in_df.loc[:,pt_res] = in_df.loc[:,pt_est] - in_df.loc[:,layer]
+    # save/overwrite error to input CSV for future interpolation 
+    in_df.to_csv(in_path, index=True)
+
+    # save copy of CSV with updated error info to out_dir with rasters
+    out_summary_csv = Path(out_dir)/Path(in_path).name
+    if not out_summary_csv.is_file():
+        in_df.to_csv(str(out_summary_csv), index=True)
+    else:
+        out_df = pd.read_csv(str(out_summary_csv), index_col='STATION_ID')
+        out_df.loc[pt_err.index, pt_est] = pt_err.loc[:, pt_est]
+        out_df.loc[pt_err.index, pt_res] = in_df.loc[pt_err.index, pt_res]
+        out_df.to_csv(out_summary_csv, index=True)
+    
+    # update error values in output point shapefile
+    if not Path(pt_shp_out).is_file():
+        with fiona.open(pt_shp, 'r') as inf:
+            schema = inf.schema.copy()
+            input_crs = inf.crs
+            # add attributes for point estimate and residual to output points
+            schema['properties'][pt_est] = 'float'
+            schema['properties'][pt_res] = 'float'
+            with fiona.open(pt_shp_out, 'w', 'ESRI Shapefile', schema, input_crs) as outf:
+                for feat in inf:
+                    STATION_ID = feat['properties']['STATION_ID']
+                    feat['properties'][pt_est] = in_df.loc[STATION_ID, pt_est].astype(float)
+                    feat['properties'][pt_res] = in_df.loc[STATION_ID, pt_res].astype(float)
+                    outf.write(feat)
+    # if already exists update point shapefile
+    else:
+        tmp_out = pt_shp_out.replace('.shp', '_tmp.shp')
+        with fiona.open(pt_shp_out, 'r') as inf:
+            schema = inf.schema.copy()
+            input_crs = inf.crs
+            # add attributes for point estimate and residual to output points
+            schema['properties'][pt_est] = 'float'
+            schema['properties'][pt_res] = 'float'
+            with fiona.open(tmp_out, 'w', 'ESRI Shapefile', schema, input_crs) as outf:
+                for feat in inf:
+                    STATION_ID = feat['properties']['STATION_ID']
+                    feat['properties'][pt_est] = in_df.loc[STATION_ID, pt_est].astype(float)
+                    feat['properties'][pt_res] = in_df.loc[STATION_ID, pt_res].astype(float)
+                    outf.write(feat)
+        # overwrite old with temp with added attributes
+        for f in os.listdir(out_dir):
+            if '_tmp' in f:
+                move(OPJ(out_dir, f), OPJ(out_dir, f.replace('_tmp', '')))
+
 def gridmet_zonal_stats(in_path, raster):
     """
     Calculate zonal means from interpolated surface of etr bias ratios

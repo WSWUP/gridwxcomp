@@ -12,7 +12,7 @@ from xml.dom import minidom
 
 import numpy as np
 import pandas as pd
-from .spatial import get_subgrid_bounds, gridmet_zonal_stats
+from .spatial import get_subgrid_bounds, gridmet_zonal_stats, calc_pt_error
 
 
 class InterpGdal(object):
@@ -68,7 +68,7 @@ class InterpGdal(object):
         >>> summary_file = 'PATH/TO/etr_mm_summary_comp.csv'
         >>> # create a InterpGdal instance
         >>> test = InterpGdal(summary_file)
-        >>> layer = 'April_to_oct_mean' # could be a list
+        >>> layer = 'growseason_mean' # could be a list
         >>> # run inverse distance interpolation with different params
         >>> for p in range(1,10):
                 for s in [0, 0.5, 1, 1.5, 2]:
@@ -109,8 +109,8 @@ class InterpGdal(object):
                      'Oct_mean',
                      'Nov_mean',
                      'Dec_mean',
-                     'April_to_oct_mean',
-                     'Annual_mean')
+                     'growseason_mean',
+                     'annual_mean')
     
     # interp params, method key, param dic as values
     default_params = {
@@ -152,10 +152,10 @@ class InterpGdal(object):
     }
     def __init__(self, summary_csv_path):
         
-        if not os.path.isfile(summary_csv_path):
+        if not Path(summary_csv_path).is_file():
             raise FileNotFoundError(
                 'Summary CSV file: {} not found!'.format(
-                    os.path.abspath(summary_csv_path))
+                    Path(summary_csv_path).absolute())
             )
             
         self.summary_csv_path = Path(summary_csv_path).absolute()
@@ -299,7 +299,7 @@ class InterpGdal(object):
             >>> from gridwxcomp import InterpGdal
             >>> summary_file = 'PATH/TO/[var]_summary_comp.csv'
             >>> out_dir = 'default_params'
-            >>> layers = ['April_to_oct_mean', 'Annual_mean']
+            >>> layers = ['growseason_mean', 'annual_mean']
             >>> # create a InterpGdal instance
             >>> test = InterpGdal(summary_file)
             >>> # run inverse distance interpolation
@@ -313,10 +313,10 @@ class InterpGdal(object):
             as the input summary CSV::
             
                 default_params/
-                ├── Annual_mean.tiff
-                ├── Annual_mean.vrt
-                ├── April_to_oct_mean.tiff
-                ├── April_to_oct_mean.vrt
+                ├── annual_mean.tiff
+                ├── annual_mean.vrt
+                ├── growseason_mean.tiff
+                ├── growseason_mean.vrt
                 └── gridMET_stats.csv
 
             GeoTiff interpolated raster files are now created for select layers
@@ -326,7 +326,7 @@ class InterpGdal(object):
             example,
             
                 ========== ================== ================== 
-                GRIDMET_ID April_to_oct_mean  Annual_mean        
+                GRIDMET_ID growseason_mean    annual_mean        
                 ========== ================== ================== 
                 511747     0.9650671287940088 0.9078723876243023 
                 510361     0.9658465063428492 0.9097255715561022 
@@ -353,8 +353,8 @@ class InterpGdal(object):
             of absolute paths of raster files. To get them as strings,
             
             >>> list(map(str, test.interped_rasters))
-                ['PATH/TO/April_to_oct_mean.tiff',
-                 'PATH/TO/Annual_mean.tiff']
+                ['PATH/TO/growseason_mean.tiff',
+                 'PATH/TO/annual_mean.tiff']
              
             Similary, the raster extent that was used and will be used again for
             any subsequent calls of :meth:`InterpGdal.gdal_grid` can be 
@@ -379,10 +379,10 @@ class InterpGdal(object):
         
         cwd = os.getcwd()
         
-        out_dir = Path(out_dir).absolute()
+        out_dir = Path(self.summary_csv_path).parent / Path(out_dir).resolve()
         if not out_dir.is_dir():
             out_dir.mkdir(parents=True, exist_ok=True)
-
+    
         source_file = Path(self.summary_csv_path).name
         source = source_file.replace('.csv', '')
         
@@ -431,11 +431,11 @@ class InterpGdal(object):
             """reuse if running multiple layers"""
             existing_layers = pd.read_csv(self.summary_csv_path).columns
             if not layer in existing_layers:
-               print('column {} does not exist in input CSV:\n {}'.format(
+                print('column {} does not exist in input CSV:\n {}'.format(
                    layer, self.summary_csv_path),
                      '\nSkipping interpolation.'
                )
-               return
+                return
             
             # move to out_dir to run gdal command
             os.chdir(out_dir)
@@ -472,14 +472,17 @@ class InterpGdal(object):
 
             p.stdout.close()
             p.stderr.close()    
-            
+         
+            os.chdir(cwd)
+
+            # calculate interpolated values and error at stations
+            calc_pt_error(self.summary_csv_path, out_dir, layer, grid_var)
             if zonal_stats:
                 gridmet_zonal_stats(self.summary_csv_path, out_file)
 
-            os.chdir(cwd)
             
         # run interpolation and zonal statistics depending on layer kwarg
-        if layer == 'all':
+        if layer == 'all': # potential for multiprocessing 
             for l in self.layers:
                 _run_gdal_grid(l)
         # run single field
