@@ -81,11 +81,11 @@ def daily_comparison(input_csv, out_dir, year_filter=''):
 
     # List of variables to compare (STATION/gridMET ORDER SHOULD MATCH)
     station_vars = ['TMin (C)', 'TMax (C)', 'wx_Ko_c', 'Rs (w/m2)',
-                    'ws_2m (m/s)', 'Vapor Pres (kPa)', 'Calc_ETo (mm)',
-                    'Calc_ETr (mm)']
+                    'ws_2m (m/s)', 'Vapor Pres (kPa)', 'RHAvg (%)',
+                    'Precip (mm)', 'Calc_ETo (mm)', 'Calc_ETr (mm)']
 
     gridmet_vars = ['tmin_c', 'tmax_c', 'grid_Ko_c', 'srad_wm2', 'u2_ms',
-                    'ea_kpa', 'eto_mm', 'etr_mm']
+                    'ea_kpa', 'rh_avg', 'prcp_mm', 'eto_mm', 'etr_mm']
 
     # # Limit row processing range (testing)
     # start = 0
@@ -104,6 +104,11 @@ def daily_comparison(input_csv, out_dir, year_filter=''):
 
         station_path = row.STATION_FILE_PATH
         logging.info('\nStation: {}'.format(row.STATION_ID))
+
+        # Check is station path is given in input
+        if pd.isnull(station_path):
+            logging.info('Station path is not given. Skipping.')
+            continue
 
         # Skip If FILE DOES NOT EXIST
         if not os.path.exists(station_path):
@@ -141,12 +146,21 @@ def daily_comparison(input_csv, out_dir, year_filter=''):
             station_data['wx_Ko_c'] = station_data['TMin (C)'] - \
                                       station_data['TDew (C)']
 
+            # grid RH Avg calc
+            # Saturated Vapor Pressure
+            grid_data['tavg_c'] = (grid_data.tmin_c + grid_data.tmax_c) / 2
+            grid_data['e_sat_kpa'] = 0.6108 * np.exp(
+                (17.27 * grid_data.tavg_c) /
+                (grid_data.tavg_c + 237.3))
+            # Average RH (%)
+            grid_data['rh_avg'] = (grid_data.ea_kpa / grid_data.e_sat_kpa) * 100
+
             # Combine station and gridMET dataframes (only plotting variables)
             merged = pd.concat([station_data[station_vars],
                                 grid_data[gridmet_vars]], axis=1,
                                join_axes=[station_data.index])
             # Remove results with na
-            merged = merged.dropna()
+            # merged = merged.dropna()
 
             for month in range(1,13):
                 logging.info('Month: {}'.format(month))
@@ -171,11 +185,13 @@ def daily_comparison(input_csv, out_dir, year_filter=''):
                 output_file(out_file_path)
 
                 station_vars = ['TMin (C)', 'TMax (C)', 'wx_Ko_c', 'Rs (w/m2)',
-                                'ws_2m (m/s)', 'Vapor Pres (kPa)',
-                                'Calc_ETo (mm)', 'Calc_ETr (mm)']
+                                'ws_2m (m/s)', 'Vapor Pres (kPa)', 'RHAvg (%)',
+                                'Precip (mm)', 'Calc_ETo (mm)', 'Calc_ETr (mm)']
 
                 gridmet_vars = ['tmin_c', 'tmax_c', 'grid_Ko_c', 'srad_wm2',
-                                'u2_ms', 'ea_kpa', 'eto_mm', 'etr_mm']
+                                'u2_ms',
+                                'ea_kpa', 'rh_avg', 'prcp_mm', 'eto_mm',
+                                'etr_mm']
 
                 # list of x variables
                 x_var_list= station_vars
@@ -183,21 +199,24 @@ def daily_comparison(input_csv, out_dir, year_filter=''):
                 y_var_list= gridmet_vars
                 # title list
                 title_list= ['TMin', 'TMax', 'Ko' , 'Rs', 'WS 2m',
-                               'ea', 'ETo', 'ETr']
+                               'ea', 'RH', 'Prcp', 'ETo', 'ETr']
                 # timeseries y label list
-                ts_ylabel_list = ['TMin (C)', 'TMax (C)', 'Ko (C)' ,'Rs (w/m2)',
-                                  'WS 2m (m/s)', 'ea (kPa)', 'ETo (mm)',
-                                  'ETr (mm)']
+                ts_ylabel_list = ['TMin (C)', 'TMax (C)', 'Ko (C)', 'Rs (w/m2)',
+                                  'WS 2m (m/s)', 'ea (kPa)', 'Avg RH (%)',
+                                  'Prcp (mm)',
+                                  'ETo (mm)', 'ETr (mm)']
                 # scatter xlabel list
-                xlabel_list= ['Station TMin (C)', 'Station TMax (C)',
-                              'Station Ko (C)','Station Rs (w/m2)',
-                              'Station WS 2m (m/s)', 'Station ea (kPa)',
-                              'Station ETo (mm)', 'Station ETr (mm)']
+                xlabel_list = ['Station TMin (C)', 'Station TMax (C)',
+                               'Station Ko (C)', 'Station Rs (w/m2)',
+                               'Station WS 2m (m/s)', 'Station ea (kPa)',
+                               'Station RH (%)', 'Station Prcp (mm)',
+                               'Station ETo (mm)', 'Station ETr (mm)']
                 # scatter ylabel list
-                ylabel_list=['gridMET TMin (C)', 'gridMET TMax (C)',
-                             'gridMET Ko (C)','gridMET Rs (w/m2)',
-                             'gridMET WS 2m (m/s)', 'gridMET ea (kPa)',
-                             'gridMET ETo (mm)', 'gridMET ETr (mm)']
+                ylabel_list = ['gridMET TMin (C)', 'gridMET TMax (C)',
+                               'gridMET Ko (C)', 'gridMET Rs (w/m2)',
+                               'gridMET WS 2m (m/s)', 'gridMET ea (kPa)',
+                               'gridMET RH (%)', 'gridMET Prcp (mm)',
+                               'gridMET ETo (mm)', 'gridMET ETr (mm)']
                 # legendx list
                 legendx_list = ['Station'] * len(title_list)
                 # legend y list
@@ -213,16 +232,25 @@ def daily_comparison(input_csv, out_dir, year_filter=''):
                                                   title_list, ts_ylabel_list,
                                                   xlabel_list, ylabel_list,
                                                   legendx_list, legendy_list)):
+
+                    # lstsq cannot have nans (drop nas for each var separately)
+                    monthly_data2 = monthly_data[[x_var, y_var]]
+                    monthly_data2 = monthly_data2.dropna()
+
+                    if monthly_data2.empty:
+                        logging.info("Skipping {}. No Data.".format(x_var))
+                        continue
+
                     if i == 0:
                         # Initial timeseries plot to establish xrange for link axes
                         p1 = figure(plot_width=800, plot_height=400,
                                     x_axis_type="datetime",title = title,
                                     y_axis_label = ts_ylabel)
-                        p1.line(monthly_data.index.to_pydatetime(),
-                                monthly_data[x_var],  color="navy",
+                        p1.line(monthly_data2.index.to_pydatetime(),
+                                monthly_data2[x_var],  color="navy",
                                 alpha=0.5, legend=legendx,line_width=2)
-                        p1.line(monthly_data.index.to_pydatetime(),
-                                monthly_data[y_var],  color="red",
+                        p1.line(monthly_data2.index.to_pydatetime(),
+                                monthly_data2[y_var],  color="red",
                                 alpha=0.5, legend=legendy,line_width=2)
                     else:
                         # Timeseries plots after first pass
@@ -230,36 +258,37 @@ def daily_comparison(input_csv, out_dir, year_filter=''):
                                     x_axis_type="datetime",title = title,
                                     y_axis_label = ts_ylabel,
                                     x_range=p1.x_range)
-                        p1.line(monthly_data.index.to_pydatetime(),
-                                monthly_data[x_var],  color="navy", alpha=0.5,
+                        p1.line(monthly_data2.index.to_pydatetime(),
+                                monthly_data2[x_var],  color="navy", alpha=0.5,
                                 legend=legendx,line_width=2)
-                        p1.line(monthly_data.index.to_pydatetime(),
-                                monthly_data[y_var],  color="red", alpha=0.5,
+                        p1.line(monthly_data2.index.to_pydatetime(),
+                                monthly_data2[y_var],  color="red", alpha=0.5,
                                 legend=legendy,line_width=2)
 
                     # 1 to 1 Plot
                     # Regression through Zero
                     # https://stackoverflow.com/questions/9990789/how-to-force-
                     # zero-interception-in-linear-regression/9994484#9994484
-                    m = np.linalg.lstsq(monthly_data[x_var].values.reshape(-1,1),
-                                        monthly_data[y_var], rcond=None)[0][0]
+
+                    m = np.linalg.lstsq(monthly_data2[x_var].values.reshape(-1,1),
+                                        monthly_data2[y_var], rcond=None)[0][0]
                     r_x, r_y = zip(*((i, i*m ) for i in range(
-                        int(np.min([monthly_data[y_var],monthly_data[x_var]])-2),
-                                     int(np.max([monthly_data[y_var],
-                                                 monthly_data[x_var]])+3),1)))
+                        int(np.min([monthly_data2[y_var],monthly_data2[x_var]])-2),
+                                     int(np.max([monthly_data2[y_var],
+                                                 monthly_data2[x_var]])+3),1)))
                     # Plots
                     p2 = figure(plot_width=400, plot_height=400,
                                 x_axis_label = xlabel, y_axis_label = ylabel,
                                 title = 'Slope Through Zero: m = {}'.format(
                                     round(m,4)))
-                    p2.circle(monthly_data[x_var], monthly_data[y_var],
+                    p2.circle(monthly_data2[x_var], monthly_data2[y_var],
                               size=15, color="navy", alpha=0.5)
-                    p2.line([int(np.min([monthly_data[y_var],
-                                         monthly_data[x_var]])-2),int(np.max(
-                        [monthly_data[y_var],monthly_data[x_var]])+2)],
-                             [int(np.min([monthly_data[y_var],
-                                          monthly_data[x_var]])-2),int(np.max(
-                                 [monthly_data[y_var],monthly_data[x_var]])+2)],
+                    p2.line([int(np.min([monthly_data2[y_var],
+                                         monthly_data2[x_var]])-2),int(np.max(
+                        [monthly_data2[y_var],monthly_data2[x_var]])+2)],
+                             [int(np.min([monthly_data2[y_var],
+                                          monthly_data2[x_var]])-2),int(np.max(
+                                 [monthly_data2[y_var],monthly_data2[x_var]])+2)],
                               color = "black", legend = '1 to 1 line')
                     p2.line(r_x, r_y, color="red", legend = 'Reg thru zero')
                     p2.legend.location = "top_left"
