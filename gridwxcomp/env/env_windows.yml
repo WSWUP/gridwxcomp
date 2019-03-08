@@ -1,0 +1,22 @@
+name: gridwxcomp
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - bokeh=1.0.4
+  - click=7.0
+  - cryptography=2.3.1
+  - earthengine-api=0.1.164
+  - fiona>=1.7.13
+  - gdal
+  - google-api-python-client=1.7.7
+  - libgdal>=2.3
+  - oauth2client=4.1.2
+  - pandas=0.23.4
+  - python=3.7
+  - rasterstats>=0.13.0
+  - refet=0.3.7
+  - shapely=1.6.4
+  - xlrd=1.2.0
+  - numpy>=1.15
+  - scipy>=1.1.0

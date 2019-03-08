@@ -280,13 +280,11 @@ def calc_bias_ratios(input_path, out_dir, gridmet_var='etr_mm',
         keyword argument is given but the ``station_var`` is left as 
         default (None), the corresponding station variable is looked 
         up from the mapping dictionary in :mod:`calc_bias_ratios.py` 
-        named ``GRIDMET_STATION_VARS``. To efficiently use climate data 
+        named ``GRIDMET_STATION_VARS``. To use climate data 
         that was  **not** created by `pyWeatherQAQC <https://github.com/DRI-WSWUP/pyWeatherQAQC>`_ 
-        which is where the default names are derived we recommend 
-        manually adjusting ``GRIDMET_STATION_VARS`` near the top of 
-        the :mod:`calc_bias_ratios.py` submodule file. Alternatively, 
-        the gridMET and station variable names need to be explicitly 
-        passed as function arguments. 
+        which is where the default names are derived, the gridMET and 
+        station variable names need to be explicitly passed as 
+        function arguments. 
         
     """
     if not GRIDMET_STATION_VARS.get(gridmet_var, None):
@@ -296,7 +294,7 @@ def calc_bias_ratios(input_path, out_dir, gridmet_var='etr_mm',
             '\n'
         )
         raise KeyError('Invalid gridMET variable name {}'.format(gridmet_var))
-        
+
     if not os.path.isdir(out_dir):
         print('{} does not exist, creating directory'.format(out_dir))
         os.mkdir(out_dir)
@@ -340,7 +338,7 @@ def calc_bias_ratios(input_path, out_dir, gridmet_var='etr_mm',
             print('Station time series file: ', row.STATION_FILE_PATH, 
                   '\nwas not found, skipping.')
             continue
-            
+
         if not station_var in station_df.columns:
             raise KeyError('{v} not found in the station file: \n{p}'.\
                            format(v=station_var, p=row.STATION_FILE_PATH))
@@ -357,26 +355,56 @@ def calc_bias_ratios(input_path, out_dir, gridmet_var='etr_mm',
         result.dropna(inplace=True)
         # monthly sums and day counts for each year
         result = result.groupby([result.index.year, result.index.month]).agg(['sum','count'])
+        result.index.set_names(['year', 'month'], inplace=True)
         # remove totals with less than XX days
         result = result[result[gridmet_var,'count']>=day_limit]
+        # calc mean growing season and June to August ratios with month sums
+        grow_season = result.loc[
+            result.index.get_level_values('month').isin([4,5,6,7,8,9]), (station_var)
+            ]['sum'].sum() / result.loc[
+                result.index.get_level_values('month').isin([4,5,6,7,8,9]), (gridmet_var)
+                ]['sum'].sum()
+        june_to_aug = result.loc[
+            result.index.get_level_values('month').isin([6,7,8]), (station_var)
+            ]['sum'].sum() / result.loc[
+                result.index.get_level_values('month').isin([6,7,8]), (gridmet_var)
+                ]['sum'].sum()
+        ann_months = list(range(1,13))
+        annual = result.loc[
+            result.index.get_level_values('month').isin(ann_months), (station_var)
+            ]['sum'].sum() / result.loc[
+                result.index.get_level_values('month').isin(ann_months), (gridmet_var)
+                ]['sum'].sum()
+        
         ratio = pd.DataFrame(columns = ['ratio', 'count'])
         # ratio of monthly sums for each year
         ratio['ratio'] = (result[station_var,'sum'])/(result[gridmet_var,'sum'])
-        # monthly counts
+        # monthly counts and stddev
         ratio['count'] = result.loc[:,(gridmet_var,'count')]
+
         # rebuild Index DateTime
         ratio['year'] = ratio.index.get_level_values(0).values.astype(int)
         ratio['month'] = ratio.index.get_level_values(1).values.astype(int)
-        ratio.index = pd.to_datetime(ratio.year*10000+ratio.month*100+15,format='%Y%m%d') 
+        ratio.index = pd.to_datetime(ratio.year*10000+ratio.month*100+15,format='%Y%m%d')
+        # useful to know how many years were used in addition to day counts
+        start_year = ratio.year.min()
+        end_year = ratio.year.max()
         counts = ratio.groupby(ratio.index.month).sum()['count']
+        # get standard deviation of each years' monthly mean ratio
+        stdev = {month: np.std(ratio.loc[ratio.month.isin([month]), 'ratio'].values)
+                 for month in ann_months}
+        stdev = pd.Series(stdev, name='stdev')
+
         # mean of monthly means of all years, can change to median or other meth
         final_ratio = ratio.groupby(ratio.index.month).mean()
         final_ratio.drop(['year', 'month'], axis=1, inplace=True)
         final_ratio['count'] = counts
-        # calc mean growing season and June to August ratios
-        grow_season = final_ratio.loc[3:10,'ratio'].mean()
-        june_to_aug = final_ratio.loc[5:8,'ratio'].mean()
-        annual = final_ratio.loc[:,'ratio'].mean()
+        final_ratio['stdev'] = stdev
+        final_ratio['cv'] = stdev / final_ratio['ratio']
+        # calc mean growing season, June through August, ann stdev
+        grow_season_std = np.std(ratio.loc[ratio.month.isin([4,5,6,7,8,9]), 'ratio'].values)
+        june_to_aug_std = np.std(ratio.loc[ratio.month.isin([6,7,8]), 'ratio'].values)
+        annual_std = np.std(ratio.loc[ratio.month.isin(ann_months), 'ratio'].values)
         # get month abbreviations in a column and drop index values
         for m in final_ratio.index:
             final_ratio.loc[m,'month'] = calendar.month_abbr[m]
@@ -388,31 +416,59 @@ def calc_bias_ratios(input_path, out_dir, gridmet_var='etr_mm',
         # add monthy means and counts into single row dataframe
         ratio_cols = [c + '_mean' for c in final_ratio.columns]
         count_cols = [c + '_count' for c in final_ratio.columns]
-        out_cols = ratio_cols + count_cols
-        final_ratio = pd.concat([final_ratio.loc['ratio'], final_ratio.loc['count']])
+        stddev_cols = [c + '_stdev' for c in final_ratio.columns]
+        coef_var_cols = [c + '_cv' for c in final_ratio.columns]
+        # combine all monthly stats
+        out_cols = ratio_cols + count_cols + stddev_cols + coef_var_cols
+        final_ratio = pd.concat([
+            final_ratio.loc['ratio'], 
+            final_ratio.loc['count'],
+            final_ratio.loc['stdev'],
+            final_ratio.loc['cv']
+        ])
         final_ratio.index = out_cols
+        # transpose so that each station is one row in final output
         final_ratio = final_ratio.to_frame().T
-        final_ratio['April_to_oct_mean'] = grow_season
-        final_ratio['June_to_aug_mean'] = june_to_aug
-        final_ratio['Annual_mean'] = annual
+        # assign non-monthly stats, growing season, annual, june-aug
+        final_ratio['growseason_mean'] = grow_season
+        final_ratio['summer_mean'] = june_to_aug
+        final_ratio['annual_mean'] = annual
+        # day counts for all years in non monthly periods
+        final_ratio['growseason_count'] =\
+            counts.loc[counts.index.isin([4,5,6,7,8,9])].sum()
+        final_ratio['summer_count'] =\
+            counts.loc[counts.index.isin([6,7,8])].sum()
+        final_ratio['annual_count'] =\
+            counts.loc[counts.index.isin(ann_months)].sum()
+        # assign stdev, coef. var. 
+        final_ratio['growseason_stdev'] = grow_season_std
+        final_ratio['summer_stdev'] = june_to_aug_std
+        final_ratio['annual_stdev'] = annual_std
+        # coefficient of variation
+        final_ratio['growseason_cv'] = grow_season_std / grow_season
+        final_ratio['summer_cv'] = june_to_aug_std / june_to_aug
+        final_ratio['annual_cv'] = annual_std / annual
+        # start and end years for interpreting annual CV, stdev...
+        final_ratio['start_year'] = start_year
+        final_ratio['end_year'] = end_year
+
         # round numerical data before adding string metadata
         for v in final_ratio:
-            if '_mean' in v:
+            if '_mean' or '_stdev' or '_cv' in v:
                 final_ratio[v] = final_ratio[v].astype(float).round(3)
             else:
                 final_ratio[v] = final_ratio[v].astype(int)
         # set station ID as index
         final_ratio['STATION_ID'] = row.STATION_ID
         final_ratio.set_index('STATION_ID', inplace=True)
-        
+
         out = final_ratio.copy()
-        out.drop(count_cols, axis=1, inplace=True)
-        out.drop('June_to_aug_mean', axis=1, inplace=True)
-        
+        out.drop(count_cols+stddev_cols+coef_var_cols, axis=1, inplace=True)
+
         # save GRIDMET_ID for merging with input table
         final_ratio['GRIDMET_ID'] = row.GRIDMET_ID    
         final_ratio = final_ratio.merge(input_df, on='GRIDMET_ID')
-    
+
         # round numeric columns
         final_ratio = final_ratio.round({
             'LAT': 10,
@@ -436,10 +492,10 @@ def calc_bias_ratios(input_path, out_dir, gridmet_var='etr_mm',
         # if comp False
         else:
             comp_out = comp
-            
+
         # save output depending on options
         _save_output(out, comp_out, out_dir, gridmet_ID, gridmet_var)
-        
+
     print(
         '\nSummary file(s) for bias ratios saved to: \n', 
          os.path.abspath(out_dir)

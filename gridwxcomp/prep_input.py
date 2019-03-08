@@ -104,6 +104,7 @@ def _read_station_list(station_path):
     """
 
     station_list = pd.read_csv(station_path)
+    # default columns from PyWeatherQAQC
     cols = [
             'FID',
             'LATDECDEG',
@@ -119,14 +120,17 @@ def _read_station_list(station_path):
             'Comments',
             'Irrigation'
             ]
-    station_list = station_list[cols]
+    # use only default columns that exist
+    station_cols = station_list.columns
+    cols = list(set(cols).intersection(station_cols))
+    #station_list = station_list[cols]
     station_list.rename(
             columns={
                 'LATDECDEG':'STATION_LAT',
                 'LONGDECDEG':'STATION_LON',
                 'Elev_m':'STATION_ELEV_M',
                 'Elev_FT':'STATION_ELEV_FT',
-                'Station_ID':'STATION_ID',
+                'Station':'STATION_ID',
                 'FileName':'STATION_FILE_PATH'},
             inplace=True
             )
