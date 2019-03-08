@@ -23,9 +23,9 @@ Note:
 import os
 import calendar
 import argparse
-
 import pandas as pd
 import numpy as np
+from .util import parse_yr_filter
 
 # keys = gridMET variable name
 # values = climate station variable name
@@ -43,7 +43,7 @@ GRIDMET_STATION_VARS = {
 OPJ = os.path.join
 
 def main(input_file_path, out_dir, gridmet_var='etr_mm', station_var=None,
-         gridmet_id=None, day_limit=10, comp=True):
+         gridmet_id=None, day_limit=10, years='all', comp=True):
     """
     Calculate monthly bias ratios between station climate and gridMET
     cells that correspond with each other geographically. Saves data
@@ -70,6 +70,8 @@ def main(input_file_path, out_dir, gridmet_var='etr_mm', station_var=None,
             to only calculate bias ratios for a single gridMET cell.
         day_limit (int): default 10. Threshold number of days in month
             of missing data, if less exclude month from calculations.
+        years (int or str): default 'all'. Years to use for calculations
+            e.g. 2000-2005 or 2011.
         comp (bool): default True. Save a "comprehensive" summary
             output CSV file that contains additional station metadata
             and statistics in addition to the mean monthly ratios.
@@ -100,7 +102,9 @@ def main(input_file_path, out_dir, gridmet_var='etr_mm', station_var=None,
             $ python calc_bias_ratios.py -i merged_input.csv -o monthly_ratios -sv EO -gv eto_mm
 
         This will produce two CSV files in ``out_dir`` named "eto_mm_summary.csv"
-        and "eto_mm_summary_comp.csv". 
+        and "eto_mm_summary_comp.csv". If the ``[-y, --years]`` option is assigned
+        e.g. as "2010 then the output CSVs will have "_2010" appended
+        to their names i.e. "eto_mm_summary_comp_2010.csv"
         
         For use within Python see :func:`calc_bias_ratios`.
 
@@ -129,7 +133,7 @@ def main(input_file_path, out_dir, gridmet_var='etr_mm', station_var=None,
         comp=comp
     )
 
-def _save_output(out_df, comp_out_df, out_dir, gridmet_ID, var_name):
+def _save_output(out_df, comp_out_df, out_dir, gridmet_ID, var_name, yrs):
     """
     Save short summary file or overwrite existing data for a single
     climate station.
@@ -151,6 +155,7 @@ def _save_output(out_df, comp_out_df, out_dir, gridmet_ID, var_name):
             the given gridMET ID with the suffix "_X" where X is the
             gridMET ID value.
         var_name (str): name of gridMET variable that is being processed.
+        yrs (str): years used to calc ratios, save to out files as suffix.
     
     Returns:
         None       
@@ -185,12 +190,13 @@ def _save_output(out_df, comp_out_df, out_dir, gridmet_ID, var_name):
     if not gridmet_ID:
         out_file = OPJ(
             out_dir, 
-            '{v}_summary.csv'.format(v=var_name)
+            '{v}_summary_{y}.csv'.format(v=var_name, y=yrs)
         )
     else: 
         out_file = OPJ(
             out_dir,
-            '{v}_summary_grid_{g}.csv'.format(v=var_name, g=gridmet_ID)
+            '{v}_summary_grid_{g}_{y}.csv'.format(
+                v=var_name, g=gridmet_ID, y=yrs)
         )
     __save_update(out_df, out_file)
 
@@ -199,17 +205,19 @@ def _save_output(out_df, comp_out_df, out_dir, gridmet_ID, var_name):
         if not gridmet_ID:
             comp_out_file = OPJ(
                 out_dir, 
-                '{v}_summary_comp.csv'.format(v=var_name)
+                '{v}_summary_comp_{y}.csv'.format(v=var_name, y=yrs)
             )
         else:
             comp_out_file = OPJ(
                 out_dir,
-                '{v}_summary_comp_{g}.csv'.format(v=var_name, g=gridmet_ID)
+                '{v}_summary_comp_{g}_{y}.csv'.format(
+                    v=var_name, g=gridmet_ID, y=yrs)
             )
         __save_update(comp_out_df, comp_out_file)
     
 def calc_bias_ratios(input_path, out_dir, gridmet_var='etr_mm', 
-             station_var=None, gridmet_ID=None, day_limit=10, comp=True):
+             station_var=None, gridmet_ID=None, day_limit=10, years='all',
+             comp=True):
     """
     Read input CSV file and calculate mean monthly bias ratios between
     station to corresponding gridMET cells for all station and gridMET 
@@ -234,6 +242,8 @@ def calc_bias_ratios(input_path, out_dir, gridmet_var='etr_mm',
             to only calculate bias ratios for a single gridMET cell.
         day_limit (int): default 10. Threshold number of days in month
             of missing data, if less exclude month from calculations.
+        years (int or str): default 'all'. Years to use for calculations
+            e.g. 2000-2005 or 2011.
         comp (bool): default True. Flag to save a "comprehensive" 
             summary output CSV file that contains additional station 
             metadata and statistics in addition to the mean monthly ratios.
@@ -281,7 +291,7 @@ def calc_bias_ratios(input_path, out_dir, gridmet_var='etr_mm',
         default (None), the corresponding station variable is looked 
         up from the mapping dictionary in :mod:`calc_bias_ratios.py` 
         named ``GRIDMET_STATION_VARS``. To use climate data 
-        that was  **not** created by `pyWeatherQAQC <https://github.com/DRI-WSWUP/pyWeatherQAQC>`_ 
+        that was  **not** created by `pyWeatherQAQC <https://github.com/WSWUP/pyWeatherQAQC>`_ 
         which is where the default names are derived, the gridMET and 
         station variable names need to be explicitly passed as 
         function arguments. 
@@ -353,28 +363,31 @@ def calc_bias_ratios(input_path, out_dir, gridmet_var='etr_mm',
                             gridmet_df[gridmet_var]], axis=1, 
                            join_axes=[station_df.index])
         result.dropna(inplace=True)
+        # apply year filter
+        result, years_str = parse_yr_filter(result, years, row.STATION_ID)
+    
         # monthly sums and day counts for each year
-        result = result.groupby([result.index.year, result.index.month]).agg(['sum','count'])
+        result = result.groupby([result.index.year, result.index.month])\
+                .agg(['sum','count'])
         result.index.set_names(['year', 'month'], inplace=True)
         # remove totals with less than XX days
         result = result[result[gridmet_var,'count']>=day_limit]
         # calc mean growing season and June to August ratios with month sums
         grow_season = result.loc[
-            result.index.get_level_values('month').isin([4,5,6,7,8,9]), (station_var)
-            ]['sum'].sum() / result.loc[
-                result.index.get_level_values('month').isin([4,5,6,7,8,9]), (gridmet_var)
-                ]['sum'].sum()
+            result.index.get_level_values('month').isin([4,5,6,7,8,9]),\
+                    (station_var)]['sum'].sum() / result.loc[
+                result.index.get_level_values('month').isin([4,5,6,7,8,9]),\
+                        (gridmet_var)]['sum'].sum()
         june_to_aug = result.loc[
             result.index.get_level_values('month').isin([6,7,8]), (station_var)
-            ]['sum'].sum() / result.loc[
-                result.index.get_level_values('month').isin([6,7,8]), (gridmet_var)
-                ]['sum'].sum()
+            ]['sum'].sum() / result.loc[result.index.get_level_values('month')\
+                    .isin([6,7,8]), (gridmet_var)]['sum'].sum()
         ann_months = list(range(1,13))
         annual = result.loc[
-            result.index.get_level_values('month').isin(ann_months), (station_var)
-            ]['sum'].sum() / result.loc[
-                result.index.get_level_values('month').isin(ann_months), (gridmet_var)
-                ]['sum'].sum()
+            result.index.get_level_values('month').isin(ann_months),\
+                    (station_var)]['sum'].sum() / result.loc[
+                result.index.get_level_values('month').isin(ann_months),\
+                        (gridmet_var)]['sum'].sum()
         
         ratio = pd.DataFrame(columns = ['ratio', 'count'])
         # ratio of monthly sums for each year
@@ -385,13 +398,16 @@ def calc_bias_ratios(input_path, out_dir, gridmet_var='etr_mm',
         # rebuild Index DateTime
         ratio['year'] = ratio.index.get_level_values(0).values.astype(int)
         ratio['month'] = ratio.index.get_level_values(1).values.astype(int)
-        ratio.index = pd.to_datetime(ratio.year*10000+ratio.month*100+15,format='%Y%m%d')
+        ratio.index = pd.to_datetime(
+                ratio.year*10000+ratio.month*100+15,format='%Y%m%d'
+                )
         # useful to know how many years were used in addition to day counts
         start_year = ratio.year.min()
         end_year = ratio.year.max()
         counts = ratio.groupby(ratio.index.month).sum()['count']
         # get standard deviation of each years' monthly mean ratio
-        stdev = {month: np.std(ratio.loc[ratio.month.isin([month]), 'ratio'].values)
+        stdev = {month: np.std(
+            ratio.loc[ratio.month.isin([month]), 'ratio'].values)
                  for month in ann_months}
         stdev = pd.Series(stdev, name='stdev')
 
@@ -402,9 +418,12 @@ def calc_bias_ratios(input_path, out_dir, gridmet_var='etr_mm',
         final_ratio['stdev'] = stdev
         final_ratio['cv'] = stdev / final_ratio['ratio']
         # calc mean growing season, June through August, ann stdev
-        grow_season_std = np.std(ratio.loc[ratio.month.isin([4,5,6,7,8,9]), 'ratio'].values)
-        june_to_aug_std = np.std(ratio.loc[ratio.month.isin([6,7,8]), 'ratio'].values)
-        annual_std = np.std(ratio.loc[ratio.month.isin(ann_months), 'ratio'].values)
+        grow_season_std = np.std(ratio.loc[ratio.month.isin([4,5,6,7,8,9]),\
+                'ratio'].values)
+        june_to_aug_std = np.std(ratio.loc[ratio.month.isin([6,7,8]),\
+                'ratio'].values)
+        annual_std = np.std(ratio.loc[ratio.month.isin(ann_months),\
+                'ratio'].values)
         # get month abbreviations in a column and drop index values
         for m in final_ratio.index:
             final_ratio.loc[m,'month'] = calendar.month_abbr[m]
@@ -494,13 +513,13 @@ def calc_bias_ratios(input_path, out_dir, gridmet_var='etr_mm',
             comp_out = comp
 
         # save output depending on options
-        _save_output(out, comp_out, out_dir, gridmet_ID, gridmet_var)
+        _save_output(out, comp_out, out_dir, gridmet_ID, gridmet_var, years_str)
 
     print(
         '\nSummary file(s) for bias ratios saved to: \n', 
          os.path.abspath(out_dir)
          )    
-
+    
 def arg_parse():
     """
     Command line usage of calc_bias_ratios.py which calculates monthly bias 
@@ -521,6 +540,9 @@ def arg_parse():
     required.add_argument(
         '-o', '--out', metavar='PATH', required=True,
         help='Output directory to save CSV files containing bias ratios')
+    optional.add_argument(
+        '-y', '--years', metavar='', required=False, default='all',
+        help='Years to use, single or range e.g. 2018 or 1995-2010')
     optional.add_argument(
         '-gv', '--gridmet-var', metavar='', required=False, default='etr_mm',
         help='GridMET variable name for bias ratio calculation')
@@ -551,4 +573,4 @@ if __name__ == '__main__':
     main(input_file_path=args.input, out_dir=args.out,
          gridmet_var=args.gridmet_var, station_var=args.station_var,
          gridmet_id=args.gridmet_id, day_limit=args.day_limit,
-         comp=args.comprehensive)
+         years=args.years, comp=args.comprehensive)

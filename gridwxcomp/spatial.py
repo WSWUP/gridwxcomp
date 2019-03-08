@@ -1170,8 +1170,22 @@ def interpolate(in_path, layer='all', out=None, scale_factor=0.1,
 def calc_pt_error(in_path, out_dir, layer, grid_var):
     """
     Calculate point ratio estimates from interpolated raster, residuals,
-    and add to output summary CSV and point shapefile.
+    and add to output summary CSV and point shapefile. Make copies of
+    updated files and saves to directory with interpolated rasters.
     
+    Arguments:
+        in_path (str): path to comprehensive summary CSV created by 
+            :mod:`calc_bias_ratios.py`
+        out_dir (str): path to dir that contains interpolated raster
+        layer (str): layer to calculate error e.g. "annual_mean"
+        grid_var (str): name of gridMET variable e.g. "etr_mm"
+
+    Returns:
+        None
+
+    Note:
+        This function should be run **after** :func:`make_points_file`
+        because it copies data from the shapefile it created.
     """
     raster = str(Path(out_dir)/'{}.tiff'.format(layer))
     pt_shp = str(Path(in_path).parent/'spatial'/'etr_mm_summary_pts.shp')
@@ -1186,7 +1200,7 @@ def calc_pt_error(in_path, out_dir, layer, grid_var):
 
     pt_err = pd.DataFrame(columns=[pt_est, pt_res])
     # read raster for layer and get interpolated data for each point
-    with fiona.open(str(pt_shp)) as shp:
+    with fiona.open(pt_shp) as shp:
         for feature in shp:
             STATION_ID = feature['properties']['STATION_ID']
             coords = feature['geometry']['coordinates']
@@ -1217,7 +1231,7 @@ def calc_pt_error(in_path, out_dir, layer, grid_var):
         out_df.loc[pt_err.index, pt_res] = in_df.loc[pt_err.index, pt_res]
         out_df.to_csv(out_summary_csv, index=True)
     
-    # update error values in output point shapefile
+    # error info to new point shapefile in raster directory
     if not Path(pt_shp_out).is_file():
         with fiona.open(pt_shp, 'r') as inf:
             schema = inf.schema.copy()
@@ -1246,9 +1260,9 @@ def calc_pt_error(in_path, out_dir, layer, grid_var):
                     feat['properties'][pt_est] = in_df.loc[STATION_ID, pt_est].astype(float)
                     feat['properties'][pt_res] = in_df.loc[STATION_ID, pt_res].astype(float)
                     outf.write(feat)
-        # overwrite old with temp with added attributes
+        # keep tmp point file with new data and remove old version
         for f in os.listdir(out_dir):
-            if '_tmp' in f:
+            if '_tmp.' in f:
                 move(OPJ(out_dir, f), OPJ(out_dir, f.replace('_tmp', '')))
 
 def gridmet_zonal_stats(in_path, raster):

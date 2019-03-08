@@ -4,9 +4,44 @@ Change log
 Version 0.0.4
 =============
 
-new function: ``spatial.calc_pt_error`` which
+Add ``util.py`` module to hold utility functions or classes which may be useful to multiple ``gridwxcomp`` modules. Added function to index a pandas DataFrame or Series that has a datetime index based on a user input year filter.
+
+Add year filter option to ``calc_bias_ratios.py``, so that certain years or ranges of years are only used to calculate bias ratios and statistics, the file names of the summary CSV files are also modified with the year or range added as a suffix so that they can be distinguished and used for spatial interpolation. 
+
+New function: ``spatial.calc_pt_error`` which
 * calculates interpolated point ratios and residuals betwen station data
-  * updates summary CSV and point shapefile, copies to directory with rasters
+* updates summary CSV and point shapefile, copies to directory with rasters
+
+For example, now after building point shapefile, making the extraction grid, and interpolating point bias ratios using the ``spatial`` module with default options but only interpolating two layers, the following file structure is created from the root directory holding the ratio sumary CSVs::
+
+    .
+    ├── etr_mm_summary_comp.csv
+    ├── etr_mm_summary.csv
+    └── spatial
+        ├── etr_mm_invdist_400m
+        │   ├── annual_mean.tiff
+        │   ├── annual_mean.vrt
+        │   ├── etr_mm_summary_comp.csv
+        │   ├── etr_mm_summary_pts.cpg
+        │   ├── etr_mm_summary_pts.dbf
+        │   ├── etr_mm_summary_pts.prj
+        │   ├── etr_mm_summary_pts.shp
+        │   ├── etr_mm_summary_pts.shx
+        │   ├── gridMET_stats.csv
+        │   ├── growseason_mean.tiff
+        │   └── growseason_mean.vrt
+        ├── etr_mm_summary_pts.cpg
+        ├── etr_mm_summary_pts.dbf
+        ├── etr_mm_summary_pts.prj
+        ├── etr_mm_summary_pts.shp
+        ├── etr_mm_summary_pts.shx
+        ├── grid.cpg
+        ├── grid.dbf
+        ├── grid.prj
+        ├── grid.shp
+        └── grid.shx
+
+Note, now there are copies of the points shapefile and the summary_comp.csv files in the directory containing the interpolated rasters (in this case growing season and annual ratios for etr). These copies are needed because the newly added point interpolation estimated and error residuals are unique to a specific interpolation run whereas these fields are not added to the original summary CSV and pt shapefile that are stored in the parent directories because they depend on the interpolation method and parameters used. 
 
 Change calculations of annual, growing season, and summer bias ratios to use period sum of data as opposed to mean of monthly ratios. Same for standard deviation calculations and coefficient of variation. Results in slightly more accurate values. Also add total day accounts for these time periods, add all of these fields to georeferenced point shapefile as opposed to only bias ratios in previous versions.
 

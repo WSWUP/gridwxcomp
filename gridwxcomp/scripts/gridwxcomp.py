@@ -69,13 +69,15 @@ def download_gridmet_ee(input_csv, out_dir, years, quiet):
 @click.option('--gridmet-id', '-id', nargs=1, type=str, default=None,
         help='gridMET ID for calculating ratios only for stations in that cell')
 @click.option('--day-limit', '-d', nargs=1, type=str, default=10,
-        help='day threshold per month, if missing more exclude month from calc')
+        help='monthly day threshold, if missing more exclude month from calc')
+@click.option('--years', '-y', nargs=1, type=str, default='all',
+        help='years to use, e.g. 2010 or 2000-2010')
 @click.option('--comp', '-c', default=True, is_flag=True,
         help='flag to NOT save comprehensive output CSV')
 @click.option('--quiet', default=False, is_flag=True, 
         help='supress command line output')
 def calc_bias_ratios(input_csv, out_dir, gridmet_var, station_var, 
-        gridmet_id, day_limit, comp, quiet):
+        gridmet_id, day_limit, years, comp, quiet):
     if quiet:
         logging.getLogger().setLevel(logging.ERROR)
     else:
@@ -88,6 +90,7 @@ def calc_bias_ratios(input_csv, out_dir, gridmet_var, station_var,
         station_var=station_var, 
         gridmet_ID=gridmet_id, 
         day_limit=day_limit,
+        years=years,
         comp=comp
     ) 
 
