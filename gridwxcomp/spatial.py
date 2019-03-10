@@ -250,7 +250,7 @@ def make_points_file(in_path):
         '\nMapping point data for climate stations in: \n',
         in_path, '\n'
     )
-    in_df = pd.read_csv(in_path, index_col='STATION_ID')
+    in_df = pd.read_csv(in_path, index_col='STATION_ID', na_values=[-999])
     # save shapefile to "spatial" subdirectory of in_path
     path_root = os.path.split(in_path)[0]
     file_name = os.path.split(in_path)[1]
@@ -291,21 +291,21 @@ def make_points_file(in_path):
             'summer': 'float',
             'growseason': 'float',
             'annual': 'float',
-            'Jan_cnt': 'int',
-            'Feb_cnt': 'int',
-            'Mar_cnt': 'int',
-            'Apr_cnt': 'int',
-            'May_cnt': 'int',
-            'Jun_cnt': 'int',
-            'Jul_cnt': 'int',
-            'Aug_cnt': 'int',
-            'Sep_cnt': 'int',
-            'Oct_cnt': 'int',
-            'Nov_cnt': 'int',
-            'Dec_cnt': 'int',
-            'summer_cnt': 'int',
-            'grow_cnt': 'int',
-            'annual_cnt': 'int',
+            'Jan_cnt': 'float',
+            'Feb_cnt': 'float',
+            'Mar_cnt': 'float',
+            'Apr_cnt': 'float',
+            'May_cnt': 'float',
+            'Jun_cnt': 'float',
+            'Jul_cnt': 'float',
+            'Aug_cnt': 'float',
+            'Sep_cnt': 'float',
+            'Oct_cnt': 'float',
+            'Nov_cnt': 'float',
+            'Dec_cnt': 'float',
+            'summer_cnt': 'float',
+            'grow_cnt': 'float',
+            'annual_cnt': 'float',
             'Jan_std': 'float',
             'Feb_std': 'float',
             'Mar_std': 'float',
@@ -969,7 +969,7 @@ def interpolate(in_path, layer='all', out=None, scale_factor=0.1,
     if not os.path.isfile(in_path):
         raise FileNotFoundError('Input summary CSV file given'+\
                                 ' was invalid or not found')
-    # look for pacakged gridmet_cell_data.csv if path not given
+    # look for packaged gridmet_cell_data.csv if path not given
     if not gridmet_meta_path:
         try:
             if pkg_resources.resource_exists('gridwxcomp', 
@@ -1042,12 +1042,12 @@ def interpolate(in_path, layer='all', out=None, scale_factor=0.1,
             return
         
         # get point station data from summary CSV
-        in_df = pd.read_csv(in_path)
+        in_df = pd.read_csv(in_path, na_values=[-999])
         lon_pts, lat_pts = in_df.STATION_LON.values, in_df.STATION_LAT.values
         values = in_df[layer].values
         # mask out stations with missing data
-        if np.isnan(values).any():
-            mask = ~np.isnan(values)
+        if len(in_df[in_df[layer] == -999]) > 0:
+            mask = in_df[layer] != -999
             n_missing = np.sum(~mask)
             # if one point or less data points exists exit
             if len(mask) == n_missing or len(mask) == 1:
@@ -1189,6 +1189,10 @@ def calc_pt_error(in_path, out_dir, layer, grid_var):
     """
     raster = str(Path(out_dir)/'{}.tiff'.format(layer))
     pt_shp = str(Path(in_path).parent/'spatial'/'etr_mm_summary_pts.shp')
+
+    if not Path(pt_shp).is_file():
+        make_points_file(in_path)
+
     pt_shp_out = str(Path(out_dir)/'{}_summary_pts.shp'.format(grid_var))
     # mean fields in point shapefile does not include '_mean'
     pt_layer = layer.replace('_mean', '')
@@ -1197,7 +1201,9 @@ def calc_pt_error(in_path, out_dir, layer, grid_var):
     # names of new fields for estimated and residual e.g. Jan_est, Jan_res
     pt_est = '{}_est'.format(pt_layer)
     pt_res = '{}_res'.format(pt_layer)
-
+    
+    print('\nExtracting interpolated data at station locations and \n',
+        'calculating residuals for layer:', layer)
     pt_err = pd.DataFrame(columns=[pt_est, pt_res])
     # read raster for layer and get interpolated data for each point
     with fiona.open(pt_shp) as shp:
@@ -1214,22 +1220,22 @@ def calc_pt_error(in_path, out_dir, layer, grid_var):
     # merge estimated point data with observed to calc residual
     pt_err['STATION_ID'] = pt_err.index
     # read summary CSV with observed ratios
-    in_df = pd.read_csv(in_path, index_col='STATION_ID')
+    in_df = pd.read_csv(in_path, index_col='STATION_ID', na_values=[-999])
     in_df.loc[pt_err.index, pt_est] = pt_err.loc[:, pt_est]
     # calculate residual estimated minus observed
     in_df.loc[:,pt_res] = in_df.loc[:,pt_est] - in_df.loc[:,layer]
     # save/overwrite error to input CSV for future interpolation 
-    in_df.to_csv(in_path, index=True)
+    in_df.to_csv(in_path, index=True, na_rep=-999)
 
     # save copy of CSV with updated error info to out_dir with rasters
     out_summary_csv = Path(out_dir)/Path(in_path).name
     if not out_summary_csv.is_file():
-        in_df.to_csv(str(out_summary_csv), index=True)
+        in_df.to_csv(str(out_summary_csv), index=True, na_rep=-999)
     else:
         out_df = pd.read_csv(str(out_summary_csv), index_col='STATION_ID')
         out_df.loc[pt_err.index, pt_est] = pt_err.loc[:, pt_est]
         out_df.loc[pt_err.index, pt_res] = in_df.loc[pt_err.index, pt_res]
-        out_df.to_csv(out_summary_csv, index=True)
+        out_df.to_csv(out_summary_csv, index=True, na_rep=-999)
     
     # error info to new point shapefile in raster directory
     if not Path(pt_shp_out).is_file():
@@ -1257,13 +1263,25 @@ def calc_pt_error(in_path, out_dir, layer, grid_var):
             with fiona.open(tmp_out, 'w', 'ESRI Shapefile', schema, input_crs) as outf:
                 for feat in inf:
                     STATION_ID = feat['properties']['STATION_ID']
-                    feat['properties'][pt_est] = in_df.loc[STATION_ID, pt_est].astype(float)
-                    feat['properties'][pt_res] = in_df.loc[STATION_ID, pt_res].astype(float)
+                    feat['properties'][pt_est] = in_df.loc[STATION_ID, pt_est]
+                    feat['properties'][pt_res] = in_df.loc[STATION_ID, pt_res]
                     outf.write(feat)
         # keep tmp point file with new data and remove old version
         for f in os.listdir(out_dir):
             if '_tmp.' in f:
                 move(OPJ(out_dir, f), OPJ(out_dir, f.replace('_tmp', '')))
+
+    # remove point shapefile from "spatial" directory and tmp files
+    spatial_dir = Path(in_path).parent.joinpath('spatial')
+    for f in os.listdir(spatial_dir):
+        if Path(f).stem == '{}_summary_pts'.format(grid_var):
+            # delete temp point shapefile
+            (Path(in_path).parent/'spatial'/f).resolve().unlink()
+
+    print(in_path)
+    if Path(in_path.replace('.csv','_tmp.csv')).resolve().is_file():
+        Path(in_path.replace('.csv','_tmp.csv')).resolve().unlink()
+
 
 def gridmet_zonal_stats(in_path, raster):
     """

@@ -41,7 +41,7 @@ def parse_yr_filter(dt_df, years, label):
     """
     if years == 'all':
         dt_df = dt_df
-        year_str = ''
+        year_str = 'all_yrs'
     else:
         try:
             if years and '-' in years:
@@ -51,6 +51,8 @@ def parse_yr_filter(dt_df, years, label):
                 year_str = '{}_{}'.format(start, end)
                 data_start = start
                 data_end = end
+                # the assignment on the next line will not raise an
+                # exception even if the full date range is missing
                 dt_df = dt_df.loc[start:end]
                 if not start in dt_df.index:
                     data_start = dt_df.index.year.min()
@@ -66,11 +68,12 @@ def parse_yr_filter(dt_df, years, label):
                     print('Years used will only include {} to {}'\
                               .format(data_start, data_end))
             else:
+                year_str = str(years)
                 if not years in dt_df.index:
-                    err_msg = 'year:',years, 'is not in the time series'
-                    dt_df = dt_df.loc[years]
+                    print('WARNING: station:', label, 'is missing data',
+                        'for year:', years)
                 else:
-                    year_str = str(years)
+                    
                     dt_df = dt_df.loc[years]
         except:
             raise ValueError(err_msg)

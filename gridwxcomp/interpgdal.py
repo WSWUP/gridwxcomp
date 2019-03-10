@@ -174,8 +174,18 @@ class InterpGdal(object):
         """
         if not Path(out_dir).is_dir():
             os.makedirs(out_dir)
+        # old method
+        #summary_file = Path(self.summary_csv_path).name
+        
+        point_data = Path(self.summary_csv_path).name.replace(
+                '.csv', '_tmp.csv')
 
-        summary_file = Path(self.summary_csv_path).name
+        # make tmp point data csv for given layer, drop missing values
+        df = pd.read_csv(self.summary_csv_path)
+        df = df[['STATION_LAT', 'STATION_LON', layer_name]]
+        df = df[df[layer_name] != -999]
+        tmp_out_path = str(Path(self.summary_csv_path).parent / point_data)
+        df.to_csv(tmp_out_path, index=False)
 
         # if out_dir adjust summary CSV path by prepending parent dirs 
         tmp = copy(Path(out_dir))
@@ -186,10 +196,10 @@ class InterpGdal(object):
             tmp = Path(tmp).parent
             n_parent_dirs+=1
         
-        path_to_summary = str(
+        path_to_data = str(
             Path(
                 '..{}'.format(os.sep)*n_parent_dirs
-            ).joinpath(summary_file)
+            ).joinpath(point_data)
         )
         
         out_file = '{}.vrt'.format(layer_name) # keep it simple just layer name
@@ -197,9 +207,9 @@ class InterpGdal(object):
         # VRT format for reading CSV point data
         root = ET.Element('OGRVRTDataSource')
         OGRVRTLayer = ET.SubElement(root, 'OGRVRTLayer', 
-                                    name=summary_file.replace('.csv', ''))
+                                    name=point_data.replace('.csv', ''))
         # set all fields, SRS WGS84, point geom
-        ET.SubElement(OGRVRTLayer, 'SrcDataSource').text = path_to_summary
+        ET.SubElement(OGRVRTLayer, 'SrcDataSource').text = path_to_data
         ET.SubElement(OGRVRTLayer, 'LayerSRS').text = 'epsg:4326'
         ET.SubElement(OGRVRTLayer, 'GeometryType').text = 'wkbPoint'
         ET.SubElement(OGRVRTLayer, 'GeometryField', encoding='PointFromColumns',
@@ -384,7 +394,7 @@ class InterpGdal(object):
             out_dir.mkdir(parents=True, exist_ok=True)
     
         source_file = Path(self.summary_csv_path).name
-        source = source_file.replace('.csv', '')
+        source = source_file.replace('.csv', '_tmp')
         
         if interp_meth not in InterpGdal.interp_methods:
             raise KeyError('{} not a valid interpolation method'.format(

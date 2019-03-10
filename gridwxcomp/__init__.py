@@ -4,7 +4,7 @@ gridwxcomp is a Python package for comparing station to gridMET climatic variabl
 
 __name__ = 'gridwxcomp'
 __author__ = 'John Volk and Chris Pearson'
-__version__ = '0.0.47'
+__version__ = '0.0.49'
 
 
 from gridwxcomp.prep_input import prep_input

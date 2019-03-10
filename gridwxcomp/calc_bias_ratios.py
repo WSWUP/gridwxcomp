@@ -172,15 +172,15 @@ def _save_output(out_df, comp_out_df, out_dir, gridmet_ID, var_name, yrs):
             existing_df = pd.read_csv(out_file, index_col='STATION_ID')
             if not out_df.index.values[0] in existing_df.index.values:
                 out_df = pd.concat([existing_df, out_df], sort=False)
-                out_df.to_csv(out_file, index=True)
+                out_df.to_csv(out_file, na_rep=-999, index=True)
             # overwrite if station is in existing, could change to
             # allow for duplicates if values are different
             else:
                 existing_df.loc[out_df.index.values[0], :] =\
                     out_df.loc[out_df.index.values[0]]
-                existing_df.to_csv(out_file, index=True)
+                existing_df.to_csv(out_file, na_rep=-999, index=True)
         else:
-            out_df.to_csv(out_file, index=True)
+            out_df.to_csv(out_file, na_rep=-999, index=True)
             
     # save or update short and comprehensive summary files
     if not os.path.isdir(out_dir):
@@ -345,8 +345,8 @@ def calc_bias_ratios(input_path, out_dir, gridmet_var='etr_mm',
             station_df = pd.read_excel(row.STATION_FILE_PATH,
                                        sheet_name='Corrected Data')
         except:
-            print('Station time series file: ', row.STATION_FILE_PATH, 
-                  '\nwas not found, skipping.')
+            print('Time series file for station: ', row.STATION_ID, 
+                  'was not found, skipping.')
             continue
 
         if not station_var in station_df.columns:
@@ -476,7 +476,7 @@ def calc_bias_ratios(input_path, out_dir, gridmet_var='etr_mm',
             if '_mean' or '_stdev' or '_cv' in v:
                 final_ratio[v] = final_ratio[v].astype(float).round(3)
             else:
-                final_ratio[v] = final_ratio[v].astype(int)
+                final_ratio[v] = final_ratio[v].astype(float).round(0)
         # set station ID as index
         final_ratio['STATION_ID'] = row.STATION_ID
         final_ratio.set_index('STATION_ID', inplace=True)
