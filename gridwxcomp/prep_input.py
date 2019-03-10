@@ -98,40 +98,36 @@ def _read_station_list(station_path):
 
     Returns:
         station_list (:class:`pandas.DataFrame`): ``Pandas.DataFrame`` that
-            contains station ID, lattitude, longitude, elevation, and others 
-            for each climate station.
+            contains station name, lattitude, longitude, and others for each 
+            climate station.
 
     """
 
     station_list = pd.read_csv(station_path)
-    # default columns from PyWeatherQAQC
-    cols = [
-            'FID',
-            'LATDECDEG',
-            'LONGDECDEG',
-            'Elev_m',
-            'FileName',
-            'Station_ID',
-            'Elev_FT',
-            'State',
-            'Source',
+    # mandatory columns 
+    need_cols = [
+            'Latitude',
+            'Longitude',
+            'Filename',
             'Station',
-            'Website',
-            'Comments',
-            'Irrigation'
             ]
-    # use only default columns that exist
+
+    # make sure mandatory columns exist else abort
     station_cols = station_list.columns
-    cols = list(set(cols).intersection(station_cols))
-    #station_list = station_list[cols]
+    if not set(need_cols).issubset(set(station_cols)):
+        err_msg = ('One or more of the mandatory columns is missing',
+            'from the station input file, it must contain:\n',
+            ', '.join(c for c in need_cols))
+        raise ValueError()
+
     station_list.rename(
             columns={
-                'LATDECDEG':'STATION_LAT',
-                'LONGDECDEG':'STATION_LON',
+                'Latitude':'STATION_LAT',
+                'Longitude':'STATION_LON',
                 'Elev_m':'STATION_ELEV_M',
                 'Elev_FT':'STATION_ELEV_FT',
                 'Station':'STATION_ID',
-                'FileName':'STATION_FILE_PATH'},
+                'Filename':'STATION_FILE_PATH'},
             inplace=True
             )
     # get station name only for matching to file name
@@ -144,13 +140,13 @@ def _read_station_list(station_path):
     # look in parent directory that contains station CSV file
     if path_root != '' and file_name != '':
         file_names = os.listdir(path_root)   
-    # if station CSV file is in same directory look there
+    # if station CSV file is in cwd look there
     else:
         file_names = os.listdir(os.getcwd())
     # match station name with time series excel files full path,
     # assumes no other files in the directory have station names in their name
     # will accept files of any extension, e.g. xlx, csv, txt
-    for station in station_list.STATION_FILE_PATH:
+    for i, station in enumerate(station_list.STATION_FILE_PATH):
         try:
             match = [s for s in file_names if station in s][0]
         except:
@@ -160,9 +156,11 @@ def _read_station_list(station_path):
                 'STATION_FILE_PATH'] = os.path.abspath(
                                        os.path.join(path_root,match))
         else:
-            print('No file was found that matches station: ', station,
-                    '\nin directory: ', os.path.abspath(path_root),
-                    '\nskipping.\n')
+            missing_station = station_list.iloc[i]['STATION_ID']
+            print('WARNING: no file was found that matches station: ', 
+                missing_station, '\nin directory: ', 
+                os.path.abspath(path_root), '\nskipping.\n'
+            )
             continue
 
     return station_list
