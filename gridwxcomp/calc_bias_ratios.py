@@ -25,6 +25,7 @@ import calendar
 import argparse
 import pandas as pd
 import numpy as np
+import warnings
 from .util import parse_yr_filter
 
 # keys = gridMET variable name
@@ -297,6 +298,12 @@ def calc_bias_ratios(input_path, out_dir, gridmet_var='etr_mm',
         function arguments. 
         
     """
+    # ignore np runtime warnings due to calcs with nans, div by 0
+    np.seterr(divide='ignore', invalid='ignore')
+    # specific for standard deviation of nans
+    std_warning = "Degrees of freedom <= 0 for slice"
+    warnings.filterwarnings("ignore", message=std_warning)
+
     if not GRIDMET_STATION_VARS.get(gridmet_var, None):
         print(
             'Valid gridMET variable names:\n',

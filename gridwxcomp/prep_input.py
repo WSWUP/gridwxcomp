@@ -116,9 +116,9 @@ def _read_station_list(station_path):
     station_cols = station_list.columns
     if not set(need_cols).issubset(set(station_cols)):
         err_msg = ('One or more of the mandatory columns is missing',
-            'from the station input file, it must contain:\n',
+            'from the station input file, it must contain:',
             ', '.join(c for c in need_cols))
-        raise ValueError()
+        raise ValueError(err_msg)
 
     station_list.rename(
             columns={
