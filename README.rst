@@ -12,11 +12,11 @@ A full documentation website is under development.
 Installation
 ------------
 
-Currently we recommend using the provided `conda environment files <https://github.com/WSWUP/gridwxcomp/tree/master/gridwxcomp/env>`_ to install dependencies. Download the appropriate ``.yml`` file e.g. on Windows ``env_windows.yml`` and then install and activate it. If you don't have conda `get it here <https://conda.io/projects/conda/en/latest/user-guide/install/index.html>`_. To install dependencies in a virtual environment run 
+Currently we recommend using the provided conda environment file to install dependencies in a virtual environment. Download the `environment.yml <https://raw.githubusercontent.com/WSWUP/gridwxcomp/master/gridwxcomp/env/environment.yml>`_ file and then install and activate it. If you don't have conda `get it here <https://conda.io/projects/conda/en/latest/user-guide/install/index.html>`_. To install dependencies in a virtual environment run 
 
 .. code-block:: bash
 
-    $ conda env create -f env_windows.yml
+    $ conda env create -f environment.yml
 
 To activate the environment before using ``gridwxcomp`` run
 
@@ -97,7 +97,7 @@ Last, to calculate interpolated surfaces of mean bias ratios and extract zonal m
 
 .. code-block:: bash
 
-    $ gridwxcomp spatial monthly_ratios/etr_mm_summary_comp.csv -b 5
+    $ gridwxcomp spatial monthly_ratios/etr_mm_summary_comp_all_yrs.csv -b 5
 
 The ``[-b 5]`` option indicates that we want to expand the rectangular bounding area for interpolation by five gridMET cells (extrapolation in the outer regions).
 
