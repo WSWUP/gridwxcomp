@@ -353,7 +353,7 @@ def calc_bias_ratios(input_path, out_dir, gridmet_var='etr_mm',
             raise KeyError('{v} not found in the station file: \n{p}'.\
                            format(v=station_var, p=row.STATION_FILE_PATH))
         print(
-             'Calculating {v} bias ratios for station: '.format(v=gridmet_var), 
+             '\nCalculating {v} bias ratios for station:'.format(v=gridmet_var),
              row.STATION_ID
              )
         gridmet_df = pd.read_csv(row.GRIDMET_FILE_PATH, parse_dates=True, 
@@ -498,6 +498,32 @@ def calc_bias_ratios(input_path, out_dir, gridmet_var='etr_mm',
             'STATION_LON': 10,
             'STATION_ELEV_M': 0
         })
+
+        # check if day counts for non-monthly periods are too low, if assign na
+        grow_thresh = 65
+        sum_thresh = 35
+        ann_thresh = 125
+        
+        if final_ratio.at[0,'summer_count'] < sum_thresh:
+            print('WARNING: less than:', sum_thresh, 'days in summer period',
+                 '\nfor station:',row.STATION_ID,'assigning -999 for all stats')
+            cols = [col for col in final_ratio.columns if 
+                    'summer_' in col and '_count' not in col]
+            final_ratio.loc[:,cols] = np.nan
+        
+        if final_ratio.at[0,'growseason_count'] < grow_thresh:
+            print('WARNING: less than:',grow_thresh,'days in growing season',
+                 '\nfor station:',row.STATION_ID,'assigning -999 for all stats')
+            cols = [col for col in final_ratio.columns if 
+                    'growseason_' in col and '_count' not in col]
+            final_ratio.loc[:,cols] = np.nan
+            
+        if final_ratio.at[0,'annual_count'] < ann_thresh:
+            print('WARNING: less than:',ann_thresh,'days in annual period',
+                 '\nfor station:',row.STATION_ID,'assigning -999 for all stats')
+            cols = [col for col in final_ratio.columns if 
+                    'annual_' in col and '_count' not in col]
+            final_ratio.loc[:,cols] = np.nan
 
         if comp:
             out['GRIDMET_ID'] = row.GRIDMET_ID

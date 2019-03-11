@@ -1045,10 +1045,11 @@ def interpolate(in_path, layer='all', out=None, scale_factor=0.1,
         in_df = pd.read_csv(in_path, na_values=[-999])
         lon_pts, lat_pts = in_df.STATION_LON.values, in_df.STATION_LAT.values
         values = in_df[layer].values
+    
         # mask out stations with missing data
-        if len(in_df[in_df[layer] == -999]) > 0:
-            mask = in_df[layer] != -999
-            n_missing = np.sum(~mask)
+        if in_df[layer].isnull().sum() > 0:
+            mask = in_df[layer].notnull()
+            n_missing = in_df[layer].isna().sum()
             # if one point or less data points exists exit
             if len(mask) == n_missing or len(mask) == 1:
                 print('Missing sufficient bias ratios for variable: {} {}'.\
@@ -1188,7 +1189,8 @@ def calc_pt_error(in_path, out_dir, layer, grid_var):
         because it copies data from the shapefile it created.
     """
     raster = str(Path(out_dir)/'{}.tiff'.format(layer))
-    pt_shp = str(Path(in_path).parent/'spatial'/'etr_mm_summary_pts.shp')
+    pt_shp = '{}_summary_pts.shp'.format(grid_var)
+    pt_shp = str(Path(in_path).parent/'spatial'/pt_shp)
 
     if not Path(pt_shp).is_file():
         make_points_file(in_path)
@@ -1263,8 +1265,8 @@ def calc_pt_error(in_path, out_dir, layer, grid_var):
             with fiona.open(tmp_out, 'w', 'ESRI Shapefile', schema, input_crs) as outf:
                 for feat in inf:
                     STATION_ID = feat['properties']['STATION_ID']
-                    feat['properties'][pt_est] = in_df.loc[STATION_ID, pt_est]
-                    feat['properties'][pt_res] = in_df.loc[STATION_ID, pt_res]
+                    feat['properties'][pt_est] = in_df.loc[STATION_ID, pt_est].astype(float)
+                    feat['properties'][pt_res] = in_df.loc[STATION_ID, pt_res].astype(float)
                     outf.write(feat)
         # keep tmp point file with new data and remove old version
         for f in os.listdir(out_dir):
@@ -1278,9 +1280,10 @@ def calc_pt_error(in_path, out_dir, layer, grid_var):
             # delete temp point shapefile
             (Path(in_path).parent/'spatial'/f).resolve().unlink()
 
-    print(in_path)
-    if Path(in_path.replace('.csv','_tmp.csv')).resolve().is_file():
-        Path(in_path.replace('.csv','_tmp.csv')).resolve().unlink()
+    # delete tmp summary csv used in interpgdal _make_pt_vrt method 
+    tmp_csv = str(in_path).replace('.csv','_tmp.csv')
+    if Path(tmp_csv).resolve().is_file():
+        Path(tmp_csv).resolve().unlink()
 
 
 def gridmet_zonal_stats(in_path, raster):
