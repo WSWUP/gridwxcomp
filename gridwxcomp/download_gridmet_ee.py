@@ -19,7 +19,8 @@ import pandas as pd
 # for connection to Earth Engine
 ee.Initialize() 
 
-def download_gridmet_ee(input_csv, out_folder, year_filter=''):
+def download_gridmet_ee(input_csv, out_folder, year_filter='', 
+        update_data=False):
 
     """
     Download gridMET time series data for multiple climate variables for 
@@ -29,7 +30,8 @@ def download_gridmet_ee(input_csv, out_folder, year_filter=''):
         input_csv (str): file path of input CSV produced by 
             :mod:`prep_input.py`
         out_folder (str): directory path to save gridmet timeseries CSV files
-        year_filter (list): single year or range to download
+        year_filter (list): default ''. Single year or range to download
+        update_data (bool): default False. Re-download existing data
 
     Returns:
         None
@@ -42,7 +44,16 @@ def download_gridmet_ee(input_csv, out_folder, year_filter=''):
             $ download_gridmet_ee.py -i merged_input.csv -o gridmet_data -y 2016-2018
 
         note, "merged_input.csv" should have been created by first running 
-        :mod:`prep_input.py`. 
+        :mod:`prep_input.py`. If the ``[-y, --years]`` option is note given 
+        the default behaviour is to download gridMET data from 1979 up through
+        yesterday.
+
+        If the data for 2018 has changed since the last run or for debugging
+        purposes you can re-download data for all or select years with the
+        ``[-u, --update-data]`` option
+
+        .. code::
+            $ download_gridmet_ee.py -i merged_input.csv -o gridmet_data -y 2018 -u
 
         To download the same gridMET data within Python
 
@@ -57,7 +68,6 @@ def download_gridmet_ee(input_csv, out_folder, year_filter=''):
         time series files that are paired with climate stations. 
 
     """
-    
     if not os.path.exists(out_folder):
         logging.info('\nCreating output folder: {}'.format(out_folder))
         os.makedirs(out_folder)
@@ -142,22 +152,36 @@ def download_gridmet_ee(input_csv, out_folder, year_filter=''):
             logging.info('{} does not exists. Creating file.'.format(
                 output_name))
             missing_dates = list(set(date_list))
-        if not missing_dates:
+        if not missing_dates and not update_data:
             logging.info('No missing data found. Skipping')
             # Add gridMET file path to input table if not already there
             input_df.loc[input_df.GRIDMET_ID == row.GRIDMET_ID,\
                 'GRIDMET_FILE_PATH'] = os.path.abspath(output_file)
             input_df.to_csv(input_csv, index=False)
             continue
+        # for option to redownload all data in given year range
+        elif not missing_dates and update_data:
+            if min(date_list.year) == max(date_list.year):
+                yr_rng = min(date_list.year)
+            else:
+                yr_rng = '{}-{}'.format(
+                        min(date_list.year), max(date_list.year))
+            logging.info('Updating data for years: {}'.format(yr_rng))
+            start_date = min(date_list)
+            end_date = max(date_list)
+            # missing years are all years for updating
+            missing_years = sorted(list(set(date_list.year)))
 
-        # Min and Max of Missing Dates (Start: Inclusive; End: Exclusive)
-        start_date = min(missing_dates)
-        end_date = max(missing_dates)
-
-        missing_years = []
-        for date in missing_dates:
-            missing_years = missing_years + [date.year]
-        missing_years = sorted(list(set(missing_years)))
+        # only download years with missing data
+        else:
+            # Min and Max of Missing Dates (Start: Inclusive; End: Exclusive)
+            start_date = min(missing_dates)
+            end_date = max(missing_dates)
+    
+            missing_years = []
+            for date in missing_dates:
+                missing_years = missing_years + [date.year]
+            missing_years = sorted(list(set(missing_years)))
 
         # Add check to verify lat/lon fall within the gridmet extent
         # -124.78749996666667 25.04583333333334
@@ -357,6 +381,9 @@ def arg_parse():
         '-y', '--years', metavar='', default=None, type=str,
         help='Year(s) to download, single year (YYYY) or range (YYYY-YYYY)')
     optional.add_argument(
+        '-u','--update-data', required=False, default=False, 
+        action='store_true', help='Flag to re-download existing data')
+    optional.add_argument(
         '--debug', default=logging.INFO, const=logging.DEBUG,
         help='Debug level logging', action="store_const", dest="loglevel")
     parser._action_groups.append(optional)# to avoid optionals listed first
@@ -376,7 +403,7 @@ if __name__ == '__main__':
         'Script:', os.path.basename(sys.argv[0])))
 
     download_gridmet_ee(input_csv=args.input, out_folder=args.out_dir,
-         year_filter=args.years)
+         year_filter=args.years, update_data=args.update_data)
 
     # Saturated vapor pressure
     # export_df['esat_min_kPa'] =

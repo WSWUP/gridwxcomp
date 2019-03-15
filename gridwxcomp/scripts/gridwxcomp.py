@@ -47,15 +47,17 @@ def prep_input(station_meta_path, out_path, gridmet_meta, quiet):
         help='folder to save downloaded gridMET time series')
 @click.option('--years', '-y', nargs=1, type=str, default=None,
         help='Year(s) to download, single year (YYYY) or range (YYYY-YYYY)')
+@click.option('--update-data', '-u', default=False, is_flag=True,
+        help='flag to re-download gridMET data for date range')
 @click.option('--quiet', default=False, is_flag=True, 
         help='supress command line output')
-def download_gridmet_ee(input_csv, out_dir, years, quiet):
+def download_gridmet_ee(input_csv, out_dir, years, update_data, quiet):
     if quiet:
         logging.getLogger().setLevel(logging.ERROR)
     else:
         logging.getLogger().setLevel(logging.INFO)
     # call gridwxcomp.download_gridmet_ee
-    download(input_csv, out_dir, year_filter=years)
+    download(input_csv, out_dir, year_filter=years, update_data=update_data)
 
 
 @gridwxcomp.command()

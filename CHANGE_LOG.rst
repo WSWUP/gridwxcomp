@@ -1,6 +1,11 @@
 Change log
 **********
 
+Version 0.0.5
+=============
+
+Add option to re-download gridMET time series data using ``download_gridmet_ee``
+
 Version 0.0.4
 =============
 

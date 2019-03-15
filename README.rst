@@ -68,7 +68,7 @@ This example workflow uses data provided with ``gridwxcomp`` including climate v
 
 Once complete, this example will calculate bias ratios between station and gridMET ETr (reference evapotranspiration), spatially interpolate GeoTIFF rasters of bias ratios at 400m resolution, and calculate zonal statistics of mean bias ratios for each gridMET cell in the region of the stations, similar to what is shown in the figure below.
 
-.. image:: https://raw.githubusercontent.com/WSWUP/gridwxcomp/master/docs/source/_static/test_case.png?sanitize=true
+.. image:: https://raw.githubusercontent.com/WSWUP/gridwxcomp/master/docs/_static/test_case.png?sanitize=true
    :align: center
 
 The same procedure can be done for climate variables other than ETr, e.g. observed evapotranspiration, temperature, precipitation, wind speed, short wave radiation, etc.
