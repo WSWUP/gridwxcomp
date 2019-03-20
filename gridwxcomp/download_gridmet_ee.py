@@ -40,7 +40,8 @@ def download_gridmet_ee(input_csv, out_folder, year_filter='',
         Say we wanted to download data for 2016 through 2018, from the command 
         line,
 
-        .. code::
+        .. code-block:: sh
+
             $ download_gridmet_ee.py -i merged_input.csv -o gridmet_data -y 2016-2018
 
         note, "merged_input.csv" should have been created by first running 
@@ -52,7 +53,8 @@ def download_gridmet_ee(input_csv, out_folder, year_filter='',
         purposes you can re-download data for all or select years with the
         ``[-u, --update-data]`` option
 
-        .. code::
+        .. code-block:: sh
+
             $ download_gridmet_ee.py -i merged_input.csv -o gridmet_data -y 2018 -u
 
         To download the same gridMET data within Python

@@ -107,9 +107,10 @@ def main(input_file_path, layer='all', out=None, buffer=25, scale_factor=0.1,
         None
 
     Examples:
-        From the command line interface,
+        From the command line,
 
-        .. code::
+        .. code-block:: sh
+
             $ python spatial.py -i monthly_ratios/etr_mm_summary_comp.csv 
 
         This will produce a subdirectory under "monthly_ratios" named
@@ -151,21 +152,24 @@ def main(input_file_path, layer='all', out=None, buffer=25, scale_factor=0.1,
         used for interpolation if, for example, extrapolation is not needed, 
         use the ``[-b, --buffer]`` option
 
-        .. code::
+        .. code-block:: sh
+
             $ python spatial.py -i monthly_ratios/etr_mm_summary_comp.csv -b 5
 
         Or, if we wanted to interpolate to a 200 m resolution 
         (i.e. scale_factor = 0.05, 0.05 x 4 km = 200 m) using the 'inverse'
         radial basis function,
         
-        .. code::
+        .. code-block:: sh
+
             $ python spatial.py -i monthly_ratios/etr_mm_summary_comp.csv -s 0.05 -f 'inverse'        
 
         To calculate zonal means for a different climate variable, e.g. 
         observed ET ("eto_mm"), as opposed to reference ET (default) use the 
         corresponding input file
         
-        .. code::
+        .. code-block:: sh
+
             $ python spatial.py -i monthly_ratios/eto_mm_summary_comp.csv -s 0.05 -f 'inverse'                
 
         In this case the final zonal statistics of zonal mean bias ratios 
@@ -177,7 +181,8 @@ def main(input_file_path, layer='all', out=None, buffer=25, scale_factor=0.1,
         mean layers, e.g. the coefficient of variation of the growing season
         bias ratio, assign the ``[-l, --layer]`` option,
         
-        .. code::
+        .. code-block:: sh
+
             $ python spatial.py -i monthly_ratios/etr_mm_summary_comp.csv -l April_to_oct_cv
             
         Also see examples of :func:`make_points_file`, :func:`make_grid`, 

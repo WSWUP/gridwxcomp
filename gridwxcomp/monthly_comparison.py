@@ -20,13 +20,14 @@ def monthly_comparison(input_csv, out_dir):
 
     """
     Compare monthly average Wx Station Data from
-    `PyWeatherQAQC <https://github.com/DRI-WSWUP/pyWeatherQAQC>`_ with gridMET 
+    `PyWeatherQAQC <https://github.com/WSWUP/pyWeatherQAQC>`_ with gridMET 
     for each month in year specified.
 
-    :func:`monthly_comparison` creates html files with time series and scatter
-    plots of station versus gridMET climate variables. It uses the :mod:`bokeh`
-    module to create plots that are interactive, e.g. they can be zoomed in/out
-    and panned.
+    The :func:`monthly_comparison` function creates HTML files with time series
+    and scatter plots of station versus gridMET climate variables. It uses the 
+    :mod:`bokeh` module to create plots that are interactive, e.g. they can be 
+    zoomed in/out and panned.
+
     Arguments:
         input_csv (str): path to input CSV file containing
             paired station/gridMET metadata. This file is
@@ -46,7 +47,8 @@ def monthly_comparison(input_csv, out_dir):
         
         From the command line for year 2016,
 
-        .. code::
+        .. code-block:: sh
+
             $ python monthly_comparison.py -i gridwxcomp/merged_input.csv -o comp_plots_2016 -y 2016
 
         or within Python,

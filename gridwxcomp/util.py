@@ -24,15 +24,14 @@ def parse_yr_filter(dt_df, years, label):
 
         >>> df = pd.DataFrame(index=pd.date_range('2000', '2015'))
         >>> df, yr_str = parse_yr_filter(df, '1998-2002', 'station1')
-            WARNING: data for station1 starts in 2000 but you gave 1998
-
-            Years used will only include 2000 to 2002
+        WARNING: data for station1 starts in 2000 but you gave 1998
+        Years used will only include 2000 to 2002
 
         Now df will only contain indices with dates between 2000 and
         2002 and
 
         >>> yr_str
-            '1998_2002'
+        '1998_2002'
 
     Raises:
         ValueError: if ``years`` is invalid or not found

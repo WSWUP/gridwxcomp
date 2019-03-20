@@ -17,23 +17,25 @@ from bokeh.layouts import gridplot
 
 
 def daily_comparison(input_csv, out_dir, year_filter=''):
-
     """
     Compare daily Wx Station Data from 
-    `PyWeatherQAQC <https://github.com/DRI-WSWUP/pyWeatherQAQC>`_ with gridMET 
+    `PyWeatherQAQC <https://github.com/WSWUP/pyWeatherQAQC>`_ with gridMET 
     for each month in year specified.
 
-    :func:`daily_comparison` creates html files with time series and scatter
-    plots of station versus gridMET climate variables. It uses the :mod:`bokeh`
-    module to create plots that are interactive, e.g. they can be zoomed in/out
-    and panned. Separate plot files are created for each month of a single year. 
+    The :func:`daily_comparison` function produces HTML files with time series 
+    and scatter plots of station versus gridMET climate variables. It uses the 
+    :mod:`bokeh` module to create plots that are interactive, e.g. they can be 
+    zoomed in/out and panned. Separate plot files are created for each month 
+    of a single year. 
+
     Arguments:
-        input_csv (str): path to input CSV file containing
-            paired station/gridMET metadata. This file is
-            created by running :mod:`prep_input.py` followed by
-            :mod:`download_gridmet_ee.py`
-        out_dir (str): Directory to save comparison plots
-        year_filter (list): single year (YYYY)
+        input_csv (str): path to input CSV file containing paired station/
+            gridMET metadata. This file is created by running 
+            :mod:`prep_input.py` followed by :mod:`download_gridmet_ee.py`.
+        out_dir (str): Directory to save comparison plots.
+
+    Keyword Arguments:
+        year_filter (list): default ''. Single year YYYY or range YYYY-YYYY
 
     Returns:
         None
@@ -42,21 +44,19 @@ def daily_comparison(input_csv, out_dir, year_filter=''):
         The ``daily_comparison.py`` module will build HTML files with 
         :mod:`bokeh` plots for paired climate variable, e.g. etr_mm,
         eto_mm, u2_ms, tmin_c, tmax_c, srad_wm2, ea_kpa, and Ko (dew point
-        depression).
-        Monthly plots are created for a single year.
+        depression). Monthly plots are created for a single year.
         
         From the command line for year 2016,
 
-        .. code::
+        .. code-block:: sh
+
             $ python daily_comparison.py -i gridwxcomp/merged_input.csv -o comp_plots_2016 -y 2016
 
         or within Python,
 
         >>> from gridwxcomp import daily_comparison
-        >>> daily_comparison('gridwxcomp/merged_input.csv',
-                'comp_plots_2016',
-                '2016'
-            )
+        >>> daily_comparison('gridwxcomp/merged_input.csv', 'comp_plots_2016',
+        >>>     '2016')
 
         Both methods result in monthly HTML :mod:`bokeh` plots being saved
         to "comp_plots_2016/STATION_ID/" where "STATION_ID" is the station

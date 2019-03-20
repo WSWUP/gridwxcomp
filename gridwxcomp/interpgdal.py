@@ -29,7 +29,7 @@ class InterpGdal(object):
     Attributes:
         CELL_SIZE (float): resolution of gridMET dataset in decimal degrees.
         interp_methods (tuple): gdal_grid interpolation algorithms.
-        default_layers (tuplesummary_csv_path): layers to interpolate created by 
+        default_layers (tuple): layers to interpolate created by 
             :mod:`calc_bias_ratios.py`, e.g. "Jan_mean", found in 
             ``summary_csv_path``.
         default_params (dict): dictionary with default parameters for each
@@ -71,12 +71,12 @@ class InterpGdal(object):
         >>> layer = 'growseason_mean' # could be a list
         >>> # run inverse distance interpolation with different params
         >>> for p in range(1,10):
-                for s in [0, 0.5, 1, 1.5, 2]:
-                    # build output directory based on parameter sets
-                    out_dir = os.path.join('spatial', 'invdist', 
-                        'power={}_smooth={}'.format(p, s))
-                    params = {'power': p, 'smooth': s}
-                    test.gdal_grid(out_dir=out_dir, layer=layer, params=params)
+        >>>     for s in [0, 0.5, 1, 1.5, 2]:
+        >>>         # build output directory based on parameter sets
+        >>>         out_dir = os.path.join('spatial', 'invdist', 
+        >>>             'power={}_smooth={}'.format(p, s))
+        >>>         params = {'power': p, 'smooth': s}
+        >>>         test.gdal_grid(out_dir=out_dir, layer=layer, params=params)
 
         Note, we did not assign the interpolation method 'invdist' because it 
         is the default. To use another interpolation method we would

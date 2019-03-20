@@ -13,10 +13,14 @@ Attributes:
         ratios according to the given gridMET variable. 
         
 Note:
-    ``GRIDMET_STATION_VARS`` can be manually adjusted, e.g. new pairs
-    can be made or removed to efficiently use :mod:`gridwxcomp` on custom
+    The module attribute ``GRIDMET_STATION_VARS`` can be manually adjusted, 
+    if ``gridwxcomp`` is installed in editable mode or used as scripts from the
+    root directory. New pairs of station-to-gridMET variables can then be made 
+    or removed to efficiently use :mod:`gridwxcomp` on custom
     station data that was **not** created by 
-    `PyWeatherQAQC <https://github.com/DRI-WSWUP/pyWeatherQAQC>`_.
+    `PyWeatherQAQC <https://github.com/WSWUP/pyWeatherQAQC>`_. Otherwise, the 
+    same can be achieved by the ``gridmet_var`` and ``station_var`` arguments
+    to :func:`calc_bias_ratios`.
     
 """
 
@@ -83,7 +87,8 @@ def main(input_file_path, out_dir, gridmet_var='etr_mm', station_var=None,
     Examples:
         From the command line interface,
 
-        .. code::
+        .. code-block:: sh
+
             $ # for all gridMET cells in input file for gridMET var "etr_mm" (default)
             $ python calc_bias_ratios.py -i merged_input.csv -o monthly_ratios
             $ # for all gridMET cells in input file for gridMET var "eto_mm"
@@ -95,11 +100,12 @@ def main(input_file_path, out_dir, gridmet_var='etr_mm', station_var=None,
             
         It is also possible for the user to define their own station 
         variable name if, for example, they are using station data that was
-        **not** created by `PyWeatherQAQC <https://github.com/DRI-WSWUP/pyWeatherQAQC>`_.
+        **not** created by `PyWeatherQAQC <https://github.com/WSWUP/pyWeatherQAQC>`_.
         Let's say our station time series has ETo named as 'EO' then 
         use the ``[-sv, --station-var]`` and ``[-gv, --gridmet-var]`` options
         
-        .. code::
+        .. code-block:: sh
+
             $ python calc_bias_ratios.py -i merged_input.csv -o monthly_ratios -sv EO -gv eto_mm
 
         This will produce two CSV files in ``out_dir`` named "eto_mm_summary.csv"
@@ -115,7 +121,7 @@ def main(input_file_path, out_dir, gridmet_var='etr_mm', station_var=None,
         (None), the corresponding station variable is looked up from the mapping 
         dictionary in :mod:`calc_bias_ratios.py` named ``GRIDMET_STATION_VARS``.
         To efficiently use climate data that was  **not** created by 
-        `PyWeatherQAQC <https://github.com/DRI-WSWUP/pyWeatherQAQC>`_ which
+        `PyWeatherQAQC <https://github.com/WSWUP/pyWeatherQAQC>`_ which
         is where the default names are derived we recommend manually adjusting
         ``GRIDMET_STATION_VARS`` near the top of the :mod:`calc_bias_ratios.py`
         submodule file. Alternatively, the gridMET and station variable names
@@ -270,9 +276,7 @@ def calc_bias_ratios(input_path, out_dir, gridmet_var='etr_mm',
                 
         This results in two CSV files in ``out_dir`` named "prcp_mm_summary.csv"
         and "prcp_mm_summary_comp.csv". 
-        
-        For command line examples see :func:`main`.
-        
+
     Raises:
         FileNotFoundError: if input file is invalid or not found.
         KeyError: if the input file does not contain file paths to

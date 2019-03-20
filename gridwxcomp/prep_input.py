@@ -40,7 +40,8 @@ def main(station_file, out_path, gridmet_meta_file):
         From the command line interface within the ``gridwxcomp/gridwxcomp``
         directory (or replace input path with correct path),
 
-        .. code::
+        .. code-block:: sh
+
             $ python prep_input.py -i example_data/Station_Data.txt 
 
         The result is "merged_input.csv" being created in the working 
@@ -191,10 +192,7 @@ def prep_input(station_path, out_path='merged_input.csv',
     Example:
 
         >>> from gridwxcomp import prep_input 
-        >>> prep_input(
-                'gridwxcomp/example_data/Station_Data.txt',
-                'outfile.csv'
-            )
+        >>> prep_input('gridwxcomp/example_data/Station_Data.txt','outfile.csv')
         
         outfile.csv will be created containing station and corresponding
         gridMET cell data. This file is later used as input for 
@@ -202,15 +200,21 @@ def prep_input(station_path, out_path='merged_input.csv',
         
     Raises:
         FileNotFoundError: if the ``gridmet_meta_path`` is not passed as a 
-        command line argument and it is not in the current working directory
-        and named "gridmet_cell_data.csv" and if ``gridwxcomp`` was not 
-        installed to the user's PATH, i.e. pip or python setup.py install.
+            command line argument and it is not in the current working directory
+            and named "gridmet_cell_data.csv" and if ``gridwxcomp`` was not 
+            installed to the user's PATH, i.e. pip or python setup.py install.
+        ValueError: if one or more of the following mandatory columns are 
+            missing from the input CSV file (``station_path`` parameter): 
+            'Longitude', 'Latitude', 'Station', or 'Filename'.   
 
     Note:
-        The CSV file that is saved contains latitude, longitude, and elevation
+        Currently, input time series files for station data must follow the
+        format created by `pyWeatherQAQC <https://github.com/WSWUP/pyWeatherQAQC>`_
+        i.e. microsoft excel files with data stored in a tab named 'corrected'.
+        The CSV file produced by contains latitude, longitude, and other
         fields for both the station and nearest gridMET cell centroid. Fields 
         that may refer to both gridMET and station data have prefixes to 
-        distinguish, the climate station data are prefixed with "STATION_" and 
+        distinguish, the climate station data are prefixed with "STATION" and 
         those refering to gridMET have no prefix. Other fields without a 
         prefix are not in all capital letters and refer to the climate station, 
         e.g. "Website". 
