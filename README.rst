@@ -7,7 +7,7 @@ A Python package for calculating bias correction factors between climate station
 
 Documentation
 -------------
-A full documentation website is under development.
+At `ReadTheDocs <http://gridwxcomp.readthedocs.io/>`_
 
 Installation
 ------------
