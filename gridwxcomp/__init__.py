@@ -4,7 +4,7 @@ A Python package for calculating bias correction factors between climate station
 
 __name__ = 'gridwxcomp'
 __author__ = 'John Volk and Chris Pearson'
-__version__ = '0.0.50'
+__version__ = '0.0.51'
 
 
 from gridwxcomp.prep_input import prep_input
