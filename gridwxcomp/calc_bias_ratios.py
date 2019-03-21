@@ -27,9 +27,10 @@ Note:
 import os
 import calendar
 import argparse
+import warnings
+
 import pandas as pd
 import numpy as np
-import warnings
 from .util import parse_yr_filter
 
 # keys = gridMET variable name
