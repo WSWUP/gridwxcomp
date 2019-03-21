@@ -200,6 +200,7 @@ epub_exclude_files = ['search.html']
 
 # Example configuration for intersphinx: refer to the Python standard library.
 intersphinx_mapping = {
+    'bokeh': ('https://bokeh.pydata.org/en/latest', None),
     'sphinx': ('http://www.sphinx-doc.org/en/stable', None),
     'python': ('https://docs.python.org/3', None),
     'matplotlib': ('https://matplotlib.org', None),
@@ -211,3 +212,16 @@ intersphinx_mapping = {
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = False
+
+# toggle on code blocks to remove prompt ">>> "
+def setup(app):
+    app.add_javascript('copybutton.js')
+    app.add_stylesheet('custom.css')
+    app.add_javascript("custom.js")
+    app.add_javascript("https://cdn.jsdelivr.net/npm/clipboard@1/dist/clipboard.min.js")
+
+#def setup(app):
+#    app.add_stylesheet('custom.css')
+#    app.add_javascript("custom.js")
+#    app.add_javascript("https://cdn.jsdelivr.net/npm/clipboard@1/dist/clipboard.min.js")
+#

@@ -1170,7 +1170,7 @@ def calc_pt_error(in_path, out_dir, layer, grid_var):
     
     Arguments:
         in_path (str): path to comprehensive summary CSV created by 
-            :mod:`gridwxcomp.calc_bias_ratios.py`
+            :mod:`gridwxcomp.calc_bias_ratios`
         out_dir (str): path to dir that contains interpolated raster
         layer (str): layer to calculate error e.g. "annual_mean"
         grid_var (str): name of gridMET variable e.g. "etr_mm"

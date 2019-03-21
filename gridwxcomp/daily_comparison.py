@@ -24,9 +24,9 @@ def daily_comparison(input_csv, out_dir, year_filter=''):
 
     The :func:`daily_comparison` function produces HTML files with time series 
     and scatter plots of station versus gridMET climate variables. It uses the 
-    :mod:`bokeh` module to create plots that are interactive, e.g. they can be 
-    zoomed in/out and panned. Separate plot files are created for each month 
-    of a single year. 
+    `bokeh <https://bokeh.pydata.org/en/latest/>`_ module to create interactive 
+    plots, e.g. they can be zoomed in/out and panned. Separate plot files are 
+    created for each month of a single year. 
 
     Arguments:
         input_csv (str): path to input CSV file containing paired station/
@@ -42,9 +42,9 @@ def daily_comparison(input_csv, out_dir, year_filter=''):
 
     Example:
         The ``daily_comparison.py`` module will build HTML files with 
-        :mod:`bokeh` plots for paired climate variable, e.g. etr_mm,
-        eto_mm, u2_ms, tmin_c, tmax_c, srad_wm2, ea_kpa, and Ko (dew point
-        depression). Monthly plots are created for a single year.
+        bokeh plots for paired climate variables, e.g. etr_mm, eto_mm, 
+        u2_ms, tmin_c, tmax_c, srad_wm2, ea_kpa, and Ko (dew point depression). 
+        Monthly plots are created for a single year.
         
         From the command line for year 2016,
 
@@ -58,10 +58,10 @@ def daily_comparison(input_csv, out_dir, year_filter=''):
         >>> daily_comparison('gridwxcomp/merged_input.csv', 'comp_plots_2016',
         >>>     '2016')
 
-        Both methods result in monthly HTML :mod:`bokeh` plots being saved
-        to "comp_plots_2016/STATION_ID/" where "STATION_ID" is the station
-        ID as found in the input CSV file. A file is saved for each month
-        with the station ID, month, and year in the file name. 
+        Both methods result in monthly HTML `bokeh <https://bokeh.pydata.org/en/latest/>`_ 
+        plots being saved to "comp_plots_2016/STATION_ID/" where "STATION_ID" 
+        is the station ID as found in the input CSV file. A file is saved for 
+        each month with the station ID, month, and year in the file name. 
 
     Note:
         If there are less than five days of data in a month the plot for that

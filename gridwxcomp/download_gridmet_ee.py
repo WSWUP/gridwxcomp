@@ -59,10 +59,7 @@ def download_gridmet_ee(input_csv, out_folder, year_filter='',
         To download the same gridMET data within Python
 
         >>> from gridwxcomp import download_gridmet_ee
-        >>> download_gridmet_ee('merged_input.csv',
-                'gridmet_data',
-                '2016-2018'
-            )
+        >>> download_gridmet_ee('merged_input.csv', 'gridmet_data', '2016-2018')
 
         Running :func:`download_gridmet_ee` also updates the CSV file
         produced from :mod:`gridwxcomp.prep_input` to include file paths to 
