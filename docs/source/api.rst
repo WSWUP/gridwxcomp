@@ -28,7 +28,7 @@ spatial
 
 .. automodule:: gridwxcomp.spatial
     :members:
-    :exclude-members: main, arg_parse
+    :exclude-members: main, arg_parse, get_cell_ID
     :undoc-members:
     :show-inheritance:
 

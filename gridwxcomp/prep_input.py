@@ -47,8 +47,8 @@ def main(station_file, out_path, gridmet_meta_file):
         The result is "merged_input.csv" being created in the working 
         directory which contains metadata from climate staions as well as the 
         lat, long, and gridMET ID of the nearest gridMET cell centroid.
-        This file is used as input to :mod:`download_gridmet_ee.py`
-        followed by :mod:`calc_bias_ratios.py`.
+        This file is used as input to :mod:`gridwxcomp.download_gridmet_ee`
+        followed by :mod:`gridwxcomp.calc_bias_ratios`.
 
     """
 
@@ -196,7 +196,7 @@ def prep_input(station_path, out_path='merged_input.csv',
         
         outfile.csv will be created containing station and corresponding
         gridMET cell data. This file is later used as input for 
-        :mod:`download_gridmet_ee.py` and :mod:`calc_bias_ratios.py`.
+        :mod:`gridwxcomp.download_gridmet_ee` and :mod:`gridwxcomp.calc_bias_ratios`.
         
     Raises:
         FileNotFoundError: if the ``gridmet_meta_path`` is not passed as a 

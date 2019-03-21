@@ -23,14 +23,14 @@ class InterpGdal(object):
     
     Arguments:
         summary_csv_path (str): path to [var]_summary_comp CSV file created 
-            by :mod:`calc_bias_ratios.py` containing point bias ratios, lat
-            and long. 
+            by :mod:`gridwxcomp.calc_bias_ratios` containing point bias ratios,
+            lat, and long. 
             
     Attributes:
         CELL_SIZE (float): resolution of gridMET dataset in decimal degrees.
         interp_methods (tuple): gdal_grid interpolation algorithms.
         default_layers (tuple): layers to interpolate created by 
-            :mod:`calc_bias_ratios.py`, e.g. "Jan_mean", found in 
+            :mod:`gridwxcomp.calc_bias_ratios`, e.g. "Jan_mean", found in 
             ``summary_csv_path``.
         default_params (dict): dictionary with default parameters for each
             interpolation algorithm, slightly modified from gdal defaults.
@@ -40,7 +40,7 @@ class InterpGdal(object):
             input ``summary_csv_path``.
         layers (list): list of layers in ``summary_csv_path`` to interpolate
             e.g. when using :meth:`InterpGdal.gdal_grid` with ``layer="all"``
-            defaults to ``InterpGdal.default_layers``.
+            defaults to :attr:`InterpGdal.default_layers`.
         grid_bounds (tuple or None): default None. Extent for interpolation
             raster in order (min long, max long, min lat, max lat).
         interp_meth (str): default 'invdist'. gdal_grid interpolation method.
@@ -52,13 +52,13 @@ class InterpGdal(object):
             in the form of a dictionary with parameter names as keys.
             
     Example:
-        The :class:`InterpGdal` is useful to experiment with multiple 
-        interpolation algorithms provided by gdal, which are optimized and
+        The :class:`InterpGdal` class is useful for experimenting with multiple 
+        interpolation algorithms provided by gdal which are optimized and
         often sensitive to multiple parameters. We can use the object
         to loop over a range of parameter combinations to test how algorithms
-        perform, we might pick a single variable to test in this case the
+        perform, we might pick a single layer to test, in this case the
         growing season bias ratios between station and gridMET reference
-        evapotranspiration (etr_mm). Specifically here is a way to conduct a
+        evapotranspiration (etr_mm). Below is a routine to conduct a
         basic sensitivity analysis of the power and smooth parameters of the 
         inverse distance to a power interpolation method,
         
@@ -82,8 +82,8 @@ class InterpGdal(object):
         is the default. To use another interpolation method we would
         assign the ``interp_meth`` kwarg to :meth:`InterpGdal.gdal_grid`.
         Similarly, we could experiment with other parameters which all can be
-        found in the class attribute ``InterpGdal.default_params``. The
-        instance variable ``InterpGdal.params`` can also be used to save
+        found in the class attribute :attr:`InterpGdal.default_params`. The
+        instance variable :attr:`InterpGdal.params` can also be used to save
         metadata on parameters used for each run.
         
     """
@@ -296,15 +296,13 @@ class InterpGdal(object):
         Examples:
             The default interpolation algorithm 'invdist' or inverse distance 
             weighting to a power to interpolate bias ratios in a summary CSV 
-            file that was first created by :mod:`calc_bias_ratios.py`. The 
-            default option will interpolate all layers in 
-            :obj:`InterpGdal.default_layers` and calculate zonal statistics for
-            all layers. It will also assume the boundaries of the rasters are 
-            defined by the centroid locations of the *outer* station locations 
-            in the input summary CSV plus a 25 gridMET cell buffer, the pixel 
-            size will be 400m (scale_factor=0.1). Here let's limit the 
-            interpolation to two layers, growing season and annual mean
-            bias ratios,
+            file that was first created by :mod:`gridwxcomp.calc_bias_ratios`. 
+            The default option will interpolate all layers in :obj:`InterpGdal.default_layers` 
+            and calculate zonal statistics for all layers. It will also assume 
+            the boundaries of the rasters are defined by the centroid locations 
+            of the *outer* station locations in the input summary CSV plus a 25 
+            gridMET cell buffer, the pixel size will be 400m (scale_factor=0.1).            We also limit the interpolation to two layers, growing season and 
+            annual mean bias ratios,
             
             >>> from gridwxcomp import InterpGdal
             >>> summary_file = 'PATH/TO/[var]_summary_comp.csv'
@@ -317,8 +315,7 @@ class InterpGdal(object):
             
             Note, zonal statistics on gridMET cells in a fishnet grid are 
             calculated by default, to avoid an error the fishnet must have been
-            previously created using :func:`spatial.make_grid`. After running 
-            the code above the following files will be created in the 
+            previously created using :func:`gridwxcomp.spatial.make_grid`. After            running the code above the following files will be created in the 
             'default_params' directory which will be build in the same location
             as the input summary CSV::
             
@@ -348,14 +345,14 @@ class InterpGdal(object):
             that were used for the last call to :meth:`InterpGdal.gdal_grid`
             
             >>> test.params
-                {'power': 4,
-                 'smoothing': 0.2,
-                 'radius1': 0,
-                 'radius2': 0,
-                 'angle': 0,
-                 'max_points': 0,
-                 'min_points': 0,
-                 'nodata': -999}
+            {'power': 4,
+             'smoothing': 0.2,
+             'radius1': 0,
+             'radius2': 0,
+             'angle': 0,
+             'max_points': 0,
+             'min_points': 0,
+             'nodata': -999}
                  
             Or to find the paths to the interpolated raster files that
             have been created by the instance (all), the "interped_rasters"
@@ -363,18 +360,18 @@ class InterpGdal(object):
             of absolute paths of raster files. To get them as strings,
             
             >>> list(map(str, test.interped_rasters))
-                ['PATH/TO/growseason_mean.tiff',
-                 'PATH/TO/annual_mean.tiff']
+            ['PATH/TO/growseason_mean.tiff',
+             'PATH/TO/annual_mean.tiff']
              
             Similary, the raster extent that was used and will be used again for
             any subsequent calls of :meth:`InterpGdal.gdal_grid` can be 
             retrieved by
              
             >>> test.grid_bounds 
-                (-111.74583329966664,
-                 -108.74583330033335,
-                 38.21250000003333,
-                 40.462499999966674)
+            (-111.74583329966664,
+             -108.74583330033335,
+             38.21250000003333,
+             40.462499999966674)
              
         Note:
             The ``nx_cells`` and ``ny_cells`` arguments are an option for 

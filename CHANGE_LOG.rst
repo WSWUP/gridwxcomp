@@ -4,7 +4,9 @@ Change Log
 Version 0.0.5
 =============
 
-Add option to re-download gridMET time series data using ``download_gridmet_ee``
+Add docs at `ReadTheDocs <http://gridwxcomp.readthedocs.io/>`_
+
+Add option to re-download gridMET time series data using ``download_gridmet_ee`` for specified year range.
 
 Version 0.0.4
 =============

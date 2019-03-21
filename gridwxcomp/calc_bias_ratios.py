@@ -4,14 +4,27 @@ Calculate monthly bias ratios of variables from climate station
 to overlapping gridMET cells. 
 
 Input file for this module must first be created by running 
-:mod:`prep_input.py` followed by :mod:`download_gridmet_ee.py`. 
+:mod:`gridwxcomp.prep_input` followed by :mod:`gridwxcomp.download_gridmet_ee`. 
 
 Attributes:
     GRIDMET_STATION_VARS (:obj:`dict`): mapping dictionary with gridMET
         variable names as keys and station variable names as values.
         Used to determine which station variable to calculate bias
         ratios according to the given gridMET variable. 
-        
+
+Default values::
+
+    GRIDMET_STATION_VARS = {
+        'u2_ms' : 'ws_2m (m/s)',
+        'tmin_c' : 'TMin (C)',
+        'tmax_c' : 'TMax (C)',
+        'srad_wm2' : 'Rs (w/m2)',
+        'ea_kpa' : 'Vapor Pres (kPa)',
+        'prcp_mm' : 'Precip (mm)',
+        'etr_mm' : 'Calc_ETr (mm)',
+        'eto_mm' : 'Calc_ETo (mm)'
+    }
+
 Note:
     The module attribute ``GRIDMET_STATION_VARS`` can be manually adjusted, 
     if ``gridwxcomp`` is installed in editable mode or used as scripts from the
@@ -60,8 +73,8 @@ def main(input_file_path, out_dir, gridmet_var='etr_mm', station_var=None,
     Arguments:
         input_file_path (str): path to input CSV file containing
             paired station/gridMET metadata. This file is 
-            created by running :mod:`prep_input.py` followed by 
-            :mod:`download_gridmet_ee.py`.
+            created by running :mod:`gridwxcomp.prep_input` followed by 
+            :mod:`gridwxcomp.download_gridmet_ee`.
         out_dir (str): path to directory to save CSV files with
             monthly bias ratios of etr.
             
@@ -70,8 +83,8 @@ def main(input_file_path, out_dir, gridmet_var='etr_mm', station_var=None,
             to calculate bias ratios.
         station_var (str): default None. Climate station variable to use
             to calculate bias ratios. If None, look up using ``gridmet_var`` 
-            as a key to ``GRIDMET_STATION_VARS`` dictionary found as a 
-            module attribute to :mod:`calc_bias_ratios.py`.
+            as a key to ``GRIDMET_STATION_VARS`` dictionary which is a 
+            module attribute to :mod:`gridwxcomp.calc_bias_ratios`.
         gridmet_ID (str): optional gridMET ID number if user wants
             to only calculate bias ratios for a single gridMET cell.
         day_limit (int): default 10. Threshold number of days in month
@@ -109,24 +122,24 @@ def main(input_file_path, out_dir, gridmet_var='etr_mm', station_var=None,
 
             $ python calc_bias_ratios.py -i merged_input.csv -o monthly_ratios -sv EO -gv eto_mm
 
-        This will produce two CSV files in ``out_dir`` named "eto_mm_summary.csv"
-        and "eto_mm_summary_comp.csv". If the ``[-y, --years]`` option is assigned
-        e.g. as "2010 then the output CSVs will have "_2010" appended
-        to their names i.e. "eto_mm_summary_comp_2010.csv"
+        This will produce two CSV files in ``out_dir`` named 
+        "eto_mm_summary_all_yrs.csv" and "eto_mm_summary_comp_all_yrs.csv". If 
+        the ``[-y, --years]`` option is assigned, e.g. as '2010', then the 
+        output CSVs will have '2010' suffix, i.e. 'eto_mm_summary_comp_2010.csv'
         
         For use within Python see :func:`calc_bias_ratios`.
 
     Note:
         If ``[-gv, --gridmet-var]`` command line option or ``gridmet_var`` 
         keyword argument is given but the station variable is left as default 
-        (None), the corresponding station variable is looked up from the mapping 
-        dictionary in :mod:`calc_bias_ratios.py` named ``GRIDMET_STATION_VARS``.
-        To efficiently use climate data that was  **not** created by 
-        `PyWeatherQAQC <https://github.com/WSWUP/pyWeatherQAQC>`_ which
-        is where the default names are derived we recommend manually adjusting
-        ``GRIDMET_STATION_VARS`` near the top of the :mod:`calc_bias_ratios.py`
+        (None), the corresponding station variable is looked up from the mapping
+        dictionary in :mod:`gridwxcomp.calc_bias_ratios` named 
+        ``GRIDMET_STATION_VARS``. To efficiently use climate data that was  
+        **not** created by `PyWeatherQAQC <https://github.com/WSWUP/pyWeatherQAQC>`_ 
+        which is where the default names are derived you can manually adjust
+        ``GRIDMET_STATION_VARS`` near the top of the :mod:`gridwxcomp.calc_bias_ratios`
         submodule file. Alternatively, the gridMET and station variable names
-        need to be explicitly passed as command line or function arguments. 
+        may be explicitly passed as command line or function arguments. 
         
     """
 
@@ -234,8 +247,8 @@ def calc_bias_ratios(input_path, out_dir, gridmet_var='etr_mm',
     Arguments:
         input_path (str): path to input CSV file with matching
             station climate and gridMET metadata. This file is 
-            created by running :mod:`prep_input.py` followed by 
-            :mod:`download_gridmet_ee.py`.
+            created by running :func:`gridwxcomp.prep_input` followed by 
+            :func:`gridwxcomp.download_gridmet_ee`.
         out_dir (str): path to directory to save CSV files with
             monthly bias ratios of etr.
             
@@ -244,8 +257,8 @@ def calc_bias_ratios(input_path, out_dir, gridmet_var='etr_mm',
             to calculate bias ratios.
         station_var (str): default None. Climate station variable to use
             to calculate bias ratios. If None, look up using ``gridmet_var`` 
-            as a key to ``GRIDMET_STATION_VARS`` dictionary found as a 
-            module attribute to :mod:`calc_bias_ratios.py`.
+            as a key to :attr:`GRIDMET_STATION_VARS` dictionary found as a 
+            module attribute to :mod:`gridwxcomp.calc_bias_ratios`.
         gridmet_ID (int): default None. GridMET ID number if user wants
             to only calculate bias ratios for a single gridMET cell.
         day_limit (int): default 10. Threshold number of days in month
@@ -272,18 +285,18 @@ def calc_bias_ratios(input_path, out_dir, gridmet_var='etr_mm',
         e.g. if we had climate daily time series data for precipitation 
         with the column named "p" then,
         
-        >>> calc_bias_ratios(input_path, out_dir, 
-                gridmet_var='prcp_mm', station_var='p')
+        >>> calc_bias_ratios(input_path, out_dir, gridmet_var='prcp_mm', 
+        >>>     station_var='p')
                 
-        This results in two CSV files in ``out_dir`` named "prcp_mm_summary.csv"
-        and "prcp_mm_summary_comp.csv". 
+        This results in two CSV files in ``out_dir`` named 
+        "prcp_mm_summary_all_yrs.csv" and "prcp_mm_summary_comp_all_yrs.csv". 
 
     Raises:
         FileNotFoundError: if input file is invalid or not found.
         KeyError: if the input file does not contain file paths to
             the climate station and gridMET time series files. This
-            occurs if, for example, the :mod:`prep_input.py` and/or 
-            the :mod:`download_gridmet_ee.py` scripts have not been 
+            occurs if, for example, the :mod:`gridwxcomp.prep_input` and/or 
+            the :mod:`gridwxcomp.download_gridmet_ee` scripts have not been 
             run first. Also raised if the given ``gridmet_var`` or 
             ``station_var`` kwargs are invalid.
     
@@ -296,7 +309,7 @@ def calc_bias_ratios(input_path, out_dir, gridmet_var='etr_mm',
         keyword argument is given but the ``station_var`` is left as 
         default (None), the corresponding station variable is looked 
         up from the mapping dictionary in :mod:`calc_bias_ratios.py` 
-        named ``GRIDMET_STATION_VARS``. To use climate data 
+        named :attr:`GRIDMET_STATION_VARS`. To use climate data 
         that was  **not** created by `pyWeatherQAQC <https://github.com/WSWUP/pyWeatherQAQC>`_ 
         which is where the default names are derived, the gridMET and 
         station variable names need to be explicitly passed as 

@@ -27,8 +27,7 @@ def download_gridmet_ee(input_csv, out_folder, year_filter='',
     select gridMET cells as listed in ``input_csv``.
 
     Arguments:
-        input_csv (str): file path of input CSV produced by 
-            :mod:`prep_input.py`
+        input_csv (str): file path of input CSV produced by :mod:`gridwxcomp.prep_input`
         out_folder (str): directory path to save gridmet timeseries CSV files
         year_filter (list): default ''. Single year or range to download
         update_data (bool): default False. Re-download existing data
@@ -45,9 +44,9 @@ def download_gridmet_ee(input_csv, out_folder, year_filter='',
             $ download_gridmet_ee.py -i merged_input.csv -o gridmet_data -y 2016-2018
 
         note, "merged_input.csv" should have been created by first running 
-        :mod:`prep_input.py`. If the ``[-y, --years]`` option is note given 
-        the default behaviour is to download gridMET data from 1979 up through
-        yesterday.
+        :mod:`gridwxcomp.prep_input`. If the ``[-y, --years]`` option is not 
+        given the default behaviour is to download gridMET data from 1979 up 
+        through yesterday.
 
         If the data for 2018 has changed since the last run or for debugging
         purposes you can re-download data for all or select years with the
@@ -55,7 +54,7 @@ def download_gridmet_ee(input_csv, out_folder, year_filter='',
 
         .. code-block:: sh
 
-            $ download_gridmet_ee.py -i merged_input.csv -o gridmet_data -y 2018 -u
+            $ python download_gridmet_ee.py -i merged_input.csv -o gridmet_data -y 2018 -u
 
         To download the same gridMET data within Python
 
@@ -65,9 +64,9 @@ def download_gridmet_ee(input_csv, out_folder, year_filter='',
                 '2016-2018'
             )
 
-        Running :func:`download_gridmet_ee.py` also updates the CSV file
-        produced from :mod:`prep_input.py` to include file paths to gridMET
-        time series files that are paired with climate stations. 
+        Running :func:`download_gridmet_ee` also updates the CSV file
+        produced from :mod:`gridwxcomp.prep_input` to include file paths to 
+        gridMET time series files that are paired with climate stations. 
 
     """
     if not os.path.exists(out_folder):
