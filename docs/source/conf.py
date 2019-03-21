@@ -17,6 +17,8 @@ import sys
 # sys.path.insert(0, os.path.abspath('.'))
 sys.path.insert(0, os.path.abspath('../../'))
 
+# for ReadTheDocs to prevent C-based module import issues
+autodoc_mock_imports = ['numpy', 'pandas', 'scipy']
 
 # -- Project information -----------------------------------------------------
 
@@ -25,10 +27,16 @@ copyright = '2019, John Volk and Chris Pearson'
 author = 'John Volk and Chris Pearson'
 
 # The short X.Y version
-version = '0.0.50'
+version = ''
 # The full version, including alpha/beta/rc tags
 release = ''
 
+try:
+    from gridwxcomp import __version__ as version
+except ImportError:
+    pass
+else:
+    release = version
 
 # -- General configuration ---------------------------------------------------
 
@@ -189,21 +197,15 @@ epub_exclude_files = ['search.html']
 # -- Options for intersphinx extension ---------------------------------------
 
 # Example configuration for intersphinx: refer to the Python standard library.
-intersphinx_mapping = {'https://docs.python.org/': None}
-
+intersphinx_mapping = {
+    'sphinx': ('http://www.sphinx-doc.org/en/stable', None),
+    'python': ('https://docs.python.org/3', None),
+    'matplotlib': ('https://matplotlib.org', None),
+    'numpy': ('https://docs.scipy.org/doc/numpy', None),
+    'pandas': ('http://pandas.pydata.org/pandas-docs/stable', None),
+    'scipy': ('https://docs.scipy.org/doc/scipy/reference', None),
+}
 # -- Options for todo extension ----------------------------------------------
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = False
-
-# for ReadTheDocs to prevent C-based module import issues
-import sys
-from unittest.mock import MagicMock
-
-class Mock(MagicMock):
-    @classmethod
-    def __getattr__(cls, name):
-        return MagicMock()
-
-MOCK_MODULES = ['numpy', 'pandas']
-sys.modules.update((mod_name, Mock()) for mod_name in MOCK_MODULES)
