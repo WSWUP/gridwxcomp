@@ -18,7 +18,8 @@ import sys
 sys.path.insert(0, os.path.abspath('../../'))
 
 # for ReadTheDocs to prevent C-based module import issues
-autodoc_mock_imports = ['bokeh', 'ee', 'numpy', 'pandas', 'scipy']
+autodoc_mock_imports = ['bokeh', 'click', 'ee', 'numpy', 'pandas', 'refet', 
+                       'fiona', 'gdal', 'rasterstats', 'shapely', 'scipy']
 
 # -- Project information -----------------------------------------------------
 
