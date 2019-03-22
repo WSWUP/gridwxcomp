@@ -1,5 +1,8 @@
 API Reference
 =============
+
+This page documents all routines provided by ``gridwxcomp``. Major functions and modules are listed in the order that they would normally be used.
+
 .. contents:: :local:
 
 prep\_input

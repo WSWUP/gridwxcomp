@@ -16,59 +16,60 @@ from bokeh.plotting import figure, output_file, show, save
 from bokeh.layouts import gridplot
 
 
-def monthly_comparison(input_csv, out_dir):
+def monthly_comparison(input_csv, out_dir=None):
 
     """
     Compare monthly average Wx Station Data from
-    `PyWeatherQAQC <https://github.com/WSWUP/pyWeatherQAQC>`_ with gridMET 
-    for each month in year specified.
+    `PyWeatherQAQC <https://github.com/WSWUP/pyWeatherQAQC>`_ with gridMET.
 
-    The :func:`monthly_comparison` function creates HTML files with time series
-    and scatter plots of station versus gridMET climate variables. It uses the 
-    :mod:`bokeh` module to create plots that are interactive, e.g. they can be 
-    zoomed in/out and panned.
+    The :func:`monthly_comparison` function produces HTML files with time series
+    and scatter plots of station versus gridMET climate variables of monthly 
+    mean data. It uses the `bokeh <https://bokeh.pydata.org/en/latest/>`_ module
+    to create interactive plots, e.g. they can be zoomed in/out and panned. 
 
     Arguments:
         input_csv (str): path to input CSV file containing
             paired station/gridMET metadata. This file is
-            created by running :mod:`prep_input.py` followed by
-            :mod:`download_gridmet_ee.py`
-        out_dir (str): Directory to save comparison plots
+            created by running :mod:`gridwxcomp.prep_input` followed by
+            :mod:`gridwxcomp.download_gridmet_ee`.
+
+    Keyword Arguments:
+        out_dir (str): default None. Directory to save comparison plots.
 
     Returns:
         None
 
     Example:
-        The ``monthly_comparison.py`` module will build HTML files with
-        :mod:`bokeh` plots for paired climate variable, e.g. etr_mm,
+        The :func:`monthly_comparison`` function will generate HTML files with
+        bokeh plots for paired climate variable, e.g. etr_mm,
         eto_mm, u2_ms, tmin_c, tmax_c, srad_wm2, ea_kpa, and Ko (dew point
         depression).
-        Monthly plots are created for a single year.
         
-        From the command line for year 2016,
+        From the command line, use the "plot" command with the ``[-f, --freq]``
+        option set to "monthly",
 
         .. code-block:: sh
 
-            $ python monthly_comparison.py -i gridwxcomp/merged_input.csv -o comp_plots_2016 -y 2016
+            $ gridwxcomp plot merged_input.csv -freq monthly -o monthly_plots
 
         or within Python,
 
         >>> from gridwxcomp import monthly_comparison
-        >>> monthly_comparison('gridwxcomp/merged_input.csv',
-                'comp_plots_2016',
-                '2016'
-            )
+        >>> monthly_comparison('merged_input.csv', 'monthly_plots')
 
-        Both methods result in monthly HTML :mod:`bokeh` plots being saved
-        to "comp_plots_2016/STATION_ID/" where "STATION_ID" is the station
-        ID as found in the input CSV file. A file is saved for each month
-        with the station ID, month, and year in the file name. 
+        Both methods result in monthly HTML bokeh plots being saved
+        to "monthly_plots/" whuch contains a plot file for each station
+        as found in the input CSV file. If ``out_dir`` keyword argument or
+        ``[-o, --out-dir]`` command line option is not given the plots will
+        be saved to a directory named "monthly_comp_plots".
 
     Note:
         If there are less than 2 months of data the plot for that
         station will not be created.
 
     """
+    if not out_dir:
+        out_dir = os.getcwd()
 
     if not os.path.isdir(out_dir):
         print('{} does not exist, creating directory'.format(out_dir))

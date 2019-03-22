@@ -8,6 +8,7 @@ import logging
 
 from gridwxcomp.calc_bias_ratios import calc_bias_ratios as calc_ratios
 from gridwxcomp.daily_comparison import daily_comparison as daily_comp
+from gridwxcomp.monthly_comparison import monthly_comparison as monthly_comp
 from gridwxcomp.download_gridmet_ee import download_gridmet_ee as download
 from gridwxcomp.prep_input import prep_input as prep
 from gridwxcomp.spatial import main as interp 
@@ -18,7 +19,7 @@ logging.basicConfig(level=logging.INFO, format='%(message)s')
 @click.group()
 def gridwxcomp():
     "access gridwxcomp functionality from the command line"
-    click.echo('\n*** Welcome to gridwxcomp! ***\n')
+    click.echo('\n*** Welcome to gridwxcomp ***\n')
 
 
 @gridwxcomp.command()
@@ -153,18 +154,43 @@ def spatial(summary_comp_csv, layer, out, buffer, scale, function, smooth,
 
 @gridwxcomp.command()
 @click.argument('input_csv', nargs=1)
-@click.option('--out-dir', '-o', nargs=1, type=str, default=os.getcwd(),
+@click.option('--freq', '-f', nargs=1, type=str, default='daily',
+        help='time frequency for comparison plots "daily" or "monthly"')
+@click.option('--out-dir', '-o', nargs=1, type=str, default=None,
         help='folder to save time series comparison plots')
 @click.option('--year', '-y', nargs=1, type=int, default=None,
-        help='Year to plot, single year (YYYY)')
+        help='year to plot, single year (YYYY)')
 @click.option('--quiet', default=False, is_flag=True, 
         help='supress command line output')
-def daily_comparison(input_csv, out_dir, year, quiet):
+def plot(input_csv, freq, out_dir, year, quiet):
+    """
+    Plot time series and scatter comparison plots at daily
+    or monthly average time periods.  
+
+    Arguments:
+        input_csv (str): path to merged file created by prep-input and 
+            download-gridmet-ee commands. 
+    """
     if quiet:
         logging.getLogger().setLevel(logging.ERROR)
     else:
         logging.getLogger().setLevel(logging.INFO)
-    # call gridwxcomp.daily_comparison
-    daily_comp(input_csv, out_dir, year_filter=year)
+    # all options for time aggregation of plotting data
+    time_freqs = ['daily', 'monthly']
+    # check plot frequency option
+    if not freq in time_freqs:
+        click.echo(
+            '\n{} is not a valid time frequency, available options: {}'.\
+            format(freq, ', '.join([t for t in time_freqs]))
+        )
+        return
+    elif freq == 'daily':
+        # call gridwxcomp.daily_comparison
+        daily_comp(input_csv, out_dir, year_filter=year)
+    elif freq == 'monthly':
+        if year:
+            click.echo('\nWarning: the --year, -y option is not used for'+\
+                ' creating monthly avg. plots, all years will be used.')
+        monthly_comp(input_csv, out_dir)
 
 

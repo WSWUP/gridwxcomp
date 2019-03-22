@@ -29,6 +29,8 @@ def download_gridmet_ee(input_csv, out_folder, year_filter='',
     Arguments:
         input_csv (str): file path of input CSV produced by :mod:`gridwxcomp.prep_input`
         out_folder (str): directory path to save gridmet timeseries CSV files
+
+    Keyword Arguments:
         year_filter (list): default ''. Single year or range to download
         update_data (bool): default False. Re-download existing data
 

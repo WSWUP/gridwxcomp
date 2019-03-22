@@ -4,7 +4,10 @@ Change Log
 Version 0.0.5
 =============
 
-Add docs at `ReadTheDocs <http://gridwxcomp.readthedocs.io/>`_
+Add monthly plotting to command line interface, change command line command "daily-comparison" to
+"plot" with "daily" and "monthly" options. 
+
+Add documentation page at `ReadTheDocs <http://gridwxcomp.readthedocs.io/>`_
 
 Add option to re-download gridMET time series data using ``download_gridmet_ee`` for specified year range.
 

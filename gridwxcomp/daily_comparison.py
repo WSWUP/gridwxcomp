@@ -16,7 +16,7 @@ from bokeh.plotting import figure, output_file, show, save
 from bokeh.layouts import gridplot
 
 
-def daily_comparison(input_csv, out_dir, year_filter=''):
+def daily_comparison(input_csv, out_dir=None, year_filter=''):
     """
     Compare daily Wx Station Data from 
     `PyWeatherQAQC <https://github.com/WSWUP/pyWeatherQAQC>`_ with gridMET 
@@ -31,8 +31,11 @@ def daily_comparison(input_csv, out_dir, year_filter=''):
     Arguments:
         input_csv (str): path to input CSV file containing paired station/
             gridMET metadata. This file is created by running 
-            :mod:`prep_input.py` followed by :mod:`download_gridmet_ee.py`.
-        out_dir (str): Directory to save comparison plots.
+            :mod:`gridwxcomp.prep_input` followed by :mod:`gridwxcomp.download_gridmet_ee`.
+
+    Keyword Arguments:
+        out_dir (str or None): default None. Directory to save comparison plots,
+            if None save to "daily_comp_plots" in currect directory. 
 
     Keyword Arguments:
         year_filter (list): default ''. Single year YYYY or range YYYY-YYYY
@@ -41,33 +44,38 @@ def daily_comparison(input_csv, out_dir, year_filter=''):
         None
 
     Example:
-        The ``daily_comparison.py`` module will build HTML files with 
+        The :func:`daily_comparison`` function will generate HTML files with 
         bokeh plots for paired climate variables, e.g. etr_mm, eto_mm, 
         u2_ms, tmin_c, tmax_c, srad_wm2, ea_kpa, and Ko (dew point depression). 
         Monthly plots are created for a single year.
         
-        From the command line for year 2016,
+        From the command line, use the "plot" command with the ``[-f, --freq]``
+        option left as default ("daily"),
 
         .. code-block:: sh
 
-            $ python daily_comparison.py -i gridwxcomp/merged_input.csv -o comp_plots_2016 -y 2016
+            $ gridwxcomp plot merged_input.csv -o comp_plots_2016 -y 2016
 
         or within Python,
 
         >>> from gridwxcomp import daily_comparison
-        >>> daily_comparison('gridwxcomp/merged_input.csv', 'comp_plots_2016',
-        >>>     '2016')
+        >>> daily_comparison('merged_input.csv', 'comp_plots_2016', '2016')
 
         Both methods result in monthly HTML `bokeh <https://bokeh.pydata.org/en/latest/>`_ 
         plots being saved to "comp_plots_2016/STATION_ID/" where "STATION_ID" 
         is the station ID as found in the input CSV file. A file is saved for 
         each month with the station ID, month, and year in the file name. 
+        If ``out_dir`` keyword argument or ``[-o, --out-dir]`` command line 
+        option is not given the plots will be saved to a directory named 
+        "daily_comp_plots".
 
     Note:
         If there are less than five days of data in a month the plot for that
         month will not be created.
 
     """
+    if not out_dir:
+        out_dir = os.getcwd()
 
     if not os.path.isdir(out_dir):
         print('{} does not exist, creating directory'.format(out_dir))
@@ -171,7 +179,7 @@ def daily_comparison(input_csv, out_dir, year_filter=''):
                                   'month.')
                      continue
                 # Output Folder
-                out_folder =  os.path.join(out_dir, 'daily_comparison_plots',
+                out_folder =  os.path.join(out_dir, 'daily_comp_plots',
                                            '{}'.format(
                                                row.STATION_ID.replace(" ","")))
 
