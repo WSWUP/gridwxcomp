@@ -42,7 +42,15 @@ def main(station_file, out_path, gridmet_meta_file):
 
         .. code-block:: sh
 
-            $ python prep_input.py -i example_data/Station_Data.txt 
+            $ gridwxcomp prep-input <station_metadata>  
+
+        where ``station_metadata`` is a file containing metadata of climate 
+        stations built from `PyWeatherQAQC <https://github.com/WSWUP/pyWeatherQAQC>`_.
+        The file should be in CSV format and contain at least these four columns:
+        * Latitude
+        * Longitude
+        * Station
+        * Filename 
 
         The result is "merged_input.csv" being created in the working 
         directory which contains metadata from climate staions as well as the 
@@ -179,12 +187,12 @@ def prep_input(station_path, out_path='merged_input.csv',
 
     Keyword Arguments:
         out_path (str): path to save output CSV, default is to save as 
-            "merged_input.csv" to current working directory.
+            'merged_input.csv' to current working directory.
         gridmet_meta_path (str): path to metadata CSV file that contains
             all gridMET cells for the contiguous United States. If None
             it is looked for at the installation directory of ``gridwxcomp``
             if not found it is looked for in the current working directory
-            as "gridmet_cell_data.csv".
+            as 'gridmet_cell_data.csv'.
 
     Returns:
         None
@@ -208,16 +216,15 @@ def prep_input(station_path, out_path='merged_input.csv',
             'Longitude', 'Latitude', 'Station', or 'Filename'.   
 
     Note:
-        Currently, input time series files for station data must follow the
-        format created by `pyWeatherQAQC <https://github.com/WSWUP/pyWeatherQAQC>`_
+        If climate station time series files do **NOT** follow the format 
+        created by `pyWeatherQAQC <https://github.com/WSWUP/pyWeatherQAQC>`_ 
         i.e. microsoft excel files with data stored in a tab named 'corrected'.
-        The CSV file produced by contains latitude, longitude, and other
-        fields for both the station and nearest gridMET cell centroid. Fields 
-        that may refer to both gridMET and station data have prefixes to 
-        distinguish, the climate station data are prefixed with "STATION" and 
-        those refering to gridMET have no prefix. Other fields without a 
-        prefix are not in all capital letters and refer to the climate station, 
-        e.g. "Website". 
+        Then station files should be in text (CSV) format with a column
+        named 'date' containing datetime strings e.g. '12/01/2018', that are 
+        able to be parsed by Pandas. The CSV file produced by contains latitude,        longitude, and other fields for both the station and nearest gridMET 
+        cell centroid. Fields that may refer to both gridMET and station data 
+        have prefixes to distinguish, the climate station data are prefixed 
+        with 'STATION' and those refering to gridMET have no prefix. 
 
     """
     # look for pacakged gridmet_cell_data.csv if path not given

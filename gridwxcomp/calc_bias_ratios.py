@@ -85,8 +85,8 @@ def main(input_file_path, out_dir, gridmet_var='etr_mm', station_var=None,
             to calculate bias ratios. If None, look up using ``gridmet_var`` 
             as a key to ``GRIDMET_STATION_VARS`` dictionary which is a 
             module attribute to :mod:`gridwxcomp.calc_bias_ratios`.
-        gridmet_ID (str): optional gridMET ID number if user wants
-            to only calculate bias ratios for a single gridMET cell.
+        gridmet_ID (str): optional gridMET ID number to only calculate bias 
+            ratios for a single gridMET cell.
         day_limit (int): default 10. Threshold number of days in month
             of missing data, if less exclude month from calculations.
         years (int or str): default 'all'. Years to use for calculations
@@ -259,15 +259,15 @@ def calc_bias_ratios(input_path, out_dir, gridmet_var='etr_mm',
             to calculate bias ratios. If None, look up using ``gridmet_var`` 
             as a key to :attr:`GRIDMET_STATION_VARS` dictionary found as a 
             module attribute to :mod:`gridwxcomp.calc_bias_ratios`.
-        gridmet_ID (int): default None. GridMET ID number if user wants
-            to only calculate bias ratios for a single gridMET cell.
+        gridmet_ID (int): default None. GridMET ID (index) to only calculate 
+            bias ratios for a single gridMET cell.
         day_limit (int): default 10. Threshold number of days in month
             of missing data, if less exclude month from calculations.
         years (int or str): default 'all'. Years to use for calculations
             e.g. 2000-2005 or 2011.
         comp (bool): default True. Flag to save a "comprehensive" 
-            summary output CSV file that contains additional station 
-            metadata and statistics in addition to the mean monthly ratios.
+            summary output CSV file that contains station metadata and 
+            statistics in addition to the mean monthly ratios.
                     
     Returns:
         None
@@ -301,19 +301,17 @@ def calc_bias_ratios(input_path, out_dir, gridmet_var='etr_mm',
             ``station_var`` kwargs are invalid.
     
     Note:
-        If an existing summary file contains a climate station that
-        is being reprocessed its monthly bias ratios and other data
-        will be overwritten. Also, to proceed with spatial analysis
-        scripts, the comprehensive summary file must be produced 
-        using this function first (default). If ``gridmet_var`` 
-        keyword argument is given but the ``station_var`` is left as 
-        default (None), the corresponding station variable is looked 
+        If an existing summary file contains a climate station that is being 
+        reprocessed its monthly bias ratios and other data will be overwritten. 
+        Also, to proceed with spatial analysis scripts, the comprehensive 
+        summary file must be produced using this function first. If 
+        ``gridmet_var`` keyword argument is given but the ``station_var`` is 
+        left as default (None), the corresponding station variable is looked 
         up from the mapping dictionary in :mod:`calc_bias_ratios.py` 
         named :attr:`GRIDMET_STATION_VARS`. To use climate data 
         that was  **not** created by `pyWeatherQAQC <https://github.com/WSWUP/pyWeatherQAQC>`_ 
-        which is where the default names are derived, the gridMET and 
-        station variable names need to be explicitly passed as 
-        function arguments. 
+        which is where the default names are derived, the gridMET and station 
+        variable names need to be explicitly passed as function arguments. 
         
     """
     # ignore np runtime warnings due to calcs with nans, div by 0
@@ -328,7 +326,8 @@ def calc_bias_ratios(input_path, out_dir, gridmet_var='etr_mm',
             '\n'.join([i for i in GRIDMET_STATION_VARS.keys()]),
             '\n'
         )
-        raise KeyError('Invalid gridMET variable name {}'.format(gridmet_var))
+        err_msg = 'Invalid gridMET variable name {}'.format(gridmet_var)
+        raise KeyError(err_msg)
 
     if not os.path.isdir(out_dir):
         print('{} does not exist, creating directory'.format(out_dir))
@@ -366,9 +365,15 @@ def calc_bias_ratios(input_path, out_dir, gridmet_var='etr_mm',
 
         # load station and gridMET time series files
         try:
-            # if station files not from pyWeatherQAQC this needs changed
-            station_df = pd.read_excel(row.STATION_FILE_PATH,
-                                       sheet_name='Corrected Data')
+            # if time series not from PyWeatherQaQc, CSV with 'date' column
+            if not row.STATION_FILE_PATH.endswith('.xlsx'):
+                station_df = pd.read_csv(row.STATION_FILE_PATH,parse_dates=True,
+                                index_col='date')
+                station_df.index = station_df.index.date # for joining
+            # if excel file, assume PyWeatherQaQc format
+            else:
+                station_df = pd.read_excel(row.STATION_FILE_PATH,
+                                sheet_name='Corrected Data')
         except:
             print('Time series file for station: ', row.STATION_ID, 
                   'was not found, skipping.')
@@ -388,6 +393,8 @@ def calc_bias_ratios(input_path, out_dir, gridmet_var='etr_mm',
                             gridmet_df[gridmet_var]], axis=1, 
                            join_axes=[station_df.index])
         result.dropna(inplace=True)
+        # make datetime index
+        result.index = pd.to_datetime(result.index)
         # apply year filter
         result, years_str = parse_yr_filter(result, years, row.STATION_ID)
     
