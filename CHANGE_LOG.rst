@@ -4,6 +4,8 @@ Change Log
 Version 0.0.5
 =============
 
+Full functionality of climate station data that was **NOT** created by `PyWeatherQaQc <https://github.com/WSWUP/pyWeatherQAQC>`_ after ``gridwxcomp >= 0.0.55``. Climate station time series files should be in CSV format and need a "date" column with date strings that can be parsed as datetime objects, e.g. '12/01/2018' or '12-01-2018'. 
+
 Add monthly plotting to command line interface, change command line command "daily-comparison" to
 "plot" with "daily" and "monthly" options. 
 

@@ -1,9 +1,32 @@
 API Reference
 =============
 
-This page documents all routines provided by ``gridwxcomp``. Major functions and modules are listed in the order that they would normally be used.
+This page documents all routines provided by ``gridwxcomp``. Tools for different routines are listed roughly in the order that they would normally be used.
+
 
 .. contents:: :local:
+
+
+Command Line Interface
+^^^^^^^^^^^^^^^^^^^^^^
+
+.. click:: gridwxcomp.scripts.gridwxcomp:gridwxcomp
+  :prog: gridwxcomp
+
+.. click:: gridwxcomp.scripts.gridwxcomp:prep_input
+  :prog: gridwxcomp prep-input
+
+.. click:: gridwxcomp.scripts.gridwxcomp:download_gridmet_ee
+  :prog: gridwxcomp download-gridmet-ee
+
+.. click:: gridwxcomp.scripts.gridwxcomp:spatial
+  :prog: gridwxcomp spatial
+
+.. click:: gridwxcomp.scripts.gridwxcomp:plot
+  :prog: gridwxcomp plot
+
+Python functions, classes, and modules
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 prep\_input
 -----------

@@ -40,7 +40,7 @@ def monthly_comparison(input_csv, out_dir=None):
         None
 
     Example:
-        The :func:`monthly_comparison`` function will generate HTML files with
+        The :func:`monthly_comparison` function will generate HTML files with
         bokeh plots for paired climate variable, e.g. etr_mm,
         eto_mm, u2_ms, tmin_c, tmax_c, srad_wm2, ea_kpa, and Ko (dew point
         depression).
@@ -58,7 +58,7 @@ def monthly_comparison(input_csv, out_dir=None):
         >>> monthly_comparison('merged_input.csv', 'monthly_plots')
 
         Both methods result in monthly HTML bokeh plots being saved
-        to "monthly_plots/" whuch contains a plot file for each station
+        to "monthly_plots/" which contains a plot file for each station
         as found in the input CSV file. If ``out_dir`` keyword argument or
         ``[-o, --out-dir]`` command line option is not given the plots will
         be saved to a directory named "monthly_comp_plots".

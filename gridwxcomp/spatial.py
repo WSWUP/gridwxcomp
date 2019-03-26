@@ -112,7 +112,7 @@ def main(input_file_path, layer='all', out=None, buffer=25, scale_factor=0.1,
 
         .. code-block:: sh
 
-            $ python spatial.py -i monthly_ratios/etr_mm_summary_comp.csv 
+            $ python spatial.py -i monthly_ratios/etr_mm_summary_comp_all_yrs.csv 
 
         This will produce a subdirectory under "monthly_ratios" named
         "spatial" where a point shapefile will be saved as 
@@ -120,9 +120,10 @@ def main(input_file_path, layer='all', out=None, buffer=25, scale_factor=0.1,
         fishnet of gridMET cells (at "monthly_ratios/spatial/grid.shp") with 
         a buffer of 25 gridMET cells added around the encompassed climate 
         stations. Next a 2-dimensional surface is interpolated from the point 
-        data of each mean bias ratio in etr_mm_summary_comp.csv which includes 
-        monthly as well as growing season and annual means using the inverse 
-        distance weighting method. The interpolated rasters are saved to::
+        data of each mean bias ratio in etr_mm_summary_comp_all_yrs.csv which 
+        includes monthly, growing season, summer, and annual means using the 
+        inverse distance weighting method. The interpolated rasters are saved 
+        to::
         
             'monthly_ratios/spatial/etr_mm_inverse_dist_400m/'' 
             
@@ -156,7 +157,7 @@ def main(input_file_path, layer='all', out=None, buffer=25, scale_factor=0.1,
 
         .. code-block:: sh
 
-            $ python spatial.py -i monthly_ratios/etr_mm_summary_comp.csv -b 5
+            $ python spatial.py -i monthly_ratios/etr_mm_summary_comp_all_yrs.csv -b 5
 
         Or, if we wanted to interpolate to a 200 m resolution 
         (i.e. scale_factor = 0.05, 0.05 x 4 km = 200 m) using the 'inverse'
@@ -164,7 +165,7 @@ def main(input_file_path, layer='all', out=None, buffer=25, scale_factor=0.1,
         
         .. code-block:: sh
 
-            $ python spatial.py -i monthly_ratios/etr_mm_summary_comp.csv -s 0.05 -f 'inverse'        
+            $ python spatial.py -i monthly_ratios/etr_mm_summary_comp_all_yrs.csv -s 0.05 -f 'inverse'        
 
         To calculate zonal means for a different climate variable, e.g. 
         observed ET ("eto_mm"), as opposed to reference ET (default) use the 
@@ -172,7 +173,7 @@ def main(input_file_path, layer='all', out=None, buffer=25, scale_factor=0.1,
         
         .. code-block:: sh
 
-            $ python spatial.py -i monthly_ratios/eto_mm_summary_comp.csv -s 0.05 -f 'inverse'                
+            $ python spatial.py -i monthly_ratios/eto_mm_summary_comp_all_yrs.csv -s 0.05 -f 'inverse'                
 
         In this case the final zonal statistics of zonal mean bias ratios 
         will be saved to::
@@ -185,7 +186,7 @@ def main(input_file_path, layer='all', out=None, buffer=25, scale_factor=0.1,
         
         .. code-block:: sh
 
-            $ python spatial.py -i monthly_ratios/etr_mm_summary_comp.csv -l April_to_oct_cv
+            $ python spatial.py -i monthly_ratios/etr_mm_summary_comp_all_yrs.csv -l April_to_oct_cv
             
         Also see examples of :func:`make_points_file`, :func:`make_grid`, 
         :func:`interpolate`, and the :class:`gridwxcomp.InterGdal` class.
@@ -232,7 +233,7 @@ def make_points_file(in_path):
         
         >>> from gridwxcomp import spatial
         >>> # path to comprehensive summary CSV
-        >>> summary_file = 'monthly_ratios/etr_mm_summary_comp.csv'
+        >>> summary_file = 'monthly_ratios/etr_mm_summary_comp_all_yrs.csv'
         >>> spatial.make_points_file(summary_file)
         
         The result is the file "etr_mm_summary_pts.shp" being saved to 
@@ -492,7 +493,7 @@ def make_grid(in_path, bounds=None, buffer=25, overwrite=False,
     `Python GDAL/OGR Cookbook <https://pcjericks.github.io/py-gdalogr-cookbook/vector_layers.html#create-fishnet-grid>`_.
     
     Arguments:
-        in_path (str): path to [var]_summary_comp.csv file containing monthly
+        in_path (str): path to [var]_summary_comp_[years].csv file containing monthly
             bias ratios, lat, long, and other data. Created by 
             :func:`gridwxcomp.calc_bias_ratios`.
     
@@ -523,12 +524,23 @@ def make_grid(in_path, bounds=None, buffer=25, overwrite=False,
         
         >>> from gridwxcomp import spatial
         >>> # assign input paths
-        >>> summary_file = 'monthly_ratios/etr_mm_summary_comp.csv'
+        >>> summary_file = 'monthly_ratios/etr_mm_summary_comp_all_yrs.csv'
         >>> # make fishnet of gridMET cells for interpolation
         >>> spatial.make_grid(summary_file)
             
         The file will be saved as "grid.shp" to a newly created subdirectory
-        "spatial" in the same directory as the input summary CSV file. 
+        "spatial" in the same directory as the input summary CSV file. i.e.::
+        
+            monthly_ratios/
+            ├── etr_mm_summary_all_yrs.csv
+            ├── etr_mm_summary_comp_all_yrs.csv
+            └── spatial/
+                ├── grid.cpg
+                ├── grid.dbf
+                ├── grid.prj
+                ├── grid.shp
+                └── grid.shx
+        
         To use a smaller buffer to the extent of the grid assign the 
         ``buffer`` keyword argument
         
@@ -812,14 +824,16 @@ def interpolate(in_path, layer='all', out=None, scale_factor=0.1,
     """
     Use various methods to interpolate a 2-dimensional surface of
     calculated bias ratios or other statistics for station/gridMET
-    pairs found in input summary CSV. 
+    pairs found in input comprehensive summary CSV. 
     
-    Options allow for modifying (down/up scaling) the resolution of the 
+    Options allow for modifying down- or up-scaling the resolution of the 
     resampling grid and to select from multiple interpolation methods.
-    Interploated surfaces are saved as GeoTIFF rasters.
+    Interploated surfaces are saved as GeoTIFF rasters. Zonal statistics 
+    using :func:`gridmet_zonal_stats` are also extracted to gridMET cells in
+    the fishnet grid built first by :func:`make_grid`. 
     
     Arguments:
-        in_path (str): path to [var]_summary_comp.csv file containing 
+        in_path (str): path to [var]_summary_comp_[years].csv file containing 
             monthly bias ratios, lat, long, and other data. Created by 
             :func:`gridwxcomp.calc_bias_ratios`.
 
@@ -865,30 +879,55 @@ def interpolate(in_path, layer='all', out=None, scale_factor=0.1,
         
     Examples:
         Let's say we wanted to interpolate the "Annual_mean" bias 
-        ratio in an input CSV first created by :func:`gridwxcomp.calc_bias_ratios`.
-        This example uses the "invdist" method (default) to interpolate 
-        to a 400 m resolution surface. The result is a GeoTIFF raster that 
-        has an extent that encompasses station locations in the input file 
-        plus an additional optional buffer of outer gridMET cells.
+        ratio in an input CSV first created by :func:`gridwxcomp.calc_bias_ratios` and a fishnet
+        grid was first created by :func:`make_grid`. This example uses the 
+        "invdist" method (default) to interpolate to a 400 m resolution 
+        surface. The result is a GeoTIFF raster that has an extent that 
+        encompasses station locations in the input file plus an additional 
+        optional buffer of outer gridMET cells. Additionally, point residuals 
+        of bias ratios are added to CSV and newly created point shapefiles, 
+        zonal (gridMET cell) means are also extracted and stored in a CSV.
         
         >>> from gridwxcomp import spatial
-        >>> summary_file = 'monthly_ratios/etr_mm_summary_comp.csv'
+        >>> summary_file = 'monthly_ratios/etr_mm_summary_comp_all_yrs.csv'
         >>> buffer = 10
         >>> layer = 'Annual_mean'
         >>> params = {'power':1, 'smooth':20}
         >>> out_dir = 's20_p1' # optional subdir name for saving rasters
         >>> interpolate(summary_file, layer=layer, out=out_dir, 
         >>>     scale_factor=0.1, params=params, buffer=buffer)
+
+        The resulting file structure that is created by the above command is::
+
+            monthly_ratios/
+            ├── etr_mm_summary_all_yrs.csv
+            ├── etr_mm_summary_comp_all_yrs.csv
+            └── spatial/
+                ├── etr_mm_invdist_400m/
+                │   └── s20_p1/
+                │       ├── annual_mean.tiff
+                │       ├── annual_mean.vrt
+                │       ├── etr_mm_summary_comp_all_yrs.csv
+                │       ├── etr_mm_summary_pts.cpg
+                │       ├── etr_mm_summary_pts.dbf
+                │       ├── etr_mm_summary_pts.prj
+                │       ├── etr_mm_summary_pts.shp
+                │       ├── etr_mm_summary_pts.shx
+                │       └── gridMET_stats.csv
+                ├── grid.cpg
+                ├── grid.dbf
+                ├── grid.prj
+                ├── grid.shp
+                └── grid.shx
                     
-        The interpolated raster will be saved to::
+        Specifically, the interpolated raster is saved to::
         
             'monthly_ratios/spatial/etr_mm_invdist_400m/s20_p1/Annual_mean.tiff'
             
         where the file name and directory is based on the variable being 
         interpolated, methods, and the raster resolution. The ``out`` 
         keyword argument lets us add any number of subdirectories to the final 
-        output directory, in this case the 's20_p1' dir contains info on params. 
-        
+        output directory, in this case the 's20_p1' dir contains info on params.  
         In this case the original gridMET resolution is 4 km therefore the 
         scale facter of 0.1 results in a 400 m resolution. 
         
@@ -947,7 +986,7 @@ def interpolate(in_path, layer='all', out=None, scale_factor=0.1,
             i.e. "<in_path>/spatial/grid.shp".
     Note:
         This function can be used independently of :func:`make_grid`
-        however, if the buffer and input [var]_summary_comp.csv files 
+        however, if the buffer and input [var]_summary_comp_[years].csv files 
         arguments differ from those used for :func:`interpolate` the 
         raster may not fully cover the fishnet which may result in 
         gaps in the zonal statistics.
@@ -1294,7 +1333,7 @@ def gridmet_zonal_stats(in_path, raster):
     a CSV file joined to gridMET IDs. 
     
     Arguments:
-        in_path (str): path to [var]_summary_comp.csv file containing 
+        in_path (str): path to [var]_summary_comp_[years].csv file containing 
             monthly bias ratios, lat, long, and other data. Created by 
             :mod:`gridwxcomp.calc_bias_ratios`. 
         raster (str): path to interpolated raster of bias ratios to
@@ -1309,7 +1348,7 @@ def gridmet_zonal_stats(in_path, raster):
         
         >>> from gridwxcomp import spatial
         >>> # assign input paths
-        >>> summary_file = 'monthly_ratios/etr_mm_summary_comp.csv'  
+        >>> summary_file = 'monthly_ratios/etr_mm_summary_comp_[years].csv'  
         >>> raster_file = 'monthly_ratios/spatial/etr_mm_invdist_400m/Jan_mean.tiff'
         >>> spatial.gridmet_zonal_stats(summary_file, raster_file)
         

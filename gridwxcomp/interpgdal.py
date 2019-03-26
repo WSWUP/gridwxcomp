@@ -110,7 +110,8 @@ class InterpGdal(object):
                      'Nov_mean',
                      'Dec_mean',
                      'growseason_mean',
-                     'annual_mean')
+                     'annual_mean',
+                     'summer_mean')
     
     # interp params, method key, param dic as values
     default_params = {

@@ -44,7 +44,7 @@ def daily_comparison(input_csv, out_dir=None, year_filter=''):
         None
 
     Example:
-        The :func:`daily_comparison`` function will generate HTML files with 
+        The :func:`daily_comparison` function will generate HTML files with 
         bokeh plots for paired climate variables, e.g. etr_mm, eto_mm, 
         u2_ms, tmin_c, tmax_c, srad_wm2, ea_kpa, and Ko (dew point depression). 
         Monthly plots are created for a single year.

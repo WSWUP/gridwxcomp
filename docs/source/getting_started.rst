@@ -16,7 +16,7 @@ To activate the environment before using ``gridwxcomp`` run
 
     $ activate gridwxcomp
 
-on windows, or on Linux, Mac
+on Windows, or on Linux, Mac
 
 .. code-block:: bash
 
@@ -58,7 +58,7 @@ This example workflow uses data provided with ``gridwxcomp`` including climate v
 
     $ python -c "import pkg_resources; print(pkg_resources.resource_filename('gridwxcomp', 'example_data/Station_Data.txt'))"
 
-Once complete, this example will calculate bias ratios between station and gridMET ETr (reference evapotranspiration), spatially interpolate GeoTIFF rasters of bias ratios at 400m resolution, and calculate zonal statistics of mean bias ratios for each gridMET cell in the region of the stations, similar to what is shown in the figure below.
+Once complete, this example will calculate bias ratios between station and gridMET ETr (reference evapotranspiration), spatially interpolate GeoTIFF rasters of bias ratios at 400 meter resolution, and calculate zonal statistics of mean bias ratios for each gridMET cell in the region of the stations, similar to what is shown in the figure below.
 
 .. image:: _static/test_case.png
    :align: center
@@ -93,6 +93,8 @@ Last, to calculate interpolated surfaces of mean bias ratios and extract zonal m
 
 The ``[-b 5]`` option indicates that we want to expand the rectangular bounding area for interpolation by five gridMET cells (extrapolation in the outer regions).
 
+GeoTIFF rasters of interpolated ratios will be saved to "monthly_ratios/spatial/etr_mm_invdist_400m/". Note, the gridMET variable name (etr_mm), the interpolation method (invdist), and the raster resolution (400m) are specified in the output directory. A fishnet grid with gridMET id values and a point shapefile of station ratios should all be created and saved in the "monthly_ratios/spatial/" directory.
+
 The final output file "monthly_ratios/spatial/etr_mm_invdist_400m/gridMET_stats.csv" contains monthly bias ratios for each gridMET cell in the interpolation region, similar to what is shown below. 
 
     ========== ======== ======== ======== ===
@@ -108,9 +110,7 @@ The final output file "monthly_ratios/spatial/etr_mm_invdist_400m/gridMET_stats.
 
 Note ``GRIDMET_ID`` is the index of the master gridMET dataset 4 km fishnet grid starting at 0 in the upper left corner and moving across rows and down columns. This value can be joined with previously created data, e.g. the ID values can be joined to centroid coordinates of gridMET cells. 
 
-GeoTIFF rasters of interpolated ratios will be saved to "monthly_ratios/spatial/etr_mm_invdist_400m/". Note, the gridMET variable name (etr_mm), the interpolation method (invdist), and the raster resolution (400m) are specified in the output directory. A fishnet grid with gridMET id values and a point shapefile of station ratios should all be created and saved in the "monthly_ratios/spatial/" directory.
-
-To get help with any of the above ``gridwxcomp`` commands use the ``[--help]`` option, e.g.
+To get abbreviated descriptions for any of the above ``gridwxcomp`` commands use the ``[--help]`` option, e.g.
 
 .. code-block:: bash
 
