@@ -1,14 +1,1 @@
 sphinx-click
-bokeh 
-click 
-ee 
-numpy 
-pandas 
-refet                        
-fiona 
-gdal 
-rasterio 
-rasterstats 
-shapely                        
-osgeo 
-scipy

@@ -20,4 +20,8 @@ formats: all
 python:
   version: 3.7
   install:
-    - requirements: gridwxcomp/env/environment.yml
+    - requirements: docs/requirements.txt
+
+# use the projects conda environment to avoid build import errors
+conda:
+  environment: gridwxcomp/env/environment.yml
