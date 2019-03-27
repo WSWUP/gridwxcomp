@@ -1,4 +1,4 @@
 dependencies:
-  - sphinx-click>=2.0.0
+  - sphinx-click
   - click>=7.0
   - python=3.7
