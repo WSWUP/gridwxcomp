@@ -1,0 +1,208 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="Python">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>Change Log &#8212; gridwxcomp 0.0.57 documentation</title>
+    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="_static/custom.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <script type="text/javascript" src="_static/language_data.js"></script>
+    <script type="text/javascript" src="_static/copybutton.js"></script>
+    <script type="text/javascript" src="_static/custom.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@1/dist/clipboard.min.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="API Reference" href="api.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <div class="section" id="change-log">
+<h1>Change Log<a class="headerlink" href="#change-log" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="version-0-0-5">
+<h2>Version 0.0.5<a class="headerlink" href="#version-0-0-5" title="Permalink to this headline">¶</a></h2>
+<p>Full functionality of climate station data that was <strong>NOT</strong> created by <a class="reference external" href="https://github.com/WSWUP/pyWeatherQAQC">PyWeatherQaQc</a> after <code class="docutils literal notranslate"><span class="pre">gridwxcomp</span> <span class="pre">&gt;=</span> <span class="pre">0.0.55</span></code>. Climate station time series files should be in CSV format and need a &quot;date&quot; column with date strings that can be parsed as datetime objects, e.g. '12/01/2018' or '12-01-2018'.</p>
+<p>Add monthly plotting to command line interface, change command line command &quot;daily-comparison&quot; to
+&quot;plot&quot; with &quot;daily&quot; and &quot;monthly&quot; options.</p>
+<p>Add documentation page at <a class="reference external" href="http://gridwxcomp.readthedocs.io/">ReadTheDocs</a></p>
+<p>Add option to re-download gridMET time series data using <code class="docutils literal notranslate"><span class="pre">download_gridmet_ee</span></code> for specified year range.</p>
+</div>
+<div class="section" id="version-0-0-4">
+<h2>Version 0.0.4<a class="headerlink" href="#version-0-0-4" title="Permalink to this headline">¶</a></h2>
+<p>Improve handling of missing data, if ratio data is missing it is generally represented by <code class="docutils literal notranslate"><span class="pre">-999</span></code> in text files (i.e. CSVs) and by <code class="docutils literal notranslate"><span class="pre">nan</span></code> in geospatial files, e.g. within point shapefiles of bias ratios. Importantly, fixed bug where gdal interpolation methods used missing data in interpolation as zeros.</p>
+<p>Add <code class="docutils literal notranslate"><span class="pre">util.py</span></code> module to hold utility functions or classes which may be useful to multiple <code class="docutils literal notranslate"><span class="pre">gridwxcomp</span></code> modules. Added function to index a pandas DataFrame or Series that has a datetime index based on a user input year filter.</p>
+<p>Add year filter option to <code class="docutils literal notranslate"><span class="pre">calc_bias_ratios.py</span></code>, so that certain years or ranges of years are only used to calculate bias ratios and statistics, the file names of the summary CSV files are also modified with the year or range added as a suffix so that they can be distinguished and used for spatial interpolation.</p>
+<p>New function: <code class="docutils literal notranslate"><span class="pre">spatial.calc_pt_error</span></code> which
+* calculates interpolated point ratios and residuals betwen station data
+* updates summary CSV and point shapefile, copies to directory with rasters</p>
+<p>For example, now after building point shapefile, making the extraction grid, and interpolating point bias ratios using the <code class="docutils literal notranslate"><span class="pre">spatial</span></code> module with default options but only interpolating two layers, the following file structure is created from the root directory holding the ratio sumary CSVs:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>.
+├── etr_mm_summary_comp.csv
+├── etr_mm_summary.csv
+└── spatial
+    ├── etr_mm_invdist_400m
+    │   ├── annual_mean.tiff
+    │   ├── annual_mean.vrt
+    │   ├── etr_mm_summary_comp.csv
+    │   ├── etr_mm_summary_pts.cpg
+    │   ├── etr_mm_summary_pts.dbf
+    │   ├── etr_mm_summary_pts.prj
+    │   ├── etr_mm_summary_pts.shp
+    │   ├── etr_mm_summary_pts.shx
+    │   ├── gridMET_stats.csv
+    │   ├── growseason_mean.tiff
+    │   └── growseason_mean.vrt
+    ├── grid.cpg
+    ├── grid.dbf
+    ├── grid.prj
+    ├── grid.shp
+    └── grid.shx
+</pre></div>
+</div>
+<p>Note, now there is a copy of the summary_comp.csv file in the directory containing the interpolated rasters, and the point shapefile is also saved there as opposed to the &quot;spatial&quot; dir in previous versions. The CSV in the root directory is needed for running additional interpolations, the copy also contains newly added interpolation estimates at points and error residuals which are unique to a specific interpolation run.</p>
+<p>Change calculations of annual, growing season, and summer bias ratios to use period sum of data as opposed to mean of monthly ratios. Same for standard deviation calculations and coefficient of variation. Results in slightly more accurate values. Also add total day accounts for these time periods, add all of these fields to georeferenced point shapefile as opposed to only bias ratios in previous versions.</p>
+</div>
+<div class="section" id="version-0-0-3">
+<h2>Version 0.0.3<a class="headerlink" href="#version-0-0-3" title="Permalink to this headline">¶</a></h2>
+<p>First version available on <a class="reference external" href="https://pypi.org/project/gridwxcomp/">PyPI</a>.</p>
+<p>Add class <code class="docutils literal notranslate"><span class="pre">gridwxcomp.interpgdal.InterpGdal</span></code> for interpolation methods provided by the <a class="reference external" href="https://www.gdal.org/gdal_grid.html">gdal_grid</a> command, the most useful being inverse distance weighting to a power and inverse distance weighting to a power with n nearest neighbors. The <code class="docutils literal notranslate"><span class="pre">InterpGdal</span></code> object can be used on its own within Python to efficiently produce interpolated rasters of arbitrary variables from point data that is calculated by <code class="docutils literal notranslate"><span class="pre">gridwxcomp.calc_bias_ratios</span></code>, it is also used in the main spatial interpolation workflow, e.g. the command line usage of <code class="docutils literal notranslate"><span class="pre">gridwxcomp.spatial</span></code>, by providing additional interpolation routines in addition to the radial basis functions. Instance attributes allow for managing metadata of different interpolation outcomes such as parameter values and paths to output files.</p>
+<p>Added calculation of standard deviation and coefficient of variation for bias ratios to the <code class="docutils literal notranslate"><span class="pre">gridwxcomp.calc_bias_ratios</span></code> function.</p>
+<p>Update file structure format for spatial interpolation and calculation of zonal statistics to gridMET cells. In previous versions a CSV file containing zonal statistics for gridMET cells was created based on the interpolation method, gridMET variable name, and interpolated raster resolution, e.g.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s1">&#39;etr_mm_gridmet_summary_linear_400m.csv&#39;</span>
+</pre></div>
+</div>
+<p>which was saved to the output directory of <code class="docutils literal notranslate"><span class="pre">calc_bias_ratios</span></code>, i.e. where the CSV file containing station point ratios and other statistics exists. This was problematic for tracking results created by multiple interpolation parameters such as changing the power parameter of the inverse distance weighting algorithm. So the new structure is saving a file named 'gridMET_stats.csv' to the output directory where interpolated rasters are saved for any interpolation routine, which can now be modified when conducting any interpolation. The columns in the CSV are updatedwhen layers are interpolated and zonal stats are extracted with the same out directory specified.</p>
+</div>
+<div class="section" id="version-0-0-2">
+<h2>Version 0.0.2<a class="headerlink" href="#version-0-0-2" title="Permalink to this headline">¶</a></h2>
+<p>Add more robust and intuitive command line interface <code class="docutils literal notranslate"><span class="pre">gridwxcomp</span></code> which interfaces with all major workflows of the module as opposed to needing to access multiple submodules of <code class="docutils literal notranslate"><span class="pre">gridwxcomp</span></code>, e.g. <code class="docutils literal notranslate"><span class="pre">gridwxcomp.prep_input</span></code>. Also add changelog. Example use of new CLI</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ gridwxcomp prep-input &lt;station_metadata_file&gt;
+</pre></div>
+</div>
+<p>old method (still possible if <code class="docutils literal notranslate"><span class="pre">prep_input.py</span></code> in working directory),</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python prep-input.py -i &lt;station_metadata_file&gt;
+</pre></div>
+</div>
+<p>Added dependencies:</p>
+<ul class="simple">
+<li><a class="reference external" href="https://click.palletsprojects.com/en/7.x/">click &gt;= 7.0</a></li>
+</ul>
+</div>
+<div class="section" id="version-0-0-1">
+<h2>Version 0.0.1<a class="headerlink" href="#version-0-0-1" title="Permalink to this headline">¶</a></h2>
+<p>First numbered version. Many changes occured for initial development under this version which were not released or registered to PyPI. Main workflow has beed tested on Linux and Windows including:</p>
+<ul class="simple">
+<li>pairing climate stations with gridMET cells</li>
+<li>calculation of bias correction ratios of climatic variables</li>
+<li>created georeferenced point shapefiles, fishnet grid</li>
+<li>perform 2-D interpolation of bias ratio surface with multiple options</li>
+<li>exctract zonal statistics to gridMET cells of bias ratio surface</li>
+<li>produce interactive plots comparing time series of station and gridMET data</li>
+</ul>
+<p>Package not yet hosted on PyPI however it is packaged and can be installed to the Python and system env PATHs with</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ pip install --editable .
+</pre></div>
+</div>
+</div>
+</div>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">gridwxcomp</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Change Log</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-0-5">Version 0.0.5</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-0-4">Version 0.0.4</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-0-3">Version 0.0.3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-0-2">Version 0.0.2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-0-1">Version 0.0.1</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="api.html" title="previous chapter">API Reference</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, John Volk and Chris Pearson.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/changelog.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

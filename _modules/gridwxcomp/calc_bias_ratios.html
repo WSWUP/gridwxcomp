@@ -1,0 +1,745 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="Python">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>gridwxcomp.calc_bias_ratios &#8212; gridwxcomp 0.0.57 documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <script type="text/javascript" src="../../_static/copybutton.js"></script>
+    <script type="text/javascript" src="../../_static/custom.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@1/dist/clipboard.min.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for gridwxcomp.calc_bias_ratios</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Calculate monthly bias ratios of variables from climate station </span>
+<span class="sd">to overlapping gridMET cells. </span>
+
+<span class="sd">Input file for this module must first be created by running </span>
+<span class="sd">:mod:`gridwxcomp.prep_input` followed by :mod:`gridwxcomp.download_gridmet_ee`. </span>
+
+<span class="sd">Attributes:</span>
+<span class="sd">    GRIDMET_STATION_VARS (:obj:`dict`): mapping dictionary with gridMET</span>
+<span class="sd">        variable names as keys and station variable names as values.</span>
+<span class="sd">        Used to determine which station variable to calculate bias</span>
+<span class="sd">        ratios according to the given gridMET variable. </span>
+
+<span class="sd">Default values::</span>
+
+<span class="sd">    GRIDMET_STATION_VARS = {</span>
+<span class="sd">        &#39;u2_ms&#39; : &#39;ws_2m (m/s)&#39;,</span>
+<span class="sd">        &#39;tmin_c&#39; : &#39;TMin (C)&#39;,</span>
+<span class="sd">        &#39;tmax_c&#39; : &#39;TMax (C)&#39;,</span>
+<span class="sd">        &#39;srad_wm2&#39; : &#39;Rs (w/m2)&#39;,</span>
+<span class="sd">        &#39;ea_kpa&#39; : &#39;Vapor Pres (kPa)&#39;,</span>
+<span class="sd">        &#39;prcp_mm&#39; : &#39;Precip (mm)&#39;,</span>
+<span class="sd">        &#39;etr_mm&#39; : &#39;Calc_ETr (mm)&#39;,</span>
+<span class="sd">        &#39;eto_mm&#39; : &#39;Calc_ETo (mm)&#39;</span>
+<span class="sd">    }</span>
+
+<span class="sd">Note:</span>
+<span class="sd">    The module attribute ``GRIDMET_STATION_VARS`` can be manually adjusted, </span>
+<span class="sd">    if ``gridwxcomp`` is installed in editable mode or used as scripts from the</span>
+<span class="sd">    root directory. New pairs of station-to-gridMET variables can then be made </span>
+<span class="sd">    or removed to efficiently use :mod:`gridwxcomp` on custom</span>
+<span class="sd">    station data that was **not** created by </span>
+<span class="sd">    `PyWeatherQAQC &lt;https://github.com/WSWUP/pyWeatherQAQC&gt;`_. Otherwise, the </span>
+<span class="sd">    same can be achieved by the ``gridmet_var`` and ``station_var`` arguments</span>
+<span class="sd">    to :func:`calc_bias_ratios`.</span>
+<span class="sd">    </span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">calendar</span>
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">warnings</span>
+
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">.util</span> <span class="k">import</span> <span class="n">parse_yr_filter</span>
+
+<span class="c1"># keys = gridMET variable name</span>
+<span class="c1"># values = climate station variable name</span>
+<span class="n">GRIDMET_STATION_VARS</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s1">&#39;u2_ms&#39;</span> <span class="p">:</span> <span class="s1">&#39;ws_2m (m/s)&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;tmin_c&#39;</span> <span class="p">:</span> <span class="s1">&#39;TMin (C)&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;tmax_c&#39;</span> <span class="p">:</span> <span class="s1">&#39;TMax (C)&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;srad_wm2&#39;</span> <span class="p">:</span> <span class="s1">&#39;Rs (w/m2)&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;ea_kpa&#39;</span> <span class="p">:</span> <span class="s1">&#39;Vapor Pres (kPa)&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;prcp_mm&#39;</span> <span class="p">:</span> <span class="s1">&#39;Precip (mm)&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;etr_mm&#39;</span> <span class="p">:</span> <span class="s1">&#39;Calc_ETr (mm)&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;eto_mm&#39;</span> <span class="p">:</span> <span class="s1">&#39;Calc_ETo (mm)&#39;</span>
+<span class="p">}</span>
+
+<span class="n">OPJ</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span>
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">input_file_path</span><span class="p">,</span> <span class="n">out_dir</span><span class="p">,</span> <span class="n">gridmet_var</span><span class="o">=</span><span class="s1">&#39;etr_mm&#39;</span><span class="p">,</span> <span class="n">station_var</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+         <span class="n">gridmet_id</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">day_limit</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">years</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">comp</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate monthly bias ratios between station climate and gridMET</span>
+<span class="sd">    cells that correspond with each other geographically. Saves data</span>
+<span class="sd">    to CSV files in the given output directory. If run later with</span>
+<span class="sd">    new station data, bias ratios for new stations will be appended</span>
+<span class="sd">    to existing output summary CSV.</span>
+<span class="sd">    </span>
+<span class="sd">    Arguments:</span>
+<span class="sd">        input_file_path (str): path to input CSV file containing</span>
+<span class="sd">            paired station/gridMET metadata. This file is </span>
+<span class="sd">            created by running :mod:`gridwxcomp.prep_input` followed by </span>
+<span class="sd">            :mod:`gridwxcomp.download_gridmet_ee`.</span>
+<span class="sd">        out_dir (str): path to directory to save CSV files with</span>
+<span class="sd">            monthly bias ratios of etr.</span>
+<span class="sd">            </span>
+<span class="sd">    Keyword Arguments:</span>
+<span class="sd">        gridmet_var (str): default &#39;etr_mm&#39;. GridMET climate variable</span>
+<span class="sd">            to calculate bias ratios.</span>
+<span class="sd">        station_var (str): default None. Climate station variable to use</span>
+<span class="sd">            to calculate bias ratios. If None, look up using ``gridmet_var`` </span>
+<span class="sd">            as a key to ``GRIDMET_STATION_VARS`` dictionary which is a </span>
+<span class="sd">            module attribute to :mod:`gridwxcomp.calc_bias_ratios`.</span>
+<span class="sd">        gridmet_ID (str): optional gridMET ID number to only calculate bias </span>
+<span class="sd">            ratios for a single gridMET cell.</span>
+<span class="sd">        day_limit (int): default 10. Threshold number of days in month</span>
+<span class="sd">            of missing data, if less exclude month from calculations.</span>
+<span class="sd">        years (int or str): default &#39;all&#39;. Years to use for calculations</span>
+<span class="sd">            e.g. 2000-2005 or 2011.</span>
+<span class="sd">        comp (bool): default True. Save a &quot;comprehensive&quot; summary</span>
+<span class="sd">            output CSV file that contains additional station metadata</span>
+<span class="sd">            and statistics in addition to the mean monthly ratios.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        None</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        From the command line interface,</span>
+
+<span class="sd">        .. code-block:: sh</span>
+
+<span class="sd">            $ # for all gridMET cells in input file for gridMET var &quot;etr_mm&quot; (default)</span>
+<span class="sd">            $ python calc_bias_ratios.py -i merged_input.csv -o monthly_ratios</span>
+<span class="sd">            $ # for all gridMET cells in input file for gridMET var &quot;eto_mm&quot;</span>
+<span class="sd">            $ python calc_bias_ratios.py -i merged_input.csv -o monthly_ratios -gv eto_mm</span>
+<span class="sd">            $ # for a specific gridMET cell ID for &quot;etr_mm&quot;</span>
+<span class="sd">            $ python calc_bias_ratios.py -i merged_input.csv -o monthly_ratios -id 509011</span>
+<span class="sd">            $ # to exclude any months with less than 15 days of data</span>
+<span class="sd">            $ python calc_bias_ratios.py -i merged_input.csv -o monthly_ratios -d 15</span>
+<span class="sd">            </span>
+<span class="sd">        It is also possible for the user to define their own station </span>
+<span class="sd">        variable name if, for example, they are using station data that was</span>
+<span class="sd">        **not** created by `PyWeatherQAQC &lt;https://github.com/WSWUP/pyWeatherQAQC&gt;`_.</span>
+<span class="sd">        Let&#39;s say our station time series has ETo named as &#39;EO&#39; then </span>
+<span class="sd">        use the ``[-sv, --station-var]`` and ``[-gv, --gridmet-var]`` options</span>
+<span class="sd">        </span>
+<span class="sd">        .. code-block:: sh</span>
+
+<span class="sd">            $ python calc_bias_ratios.py -i merged_input.csv -o monthly_ratios -sv EO -gv eto_mm</span>
+
+<span class="sd">        This will produce two CSV files in ``out_dir`` named </span>
+<span class="sd">        &quot;eto_mm_summary_all_yrs.csv&quot; and &quot;eto_mm_summary_comp_all_yrs.csv&quot;. If </span>
+<span class="sd">        the ``[-y, --years]`` option is assigned, e.g. as &#39;2010&#39;, then the </span>
+<span class="sd">        output CSVs will have &#39;2010&#39; suffix, i.e. &#39;eto_mm_summary_comp_2010.csv&#39;</span>
+<span class="sd">        </span>
+<span class="sd">        For use within Python see :func:`calc_bias_ratios`.</span>
+
+<span class="sd">    Note:</span>
+<span class="sd">        If ``[-gv, --gridmet-var]`` command line option or ``gridmet_var`` </span>
+<span class="sd">        keyword argument is given but the station variable is left as default </span>
+<span class="sd">        (None), the corresponding station variable is looked up from the mapping</span>
+<span class="sd">        dictionary in :mod:`gridwxcomp.calc_bias_ratios` named </span>
+<span class="sd">        ``GRIDMET_STATION_VARS``. To efficiently use climate data that was  </span>
+<span class="sd">        **not** created by `PyWeatherQAQC &lt;https://github.com/WSWUP/pyWeatherQAQC&gt;`_ </span>
+<span class="sd">        which is where the default names are derived you can manually adjust</span>
+<span class="sd">        ``GRIDMET_STATION_VARS`` near the top of the :mod:`gridwxcomp.calc_bias_ratios`</span>
+<span class="sd">        submodule file. Alternatively, the gridMET and station variable names</span>
+<span class="sd">        may be explicitly passed as command line or function arguments. </span>
+<span class="sd">        </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># calculate monthly bias ratios and save to CSV files</span>
+    <span class="n">calc_bias_ratios</span><span class="p">(</span>
+        <span class="n">input_file_path</span><span class="p">,</span> 
+        <span class="n">out_dir</span><span class="p">,</span> 
+        <span class="n">gridmet_var</span><span class="o">=</span><span class="n">gridmet_var</span><span class="p">,</span>
+        <span class="n">station_var</span><span class="o">=</span><span class="n">station_var</span><span class="p">,</span> 
+        <span class="n">gridmet_ID</span><span class="o">=</span><span class="n">gridmet_id</span><span class="p">,</span> 
+        <span class="n">day_limit</span><span class="o">=</span><span class="n">day_limit</span><span class="p">,</span>
+        <span class="n">comp</span><span class="o">=</span><span class="n">comp</span>
+    <span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">_save_output</span><span class="p">(</span><span class="n">out_df</span><span class="p">,</span> <span class="n">comp_out_df</span><span class="p">,</span> <span class="n">out_dir</span><span class="p">,</span> <span class="n">gridmet_ID</span><span class="p">,</span> <span class="n">var_name</span><span class="p">,</span> <span class="n">yrs</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Save short summary file or overwrite existing data for a single</span>
+<span class="sd">    climate station.</span>
+<span class="sd">    </span>
+<span class="sd">    Arguments:</span>
+<span class="sd">        out_df (:class:`pandas.DataFrame`): data containing short</span>
+<span class="sd">            summary info, mainly mean monthly bias ratios for a </span>
+<span class="sd">            single climate station to save.</span>
+<span class="sd">        comp_out_df (:class:`pandas.DataFrame`, bool): either a </span>
+<span class="sd">            single row dataframe with comprehensive summary data</span>
+<span class="sd">            or False (default). depends on ``comp`` argument to </span>
+<span class="sd">            :func:`calc_bias_ratios`. If :class:`pandas.DataFrame` </span>
+<span class="sd">            is passed then save or update existing file.</span>
+<span class="sd">        out_dir (str): path to directory to save or update summary data</span>
+<span class="sd">            for monthly bias ratios.</span>
+<span class="sd">        gridmet_ID (int, optional): depends on ``gridmet_ID`` argument</span>
+<span class="sd">            passed to :func:`calc_bias_ratios`. If not None (default)</span>
+<span class="sd">            then save summary files for stations that correspond with</span>
+<span class="sd">            the given gridMET ID with the suffix &quot;_X&quot; where X is the</span>
+<span class="sd">            gridMET ID value.</span>
+<span class="sd">        var_name (str): name of gridMET variable that is being processed.</span>
+<span class="sd">        yrs (str): years used to calc ratios, save to out files as suffix.</span>
+<span class="sd">    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        None       </span>
+<span class="sd">        </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+        
+    <span class="k">def</span> <span class="nf">__save_update</span><span class="p">(</span><span class="n">out_df</span><span class="p">,</span> <span class="n">out_file</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Helper function that is reused for both short and long summary</span>
+<span class="sd">        files.        </span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="c1"># if short file exists add/overwrite row for station</span>
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">out_file</span><span class="p">):</span>
+            <span class="n">existing_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">out_file</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="s1">&#39;STATION_ID&#39;</span><span class="p">)</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">out_df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="ow">in</span> <span class="n">existing_df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="p">:</span>
+                <span class="n">out_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">existing_df</span><span class="p">,</span> <span class="n">out_df</span><span class="p">],</span> <span class="n">sort</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+                <span class="n">out_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">out_file</span><span class="p">,</span> <span class="n">na_rep</span><span class="o">=-</span><span class="mi">999</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="c1"># overwrite if station is in existing, could change to</span>
+            <span class="c1"># allow for duplicates if values are different</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">existing_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">out_df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="p">:]</span> <span class="o">=</span>\
+                    <span class="n">out_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">out_df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span>
+                <span class="n">existing_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">out_file</span><span class="p">,</span> <span class="n">na_rep</span><span class="o">=-</span><span class="mi">999</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">out_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">out_file</span><span class="p">,</span> <span class="n">na_rep</span><span class="o">=-</span><span class="mi">999</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            
+    <span class="c1"># save or update short and comprehensive summary files</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">out_dir</span><span class="p">):</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">out_dir</span><span class="p">)</span>   
+        
+    <span class="c1"># save/update short summary file or update existing with new station</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">gridmet_ID</span><span class="p">:</span>
+        <span class="n">out_file</span> <span class="o">=</span> <span class="n">OPJ</span><span class="p">(</span>
+            <span class="n">out_dir</span><span class="p">,</span> 
+            <span class="s1">&#39;</span><span class="si">{v}</span><span class="s1">_summary_</span><span class="si">{y}</span><span class="s1">.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">v</span><span class="o">=</span><span class="n">var_name</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">yrs</span><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span> 
+        <span class="n">out_file</span> <span class="o">=</span> <span class="n">OPJ</span><span class="p">(</span>
+            <span class="n">out_dir</span><span class="p">,</span>
+            <span class="s1">&#39;</span><span class="si">{v}</span><span class="s1">_summary_grid_</span><span class="si">{g}</span><span class="s1">_</span><span class="si">{y}</span><span class="s1">.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">v</span><span class="o">=</span><span class="n">var_name</span><span class="p">,</span> <span class="n">g</span><span class="o">=</span><span class="n">gridmet_ID</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">yrs</span><span class="p">)</span>
+        <span class="p">)</span>
+    <span class="n">__save_update</span><span class="p">(</span><span class="n">out_df</span><span class="p">,</span> <span class="n">out_file</span><span class="p">)</span>
+
+    <span class="c1"># if comprehensive summary is requested save/update</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">comp_out_df</span><span class="p">,</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">):</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">gridmet_ID</span><span class="p">:</span>
+            <span class="n">comp_out_file</span> <span class="o">=</span> <span class="n">OPJ</span><span class="p">(</span>
+                <span class="n">out_dir</span><span class="p">,</span> 
+                <span class="s1">&#39;</span><span class="si">{v}</span><span class="s1">_summary_comp_</span><span class="si">{y}</span><span class="s1">.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">v</span><span class="o">=</span><span class="n">var_name</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">yrs</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">comp_out_file</span> <span class="o">=</span> <span class="n">OPJ</span><span class="p">(</span>
+                <span class="n">out_dir</span><span class="p">,</span>
+                <span class="s1">&#39;</span><span class="si">{v}</span><span class="s1">_summary_comp_</span><span class="si">{g}</span><span class="s1">_</span><span class="si">{y}</span><span class="s1">.csv&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="n">v</span><span class="o">=</span><span class="n">var_name</span><span class="p">,</span> <span class="n">g</span><span class="o">=</span><span class="n">gridmet_ID</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">yrs</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="n">__save_update</span><span class="p">(</span><span class="n">comp_out_df</span><span class="p">,</span> <span class="n">comp_out_file</span><span class="p">)</span>
+    
+<div class="viewcode-block" id="calc_bias_ratios"><a class="viewcode-back" href="../../api.html#gridwxcomp.calc_bias_ratios.calc_bias_ratios">[docs]</a><span class="k">def</span> <span class="nf">calc_bias_ratios</span><span class="p">(</span><span class="n">input_path</span><span class="p">,</span> <span class="n">out_dir</span><span class="p">,</span> <span class="n">gridmet_var</span><span class="o">=</span><span class="s1">&#39;etr_mm&#39;</span><span class="p">,</span> 
+             <span class="n">station_var</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">gridmet_ID</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">day_limit</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">years</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span>
+             <span class="n">comp</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Read input CSV file and calculate mean monthly bias ratios between</span>
+<span class="sd">    station to corresponding gridMET cells for all station and gridMET </span>
+<span class="sd">    pairs, optionally calculate ratios for a single gridMET cell.</span>
+<span class="sd">    </span>
+<span class="sd">    Arguments:</span>
+<span class="sd">        input_path (str): path to input CSV file with matching</span>
+<span class="sd">            station climate and gridMET metadata. This file is </span>
+<span class="sd">            created by running :func:`gridwxcomp.prep_input` followed by </span>
+<span class="sd">            :func:`gridwxcomp.download_gridmet_ee`.</span>
+<span class="sd">        out_dir (str): path to directory to save CSV files with</span>
+<span class="sd">            monthly bias ratios of etr.</span>
+<span class="sd">            </span>
+<span class="sd">    Keyword Arguments:</span>
+<span class="sd">        gridmet_var (str): default &#39;etr_mm&#39;. GridMET climate variable</span>
+<span class="sd">            to calculate bias ratios.</span>
+<span class="sd">        station_var (str): default None. Climate station variable to use</span>
+<span class="sd">            to calculate bias ratios. If None, look up using ``gridmet_var`` </span>
+<span class="sd">            as a key to :attr:`GRIDMET_STATION_VARS` dictionary found as a </span>
+<span class="sd">            module attribute to :mod:`gridwxcomp.calc_bias_ratios`.</span>
+<span class="sd">        gridmet_ID (int): default None. GridMET ID (index) to only calculate </span>
+<span class="sd">            bias ratios for a single gridMET cell.</span>
+<span class="sd">        day_limit (int): default 10. Threshold number of days in month</span>
+<span class="sd">            of missing data, if less exclude month from calculations.</span>
+<span class="sd">        years (int or str): default &#39;all&#39;. Years to use for calculations</span>
+<span class="sd">            e.g. 2000-2005 or 2011.</span>
+<span class="sd">        comp (bool): default True. Flag to save a &quot;comprehensive&quot; </span>
+<span class="sd">            summary output CSV file that contains station metadata and </span>
+<span class="sd">            statistics in addition to the mean monthly ratios.</span>
+<span class="sd">                    </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        None</span>
+<span class="sd">        </span>
+<span class="sd">    Examples:</span>
+<span class="sd">        To use within Python for observed ET,</span>
+<span class="sd">        </span>
+<span class="sd">        &gt;&gt;&gt; from gridwxcomp import calc_bias_ratios</span>
+<span class="sd">        &gt;&gt;&gt; input_path = &#39;merged_input.csv&#39;</span>
+<span class="sd">        &gt;&gt;&gt; out_dir = &#39;monthly_ratios&#39;</span>
+<span class="sd">        &gt;&gt;&gt; gridmet_variable = &#39;eto_mm&#39;</span>
+<span class="sd">        &gt;&gt;&gt; calc_bias_ratios(input_path, out_dir, gridmet_var=gridmet_variable)</span>
+<span class="sd">        </span>
+<span class="sd">        To use custom station data, give the keyword argument ``station_var``, </span>
+<span class="sd">        e.g. if we had climate daily time series data for precipitation </span>
+<span class="sd">        with the column named &quot;p&quot; then,</span>
+<span class="sd">        </span>
+<span class="sd">        &gt;&gt;&gt; calc_bias_ratios(input_path, out_dir, gridmet_var=&#39;prcp_mm&#39;, </span>
+<span class="sd">        &gt;&gt;&gt;     station_var=&#39;p&#39;)</span>
+<span class="sd">                </span>
+<span class="sd">        This results in two CSV files in ``out_dir`` named </span>
+<span class="sd">        &quot;prcp_mm_summary_all_yrs.csv&quot; and &quot;prcp_mm_summary_comp_all_yrs.csv&quot;. </span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        FileNotFoundError: if input file is invalid or not found.</span>
+<span class="sd">        KeyError: if the input file does not contain file paths to</span>
+<span class="sd">            the climate station and gridMET time series files. This</span>
+<span class="sd">            occurs if, for example, the :mod:`gridwxcomp.prep_input` and/or </span>
+<span class="sd">            the :mod:`gridwxcomp.download_gridmet_ee` scripts have not been </span>
+<span class="sd">            run first. Also raised if the given ``gridmet_var`` or </span>
+<span class="sd">            ``station_var`` kwargs are invalid.</span>
+<span class="sd">    </span>
+<span class="sd">    Note:</span>
+<span class="sd">        If an existing summary file contains a climate station that is being </span>
+<span class="sd">        reprocessed its monthly bias ratios and other data will be overwritten. </span>
+<span class="sd">        Also, to proceed with spatial analysis scripts, the comprehensive </span>
+<span class="sd">        summary file must be produced using this function first. If </span>
+<span class="sd">        ``gridmet_var`` keyword argument is given but the ``station_var`` is </span>
+<span class="sd">        left as default (None), the corresponding station variable is looked </span>
+<span class="sd">        up from the mapping dictionary in :mod:`calc_bias_ratios.py` </span>
+<span class="sd">        named :attr:`GRIDMET_STATION_VARS`. To use climate data </span>
+<span class="sd">        that was  **not** created by `pyWeatherQAQC &lt;https://github.com/WSWUP/pyWeatherQAQC&gt;`_ </span>
+<span class="sd">        which is where the default names are derived, the gridMET and station </span>
+<span class="sd">        variable names need to be explicitly passed as function arguments. </span>
+<span class="sd">        </span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># ignore np runtime warnings due to calcs with nans, div by 0</span>
+    <span class="n">np</span><span class="o">.</span><span class="n">seterr</span><span class="p">(</span><span class="n">divide</span><span class="o">=</span><span class="s1">&#39;ignore&#39;</span><span class="p">,</span> <span class="n">invalid</span><span class="o">=</span><span class="s1">&#39;ignore&#39;</span><span class="p">)</span>
+    <span class="c1"># specific for standard deviation of nans</span>
+    <span class="n">std_warning</span> <span class="o">=</span> <span class="s2">&quot;Degrees of freedom &lt;= 0 for slice&quot;</span>
+    <span class="n">warnings</span><span class="o">.</span><span class="n">filterwarnings</span><span class="p">(</span><span class="s2">&quot;ignore&quot;</span><span class="p">,</span> <span class="n">message</span><span class="o">=</span><span class="n">std_warning</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">GRIDMET_STATION_VARS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">gridmet_var</span><span class="p">,</span> <span class="kc">None</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="s1">&#39;Valid gridMET variable names:</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">([</span><span class="n">i</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">GRIDMET_STATION_VARS</span><span class="o">.</span><span class="n">keys</span><span class="p">()]),</span>
+            <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
+        <span class="p">)</span>
+        <span class="n">err_msg</span> <span class="o">=</span> <span class="s1">&#39;Invalid gridMET variable name </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">gridmet_var</span><span class="p">)</span>
+        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="n">err_msg</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">out_dir</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> does not exist, creating directory&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">out_dir</span><span class="p">))</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">out_dir</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">input_path</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="s1">&#39;Input CSV file given was invalid or not found&#39;</span><span class="p">)</span>
+
+    <span class="n">input_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">input_path</span><span class="p">)</span>
+    <span class="c1"># get matching station variable name</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">station_var</span><span class="p">:</span>
+        <span class="n">station_var</span> <span class="o">=</span> <span class="n">GRIDMET_STATION_VARS</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">gridmet_var</span><span class="p">)</span>
+    <span class="c1"># If only calculating ratios for a single cell, change console message</span>
+    <span class="k">if</span> <span class="n">gridmet_ID</span><span class="p">:</span>
+        <span class="n">single_gridmet_cell_msg</span> <span class="o">=</span> \
+            <span class="s1">&#39;For gridmet cell ID: </span><span class="si">{g}</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">g</span><span class="o">=</span><span class="n">gridmet_ID</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">single_gridmet_cell_msg</span> <span class="o">=</span> <span class="s1">&#39;&#39;</span>
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="s1">&#39;Calculating bias ratios between climate station variable: &#39;</span><span class="p">,</span>
+        <span class="n">station_var</span><span class="p">,</span>
+        <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;and gridMET climate variable: &#39;</span><span class="p">,</span>
+        <span class="n">gridmet_var</span><span class="p">,</span>
+        <span class="s1">&#39;</span><span class="se">\n</span><span class="si">{g}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">g</span><span class="o">=</span><span class="n">single_gridmet_cell_msg</span><span class="p">)</span>
+    <span class="p">)</span>
+    <span class="c1"># loop through each station and calculate monthly ratio</span>
+    <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">input_df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="s1">&#39;STATION_FILE_PATH&#39;</span> <span class="ow">in</span> <span class="n">row</span> <span class="ow">or</span> <span class="ow">not</span> <span class="s1">&#39;GRIDMET_FILE_PATH&#39;</span> <span class="ow">in</span> <span class="n">row</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s1">&#39;Missing station and/or gridMET file paths in &#39;</span><span class="o">+</span>\
+                           <span class="s1">&#39;input file. Run prep_input.py followed &#39;</span><span class="o">+</span>\
+                           <span class="s1">&#39;by download_gridmet_ee.py first.&#39;</span><span class="p">)</span>
+        <span class="c1"># if only doing a single gridMET cell check for matching ID</span>
+        <span class="k">if</span> <span class="n">gridmet_ID</span> <span class="ow">and</span> <span class="nb">int</span><span class="p">(</span><span class="n">gridmet_ID</span><span class="p">)</span> <span class="o">!=</span> <span class="n">row</span><span class="o">.</span><span class="n">GRIDMET_ID</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+        <span class="c1"># load station and gridMET time series files</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># if time series not from PyWeatherQaQc, CSV with &#39;date&#39; column</span>
+            <span class="k">if</span> <span class="ow">not</span> <span class="n">row</span><span class="o">.</span><span class="n">STATION_FILE_PATH</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.xlsx&#39;</span><span class="p">):</span>
+                <span class="n">station_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">STATION_FILE_PATH</span><span class="p">,</span><span class="n">parse_dates</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                                <span class="n">index_col</span><span class="o">=</span><span class="s1">&#39;date&#39;</span><span class="p">)</span>
+                <span class="n">station_df</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">station_df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">date</span> <span class="c1"># for joining</span>
+            <span class="c1"># if excel file, assume PyWeatherQaQc format</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">station_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_excel</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">STATION_FILE_PATH</span><span class="p">,</span>
+                                <span class="n">sheet_name</span><span class="o">=</span><span class="s1">&#39;Corrected Data&#39;</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Time series file for station: &#39;</span><span class="p">,</span> <span class="n">row</span><span class="o">.</span><span class="n">STATION_ID</span><span class="p">,</span> 
+                  <span class="s1">&#39;was not found, skipping.&#39;</span><span class="p">)</span>
+            <span class="k">continue</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">station_var</span> <span class="ow">in</span> <span class="n">station_df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{v}</span><span class="s1"> not found in the station file: </span><span class="se">\n</span><span class="si">{p}</span><span class="s1">&#39;</span><span class="o">.</span>\
+                           <span class="nb">format</span><span class="p">(</span><span class="n">v</span><span class="o">=</span><span class="n">station_var</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="n">row</span><span class="o">.</span><span class="n">STATION_FILE_PATH</span><span class="p">))</span>
+        <span class="nb">print</span><span class="p">(</span>
+             <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Calculating </span><span class="si">{v}</span><span class="s1"> bias ratios for station:&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">v</span><span class="o">=</span><span class="n">gridmet_var</span><span class="p">),</span>
+             <span class="n">row</span><span class="o">.</span><span class="n">STATION_ID</span>
+             <span class="p">)</span>
+        <span class="n">gridmet_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">GRIDMET_FILE_PATH</span><span class="p">,</span> <span class="n">parse_dates</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> 
+                                 <span class="n">index_col</span><span class="o">=</span><span class="s1">&#39;date&#39;</span><span class="p">)</span>
+        <span class="c1"># merge both datasets drop missing days</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">station_df</span><span class="p">[</span><span class="n">station_var</span><span class="p">],</span> 
+                            <span class="n">gridmet_df</span><span class="p">[</span><span class="n">gridmet_var</span><span class="p">]],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> 
+                           <span class="n">join_axes</span><span class="o">=</span><span class="p">[</span><span class="n">station_df</span><span class="o">.</span><span class="n">index</span><span class="p">])</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="c1"># make datetime index</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
+        <span class="c1"># apply year filter</span>
+        <span class="n">result</span><span class="p">,</span> <span class="n">years_str</span> <span class="o">=</span> <span class="n">parse_yr_filter</span><span class="p">(</span><span class="n">result</span><span class="p">,</span> <span class="n">years</span><span class="p">,</span> <span class="n">row</span><span class="o">.</span><span class="n">STATION_ID</span><span class="p">)</span>
+    
+        <span class="c1"># monthly sums and day counts for each year</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">groupby</span><span class="p">([</span><span class="n">result</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="n">result</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">month</span><span class="p">])</span>\
+                <span class="o">.</span><span class="n">agg</span><span class="p">([</span><span class="s1">&#39;sum&#39;</span><span class="p">,</span><span class="s1">&#39;count&#39;</span><span class="p">])</span>
+        <span class="n">result</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">set_names</span><span class="p">([</span><span class="s1">&#39;year&#39;</span><span class="p">,</span> <span class="s1">&#39;month&#39;</span><span class="p">],</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="c1"># remove totals with less than XX days</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">result</span><span class="p">[</span><span class="n">result</span><span class="p">[</span><span class="n">gridmet_var</span><span class="p">,</span><span class="s1">&#39;count&#39;</span><span class="p">]</span><span class="o">&gt;=</span><span class="n">day_limit</span><span class="p">]</span>
+        <span class="c1"># calc mean growing season and June to August ratios with month sums</span>
+        <span class="n">grow_season</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">get_level_values</span><span class="p">(</span><span class="s1">&#39;month&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">]),</span>\
+                    <span class="p">(</span><span class="n">station_var</span><span class="p">)][</span><span class="s1">&#39;sum&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">result</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">get_level_values</span><span class="p">(</span><span class="s1">&#39;month&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">]),</span>\
+                        <span class="p">(</span><span class="n">gridmet_var</span><span class="p">)][</span><span class="s1">&#39;sum&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="n">june_to_aug</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">get_level_values</span><span class="p">(</span><span class="s1">&#39;month&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">]),</span> <span class="p">(</span><span class="n">station_var</span><span class="p">)</span>
+            <span class="p">][</span><span class="s1">&#39;sum&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">result</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">result</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">get_level_values</span><span class="p">(</span><span class="s1">&#39;month&#39;</span><span class="p">)</span>\
+                    <span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">]),</span> <span class="p">(</span><span class="n">gridmet_var</span><span class="p">)][</span><span class="s1">&#39;sum&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="n">ann_months</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">13</span><span class="p">))</span>
+        <span class="n">annual</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+            <span class="n">result</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">get_level_values</span><span class="p">(</span><span class="s1">&#39;month&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">ann_months</span><span class="p">),</span>\
+                    <span class="p">(</span><span class="n">station_var</span><span class="p">)][</span><span class="s1">&#39;sum&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">result</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
+                <span class="n">result</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">get_level_values</span><span class="p">(</span><span class="s1">&#39;month&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">ann_months</span><span class="p">),</span>\
+                        <span class="p">(</span><span class="n">gridmet_var</span><span class="p">)][</span><span class="s1">&#39;sum&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        
+        <span class="n">ratio</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;ratio&#39;</span><span class="p">,</span> <span class="s1">&#39;count&#39;</span><span class="p">])</span>
+        <span class="c1"># ratio of monthly sums for each year</span>
+        <span class="n">ratio</span><span class="p">[</span><span class="s1">&#39;ratio&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="n">station_var</span><span class="p">,</span><span class="s1">&#39;sum&#39;</span><span class="p">])</span><span class="o">/</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="n">gridmet_var</span><span class="p">,</span><span class="s1">&#39;sum&#39;</span><span class="p">])</span>
+        <span class="c1"># monthly counts and stddev</span>
+        <span class="n">ratio</span><span class="p">[</span><span class="s1">&#39;count&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,(</span><span class="n">gridmet_var</span><span class="p">,</span><span class="s1">&#39;count&#39;</span><span class="p">)]</span>
+
+        <span class="c1"># rebuild Index DateTime</span>
+        <span class="n">ratio</span><span class="p">[</span><span class="s1">&#39;year&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ratio</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">get_level_values</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+        <span class="n">ratio</span><span class="p">[</span><span class="s1">&#39;month&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ratio</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">get_level_values</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+        <span class="n">ratio</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span>
+                <span class="n">ratio</span><span class="o">.</span><span class="n">year</span><span class="o">*</span><span class="mi">10000</span><span class="o">+</span><span class="n">ratio</span><span class="o">.</span><span class="n">month</span><span class="o">*</span><span class="mi">100</span><span class="o">+</span><span class="mi">15</span><span class="p">,</span><span class="nb">format</span><span class="o">=</span><span class="s1">&#39;%Y%m</span><span class="si">%d</span><span class="s1">&#39;</span>
+                <span class="p">)</span>
+        <span class="c1"># useful to know how many years were used in addition to day counts</span>
+        <span class="n">start_year</span> <span class="o">=</span> <span class="n">ratio</span><span class="o">.</span><span class="n">year</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+        <span class="n">end_year</span> <span class="o">=</span> <span class="n">ratio</span><span class="o">.</span><span class="n">year</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+        <span class="n">counts</span> <span class="o">=</span> <span class="n">ratio</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">ratio</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">month</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()[</span><span class="s1">&#39;count&#39;</span><span class="p">]</span>
+        <span class="c1"># get standard deviation of each years&#39; monthly mean ratio</span>
+        <span class="n">stdev</span> <span class="o">=</span> <span class="p">{</span><span class="n">month</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span>
+            <span class="n">ratio</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">ratio</span><span class="o">.</span><span class="n">month</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="n">month</span><span class="p">]),</span> <span class="s1">&#39;ratio&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+                 <span class="k">for</span> <span class="n">month</span> <span class="ow">in</span> <span class="n">ann_months</span><span class="p">}</span>
+        <span class="n">stdev</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">Series</span><span class="p">(</span><span class="n">stdev</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s1">&#39;stdev&#39;</span><span class="p">)</span>
+
+        <span class="c1"># mean of monthly means of all years, can change to median or other meth</span>
+        <span class="n">final_ratio</span> <span class="o">=</span> <span class="n">ratio</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="n">ratio</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">month</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+        <span class="n">final_ratio</span><span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s1">&#39;year&#39;</span><span class="p">,</span> <span class="s1">&#39;month&#39;</span><span class="p">],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">final_ratio</span><span class="p">[</span><span class="s1">&#39;count&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">counts</span>
+        <span class="n">final_ratio</span><span class="p">[</span><span class="s1">&#39;stdev&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">stdev</span>
+        <span class="n">final_ratio</span><span class="p">[</span><span class="s1">&#39;cv&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">stdev</span> <span class="o">/</span> <span class="n">final_ratio</span><span class="p">[</span><span class="s1">&#39;ratio&#39;</span><span class="p">]</span>
+        <span class="c1"># calc mean growing season, June through August, ann stdev</span>
+        <span class="n">grow_season_std</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">ratio</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">ratio</span><span class="o">.</span><span class="n">month</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">]),</span>\
+                <span class="s1">&#39;ratio&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+        <span class="n">june_to_aug_std</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">ratio</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">ratio</span><span class="o">.</span><span class="n">month</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">]),</span>\
+                <span class="s1">&#39;ratio&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+        <span class="n">annual_std</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">ratio</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">ratio</span><span class="o">.</span><span class="n">month</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">ann_months</span><span class="p">),</span>\
+                <span class="s1">&#39;ratio&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+        <span class="c1"># get month abbreviations in a column and drop index values</span>
+        <span class="k">for</span> <span class="n">m</span> <span class="ow">in</span> <span class="n">final_ratio</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>
+            <span class="n">final_ratio</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">m</span><span class="p">,</span><span class="s1">&#39;month&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">calendar</span><span class="o">.</span><span class="n">month_abbr</span><span class="p">[</span><span class="n">m</span><span class="p">]</span>
+        <span class="c1"># restructure as a row with station index</span>
+        <span class="n">months</span> <span class="o">=</span> <span class="n">final_ratio</span><span class="o">.</span><span class="n">month</span><span class="o">.</span><span class="n">values</span>
+        <span class="n">final_ratio</span> <span class="o">=</span> <span class="n">final_ratio</span><span class="o">.</span><span class="n">T</span>
+        <span class="n">final_ratio</span><span class="o">.</span><span class="n">columns</span> <span class="o">=</span> <span class="n">months</span>
+        <span class="n">final_ratio</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="s1">&#39;month&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="c1"># add monthy means and counts into single row dataframe</span>
+        <span class="n">ratio_cols</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="o">+</span> <span class="s1">&#39;_mean&#39;</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">final_ratio</span><span class="o">.</span><span class="n">columns</span><span class="p">]</span>
+        <span class="n">count_cols</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="o">+</span> <span class="s1">&#39;_count&#39;</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">final_ratio</span><span class="o">.</span><span class="n">columns</span><span class="p">]</span>
+        <span class="n">stddev_cols</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="o">+</span> <span class="s1">&#39;_stdev&#39;</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">final_ratio</span><span class="o">.</span><span class="n">columns</span><span class="p">]</span>
+        <span class="n">coef_var_cols</span> <span class="o">=</span> <span class="p">[</span><span class="n">c</span> <span class="o">+</span> <span class="s1">&#39;_cv&#39;</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">final_ratio</span><span class="o">.</span><span class="n">columns</span><span class="p">]</span>
+        <span class="c1"># combine all monthly stats</span>
+        <span class="n">out_cols</span> <span class="o">=</span> <span class="n">ratio_cols</span> <span class="o">+</span> <span class="n">count_cols</span> <span class="o">+</span> <span class="n">stddev_cols</span> <span class="o">+</span> <span class="n">coef_var_cols</span>
+        <span class="n">final_ratio</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span>
+            <span class="n">final_ratio</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">&#39;ratio&#39;</span><span class="p">],</span> 
+            <span class="n">final_ratio</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">&#39;count&#39;</span><span class="p">],</span>
+            <span class="n">final_ratio</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">&#39;stdev&#39;</span><span class="p">],</span>
+            <span class="n">final_ratio</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="s1">&#39;cv&#39;</span><span class="p">]</span>
+        <span class="p">])</span>
+        <span class="n">final_ratio</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">out_cols</span>
+        <span class="c1"># transpose so that each station is one row in final output</span>
+        <span class="n">final_ratio</span> <span class="o">=</span> <span class="n">final_ratio</span><span class="o">.</span><span class="n">to_frame</span><span class="p">()</span><span class="o">.</span><span class="n">T</span>
+        <span class="c1"># assign non-monthly stats, growing season, annual, june-aug</span>
+        <span class="n">final_ratio</span><span class="p">[</span><span class="s1">&#39;growseason_mean&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">grow_season</span>
+        <span class="n">final_ratio</span><span class="p">[</span><span class="s1">&#39;summer_mean&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">june_to_aug</span>
+        <span class="n">final_ratio</span><span class="p">[</span><span class="s1">&#39;annual_mean&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">annual</span>
+        <span class="c1"># day counts for all years in non monthly periods</span>
+        <span class="n">final_ratio</span><span class="p">[</span><span class="s1">&#39;growseason_count&#39;</span><span class="p">]</span> <span class="o">=</span>\
+            <span class="n">counts</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">counts</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="mi">4</span><span class="p">,</span><span class="mi">5</span><span class="p">,</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">9</span><span class="p">])]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="n">final_ratio</span><span class="p">[</span><span class="s1">&#39;summer_count&#39;</span><span class="p">]</span> <span class="o">=</span>\
+            <span class="n">counts</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">counts</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">isin</span><span class="p">([</span><span class="mi">6</span><span class="p">,</span><span class="mi">7</span><span class="p">,</span><span class="mi">8</span><span class="p">])]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="n">final_ratio</span><span class="p">[</span><span class="s1">&#39;annual_count&#39;</span><span class="p">]</span> <span class="o">=</span>\
+            <span class="n">counts</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">counts</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">ann_months</span><span class="p">)]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="c1"># assign stdev, coef. var. </span>
+        <span class="n">final_ratio</span><span class="p">[</span><span class="s1">&#39;growseason_stdev&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">grow_season_std</span>
+        <span class="n">final_ratio</span><span class="p">[</span><span class="s1">&#39;summer_stdev&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">june_to_aug_std</span>
+        <span class="n">final_ratio</span><span class="p">[</span><span class="s1">&#39;annual_stdev&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">annual_std</span>
+        <span class="c1"># coefficient of variation</span>
+        <span class="n">final_ratio</span><span class="p">[</span><span class="s1">&#39;growseason_cv&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">grow_season_std</span> <span class="o">/</span> <span class="n">grow_season</span>
+        <span class="n">final_ratio</span><span class="p">[</span><span class="s1">&#39;summer_cv&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">june_to_aug_std</span> <span class="o">/</span> <span class="n">june_to_aug</span>
+        <span class="n">final_ratio</span><span class="p">[</span><span class="s1">&#39;annual_cv&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">annual_std</span> <span class="o">/</span> <span class="n">annual</span>
+        <span class="c1"># start and end years for interpreting annual CV, stdev...</span>
+        <span class="n">final_ratio</span><span class="p">[</span><span class="s1">&#39;start_year&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">start_year</span>
+        <span class="n">final_ratio</span><span class="p">[</span><span class="s1">&#39;end_year&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">end_year</span>
+
+        <span class="c1"># round numerical data before adding string metadata</span>
+        <span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">final_ratio</span><span class="p">:</span>
+            <span class="k">if</span> <span class="s1">&#39;_mean&#39;</span> <span class="ow">or</span> <span class="s1">&#39;_stdev&#39;</span> <span class="ow">or</span> <span class="s1">&#39;_cv&#39;</span> <span class="ow">in</span> <span class="n">v</span><span class="p">:</span>
+                <span class="n">final_ratio</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="n">final_ratio</span><span class="p">[</span><span class="n">v</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">3</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">final_ratio</span><span class="p">[</span><span class="n">v</span><span class="p">]</span> <span class="o">=</span> <span class="n">final_ratio</span><span class="p">[</span><span class="n">v</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span><span class="o">.</span><span class="n">round</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="c1"># set station ID as index</span>
+        <span class="n">final_ratio</span><span class="p">[</span><span class="s1">&#39;STATION_ID&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">STATION_ID</span>
+        <span class="n">final_ratio</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;STATION_ID&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">out</span> <span class="o">=</span> <span class="n">final_ratio</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+        <span class="n">out</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">count_cols</span><span class="o">+</span><span class="n">stddev_cols</span><span class="o">+</span><span class="n">coef_var_cols</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="c1"># save GRIDMET_ID for merging with input table</span>
+        <span class="n">final_ratio</span><span class="p">[</span><span class="s1">&#39;GRIDMET_ID&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">GRIDMET_ID</span>    
+        <span class="n">final_ratio</span> <span class="o">=</span> <span class="n">final_ratio</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">input_df</span><span class="p">,</span> <span class="n">on</span><span class="o">=</span><span class="s1">&#39;GRIDMET_ID&#39;</span><span class="p">)</span>
+
+        <span class="c1"># round numeric columns</span>
+        <span class="n">final_ratio</span> <span class="o">=</span> <span class="n">final_ratio</span><span class="o">.</span><span class="n">round</span><span class="p">({</span>
+            <span class="s1">&#39;LAT&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+            <span class="s1">&#39;LON&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+            <span class="s1">&#39;ELEV_M&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s1">&#39;ELEV_FT&#39;</span><span class="p">:</span> <span class="mi">0</span><span class="p">,</span>
+            <span class="s1">&#39;STATION_LAT&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+            <span class="s1">&#39;STATION_LON&#39;</span><span class="p">:</span> <span class="mi">10</span><span class="p">,</span>
+            <span class="s1">&#39;STATION_ELEV_M&#39;</span><span class="p">:</span> <span class="mi">0</span>
+        <span class="p">})</span>
+
+        <span class="c1"># check if day counts for non-monthly periods are too low, if assign na</span>
+        <span class="n">grow_thresh</span> <span class="o">=</span> <span class="mi">65</span>
+        <span class="n">sum_thresh</span> <span class="o">=</span> <span class="mi">35</span>
+        <span class="n">ann_thresh</span> <span class="o">=</span> <span class="mi">125</span>
+        
+        <span class="k">if</span> <span class="n">final_ratio</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="s1">&#39;summer_count&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">sum_thresh</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;WARNING: less than:&#39;</span><span class="p">,</span> <span class="n">sum_thresh</span><span class="p">,</span> <span class="s1">&#39;days in summer period&#39;</span><span class="p">,</span>
+                 <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">for station:&#39;</span><span class="p">,</span><span class="n">row</span><span class="o">.</span><span class="n">STATION_ID</span><span class="p">,</span><span class="s1">&#39;assigning -999 for all stats&#39;</span><span class="p">)</span>
+            <span class="n">cols</span> <span class="o">=</span> <span class="p">[</span><span class="n">col</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">final_ratio</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> 
+                    <span class="s1">&#39;summer_&#39;</span> <span class="ow">in</span> <span class="n">col</span> <span class="ow">and</span> <span class="s1">&#39;_count&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">col</span><span class="p">]</span>
+            <span class="n">final_ratio</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span><span class="n">cols</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+        
+        <span class="k">if</span> <span class="n">final_ratio</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="s1">&#39;growseason_count&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">grow_thresh</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;WARNING: less than:&#39;</span><span class="p">,</span><span class="n">grow_thresh</span><span class="p">,</span><span class="s1">&#39;days in growing season&#39;</span><span class="p">,</span>
+                 <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">for station:&#39;</span><span class="p">,</span><span class="n">row</span><span class="o">.</span><span class="n">STATION_ID</span><span class="p">,</span><span class="s1">&#39;assigning -999 for all stats&#39;</span><span class="p">)</span>
+            <span class="n">cols</span> <span class="o">=</span> <span class="p">[</span><span class="n">col</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">final_ratio</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> 
+                    <span class="s1">&#39;growseason_&#39;</span> <span class="ow">in</span> <span class="n">col</span> <span class="ow">and</span> <span class="s1">&#39;_count&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">col</span><span class="p">]</span>
+            <span class="n">final_ratio</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span><span class="n">cols</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+            
+        <span class="k">if</span> <span class="n">final_ratio</span><span class="o">.</span><span class="n">at</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="s1">&#39;annual_count&#39;</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">ann_thresh</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;WARNING: less than:&#39;</span><span class="p">,</span><span class="n">ann_thresh</span><span class="p">,</span><span class="s1">&#39;days in annual period&#39;</span><span class="p">,</span>
+                 <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">for station:&#39;</span><span class="p">,</span><span class="n">row</span><span class="o">.</span><span class="n">STATION_ID</span><span class="p">,</span><span class="s1">&#39;assigning -999 for all stats&#39;</span><span class="p">)</span>
+            <span class="n">cols</span> <span class="o">=</span> <span class="p">[</span><span class="n">col</span> <span class="k">for</span> <span class="n">col</span> <span class="ow">in</span> <span class="n">final_ratio</span><span class="o">.</span><span class="n">columns</span> <span class="k">if</span> 
+                    <span class="s1">&#39;annual_&#39;</span> <span class="ow">in</span> <span class="n">col</span> <span class="ow">and</span> <span class="s1">&#39;_count&#39;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">col</span><span class="p">]</span>
+            <span class="n">final_ratio</span><span class="o">.</span><span class="n">loc</span><span class="p">[:,</span><span class="n">cols</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+
+        <span class="k">if</span> <span class="n">comp</span><span class="p">:</span>
+            <span class="n">out</span><span class="p">[</span><span class="s1">&#39;GRIDMET_ID&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">GRIDMET_ID</span>
+            <span class="n">out</span><span class="p">[</span><span class="s1">&#39;GRIDMET_ID&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">final_ratio</span><span class="o">.</span><span class="n">GRIDMET_ID</span><span class="o">.</span><span class="n">unique</span><span class="p">()</span>
+            <span class="c1"># build comprehensive output summary </span>
+            <span class="n">comp_out</span> <span class="o">=</span> <span class="n">final_ratio</span>
+            <span class="n">comp_out</span><span class="o">.</span><span class="n">set_index</span><span class="p">(</span><span class="s1">&#39;STATION_ID&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+            <span class="c1"># no longer need GRIDMET_ID in short summary </span>
+            <span class="n">out</span><span class="o">.</span><span class="n">drop</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="s1">&#39;GRIDMET_ID&#39;</span><span class="p">,</span> <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="c1"># if comp False</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">comp_out</span> <span class="o">=</span> <span class="n">comp</span>
+
+        <span class="c1"># save output depending on options</span>
+        <span class="n">_save_output</span><span class="p">(</span><span class="n">out</span><span class="p">,</span> <span class="n">comp_out</span><span class="p">,</span> <span class="n">out_dir</span><span class="p">,</span> <span class="n">gridmet_ID</span><span class="p">,</span> <span class="n">gridmet_var</span><span class="p">,</span> <span class="n">years_str</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span>
+        <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Summary file(s) for bias ratios saved to: </span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">,</span> 
+         <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">out_dir</span><span class="p">)</span>
+         <span class="p">)</span>    </div>
+    
+<span class="k">def</span> <span class="nf">arg_parse</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Command line usage of calc_bias_ratios.py which calculates monthly bias </span>
+<span class="sd">    ratios between station climate and gridMET cells that correspond with </span>
+<span class="sd">    each other geographically. Saves data to CSV files in the given output </span>
+<span class="sd">    directory. If run later with new station data, bias ratios for new </span>
+<span class="sd">    stations will be appended to existing output summary CSV.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span>
+        <span class="n">description</span><span class="o">=</span><span class="n">arg_parse</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">,</span>
+        <span class="n">formatter_class</span><span class="o">=</span><span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentDefaultsHelpFormatter</span><span class="p">)</span>
+    <span class="n">optional</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">_action_groups</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span> <span class="c1"># optionals listed second</span>
+    <span class="n">required</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s1">&#39;required arguments&#39;</span><span class="p">)</span>
+    <span class="n">required</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;-i&#39;</span><span class="p">,</span> <span class="s1">&#39;--input&#39;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;PATH&#39;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Input CSV file of merged climate/gridMET data that &#39;</span><span class="o">+</span>\
+             <span class="s1">&#39;was created by running prep_input.py and download_gridmet_ee.py&#39;</span><span class="p">)</span>
+    <span class="n">required</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;-o&#39;</span><span class="p">,</span> <span class="s1">&#39;--out&#39;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;PATH&#39;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Output directory to save CSV files containing bias ratios&#39;</span><span class="p">)</span>
+    <span class="n">optional</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;-y&#39;</span><span class="p">,</span> <span class="s1">&#39;--years&#39;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Years to use, single or range e.g. 2018 or 1995-2010&#39;</span><span class="p">)</span>
+    <span class="n">optional</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;-gv&#39;</span><span class="p">,</span> <span class="s1">&#39;--gridmet-var&#39;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;etr_mm&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;GridMET variable name for bias ratio calculation&#39;</span><span class="p">)</span>
+    <span class="n">optional</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;-sv&#39;</span><span class="p">,</span> <span class="s1">&#39;--station-var&#39;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Station variable name for bias ratio calculation&#39;</span><span class="p">)</span>
+    <span class="n">optional</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;-id&#39;</span><span class="p">,</span> <span class="s1">&#39;--gridmet-id&#39;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Optional gridMET ID to calculate bias ratios for a single &#39;</span><span class="o">+</span>\
+             <span class="s1">&#39;gridMET cell&#39;</span><span class="p">)</span>
+    <span class="n">optional</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-d&#39;</span><span class="p">,</span> <span class="s1">&#39;--day-limit&#39;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> 
+        <span class="n">default</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Number of days of valid data per month to &#39;</span><span class="o">+</span>\
+              <span class="s1">&#39;include it in bias correction calculation.&#39;</span><span class="p">)</span>
+    <span class="n">optional</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span><span class="s1">&#39;-c&#39;</span><span class="p">,</span> <span class="s1">&#39;--comprehensive&#39;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> 
+        <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_false&#39;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s1">&#39;comprehensive&#39;</span><span class="p">,</span> 
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Flag, if given, to NOT save comprehensive summary file with &#39;</span><span class="o">+</span>\
+             <span class="s1">&#39;extra metadata and statistics with the suffix &quot;_comp&quot;&#39;</span><span class="p">)</span>
+<span class="c1">#    parser.add_argument(</span>
+<span class="c1">#        &#39;--debug&#39;, default=logging.INFO, const=logging.DEBUG,</span>
+<span class="c1">#        help=&#39;Debug level logging&#39;, action=&quot;store_const&quot;, dest=&quot;loglevel&quot;)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">_action_groups</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">optional</span><span class="p">)</span><span class="c1"># to avoid optionals listed first</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">args</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">arg_parse</span><span class="p">()</span>
+
+    <span class="n">main</span><span class="p">(</span><span class="n">input_file_path</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">input</span><span class="p">,</span> <span class="n">out_dir</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">out</span><span class="p">,</span>
+         <span class="n">gridmet_var</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">gridmet_var</span><span class="p">,</span> <span class="n">station_var</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">station_var</span><span class="p">,</span>
+         <span class="n">gridmet_id</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">gridmet_id</span><span class="p">,</span> <span class="n">day_limit</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">day_limit</span><span class="p">,</span>
+         <span class="n">years</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">years</span><span class="p">,</span> <span class="n">comp</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">comprehensive</span><span class="p">)</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">gridwxcomp</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Change Log</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, John Volk and Chris Pearson.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>

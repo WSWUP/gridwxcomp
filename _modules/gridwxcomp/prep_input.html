@@ -1,0 +1,457 @@
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml" lang="Python">
+  <head>
+    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>gridwxcomp.prep_input &#8212; gridwxcomp 0.0.57 documentation</title>
+    <link rel="stylesheet" href="../../_static/alabaster.css" type="text/css" />
+    <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+    <link rel="stylesheet" type="text/css" href="../../_static/custom.css" />
+    <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+    <script type="text/javascript" src="../../_static/jquery.js"></script>
+    <script type="text/javascript" src="../../_static/underscore.js"></script>
+    <script type="text/javascript" src="../../_static/doctools.js"></script>
+    <script type="text/javascript" src="../../_static/language_data.js"></script>
+    <script type="text/javascript" src="../../_static/copybutton.js"></script>
+    <script type="text/javascript" src="../../_static/custom.js"></script>
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@1/dist/clipboard.min.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" />
+   
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <h1>Source code for gridwxcomp.prep_input</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="c1">#!/usr/bin/env python</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Read a CSV of climate station information and match each with nearest gridMET</span>
+<span class="sd">cell information. Produce a CSV file that will be used for input for main</span>
+<span class="sd">bias correction workflow.</span>
+
+<span class="sd">Todo:</span>
+<span class="sd">    *  add logging </span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">os</span>                                                                       
+<span class="kn">import</span> <span class="nn">argparse</span>                                                                 
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">pkg_resources</span>
+                                                    
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>                                                             
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>        
+<span class="kn">from</span> <span class="nn">scipy</span> <span class="k">import</span> <span class="n">spatial</span>
+
+
+
+<span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">station_file</span><span class="p">,</span> <span class="n">out_path</span><span class="p">,</span> <span class="n">gridmet_meta_file</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Take list of climate stations and merge each with overlapping gridMET cell</span>
+<span class="sd">    information, write new CSV for next step in bias correction workflow.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        station_file (str): path to CSV file containing list of climate</span>
+<span class="sd">            stations that will later be used to calculate monthly</span>
+<span class="sd">            bias ratios to gridMET reference ET.</span>
+<span class="sd">        gridmet_meta_file (str): path to metadata CSV file that contains</span>
+<span class="sd">            all gridMET cells for the contiguous United States. Can be</span>
+<span class="sd">            found at ``gridwxcomp/gridmet_cell_data.csv``.</span>
+<span class="sd">        out_path (str or None): path to save output CSV, default is to save </span>
+<span class="sd">            as &quot;merged_input.csv&quot; to current working directory if not passed</span>
+<span class="sd">            at command line to script.</span>
+
+<span class="sd">    Example:</span>
+<span class="sd">        From the command line interface within the ``gridwxcomp/gridwxcomp``</span>
+<span class="sd">        directory (or replace input path with correct path),</span>
+
+<span class="sd">        .. code-block:: sh</span>
+
+<span class="sd">            $ gridwxcomp prep-input &lt;station_metadata&gt;  </span>
+
+<span class="sd">        where ``station_metadata`` is a file containing metadata of climate </span>
+<span class="sd">        stations built from `PyWeatherQAQC &lt;https://github.com/WSWUP/pyWeatherQAQC&gt;`_.</span>
+<span class="sd">        The file should be in CSV format and contain at least these four columns:</span>
+<span class="sd">        * Latitude</span>
+<span class="sd">        * Longitude</span>
+<span class="sd">        * Station</span>
+<span class="sd">        * Filename </span>
+
+<span class="sd">        The result is &quot;merged_input.csv&quot; being created in the working </span>
+<span class="sd">        directory which contains metadata from climate staions as well as the </span>
+<span class="sd">        lat, long, and gridMET ID of the nearest gridMET cell centroid.</span>
+<span class="sd">        This file is used as input to :mod:`gridwxcomp.download_gridmet_ee`</span>
+<span class="sd">        followed by :mod:`gridwxcomp.calc_bias_ratios`.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># station info with overlapping gridMET and save CSV</span>
+    <span class="n">prep_input</span><span class="p">(</span>
+        <span class="n">station_file</span><span class="p">,</span> 
+        <span class="n">out_path</span><span class="p">,</span>
+        <span class="n">gridmet_meta_path</span><span class="o">=</span><span class="n">gridmet_meta_file</span> 
+    <span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">gridMET_centroid</span><span class="p">(</span><span class="n">lat</span><span class="p">,</span><span class="n">lon</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculate the nearest centroid lattitude and longitude for an arbitrary</span>
+<span class="sd">    coordinate. Used for finding closest neighboring grdiMET cell to a climate </span>
+<span class="sd">    station.</span>
+<span class="sd">    </span>
+<span class="sd">    Arguments:</span>
+<span class="sd">        lat (float): decimal degree latitude of location</span>
+<span class="sd">        lon (float): decimal degree longitude of location </span>
+<span class="sd">            </span>
+<span class="sd">    Returns:</span>
+<span class="sd">        gridcell_lat,gridcell_lon (tuple): tuple of latitude and </span>
+<span class="sd">            longitude of nearest gridMET cell centroid location.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">gridmet_lon</span> <span class="o">=</span> <span class="o">-</span><span class="mf">124.78749996666667</span>
+    <span class="n">gridmet_lat</span> <span class="o">=</span> <span class="mf">25.04583333333334</span>
+    <span class="n">gridmet_cs</span> <span class="o">=</span> <span class="mf">0.041666666666666664</span>
+    <span class="n">gridcell_lat</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span>
+        <span class="nb">abs</span><span class="p">(</span><span class="n">lat</span> <span class="o">-</span> <span class="n">gridmet_lat</span><span class="p">)</span> <span class="o">/</span> <span class="n">gridmet_cs</span><span class="p">)</span> <span class="o">*</span> <span class="n">gridmet_cs</span> <span class="o">+</span>\
+        <span class="n">gridmet_lat</span> <span class="o">+</span> <span class="n">gridmet_cs</span><span class="o">/</span><span class="mi">2</span>
+    <span class="n">gridcell_lon</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span>
+        <span class="nb">abs</span><span class="p">(</span><span class="n">lon</span> <span class="o">-</span> <span class="n">gridmet_lon</span><span class="p">)</span> <span class="o">/</span> <span class="n">gridmet_cs</span><span class="p">)</span> <span class="o">*</span> <span class="n">gridmet_cs</span> <span class="o">+</span>\
+        <span class="n">gridmet_lon</span> <span class="o">+</span> <span class="n">gridmet_cs</span><span class="o">/</span><span class="mi">2</span>
+    
+    <span class="k">return</span> <span class="n">gridcell_lat</span><span class="p">,</span> <span class="n">gridcell_lon</span>
+
+<span class="k">def</span> <span class="nf">_read_station_list</span><span class="p">(</span><span class="n">station_path</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Helper function that reads station list CSV file and return modified </span>
+<span class="sd">    version as a :obj:`Pandas.DataFrame` that includes file paths to each </span>
+<span class="sd">    station time series file. Renames some columns for consistency with other </span>
+<span class="sd">    ``gridwxcomp`` functions and scripts. </span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        station_path (str): path to CSV file containing list of climate</span>
+<span class="sd">            stations that will later be used to calculate monthly</span>
+<span class="sd">            bias rations to GridMET reference ET.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        station_list (:class:`pandas.DataFrame`): ``Pandas.DataFrame`` that</span>
+<span class="sd">            contains station name, lattitude, longitude, and others for each </span>
+<span class="sd">            climate station.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">station_list</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">station_path</span><span class="p">)</span>
+    <span class="c1"># mandatory columns </span>
+    <span class="n">need_cols</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="s1">&#39;Latitude&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;Longitude&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;Filename&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;Station&#39;</span><span class="p">,</span>
+            <span class="p">]</span>
+
+    <span class="c1"># make sure mandatory columns exist else abort</span>
+    <span class="n">station_cols</span> <span class="o">=</span> <span class="n">station_list</span><span class="o">.</span><span class="n">columns</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">set</span><span class="p">(</span><span class="n">need_cols</span><span class="p">)</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">station_cols</span><span class="p">)):</span>
+        <span class="n">err_msg</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;One or more of the mandatory columns is missing&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;from the station input file, it must contain:&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">c</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">need_cols</span><span class="p">))</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">err_msg</span><span class="p">)</span>
+
+    <span class="n">station_list</span><span class="o">.</span><span class="n">rename</span><span class="p">(</span>
+            <span class="n">columns</span><span class="o">=</span><span class="p">{</span>
+                <span class="s1">&#39;Latitude&#39;</span><span class="p">:</span><span class="s1">&#39;STATION_LAT&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;Longitude&#39;</span><span class="p">:</span><span class="s1">&#39;STATION_LON&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;Elev_m&#39;</span><span class="p">:</span><span class="s1">&#39;STATION_ELEV_M&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;Elev_FT&#39;</span><span class="p">:</span><span class="s1">&#39;STATION_ELEV_FT&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;Station&#39;</span><span class="p">:</span><span class="s1">&#39;STATION_ID&#39;</span><span class="p">,</span>
+                <span class="s1">&#39;Filename&#39;</span><span class="p">:</span><span class="s1">&#39;STATION_FILE_PATH&#39;</span><span class="p">},</span>
+            <span class="n">inplace</span><span class="o">=</span><span class="kc">True</span>
+            <span class="p">)</span>
+    <span class="c1"># get station name only for matching to file name</span>
+    <span class="n">station_list</span><span class="o">.</span><span class="n">STATION_FILE_PATH</span> <span class="o">=</span>\
+            <span class="n">station_list</span><span class="o">.</span><span class="n">STATION_FILE_PATH</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">str</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="c1"># look at path for station CSV, look for time series files in same directory</span>
+    <span class="n">station_path_tuple</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">station_path</span><span class="p">)</span>
+    <span class="n">path_root</span> <span class="o">=</span> <span class="n">station_path_tuple</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">file_name</span> <span class="o">=</span> <span class="n">station_path_tuple</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="c1"># look in parent directory that contains station CSV file</span>
+    <span class="k">if</span> <span class="n">path_root</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span> <span class="ow">and</span> <span class="n">file_name</span> <span class="o">!=</span> <span class="s1">&#39;&#39;</span><span class="p">:</span>
+        <span class="n">file_names</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">path_root</span><span class="p">)</span>   
+    <span class="c1"># if station CSV file is in cwd look there</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">file_names</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">())</span>
+    <span class="c1"># match station name with time series excel files full path,</span>
+    <span class="c1"># assumes no other files in the directory have station names in their name</span>
+    <span class="c1"># will accept files of any extension, e.g. xlx, csv, txt</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">station</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">station_list</span><span class="o">.</span><span class="n">STATION_FILE_PATH</span><span class="p">):</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">match</span> <span class="o">=</span> <span class="p">[</span><span class="n">s</span> <span class="k">for</span> <span class="n">s</span> <span class="ow">in</span> <span class="n">file_names</span> <span class="k">if</span> <span class="n">station</span> <span class="ow">in</span> <span class="n">s</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">match</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="k">if</span> <span class="n">match</span><span class="p">:</span>
+            <span class="n">station_list</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">station_list</span><span class="o">.</span><span class="n">STATION_FILE_PATH</span> <span class="o">==</span> <span class="n">station</span><span class="p">,</span>\
+                <span class="s1">&#39;STATION_FILE_PATH&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span>
+                                       <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">path_root</span><span class="p">,</span><span class="n">match</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">missing_station</span> <span class="o">=</span> <span class="n">station_list</span><span class="o">.</span><span class="n">iloc</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="s1">&#39;STATION_ID&#39;</span><span class="p">]</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;WARNING: no file was found that matches station: &#39;</span><span class="p">,</span> 
+                <span class="n">missing_station</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">in directory: &#39;</span><span class="p">,</span> 
+                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">path_root</span><span class="p">),</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">skipping.</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="p">)</span>
+            <span class="k">continue</span>
+
+    <span class="k">return</span> <span class="n">station_list</span>
+
+<div class="viewcode-block" id="prep_input"><a class="viewcode-back" href="../../api.html#gridwxcomp.prep_input">[docs]</a><span class="k">def</span> <span class="nf">prep_input</span><span class="p">(</span><span class="n">station_path</span><span class="p">,</span> <span class="n">out_path</span><span class="o">=</span><span class="s1">&#39;merged_input.csv&#39;</span><span class="p">,</span> 
+                <span class="n">gridmet_meta_path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Read list of climate stations and match each with its</span>
+<span class="sd">    closest GridMET cell, save CSV with information from both.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        station_path (str): path to CSV file containing list of climate</span>
+<span class="sd">            stations that will later be used to calculate monthly</span>
+<span class="sd">            bias ratios to GridMET reference ET.</span>
+
+<span class="sd">    Keyword Arguments:</span>
+<span class="sd">        out_path (str): path to save output CSV, default is to save as </span>
+<span class="sd">            &#39;merged_input.csv&#39; to current working directory.</span>
+<span class="sd">        gridmet_meta_path (str): path to metadata CSV file that contains</span>
+<span class="sd">            all gridMET cells for the contiguous United States. If None</span>
+<span class="sd">            it is looked for at the installation directory of ``gridwxcomp``</span>
+<span class="sd">            if not found it is looked for in the current working directory</span>
+<span class="sd">            as &#39;gridmet_cell_data.csv&#39;.</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        None</span>
+
+<span class="sd">    Example:</span>
+
+<span class="sd">        &gt;&gt;&gt; from gridwxcomp import prep_input </span>
+<span class="sd">        &gt;&gt;&gt; prep_input(&#39;gridwxcomp/example_data/Station_Data.txt&#39;,&#39;outfile.csv&#39;)</span>
+<span class="sd">        </span>
+<span class="sd">        outfile.csv will be created containing station and corresponding</span>
+<span class="sd">        gridMET cell data. This file is later used as input for </span>
+<span class="sd">        :mod:`gridwxcomp.download_gridmet_ee` and :mod:`gridwxcomp.calc_bias_ratios`.</span>
+<span class="sd">        </span>
+<span class="sd">    Raises:</span>
+<span class="sd">        FileNotFoundError: if the ``gridmet_meta_path`` is not passed as a </span>
+<span class="sd">            command line argument and it is not in the current working directory</span>
+<span class="sd">            and named &quot;gridmet_cell_data.csv&quot; and if ``gridwxcomp`` was not </span>
+<span class="sd">            installed to the user&#39;s PATH, i.e. pip or python setup.py install.</span>
+<span class="sd">        ValueError: if one or more of the following mandatory columns are </span>
+<span class="sd">            missing from the input CSV file (``station_path`` parameter): </span>
+<span class="sd">            &#39;Longitude&#39;, &#39;Latitude&#39;, &#39;Station&#39;, or &#39;Filename&#39;.   </span>
+
+<span class="sd">    Note:</span>
+<span class="sd">        If climate station time series files do **NOT** follow the format </span>
+<span class="sd">        created by `pyWeatherQAQC &lt;https://github.com/WSWUP/pyWeatherQAQC&gt;`_ </span>
+<span class="sd">        i.e. microsoft excel files with data stored in a tab named &#39;corrected&#39;.</span>
+<span class="sd">        Then station files should be in text (CSV) format with a column</span>
+<span class="sd">        named &#39;date&#39; containing datetime strings e.g. &#39;12/01/2018&#39;, that are </span>
+<span class="sd">        able to be parsed by Pandas. The CSV file produced by contains latitude,        longitude, and other fields for both the station and nearest gridMET </span>
+<span class="sd">        cell centroid. Fields that may refer to both gridMET and station data </span>
+<span class="sd">        have prefixes to distinguish, the climate station data are prefixed </span>
+<span class="sd">        with &#39;STATION&#39; and those refering to gridMET have no prefix. </span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># look for pacakged gridmet_cell_data.csv if path not given</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">gridmet_meta_path</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">resource_exists</span><span class="p">(</span><span class="s1">&#39;gridwxcomp&#39;</span><span class="p">,</span> 
+                    <span class="s1">&#39;gridmet_cell_data.csv&#39;</span><span class="p">):</span>
+                <span class="n">gridmet_meta_path</span> <span class="o">=</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">resource_filename</span><span class="p">(</span>
+                    <span class="s1">&#39;gridwxcomp&#39;</span><span class="p">,</span> 
+                    <span class="s1">&#39;gridmet_cell_data.csv&#39;</span>
+                    <span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">gridmet_meta_path</span> <span class="o">=</span> <span class="s1">&#39;gridmet_cell_data.csv&#39;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">gridmet_meta_path</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="s1">&#39;GridMET file path was not given and &#39;</span><span class="o">+</span>\
+                <span class="s1">&#39;gridmet_cell_data.csv was not found in the gridwxcomp &#39;</span><span class="o">+</span>\
+                <span class="s1">&#39;install directory. Please assign the path or put &#39;</span><span class="o">+</span>\
+                <span class="s1">&#39;&quot;gridmet_cell_data.csv&quot; in the current working directory.</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+
+    <span class="n">path_root</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">out_path</span><span class="p">))[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">path_root</span><span class="p">):</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="s1">&#39;The directory: &#39;</span><span class="p">,</span> 
+            <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">path_root</span><span class="p">),</span>
+            <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">does not exist, creating directory&#39;</span>
+        <span class="p">)</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">path_root</span><span class="p">)</span>
+
+    <span class="nb">print</span><span class="p">(</span>
+          <span class="s1">&#39;station list CSV: &#39;</span><span class="p">,</span>
+          <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">station_path</span><span class="p">),</span>
+          <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">gridMET cell info CSV: &#39;</span><span class="p">,</span>
+          <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">gridmet_meta_path</span><span class="p">),</span>
+          <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">merged CSV will be saved to: &#39;</span><span class="p">,</span>
+          <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">out_path</span><span class="p">)</span>
+    <span class="p">)</span>
+
+    <span class="n">stations</span> <span class="o">=</span> <span class="n">_read_station_list</span><span class="p">(</span><span class="n">station_path</span><span class="p">)</span>
+    <span class="n">gridmet_meta</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">gridmet_meta_path</span><span class="p">)</span>
+    <span class="n">gridmet_pts</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">zip</span><span class="p">(</span><span class="n">gridmet_meta</span><span class="o">.</span><span class="n">LAT</span><span class="p">,</span><span class="n">gridmet_meta</span><span class="o">.</span><span class="n">LON</span><span class="p">))</span>
+    <span class="c1"># scipy KDTree to find nearest neighbor between station and centroids</span>
+    <span class="n">tree</span> <span class="o">=</span> <span class="n">spatial</span><span class="o">.</span><span class="n">KDTree</span><span class="p">(</span><span class="n">gridmet_pts</span><span class="p">)</span>
+    <span class="c1"># loop through each station find closest GridMET</span>
+    <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">stations</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">station_lat</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">STATION_LAT</span>
+            <span class="n">station_lon</span> <span class="o">=</span> <span class="n">row</span><span class="o">.</span><span class="n">STATION_LON</span>
+            <span class="n">pt</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">station_lat</span><span class="p">,</span><span class="n">station_lon</span><span class="p">])</span>
+            <span class="c1"># index of nearest GridMET point, same as GRIDMET_ID</span>
+            <span class="n">ind</span> <span class="o">=</span> <span class="n">tree</span><span class="o">.</span><span class="n">query</span><span class="p">(</span><span class="n">pt</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
+            <span class="n">stations</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">index</span><span class="p">,</span><span class="s1">&#39;GRIDMET_ID&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">ind</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Failed to find matching gridMET info for climate &#39;</span>\
+                    <span class="o">+</span><span class="s1">&#39;station with STATION_ID = &#39;</span><span class="p">,</span> <span class="n">row</span><span class="o">.</span><span class="n">STATION_ID</span><span class="p">,</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>  
+    <span class="n">stations</span><span class="o">.</span><span class="n">GRIDMET_ID</span> <span class="o">=</span> <span class="n">stations</span><span class="o">.</span><span class="n">GRIDMET_ID</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+    <span class="n">out_df</span> <span class="o">=</span> <span class="n">stations</span><span class="o">.</span><span class="n">merge</span><span class="p">(</span><span class="n">gridmet_meta</span><span class="p">,</span><span class="n">on</span><span class="o">=</span><span class="s1">&#39;GRIDMET_ID&#39;</span><span class="p">)</span>
+    <span class="n">out_df</span><span class="p">[</span><span class="s1">&#39;ELEV_FT&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">out_df</span><span class="o">.</span><span class="n">ELEV_M</span> <span class="o">*</span> <span class="mf">3.28084</span> <span class="c1"># m to ft</span>
+    <span class="n">out_df</span> <span class="o">=</span> <span class="n">out_df</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span>
+             <span class="n">columns</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;GRIDMET_ID&#39;</span><span class="p">,</span>
+                      <span class="s1">&#39;LAT&#39;</span><span class="p">,</span>
+                      <span class="s1">&#39;LON&#39;</span><span class="p">,</span>
+                      <span class="s1">&#39;ELEV_M&#39;</span><span class="p">,</span>
+                      <span class="s1">&#39;ELEV_FT&#39;</span><span class="p">,</span>
+                      <span class="s1">&#39;STATION_ID&#39;</span><span class="p">,</span>
+                      <span class="s1">&#39;FID&#39;</span><span class="p">,</span>
+                      <span class="s1">&#39;STATION_LAT&#39;</span><span class="p">,</span>
+                      <span class="s1">&#39;STATION_LON&#39;</span><span class="p">,</span>
+                      <span class="s1">&#39;STATION_ELEV_M&#39;</span><span class="p">,</span>
+                      <span class="s1">&#39;STATION_ELEV_FT&#39;</span><span class="p">,</span>
+                      <span class="s1">&#39;STATION_FILE_PATH&#39;</span><span class="p">,</span>
+                      <span class="s1">&#39;State&#39;</span><span class="p">,</span>
+                      <span class="s1">&#39;Source&#39;</span><span class="p">,</span>
+                      <span class="s1">&#39;Station&#39;</span><span class="p">,</span>
+                      <span class="s1">&#39;Website&#39;</span><span class="p">,</span>
+                      <span class="s1">&#39;Comments&#39;</span><span class="p">,</span>
+                      <span class="s1">&#39;Irrigation&#39;</span>
+            <span class="p">])</span>
+    <span class="c1"># save CSV </span>
+    <span class="n">out_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">out_path</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span></div>
+
+<span class="k">def</span> <span class="nf">arg_parse</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Command line usage for prep_input.py for merging climate station </span>
+<span class="sd">    and corresponding gridMET data into a single table (CSV file).</span>
+<span class="sd">    The CSV file produced is used as input to download_gridmet_ee.py </span>
+<span class="sd">    and calc_bias_ratios.py.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span>
+        <span class="n">description</span><span class="o">=</span><span class="n">arg_parse</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">,</span>
+        <span class="n">formatter_class</span><span class="o">=</span><span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentDefaultsHelpFormatter</span><span class="p">)</span>
+    <span class="n">optional</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">_action_groups</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span> <span class="c1"># optionals listed second</span>
+    <span class="n">required</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s1">&#39;required arguments&#39;</span><span class="p">)</span>
+    <span class="n">required</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;-i&#39;</span><span class="p">,</span> <span class="s1">&#39;--input&#39;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;PATH&#39;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Input CSV file of climate stations&#39;</span><span class="p">)</span>
+    <span class="n">optional</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;-g&#39;</span><span class="p">,</span> <span class="s1">&#39;--gridmet-meta&#39;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;PATH&#39;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;GridMET metadata CSV file with cell data, packaged with &#39;</span><span class="o">+</span>\
+             <span class="s1">&#39;gridwxcomp and automatically found if pip was used to install &#39;</span><span class="o">+</span>\
+             <span class="s1">&#39;if not given it needs to be located in the currect directory&#39;</span><span class="p">)</span>
+    <span class="n">optional</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;-o&#39;</span><span class="p">,</span> <span class="s1">&#39;--out&#39;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;PATH&#39;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> 
+        <span class="n">default</span><span class="o">=</span><span class="s1">&#39;merged_input.csv&#39;</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Optional output path for CSV with merged climate/gridMET data&#39;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">_action_groups</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">optional</span><span class="p">)</span><span class="c1"># to avoid optionals listed first</span>
+<span class="c1">#    parser.add_argument(</span>
+<span class="c1">#        &#39;--debug&#39;, default=logging.INFO, const=logging.DEBUG,</span>
+<span class="c1">#        help=&#39;Debug level logging&#39;, action=&quot;store_const&quot;, dest=&quot;loglevel&quot;)</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">args</span>
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">arg_parse</span><span class="p">()</span>
+
+    <span class="n">main</span><span class="p">(</span><span class="n">station_file</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">input</span><span class="p">,</span> 
+         <span class="n">out_path</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">out</span><span class="p">,</span>
+         <span class="n">gridmet_meta_file</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">gridmet_meta</span>
+         <span class="p">)</span>
+</pre></div>
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="../../index.html">gridwxcomp</a></h1>
+
+
+
+
+
+
+
+
+<h3>Navigation</h3>
+<p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started.html">Getting Started</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Change Log</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="../../index.html">Documentation overview</a><ul>
+  <li><a href="../index.html">Module code</a><ul>
+  </ul></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="../../search.html" method="get">
+      <input type="text" name="q" />
+      <input type="submit" value="Go" />
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+    </div>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      &copy;2019, John Volk and Chris Pearson.
+      
+      |
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+    </div>
+
+    
+
+    
+  </body>
+</html>
