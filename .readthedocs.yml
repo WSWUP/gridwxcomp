@@ -23,5 +23,5 @@ python:
     - requirements: docs/requirements.txt
 
 # use the projects conda environment to avoid build import errors
-conda:
-  environment: gridwxcomp/env/environment.yml
+# conda:
+#  environment: gridwxcomp/env/environment.yml
