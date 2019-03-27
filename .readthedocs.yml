@@ -5,6 +5,10 @@
 # Required
 version: 2
 
+# use the projects conda environment to avoid build import errors
+conda:
+  environment: gridwxcomp/env/rtd_env.yml
+
 # Build documentation in the docs/ directory with Sphinx
 sphinx:
   configuration: docs/source/conf.py
@@ -17,11 +21,9 @@ sphinx:
 formats: all
 
 # Optionally set the version of Python and requirements required to build your docs
-python:
-  version: 3.7
-  install:
-    - requirements: docs/requirements.txt
+#python:
+#  version: 3.7
+#  install:
+#    - requirements: docs/requirements.txt
 
-# use the projects conda environment to avoid build import errors
-# conda:
-#  environment: gridwxcomp/env/environment.yml
+
