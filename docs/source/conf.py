@@ -17,21 +17,10 @@ import sys
 # sys.path.insert(0, os.path.abspath('.'))
 sys.path.insert(0, os.path.abspath('../../'))
 
-import subprocess
-subprocess.Popen('pip install click', shell=True)
-subprocess.Popen('pip install sphinx-click', shell=True)
-
 # for ReadTheDocs to prevent C-based module import issues
 autodoc_mock_imports = ['bokeh', 'click', 'ee', 'numpy', 'pandas', 'refet', 
                        'fiona', 'gdal', 'rasterio', 'rasterstats', 'shapely', 
                        'osgeo', 'scipy']
-
-#import mock
-#MOCK_MODULES = ['bokeh', 'ee', 'numpy', 'pandas', 'refet', 
-#                'fiona', 'gdal', 'rasterio', 'rasterstats', 'shapely', 
-#                'osgeo', 'scipy']
-#for mod_name in MOCK_MODULES:
-#    sys.modules[mod_name] = mock.Mock()
 
 # -- Project information -----------------------------------------------------
 
