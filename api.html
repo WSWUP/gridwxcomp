@@ -1,42 +1,197 @@
 
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
-  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-<html xmlns="http://www.w3.org/1999/xhtml" lang="Python">
-  <head>
-    <meta http-equiv="X-UA-Compatible" content="IE=Edge" />
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <title>API Reference &#8212; gridwxcomp 0.0.57 documentation</title>
-    <link rel="stylesheet" href="_static/alabaster.css" type="text/css" />
-    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-    <link rel="stylesheet" type="text/css" href="_static/custom.css" />
-    <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-    <script type="text/javascript" src="_static/jquery.js"></script>
-    <script type="text/javascript" src="_static/underscore.js"></script>
-    <script type="text/javascript" src="_static/doctools.js"></script>
-    <script type="text/javascript" src="_static/language_data.js"></script>
-    <script type="text/javascript" src="_static/copybutton.js"></script>
-    <script type="text/javascript" src="_static/custom.js"></script>
-    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@1/dist/clipboard.min.js"></script>
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="Python" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="Python" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>API Reference &mdash; gridwxcomp 0.0.57 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="_static/favicon.ico"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script type="text/javascript" src="_static/jquery.js"></script>
+        <script type="text/javascript" src="_static/underscore.js"></script>
+        <script type="text/javascript" src="_static/doctools.js"></script>
+        <script type="text/javascript" src="_static/language_data.js"></script>
+        <script type="text/javascript" src="_static/copybutton.js"></script>
+        <script type="text/javascript" src="_static/custom.js"></script>
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@1/dist/clipboard.min.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Change Log" href="changelog.html" />
-    <link rel="prev" title="Getting Started" href="getting_started.html" />
+    <link rel="prev" title="Getting Started" href="getting_started.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
    
-  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
-  
-  
-  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
-
-  </head><body>
-  
-
-    <div class="document">
-      <div class="documentwrapper">
-        <div class="bodywrapper">
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
           
 
-          <div class="body" role="main">
+          
+            <a href="index.html" class="icon icon-home"> gridwxcomp
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.57
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="getting_started.html#quick-start-from-command-line">Quick start from command line</a></li>
+</ul>
+</li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#command-line-interface">Command Line Interface</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#gridwxcomp">gridwxcomp</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gridwxcomp-prep-input">gridwxcomp prep-input</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gridwxcomp-download-gridmet-ee">gridwxcomp download-gridmet-ee</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gridwxcomp-spatial">gridwxcomp spatial</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gridwxcomp-plot">gridwxcomp plot</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#python-functions-classes-and-modules">Python functions, classes, and modules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#prep-input">prep_input</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#download-gridmet-ee">download_gridmet_ee</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-gridwxcomp.calc_bias_ratios">calc_bias_ratios</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-gridwxcomp.spatial">spatial</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-gridwxcomp.daily_comparison">daily_comparison</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-gridwxcomp.monthly_comparison">monthly_comparison</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#interpgdal">InterpGdal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-gridwxcomp.util">util</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="changelog.html">Change Log</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#version-0-0-5">Version 0.0.5</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#version-0-0-4">Version 0.0.4</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#version-0-0-3">Version 0.0.3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#version-0-0-2">Version 0.0.2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#version-0-0-1">Version 0.0.1</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">gridwxcomp</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>API Reference</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/api.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
             
   <div class="section" id="api-reference">
 <h1>API Reference<a class="headerlink" href="#api-reference" title="Permalink to this headline">¶</a></h1>
@@ -276,7 +431,7 @@ each gridMET cell by its index (GRIDMET_ID) in the full gridMET fishnet
 that covers the CONUS. In total interpolated rasters, station point
 shapefiles, fishnet grid for zonal stats, and CSVs of bias ratios and zonal
 statistics are all created and stored in a file structure that is explained
-in <a class="reference internal" href="#gridwxcomp.spatial.make_grid" title="gridwxcomp.spatial.make_grid"><code class="xref py py-func docutils literal notranslate"><span class="pre">gridwxcomp.spatial.make_grid()</span></code></a>. and <a class="reference internal" href="#gridwxcomp.spatial.interpolate" title="gridwxcomp.spatial.interpolate"><code class="xref py py-func docutils literal notranslate"><span class="pre">gridwxcomp.spatial.interpolate()</span></code></a>.</p>
+in <a class="reference internal" href="#gridwxcomp.spatial.make_grid" title="gridwxcomp.spatial.make_grid"><code class="xref py py-func docutils literal notranslate"><span class="pre">gridwxcomp.spatial.make_grid</span></code></a>. and <a class="reference internal" href="#gridwxcomp.spatial.interpolate" title="gridwxcomp.spatial.interpolate"><code class="xref py py-func docutils literal notranslate"><span class="pre">gridwxcomp.spatial.interpolate</span></code></a>.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>gridwxcomp spatial <span class="o">[</span>OPTIONS<span class="o">]</span> SUMMARY_COMP_CSV
 </pre></div>
 </div>
@@ -535,7 +690,7 @@ purposes you can re-download data for all or select years with the
 <span class="gp">&gt;&gt;&gt; </span><span class="n">download_gridmet_ee</span><span class="p">(</span><span class="s1">&#39;merged_input.csv&#39;</span><span class="p">,</span> <span class="s1">&#39;gridmet_data&#39;</span><span class="p">,</span> <span class="s1">&#39;2016-2018&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Running <a class="reference internal" href="#gridwxcomp.download_gridmet_ee" title="gridwxcomp.download_gridmet_ee"><code class="xref py py-func docutils literal notranslate"><span class="pre">download_gridmet_ee()</span></code></a> also updates the CSV file
+<p>Running <a class="reference internal" href="#gridwxcomp.download_gridmet_ee" title="gridwxcomp.download_gridmet_ee"><code class="xref py py-func docutils literal notranslate"><span class="pre">download_gridmet_ee</span></code></a> also updates the CSV file
 produced from <a class="reference internal" href="#gridwxcomp.prep_input" title="gridwxcomp.prep_input"><code class="xref py py-mod docutils literal notranslate"><span class="pre">gridwxcomp.prep_input</span></code></a> to include file paths to
 gridMET time series files that are paired with climate stations.</p>
 </dd></dl>
@@ -586,7 +741,7 @@ or removed to efficiently use <code class="xref py py-mod docutils literal notra
 station data that was <strong>not</strong> created by
 <a class="reference external" href="https://github.com/WSWUP/pyWeatherQAQC">PyWeatherQAQC</a>. Otherwise, the
 same can be achieved by the <code class="docutils literal notranslate"><span class="pre">gridmet_var</span></code> and <code class="docutils literal notranslate"><span class="pre">station_var</span></code> arguments
-to <a class="reference internal" href="#gridwxcomp.calc_bias_ratios.calc_bias_ratios" title="gridwxcomp.calc_bias_ratios.calc_bias_ratios"><code class="xref py py-func docutils literal notranslate"><span class="pre">calc_bias_ratios()</span></code></a>.</p>
+to <a class="reference internal" href="#gridwxcomp.calc_bias_ratios.calc_bias_ratios" title="gridwxcomp.calc_bias_ratios.calc_bias_ratios"><code class="xref py py-func docutils literal notranslate"><span class="pre">calc_bias_ratios</span></code></a>.</p>
 </div>
 <dl class="function">
 <dt id="gridwxcomp.calc_bias_ratios.calc_bias_ratios">
@@ -601,8 +756,8 @@ pairs, optionally calculate ratios for a single gridMET cell.</p>
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>input_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- path to input CSV file with matching
 station climate and gridMET metadata. This file is
-created by running <a class="reference internal" href="#gridwxcomp.prep_input" title="gridwxcomp.prep_input"><code class="xref py py-func docutils literal notranslate"><span class="pre">gridwxcomp.prep_input()</span></code></a> followed by
-<a class="reference internal" href="#gridwxcomp.download_gridmet_ee" title="gridwxcomp.download_gridmet_ee"><code class="xref py py-func docutils literal notranslate"><span class="pre">gridwxcomp.download_gridmet_ee()</span></code></a>.</li>
+created by running <a class="reference internal" href="#gridwxcomp.prep_input" title="gridwxcomp.prep_input"><code class="xref py py-func docutils literal notranslate"><span class="pre">gridwxcomp.prep_input</span></code></a> followed by
+<a class="reference internal" href="#gridwxcomp.download_gridmet_ee" title="gridwxcomp.download_gridmet_ee"><code class="xref py py-func docutils literal notranslate"><span class="pre">gridwxcomp.download_gridmet_ee</span></code></a>.</li>
 <li><strong>out_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- path to directory to save CSV files with
 monthly bias ratios of etr.</li>
 </ul>
@@ -711,33 +866,51 @@ value = 0.041666666666666664.</p>
 <em>ESRI Shapefile</em> file or GeoTiff format.</p>
 </div>
 <dl class="function">
-<dt id="gridwxcomp.spatial.calc_pt_error">
-<code class="descclassname">gridwxcomp.spatial.</code><code class="descname">calc_pt_error</code><span class="sig-paren">(</span><em>in_path</em>, <em>out_dir</em>, <em>layer</em>, <em>grid_var</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gridwxcomp/spatial.html#calc_pt_error"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gridwxcomp.spatial.calc_pt_error" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate point ratio estimates from interpolated raster, residuals,
-and add to output summary CSV and point shapefile. Make copies of
-updated files and saves to directory with interpolated rasters.</p>
+<dt id="gridwxcomp.spatial.make_points_file">
+<code class="descclassname">gridwxcomp.spatial.</code><code class="descname">make_points_file</code><span class="sig-paren">(</span><em>in_path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gridwxcomp/spatial.html#make_points_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gridwxcomp.spatial.make_points_file" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create vector shapefile of points with monthly mean bias ratios
+for climate stations using all stations found in a comprehensive
+CSV file created by <a class="reference internal" href="#module-gridwxcomp.calc_bias_ratios" title="gridwxcomp.calc_bias_ratios"><code class="xref py py-mod docutils literal notranslate"><span class="pre">gridwxcomp.calc_bias_ratios</span></code></a>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>in_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- path to comprehensive summary CSV created by
-<a class="reference internal" href="#module-gridwxcomp.calc_bias_ratios" title="gridwxcomp.calc_bias_ratios"><code class="xref py py-mod docutils literal notranslate"><span class="pre">gridwxcomp.calc_bias_ratios</span></code></a></li>
-<li><strong>out_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- path to dir that contains interpolated raster</li>
-<li><strong>layer</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- layer to calculate error e.g. &quot;annual_mean&quot;</li>
-<li><strong>grid_var</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- name of gridMET variable e.g. &quot;etr_mm&quot;</li>
-</ul>
-</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>in_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- path to [var]_summary_comp.CSV file containing
+monthly bias ratios, lat, long, and other data. Shapefile
+&quot;[var]_summary_pts.shp&quot; is saved to parent directory of
+<code class="docutils literal notranslate"><span class="pre">in_path</span></code> under &quot;spatial&quot; subdirectory.</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
-</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Example</p>
+<p>Create shapefile containing point data for all climate stations
+in input summary file created by <a class="reference internal" href="#module-gridwxcomp.calc_bias_ratios" title="gridwxcomp.calc_bias_ratios"><code class="xref py py-mod docutils literal notranslate"><span class="pre">gridwxcomp.calc_bias_ratios</span></code></a></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gridwxcomp</span> <span class="k">import</span> <span class="n">spatial</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># path to comprehensive summary CSV</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">summary_file</span> <span class="o">=</span> <span class="s1">&#39;monthly_ratios/etr_mm_summary_comp_all_yrs.csv&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">spatial</span><span class="o">.</span><span class="n">make_points_file</span><span class="p">(</span><span class="n">summary_file</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The result is the file &quot;etr_mm_summary_pts.shp&quot; being saved to
+a subdirectory created in the directory containing <code class="docutils literal notranslate"><span class="pre">in_path</span></code>
+named &quot;spatial&quot;, i.e.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;monthly_ratios/spatial/etr_mm_summary_pts.shp&quot;</span><span class="o">.</span>
+</pre></div>
+</div>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#FileNotFoundError" title="(in Python v3.7)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">FileNotFoundError</span></code></a> -- if input summary CSV file is not found.</td>
 </tr>
 </tbody>
 </table>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">This function should be run <strong>after</strong> <a class="reference internal" href="#gridwxcomp.spatial.make_points_file" title="gridwxcomp.spatial.make_points_file"><code class="xref py py-func docutils literal notranslate"><span class="pre">make_points_file()</span></code></a>
-because it copies data from the shapefile it created.</p>
+<p class="last"><a class="reference internal" href="#gridwxcomp.spatial.make_points_file" title="gridwxcomp.spatial.make_points_file"><code class="xref py py-func docutils literal notranslate"><span class="pre">make_points_file</span></code></a> will overwrite any existing point
+shapefile of the same climate variable.</p>
 </div>
 </dd></dl>
 
@@ -753,7 +926,7 @@ and station locations.</p>
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
 <li><strong>in_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- path to comprehensive summary file containing
-monthly bias ratios, created by <a class="reference internal" href="#module-gridwxcomp.calc_bias_ratios" title="gridwxcomp.calc_bias_ratios"><code class="xref py py-func docutils literal notranslate"><span class="pre">gridwxcomp.calc_bias_ratios()</span></code></a>.</li>
+monthly bias ratios, created by <a class="reference internal" href="#module-gridwxcomp.calc_bias_ratios" title="gridwxcomp.calc_bias_ratios"><code class="xref py py-func docutils literal notranslate"><span class="pre">gridwxcomp.calc_bias_ratios</span></code></a>.</li>
 <li><strong>buffer</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- number of gridMET cells to expand the rectangular extent
 of the subgrid fishnet.</li>
 </ul>
@@ -779,72 +952,104 @@ of the subgrid fishnet.</li>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">By expanding the grid to a larger area encompassing the climate
-stations of interest <a class="reference internal" href="#gridwxcomp.spatial.interpolate" title="gridwxcomp.spatial.interpolate"><code class="xref py py-func docutils literal notranslate"><span class="pre">interpolate()</span></code></a> can be used to extrapolate
+stations of interest <a class="reference internal" href="#gridwxcomp.spatial.interpolate" title="gridwxcomp.spatial.interpolate"><code class="xref py py-func docutils literal notranslate"><span class="pre">interpolate</span></code></a> can be used to extrapolate
 passed the bounds of the outer station locations.</p>
 </div>
 </dd></dl>
 
 <dl class="function">
-<dt id="gridwxcomp.spatial.gridmet_zonal_stats">
-<code class="descclassname">gridwxcomp.spatial.</code><code class="descname">gridmet_zonal_stats</code><span class="sig-paren">(</span><em>in_path</em>, <em>raster</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gridwxcomp/spatial.html#gridmet_zonal_stats"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gridwxcomp.spatial.gridmet_zonal_stats" title="Permalink to this definition">¶</a></dt>
-<dd><p>Calculate zonal means from interpolated surface of etr bias ratios
-created by <a class="reference internal" href="#gridwxcomp.spatial.interpolate" title="gridwxcomp.spatial.interpolate"><code class="xref py py-func docutils literal notranslate"><span class="pre">interpolate()</span></code></a> using the fishnet grid created by
-<a class="reference internal" href="#gridwxcomp.spatial.make_grid" title="gridwxcomp.spatial.make_grid"><code class="xref py py-func docutils literal notranslate"><span class="pre">make_grid()</span></code></a>. Save mean values for each gridMET cell to
-a CSV file joined to gridMET IDs.</p>
+<dt id="gridwxcomp.spatial.make_grid">
+<code class="descclassname">gridwxcomp.spatial.</code><code class="descname">make_grid</code><span class="sig-paren">(</span><em>in_path</em>, <em>bounds=None</em>, <em>buffer=25</em>, <em>overwrite=False</em>, <em>gridmet_meta_path=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gridwxcomp/spatial.html#make_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gridwxcomp.spatial.make_grid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Make fishnet grid (vector file of polygon geometry) for
+select gridMET cells based on bounding coordinates.</p>
+<p>Add gridMET ID values to each cell based on their centroid
+lookup in <code class="docutils literal notranslate"><span class="pre">gridwxcomp/gridmet_cell_data.csv</span></code>. Assigns the
+WGS84 reference coordinate system. The grid is later used to
+spatially interpolate point data. Modified from the
+<a class="reference external" href="https://pcjericks.github.io/py-gdalogr-cookbook/vector_layers.html#create-fishnet-grid">Python GDAL/OGR Cookbook</a>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>in_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- path to [var]_summary_comp_[years].csv file containing
-monthly bias ratios, lat, long, and other data. Created by
-<a class="reference internal" href="#module-gridwxcomp.calc_bias_ratios" title="gridwxcomp.calc_bias_ratios"><code class="xref py py-mod docutils literal notranslate"><span class="pre">gridwxcomp.calc_bias_ratios</span></code></a>.</li>
-<li><strong>raster</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- path to interpolated raster of bias ratios to
-be used for zonal stats. First created by <a class="reference internal" href="#gridwxcomp.spatial.interpolate" title="gridwxcomp.spatial.interpolate"><code class="xref py py-func docutils literal notranslate"><span class="pre">interpolate()</span></code></a>.</li>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>in_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- path to [var]_summary_comp_[years].csv file containing monthly
+bias ratios, lat, long, and other data. Created by
+<a class="reference internal" href="#module-gridwxcomp.calc_bias_ratios" title="gridwxcomp.calc_bias_ratios"><code class="xref py py-func docutils literal notranslate"><span class="pre">gridwxcomp.calc_bias_ratios</span></code></a>.</p>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first simple">
+<li><strong>bounds</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)"><em>tuple</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><em>None</em></a>) -- default None. Tuple of bounding coordinates
+in the following order (min long, max long, min lat, max lat)
+which need to be in decimal degrees. Need to align with gridMET
+resolution outer corners. If None, get extent from centoid
+locations of climate stations in <code class="docutils literal notranslate"><span class="pre">in_path</span></code> summary CSV.</li>
+<li><strong>buffer</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- default 25. Number of gridMET cells to expand
+the rectangular extent of the subgrid fishnet and interpolated
+output raster.</li>
+<li><strong>overwrite</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) -- default False. If True overwrite the grid
+shapefile at <code class="docutils literal notranslate"><span class="pre">out_path</span></code> if it already exists.</li>
+<li><strong>gridmet_meta_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- default None. Path to metadata CSV file
+that contains all gridMET cells for the contiguous United
+States. If None it is looked for at the install directory of
+gridwxcomp (i.e. with pip install) or within the current directory
+as &quot;gridmet_cell_data.csv&quot;.</li>
 </ul>
+</td>
+</tr>
+<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
 </td>
 </tr>
 </tbody>
 </table>
-<p class="rubric">Example</p>
-<p>Although it is prefered to use this function as part of
-<a class="reference internal" href="#gridwxcomp.spatial.interpolate" title="gridwxcomp.spatial.interpolate"><code class="xref py py-func docutils literal notranslate"><span class="pre">interpolate()</span></code></a> or indirectly using the <a class="reference internal" href="#module-gridwxcomp.spatial" title="gridwxcomp.spatial"><code class="xref py py-mod docutils literal notranslate"><span class="pre">gridwxcomp.spatial</span></code></a>
-command line usage. However if the grid shapefile and spatial
-interpolated raster(s) have already been created without zonal
-stats then,</p>
+<p class="rubric">Examples</p>
+<p>Build a fishnet uniform grid that matches gridMET cells around
+climate stations found in <code class="docutils literal notranslate"><span class="pre">in_path</span></code> summary CSV file with a
+25 cell buffer.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gridwxcomp</span> <span class="k">import</span> <span class="n">spatial</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># assign input paths</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">summary_file</span> <span class="o">=</span> <span class="s1">&#39;monthly_ratios/etr_mm_summary_comp_[years].csv&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">raster_file</span> <span class="o">=</span> <span class="s1">&#39;monthly_ratios/spatial/etr_mm_invdist_400m/Jan_mean.tiff&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">spatial</span><span class="o">.</span><span class="n">gridmet_zonal_stats</span><span class="p">(</span><span class="n">summary_file</span><span class="p">,</span> <span class="n">raster_file</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">summary_file</span> <span class="o">=</span> <span class="s1">&#39;monthly_ratios/etr_mm_summary_comp_all_yrs.csv&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># make fishnet of gridMET cells for interpolation</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">spatial</span><span class="o">.</span><span class="n">make_grid</span><span class="p">(</span><span class="n">summary_file</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The final result will be the creation of:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s1">&#39;monthly_ratios/spatial/etr_mm_invdist_400m/gridMET_stats.csv&#39;</span>
+<p>The file will be saved as &quot;grid.shp&quot; to a newly created subdirectory
+&quot;spatial&quot; in the same directory as the input summary CSV file. i.e.:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>monthly_ratios/
+├── etr_mm_summary_all_yrs.csv
+├── etr_mm_summary_comp_all_yrs.csv
+└── spatial/
+    ├── grid.cpg
+    ├── grid.dbf
+    ├── grid.prj
+    ├── grid.shp
+    └── grid.shx
 </pre></div>
 </div>
-<p>The resulting CSV contains the gridMET IDS and zonal means
-for each gridMET cell in the fishnet which must exist at:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s1">&#39;monthly_ratios/spatial/grid.shp&#39;</span>
+<p>To use a smaller buffer to the extent of the grid assign the
+<code class="docutils literal notranslate"><span class="pre">buffer</span></code> keyword argument</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">spatial</span><span class="o">.</span><span class="n">make_grid</span><span class="p">(</span><span class="n">summary_file</span><span class="p">,</span> <span class="n">buffer</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>also see <a class="reference internal" href="#gridwxcomp.spatial.interpolate" title="gridwxcomp.spatial.interpolate"><code class="xref py py-func docutils literal notranslate"><span class="pre">interpolate()</span></code></a></p>
+<p>If the grid file already exists the default action is to not
+overwrite. To overwrite an existing grid if, for example, you
+are working with a new set of climate stations as input, then
+set the <code class="docutils literal notranslate"><span class="pre">overwrite</span></code> keyword argument to True.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">spatial</span><span class="o">.</span><span class="n">make_grid</span><span class="p">(</span><span class="n">summary_file</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">buffer</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+</pre></div>
+</div>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#FileNotFoundError" title="(in Python v3.7)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">FileNotFoundError</span></code></a> -- if the input summary CSV file or the
-fishnet for extracting zonal statistics do not exist.
-The fishnet should be in the subdirectory of <code class="docutils literal notranslate"><span class="pre">in_path</span></code>
-at &quot;/spatial/grid.shp&quot;.</td>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#FileNotFoundError" title="(in Python v3.7)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">FileNotFoundError</span></code></a> -- if input summary CSV file is not found.</td>
 </tr>
 </tbody>
 </table>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">If zonal statistics are estimated for the same variable on the
-same raster more than once, the contents of that column in the
-gridMET_stats.csv file will be overwritten.</p>
+<p class="last">If cells in the fishnet grid lie outside of the gridMET master
+fishnet for the contiguous U.S., the GRIDMET_ID will be assigned
+to -999.</p>
 </div>
 </dd></dl>
 
@@ -857,15 +1062,15 @@ pairs found in input comprehensive summary CSV.</p>
 <p>Options allow for modifying down- or up-scaling the resolution of the
 resampling grid and to select from multiple interpolation methods.
 Interploated surfaces are saved as GeoTIFF rasters. Zonal statistics
-using <a class="reference internal" href="#gridwxcomp.spatial.gridmet_zonal_stats" title="gridwxcomp.spatial.gridmet_zonal_stats"><code class="xref py py-func docutils literal notranslate"><span class="pre">gridmet_zonal_stats()</span></code></a> are also extracted to gridMET cells in
-the fishnet grid built first by <a class="reference internal" href="#gridwxcomp.spatial.make_grid" title="gridwxcomp.spatial.make_grid"><code class="xref py py-func docutils literal notranslate"><span class="pre">make_grid()</span></code></a>.</p>
+using <a class="reference internal" href="#gridwxcomp.spatial.gridmet_zonal_stats" title="gridwxcomp.spatial.gridmet_zonal_stats"><code class="xref py py-func docutils literal notranslate"><span class="pre">gridmet_zonal_stats</span></code></a> are also extracted to gridMET cells in
+the fishnet grid built first by <a class="reference internal" href="#gridwxcomp.spatial.make_grid" title="gridwxcomp.spatial.make_grid"><code class="xref py py-func docutils literal notranslate"><span class="pre">make_grid</span></code></a>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>in_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- path to [var]_summary_comp_[years].csv file containing
 monthly bias ratios, lat, long, and other data. Created by
-<a class="reference internal" href="#module-gridwxcomp.calc_bias_ratios" title="gridwxcomp.calc_bias_ratios"><code class="xref py py-func docutils literal notranslate"><span class="pre">gridwxcomp.calc_bias_ratios()</span></code></a>.</p>
+<a class="reference internal" href="#module-gridwxcomp.calc_bias_ratios" title="gridwxcomp.calc_bias_ratios"><code class="xref py py-func docutils literal notranslate"><span class="pre">gridwxcomp.calc_bias_ratios</span></code></a>.</p>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
@@ -916,8 +1121,8 @@ current directory as 'gridmet_cell_data.csv'.</li>
 </table>
 <p class="rubric">Examples</p>
 <p>Let's say we wanted to interpolate the &quot;Annual_mean&quot; bias
-ratio in an input CSV first created by <a class="reference internal" href="#module-gridwxcomp.calc_bias_ratios" title="gridwxcomp.calc_bias_ratios"><code class="xref py py-func docutils literal notranslate"><span class="pre">gridwxcomp.calc_bias_ratios()</span></code></a> and a fishnet
-grid was first created by <a class="reference internal" href="#gridwxcomp.spatial.make_grid" title="gridwxcomp.spatial.make_grid"><code class="xref py py-func docutils literal notranslate"><span class="pre">make_grid()</span></code></a>. This example uses the
+ratio in an input CSV first created by <a class="reference internal" href="#module-gridwxcomp.calc_bias_ratios" title="gridwxcomp.calc_bias_ratios"><code class="xref py py-func docutils literal notranslate"><span class="pre">gridwxcomp.calc_bias_ratios</span></code></a> and a fishnet
+grid was first created by <a class="reference internal" href="#gridwxcomp.spatial.make_grid" title="gridwxcomp.spatial.make_grid"><code class="xref py py-func docutils literal notranslate"><span class="pre">make_grid</span></code></a>. This example uses the
 &quot;invdist&quot; method (default) to interpolate to a 400 m resolution
 surface. The result is a GeoTIFF raster that has an extent that
 encompasses station locations in the input file plus an additional
@@ -1026,9 +1231,9 @@ to:</p>
 variables that exist in the gridMET dataset can be used along
 with any corresponding station time series data from the user.
 The input (<code class="docutils literal notranslate"><span class="pre">in_path</span></code>) to all routines in <a class="reference internal" href="#module-gridwxcomp.spatial" title="gridwxcomp.spatial"><code class="xref py py-mod docutils literal notranslate"><span class="pre">gridwxcomp.spatial</span></code></a>
-is the summary CSV created by <a class="reference internal" href="#module-gridwxcomp.calc_bias_ratios" title="gridwxcomp.calc_bias_ratios"><code class="xref py py-func docutils literal notranslate"><span class="pre">gridwxcomp.calc_bias_ratios()</span></code></a>, the
+is the summary CSV created by <a class="reference internal" href="#module-gridwxcomp.calc_bias_ratios" title="gridwxcomp.calc_bias_ratios"><code class="xref py py-func docutils literal notranslate"><span class="pre">gridwxcomp.calc_bias_ratios</span></code></a>, the
 prefix to this file is what determines the climatic variable
-that spatial analysis is conducted. See <a class="reference internal" href="#module-gridwxcomp.calc_bias_ratios" title="gridwxcomp.calc_bias_ratios"><code class="xref py py-func docutils literal notranslate"><span class="pre">gridwxcomp.calc_bias_ratios()</span></code></a>
+that spatial analysis is conducted. See <a class="reference internal" href="#module-gridwxcomp.calc_bias_ratios" title="gridwxcomp.calc_bias_ratios"><code class="xref py py-func docutils literal notranslate"><span class="pre">gridwxcomp.calc_bias_ratios</span></code></a>
 for examples of how to use different climatic variables, e.g.
 TMax or ETo.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -1044,156 +1249,106 @@ i.e. &quot;&lt;in_path&gt;/spatial/grid.shp&quot;.</td>
 </table>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">This function can be used independently of <a class="reference internal" href="#gridwxcomp.spatial.make_grid" title="gridwxcomp.spatial.make_grid"><code class="xref py py-func docutils literal notranslate"><span class="pre">make_grid()</span></code></a>
+<p class="last">This function can be used independently of <a class="reference internal" href="#gridwxcomp.spatial.make_grid" title="gridwxcomp.spatial.make_grid"><code class="xref py py-func docutils literal notranslate"><span class="pre">make_grid</span></code></a>
 however, if the buffer and input [var]_summary_comp_[years].csv files
-arguments differ from those used for <a class="reference internal" href="#gridwxcomp.spatial.interpolate" title="gridwxcomp.spatial.interpolate"><code class="xref py py-func docutils literal notranslate"><span class="pre">interpolate()</span></code></a> the
+arguments differ from those used for <a class="reference internal" href="#gridwxcomp.spatial.interpolate" title="gridwxcomp.spatial.interpolate"><code class="xref py py-func docutils literal notranslate"><span class="pre">interpolate</span></code></a> the
 raster may not fully cover the fishnet which may result in
 gaps in the zonal statistics.</p>
 </div>
 </dd></dl>
 
 <dl class="function">
-<dt id="gridwxcomp.spatial.make_grid">
-<code class="descclassname">gridwxcomp.spatial.</code><code class="descname">make_grid</code><span class="sig-paren">(</span><em>in_path</em>, <em>bounds=None</em>, <em>buffer=25</em>, <em>overwrite=False</em>, <em>gridmet_meta_path=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gridwxcomp/spatial.html#make_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gridwxcomp.spatial.make_grid" title="Permalink to this definition">¶</a></dt>
-<dd><p>Make fishnet grid (vector file of polygon geometry) for
-select gridMET cells based on bounding coordinates.</p>
-<p>Add gridMET ID values to each cell based on their centroid
-lookup in <code class="docutils literal notranslate"><span class="pre">gridwxcomp/gridmet_cell_data.csv</span></code>. Assigns the
-WGS84 reference coordinate system. The grid is later used to
-spatially interpolate point data. Modified from the
-<a class="reference external" href="https://pcjericks.github.io/py-gdalogr-cookbook/vector_layers.html#create-fishnet-grid">Python GDAL/OGR Cookbook</a>.</p>
+<dt id="gridwxcomp.spatial.calc_pt_error">
+<code class="descclassname">gridwxcomp.spatial.</code><code class="descname">calc_pt_error</code><span class="sig-paren">(</span><em>in_path</em>, <em>out_dir</em>, <em>layer</em>, <em>grid_var</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gridwxcomp/spatial.html#calc_pt_error"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gridwxcomp.spatial.calc_pt_error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate point ratio estimates from interpolated raster, residuals,
+and add to output summary CSV and point shapefile. Make copies of
+updated files and saves to directory with interpolated rasters.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>in_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- path to [var]_summary_comp_[years].csv file containing monthly
-bias ratios, lat, long, and other data. Created by
-<a class="reference internal" href="#module-gridwxcomp.calc_bias_ratios" title="gridwxcomp.calc_bias_ratios"><code class="xref py py-func docutils literal notranslate"><span class="pre">gridwxcomp.calc_bias_ratios()</span></code></a>.</p>
-</td>
-</tr>
-<tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
-<tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first simple">
-<li><strong>bounds</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)"><em>tuple</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><em>None</em></a>) -- default None. Tuple of bounding coordinates
-in the following order (min long, max long, min lat, max lat)
-which need to be in decimal degrees. Need to align with gridMET
-resolution outer corners. If None, get extent from centoid
-locations of climate stations in <code class="docutils literal notranslate"><span class="pre">in_path</span></code> summary CSV.</li>
-<li><strong>buffer</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- default 25. Number of gridMET cells to expand
-the rectangular extent of the subgrid fishnet and interpolated
-output raster.</li>
-<li><strong>overwrite</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) -- default False. If True overwrite the grid
-shapefile at <code class="docutils literal notranslate"><span class="pre">out_path</span></code> if it already exists.</li>
-<li><strong>gridmet_meta_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- default None. Path to metadata CSV file
-that contains all gridMET cells for the contiguous United
-States. If None it is looked for at the install directory of
-gridwxcomp (i.e. with pip install) or within the current directory
-as &quot;gridmet_cell_data.csv&quot;.</li>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>in_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- path to comprehensive summary CSV created by
+<a class="reference internal" href="#module-gridwxcomp.calc_bias_ratios" title="gridwxcomp.calc_bias_ratios"><code class="xref py py-mod docutils literal notranslate"><span class="pre">gridwxcomp.calc_bias_ratios</span></code></a></li>
+<li><strong>out_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- path to dir that contains interpolated raster</li>
+<li><strong>layer</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- layer to calculate error e.g. &quot;annual_mean&quot;</li>
+<li><strong>grid_var</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- name of gridMET variable e.g. &quot;etr_mm&quot;</li>
 </ul>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
 </td>
-</tr>
-</tbody>
-</table>
-<p class="rubric">Examples</p>
-<p>Build a fishnet uniform grid that matches gridMET cells around
-climate stations found in <code class="docutils literal notranslate"><span class="pre">in_path</span></code> summary CSV file with a
-25 cell buffer.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gridwxcomp</span> <span class="k">import</span> <span class="n">spatial</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># assign input paths</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">summary_file</span> <span class="o">=</span> <span class="s1">&#39;monthly_ratios/etr_mm_summary_comp_all_yrs.csv&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># make fishnet of gridMET cells for interpolation</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">spatial</span><span class="o">.</span><span class="n">make_grid</span><span class="p">(</span><span class="n">summary_file</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>The file will be saved as &quot;grid.shp&quot; to a newly created subdirectory
-&quot;spatial&quot; in the same directory as the input summary CSV file. i.e.:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span>monthly_ratios/
-├── etr_mm_summary_all_yrs.csv
-├── etr_mm_summary_comp_all_yrs.csv
-└── spatial/
-    ├── grid.cpg
-    ├── grid.dbf
-    ├── grid.prj
-    ├── grid.shp
-    └── grid.shx
-</pre></div>
-</div>
-<p>To use a smaller buffer to the extent of the grid assign the
-<code class="docutils literal notranslate"><span class="pre">buffer</span></code> keyword argument</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">spatial</span><span class="o">.</span><span class="n">make_grid</span><span class="p">(</span><span class="n">summary_file</span><span class="p">,</span> <span class="n">buffer</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>If the grid file already exists the default action is to not
-overwrite. To overwrite an existing grid if, for example, you
-are working with a new set of climate stations as input, then
-set the <code class="docutils literal notranslate"><span class="pre">overwrite</span></code> keyword argument to True.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">spatial</span><span class="o">.</span><span class="n">make_grid</span><span class="p">(</span><span class="n">summary_file</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">buffer</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
-</pre></div>
-</div>
-<table class="docutils field-list" frame="void" rules="none">
-<col class="field-name" />
-<col class="field-body" />
-<tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#FileNotFoundError" title="(in Python v3.7)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">FileNotFoundError</span></code></a> -- if input summary CSV file is not found.</td>
 </tr>
 </tbody>
 </table>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">If cells in the fishnet grid lie outside of the gridMET master
-fishnet for the contiguous U.S., the GRIDMET_ID will be assigned
-to -999.</p>
+<p class="last">This function should be run <strong>after</strong> <a class="reference internal" href="#gridwxcomp.spatial.make_points_file" title="gridwxcomp.spatial.make_points_file"><code class="xref py py-func docutils literal notranslate"><span class="pre">make_points_file</span></code></a>
+because it copies data from the shapefile it created.</p>
 </div>
 </dd></dl>
 
 <dl class="function">
-<dt id="gridwxcomp.spatial.make_points_file">
-<code class="descclassname">gridwxcomp.spatial.</code><code class="descname">make_points_file</code><span class="sig-paren">(</span><em>in_path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gridwxcomp/spatial.html#make_points_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gridwxcomp.spatial.make_points_file" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create vector shapefile of points with monthly mean bias ratios
-for climate stations using all stations found in a comprehensive
-CSV file created by <a class="reference internal" href="#module-gridwxcomp.calc_bias_ratios" title="gridwxcomp.calc_bias_ratios"><code class="xref py py-mod docutils literal notranslate"><span class="pre">gridwxcomp.calc_bias_ratios</span></code></a>.</p>
+<dt id="gridwxcomp.spatial.gridmet_zonal_stats">
+<code class="descclassname">gridwxcomp.spatial.</code><code class="descname">gridmet_zonal_stats</code><span class="sig-paren">(</span><em>in_path</em>, <em>raster</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gridwxcomp/spatial.html#gridmet_zonal_stats"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gridwxcomp.spatial.gridmet_zonal_stats" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate zonal means from interpolated surface of etr bias ratios
+created by <a class="reference internal" href="#gridwxcomp.spatial.interpolate" title="gridwxcomp.spatial.interpolate"><code class="xref py py-func docutils literal notranslate"><span class="pre">interpolate</span></code></a> using the fishnet grid created by
+<a class="reference internal" href="#gridwxcomp.spatial.make_grid" title="gridwxcomp.spatial.make_grid"><code class="xref py py-func docutils literal notranslate"><span class="pre">make_grid</span></code></a>. Save mean values for each gridMET cell to
+a CSV file joined to gridMET IDs.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>in_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- path to [var]_summary_comp.CSV file containing
-monthly bias ratios, lat, long, and other data. Shapefile
-&quot;[var]_summary_pts.shp&quot; is saved to parent directory of
-<code class="docutils literal notranslate"><span class="pre">in_path</span></code> under &quot;spatial&quot; subdirectory.</td>
-</tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
+<li><strong>in_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- path to [var]_summary_comp_[years].csv file containing
+monthly bias ratios, lat, long, and other data. Created by
+<a class="reference internal" href="#module-gridwxcomp.calc_bias_ratios" title="gridwxcomp.calc_bias_ratios"><code class="xref py py-mod docutils literal notranslate"><span class="pre">gridwxcomp.calc_bias_ratios</span></code></a>.</li>
+<li><strong>raster</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- path to interpolated raster of bias ratios to
+be used for zonal stats. First created by <a class="reference internal" href="#gridwxcomp.spatial.interpolate" title="gridwxcomp.spatial.interpolate"><code class="xref py py-func docutils literal notranslate"><span class="pre">interpolate</span></code></a>.</li>
+</ul>
+</td>
 </tr>
 </tbody>
 </table>
 <p class="rubric">Example</p>
-<p>Create shapefile containing point data for all climate stations
-in input summary file created by <a class="reference internal" href="#module-gridwxcomp.calc_bias_ratios" title="gridwxcomp.calc_bias_ratios"><code class="xref py py-mod docutils literal notranslate"><span class="pre">gridwxcomp.calc_bias_ratios</span></code></a></p>
+<p>Although it is prefered to use this function as part of
+<a class="reference internal" href="#gridwxcomp.spatial.interpolate" title="gridwxcomp.spatial.interpolate"><code class="xref py py-func docutils literal notranslate"><span class="pre">interpolate</span></code></a> or indirectly using the <a class="reference internal" href="#module-gridwxcomp.spatial" title="gridwxcomp.spatial"><code class="xref py py-mod docutils literal notranslate"><span class="pre">gridwxcomp.spatial</span></code></a>
+command line usage. However if the grid shapefile and spatial
+interpolated raster(s) have already been created without zonal
+stats then,</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gridwxcomp</span> <span class="k">import</span> <span class="n">spatial</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="c1"># path to comprehensive summary CSV</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">summary_file</span> <span class="o">=</span> <span class="s1">&#39;monthly_ratios/etr_mm_summary_comp_all_yrs.csv&#39;</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">spatial</span><span class="o">.</span><span class="n">make_points_file</span><span class="p">(</span><span class="n">summary_file</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># assign input paths</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">summary_file</span> <span class="o">=</span> <span class="s1">&#39;monthly_ratios/etr_mm_summary_comp_[years].csv&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">raster_file</span> <span class="o">=</span> <span class="s1">&#39;monthly_ratios/spatial/etr_mm_invdist_400m/Jan_mean.tiff&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">spatial</span><span class="o">.</span><span class="n">gridmet_zonal_stats</span><span class="p">(</span><span class="n">summary_file</span><span class="p">,</span> <span class="n">raster_file</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The result is the file &quot;etr_mm_summary_pts.shp&quot; being saved to
-a subdirectory created in the directory containing <code class="docutils literal notranslate"><span class="pre">in_path</span></code>
-named &quot;spatial&quot;, i.e.:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;monthly_ratios/spatial/etr_mm_summary_pts.shp&quot;</span><span class="o">.</span>
+<p>The final result will be the creation of:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s1">&#39;monthly_ratios/spatial/etr_mm_invdist_400m/gridMET_stats.csv&#39;</span>
 </pre></div>
 </div>
+<p>The resulting CSV contains the gridMET IDS and zonal means
+for each gridMET cell in the fishnet which must exist at:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s1">&#39;monthly_ratios/spatial/grid.shp&#39;</span>
+</pre></div>
+</div>
+<p>also see <a class="reference internal" href="#gridwxcomp.spatial.interpolate" title="gridwxcomp.spatial.interpolate"><code class="xref py py-func docutils literal notranslate"><span class="pre">interpolate</span></code></a></p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#FileNotFoundError" title="(in Python v3.7)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">FileNotFoundError</span></code></a> -- if input summary CSV file is not found.</td>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#FileNotFoundError" title="(in Python v3.7)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">FileNotFoundError</span></code></a> -- if the input summary CSV file or the
+fishnet for extracting zonal statistics do not exist.
+The fishnet should be in the subdirectory of <code class="docutils literal notranslate"><span class="pre">in_path</span></code>
+at &quot;/spatial/grid.shp&quot;.</td>
 </tr>
 </tbody>
 </table>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last"><a class="reference internal" href="#gridwxcomp.spatial.make_points_file" title="gridwxcomp.spatial.make_points_file"><code class="xref py py-func docutils literal notranslate"><span class="pre">make_points_file()</span></code></a> will overwrite any existing point
-shapefile of the same climate variable.</p>
+<p class="last">If zonal statistics are estimated for the same variable on the
+same raster more than once, the contents of that column in the
+gridMET_stats.csv file will be overwritten.</p>
 </div>
 </dd></dl>
 
@@ -1208,7 +1363,7 @@ gridMET climatic variables.</p>
 <dd><p>Compare daily Wx Station Data from
 <a class="reference external" href="https://github.com/WSWUP/pyWeatherQAQC">PyWeatherQAQC</a> with gridMET
 for each month in year specified.</p>
-<p>The <a class="reference internal" href="#gridwxcomp.daily_comparison.daily_comparison" title="gridwxcomp.daily_comparison.daily_comparison"><code class="xref py py-func docutils literal notranslate"><span class="pre">daily_comparison()</span></code></a> function produces HTML files with time series
+<p>The <a class="reference internal" href="#gridwxcomp.daily_comparison.daily_comparison" title="gridwxcomp.daily_comparison.daily_comparison"><code class="xref py py-func docutils literal notranslate"><span class="pre">daily_comparison</span></code></a> function produces HTML files with time series
 and scatter plots of station versus gridMET climate variables. It uses the
 <a class="reference external" href="https://bokeh.pydata.org/en/latest/">bokeh</a> module to create interactive
 plots, e.g. they can be zoomed in/out and panned. Separate plot files are
@@ -1236,7 +1391,7 @@ if None save to &quot;daily_comp_plots&quot; in currect directory.</li>
 </tbody>
 </table>
 <p class="rubric">Example</p>
-<p>The <a class="reference internal" href="#gridwxcomp.daily_comparison.daily_comparison" title="gridwxcomp.daily_comparison.daily_comparison"><code class="xref py py-func docutils literal notranslate"><span class="pre">daily_comparison()</span></code></a> function will generate HTML files with
+<p>The <a class="reference internal" href="#gridwxcomp.daily_comparison.daily_comparison" title="gridwxcomp.daily_comparison.daily_comparison"><code class="xref py py-func docutils literal notranslate"><span class="pre">daily_comparison</span></code></a> function will generate HTML files with
 bokeh plots for paired climate variables, e.g. etr_mm, eto_mm,
 u2_ms, tmin_c, tmax_c, srad_wm2, ea_kpa, and Ko (dew point depression).
 Monthly plots are created for a single year.</p>
@@ -1274,7 +1429,7 @@ gridMET climatic variables.</p>
 <code class="descclassname">gridwxcomp.monthly_comparison.</code><code class="descname">monthly_comparison</code><span class="sig-paren">(</span><em>input_csv</em>, <em>out_dir=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gridwxcomp/monthly_comparison.html#monthly_comparison"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gridwxcomp.monthly_comparison.monthly_comparison" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compare monthly average Wx Station Data from
 <a class="reference external" href="https://github.com/WSWUP/pyWeatherQAQC">PyWeatherQAQC</a> with gridMET.</p>
-<p>The <a class="reference internal" href="#gridwxcomp.monthly_comparison.monthly_comparison" title="gridwxcomp.monthly_comparison.monthly_comparison"><code class="xref py py-func docutils literal notranslate"><span class="pre">monthly_comparison()</span></code></a> function produces HTML files with time series
+<p>The <a class="reference internal" href="#gridwxcomp.monthly_comparison.monthly_comparison" title="gridwxcomp.monthly_comparison.monthly_comparison"><code class="xref py py-func docutils literal notranslate"><span class="pre">monthly_comparison</span></code></a> function produces HTML files with time series
 and scatter plots of station versus gridMET climate variables of monthly
 mean data. It uses the <a class="reference external" href="https://bokeh.pydata.org/en/latest/">bokeh</a> module
 to create interactive plots, e.g. they can be zoomed in/out and panned.</p>
@@ -1295,7 +1450,7 @@ created by running <a class="reference internal" href="#gridwxcomp.prep_input" t
 </tbody>
 </table>
 <p class="rubric">Example</p>
-<p>The <a class="reference internal" href="#gridwxcomp.monthly_comparison.monthly_comparison" title="gridwxcomp.monthly_comparison.monthly_comparison"><code class="xref py py-func docutils literal notranslate"><span class="pre">monthly_comparison()</span></code></a> function will generate HTML files with
+<p>The <a class="reference internal" href="#gridwxcomp.monthly_comparison.monthly_comparison" title="gridwxcomp.monthly_comparison.monthly_comparison"><code class="xref py py-func docutils literal notranslate"><span class="pre">monthly_comparison</span></code></a> function will generate HTML files with
 bokeh plots for paired climate variable, e.g. etr_mm,
 eto_mm, u2_ms, tmin_c, tmax_c, srad_wm2, ea_kpa, and Ko (dew point
 depression).</p>
@@ -1421,7 +1576,7 @@ input <code class="docutils literal notranslate"><span class="pre">summary_csv_p
 <dt id="gridwxcomp.InterpGdal.layers">
 <code class="descname">layers</code><a class="headerlink" href="#gridwxcomp.InterpGdal.layers" title="Permalink to this definition">¶</a></dt>
 <dd><p>list of layers in <code class="docutils literal notranslate"><span class="pre">summary_csv_path</span></code> to interpolate
-e.g. when using <a class="reference internal" href="#gridwxcomp.InterpGdal.gdal_grid" title="gridwxcomp.InterpGdal.gdal_grid"><code class="xref py py-meth docutils literal notranslate"><span class="pre">InterpGdal.gdal_grid()</span></code></a> with <code class="docutils literal notranslate"><span class="pre">layer=&quot;all&quot;</span></code>
+e.g. when using <a class="reference internal" href="#gridwxcomp.InterpGdal.gdal_grid" title="gridwxcomp.InterpGdal.gdal_grid"><code class="xref py py-meth docutils literal notranslate"><span class="pre">InterpGdal.gdal_grid</span></code></a> with <code class="docutils literal notranslate"><span class="pre">layer=&quot;all&quot;</span></code>
 defaults to <a class="reference internal" href="#gridwxcomp.InterpGdal.default_layers" title="gridwxcomp.InterpGdal.default_layers"><code class="xref py py-attr docutils literal notranslate"><span class="pre">InterpGdal.default_layers</span></code></a>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -1467,7 +1622,7 @@ raster in order (min long, max long, min lat, max lat).</p>
 <code class="descname">interped_rasters</code><a class="headerlink" href="#gridwxcomp.InterpGdal.interped_rasters" title="Permalink to this definition">¶</a></dt>
 <dd><p>empty list that is appended with
 <a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a> objects to interpolated rasters after using
-<a class="reference internal" href="#gridwxcomp.InterpGdal.gdal_grid" title="gridwxcomp.InterpGdal.gdal_grid"><code class="xref py py-meth docutils literal notranslate"><span class="pre">InterpGdal.gdal_grid()</span></code></a>.</p>
+<a class="reference internal" href="#gridwxcomp.InterpGdal.gdal_grid" title="gridwxcomp.InterpGdal.gdal_grid"><code class="xref py py-meth docutils literal notranslate"><span class="pre">InterpGdal.gdal_grid</span></code></a>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -1481,7 +1636,7 @@ raster in order (min long, max long, min lat, max lat).</p>
 <dl class="attribute">
 <dt id="gridwxcomp.InterpGdal.params">
 <code class="descname">params</code><a class="headerlink" href="#gridwxcomp.InterpGdal.params" title="Permalink to this definition">¶</a></dt>
-<dd><p>default None. After <a class="reference internal" href="#gridwxcomp.InterpGdal.gdal_grid" title="gridwxcomp.InterpGdal.gdal_grid"><code class="xref py py-meth docutils literal notranslate"><span class="pre">InterpGdal.gdal_grid()</span></code></a>
+<dd><p>default None. After <a class="reference internal" href="#gridwxcomp.InterpGdal.gdal_grid" title="gridwxcomp.InterpGdal.gdal_grid"><code class="xref py py-meth docutils literal notranslate"><span class="pre">InterpGdal.gdal_grid</span></code></a>
 <code class="docutils literal notranslate"><span class="pre">params</span></code> is updated with the last used interpolation parameters
 in the form of a dictionary with parameter names as keys.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -1523,7 +1678,7 @@ inverse distance to a power interpolation method,</p>
 </div>
 <p>Note, we did not assign the interpolation method 'invdist' because it
 is the default. To use another interpolation method we would
-assign the <code class="docutils literal notranslate"><span class="pre">interp_meth</span></code> kwarg to <a class="reference internal" href="#gridwxcomp.InterpGdal.gdal_grid" title="gridwxcomp.InterpGdal.gdal_grid"><code class="xref py py-meth docutils literal notranslate"><span class="pre">InterpGdal.gdal_grid()</span></code></a>.
+assign the <code class="docutils literal notranslate"><span class="pre">interp_meth</span></code> kwarg to <a class="reference internal" href="#gridwxcomp.InterpGdal.gdal_grid" title="gridwxcomp.InterpGdal.gdal_grid"><code class="xref py py-meth docutils literal notranslate"><span class="pre">InterpGdal.gdal_grid</span></code></a>.
 Similarly, we could experiment with other parameters which all can be
 found in the class attribute <a class="reference internal" href="#gridwxcomp.InterpGdal.default_params" title="gridwxcomp.InterpGdal.default_params"><code class="xref py py-attr docutils literal notranslate"><span class="pre">InterpGdal.default_params</span></code></a>. The
 instance variable <a class="reference internal" href="#gridwxcomp.InterpGdal.params" title="gridwxcomp.InterpGdal.params"><code class="xref py py-attr docutils literal notranslate"><span class="pre">InterpGdal.params</span></code></a> can also be used to save
@@ -1531,6 +1686,11 @@ metadata on parameters used for each run.</p>
 <dl class="attribute">
 <dt>
 <code class="descname">CELL_SIZE</code><em class="property"> = 0.041666666666666664</em></dt>
+<dd></dd></dl>
+
+<dl class="attribute">
+<dt>
+<code class="descname">interp_methods</code><em class="property"> = ('average', 'invdist', 'invdistnn', 'linear', 'nearest')</em></dt>
 <dd></dd></dl>
 
 <dl class="attribute">
@@ -1614,7 +1774,7 @@ annual mean bias ratios,</p>
 </div>
 <p>Note, zonal statistics on gridMET cells in a fishnet grid are
 calculated by default, to avoid an error the fishnet must have been
-previously created using <a class="reference internal" href="#gridwxcomp.spatial.make_grid" title="gridwxcomp.spatial.make_grid"><code class="xref py py-func docutils literal notranslate"><span class="pre">gridwxcomp.spatial.make_grid()</span></code></a>. After            running the code above the following files will be created in the
+previously created using <a class="reference internal" href="#gridwxcomp.spatial.make_grid" title="gridwxcomp.spatial.make_grid"><code class="xref py py-func docutils literal notranslate"><span class="pre">gridwxcomp.spatial.make_grid</span></code></a>. After            running the code above the following files will be created in the
 'default_params' directory which will be build in the same location
 as the input summary CSV:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>default_params/
@@ -1661,7 +1821,7 @@ example,</p>
 </div></blockquote>
 <p>On a final note, there are several <a class="reference internal" href="#gridwxcomp.InterpGdal" title="gridwxcomp.InterpGdal"><code class="xref py py-class docutils literal notranslate"><span class="pre">InterpGdal</span></code></a> instance
 attributes that may be useful, for example to see the parameters
-that were used for the last call to <a class="reference internal" href="#gridwxcomp.InterpGdal.gdal_grid" title="gridwxcomp.InterpGdal.gdal_grid"><code class="xref py py-meth docutils literal notranslate"><span class="pre">InterpGdal.gdal_grid()</span></code></a></p>
+that were used for the last call to <a class="reference internal" href="#gridwxcomp.InterpGdal.gdal_grid" title="gridwxcomp.InterpGdal.gdal_grid"><code class="xref py py-meth docutils literal notranslate"><span class="pre">InterpGdal.gdal_grid</span></code></a></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">test</span><span class="o">.</span><span class="n">params</span>
 <span class="go">{&#39;power&#39;: 4,</span>
 <span class="go"> &#39;smoothing&#39;: 0.2,</span>
@@ -1683,7 +1843,7 @@ of absolute paths of raster files. To get them as strings,</p>
 </pre></div>
 </div>
 <p>Similary, the raster extent that was used and will be used again for
-any subsequent calls of <a class="reference internal" href="#gridwxcomp.InterpGdal.gdal_grid" title="gridwxcomp.InterpGdal.gdal_grid"><code class="xref py py-meth docutils literal notranslate"><span class="pre">InterpGdal.gdal_grid()</span></code></a> can be
+any subsequent calls of <a class="reference internal" href="#gridwxcomp.InterpGdal.gdal_grid" title="gridwxcomp.InterpGdal.gdal_grid"><code class="xref py py-meth docutils literal notranslate"><span class="pre">InterpGdal.gdal_grid</span></code></a> can be
 retrieved by</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">test</span><span class="o">.</span><span class="n">grid_bounds</span>
 <span class="go">(-111.74583329966664,</span>
@@ -1709,11 +1869,6 @@ algorithm name.</td>
 </tbody>
 </table>
 </dd></dl>
-
-<dl class="attribute">
-<dt>
-<code class="descname">interp_methods</code><em class="property"> = ('average', 'invdist', 'invdistnn', 'linear', 'nearest')</em></dt>
-<dd></dd></dl>
 
 </dd></dl>
 
@@ -1785,80 +1940,64 @@ in time series index of DataFrame.</td>
 </div>
 
 
+           </div>
+           
           </div>
-          
-        </div>
-      </div>
-      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
-        <div class="sphinxsidebarwrapper">
-<h1 class="logo"><a href="index.html">gridwxcomp</a></h1>
-
-
-
-
-
-
-
-
-<h3>Navigation</h3>
-<p class="caption"><span class="caption-text">Contents:</span></p>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="getting_started.html">Getting Started</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">API Reference</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#command-line-interface">Command Line Interface</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#python-functions-classes-and-modules">Python functions, classes, and modules</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="changelog.html">Change Log</a></li>
-</ul>
-
-<div class="relations">
-<h3>Related Topics</h3>
-<ul>
-  <li><a href="index.html">Documentation overview</a><ul>
-      <li>Previous: <a href="getting_started.html" title="previous chapter">Getting Started</a></li>
-      <li>Next: <a href="changelog.html" title="next chapter">Change Log</a></li>
-  </ul></li>
-</ul>
-</div>
-<div id="searchbox" style="display: none" role="search">
-  <h3>Quick search</h3>
-    <div class="searchformwrapper">
-    <form class="search" action="search.html" method="get">
-      <input type="text" name="q" />
-      <input type="submit" value="Go" />
-      <input type="hidden" name="check_keywords" value="yes" />
-      <input type="hidden" name="area" value="default" />
-    </form>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="changelog.html" class="btn btn-neutral float-right" title="Change Log" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="getting_started.html" class="btn btn-neutral float-left" title="Getting Started" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
     </div>
-</div>
-<script type="text/javascript">$('#searchbox').show(0);</script>
+  
 
+  <hr/>
 
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, John Volk and Chris Pearson
 
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
-
-
-
+</footer>
 
         </div>
       </div>
-      <div class="clearer"></div>
-    </div>
-    <div class="footer">
-      &copy;2019, John Volk and Chris Pearson.
-      
-      |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 1.8.5</a>
-      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
-      
-      |
-      <a href="_sources/api.rst.txt"
-          rel="nofollow">Page source</a>
-    </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+    <!-- Theme Analytics -->
+    <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-XXXXXXX-1', 'auto');
+    ga('send', 'pageview');
+    </script>
 
     
+   
 
-    
-  </body>
+</body>
 </html>
