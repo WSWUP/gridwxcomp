@@ -17,7 +17,7 @@ Bias ratios calculated by ``gridwxcomp`` can be used to correct bias of gridMET 
 
 Documentation
 -------------
-At `ReadTheDocs <http://gridwxcomp.readthedocs.io/>`_
+`Online documentation <https://wswup.github.io/gridwxcomp/>`_
 
 Installation
 ------------

@@ -66,6 +66,7 @@ instance/
 
 # Sphinx documentation
 docs/_build/
+build_docs.sh
 
 # PyBuilder
 target/
@@ -105,8 +106,4 @@ venv.bak/
 .mypy_cache/
 
 # historical or test data 
-/gridwxcomp/merged_input.csv
 /gridwxcomp/test**
-/gridmet_historical
-/philip_monthly_ratios
-/gridwxcomp/test_gridmet_data
