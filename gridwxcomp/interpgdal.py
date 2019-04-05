@@ -12,8 +12,12 @@ from xml.dom import minidom
 
 import numpy as np
 import pandas as pd
-from .spatial import get_subgrid_bounds, gridmet_zonal_stats, calc_pt_error
 
+# allows for CL script usage if gridwxcomp not installed
+try:
+    from .spatial import get_subgrid_bounds, gridmet_zonal_stats, calc_pt_error
+except:
+    from spatial import get_subgrid_bounds, gridmet_zonal_stats, calc_pt_error
 
 class InterpGdal(object):
     """

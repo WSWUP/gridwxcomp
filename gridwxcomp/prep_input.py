@@ -18,8 +18,6 @@ import pandas as pd
 import numpy as np        
 from scipy import spatial
 
-
-
 def main(station_file, out_path, gridmet_meta_file):
     """
     Take list of climate stations and merge each with overlapping gridMET cell
@@ -181,9 +179,9 @@ def prep_input(station_path, out_path='merged_input.csv',
     closest GridMET cell, save CSV with information from both.
 
     Arguments:
-        station_path (str): path to CSV file containing list of climate
-            stations that will later be used to calculate monthly
-            bias ratios to GridMET reference ET.
+        station_path (str): path to CSV file containing metadata of climate
+            stations that will later be used to calculate bias ratios to 
+            GridMET.
 
     Keyword Arguments:
         out_path (str): path to save output CSV, default is to save as 
@@ -221,10 +219,12 @@ def prep_input(station_path, out_path='merged_input.csv',
         i.e. microsoft excel files with data stored in a tab named 'corrected'.
         Then station files should be in text (CSV) format with a column
         named 'date' containing datetime strings e.g. '12/01/2018', that are 
-        able to be parsed by Pandas. The CSV file produced by contains latitude,        longitude, and other fields for both the station and nearest gridMET 
-        cell centroid. Fields that may refer to both gridMET and station data 
-        have prefixes to distinguish, the climate station data are prefixed 
-        with 'STATION' and those refering to gridMET have no prefix. 
+        able to be parsed by Pandas. The CSV file produced by :func:`prep_input`
+        contains latitude, longitude, and other fields for both the station 
+        and nearest gridMET cell centroid coordinates. Fields that may refer 
+        to both gridMET and station data have prefixes to distinguish, the 
+        climate station data are prefixed with 'STATION' and those refering 
+        to gridMET have no prefix. 
 
     """
     # look for pacakged gridmet_cell_data.csv if path not given
@@ -319,13 +319,13 @@ def arg_parse():
     required = parser.add_argument_group('required arguments')
     required.add_argument(
         '-i', '--input', metavar='PATH', required=True,
-        help='Input CSV file of climate stations')
+        help='Climate station metadata CSV file')
     optional.add_argument(
         '-g', '--gridmet-meta', metavar='PATH', required=False,
         default=None,
         help='GridMET metadata CSV file with cell data, packaged with '+\
              'gridwxcomp and automatically found if pip was used to install '+\
-             'if not given it needs to be located in the currect directory')
+             'if not given it needs to be located in the current directory')
     optional.add_argument(
         '-o', '--out', metavar='PATH', required=False, 
         default='merged_input.csv',

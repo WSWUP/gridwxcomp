@@ -59,6 +59,8 @@ def main(input_file_path, layer='all', out=None, buffer=25, scale_factor=0.1,
             ``input_file_path`` under a subdirectory named "spatial".
 
     Keyword Arguments:
+        layer (str or list): default 'all'. Name of variable(s) in ``in_path``
+            to conduct 2-D interpolation. e.g. 'Annual_mean'.
         out (str): default None. Subdirectory to save GeoTIFF rasters.
         gridmet_meta_path (str): default None. Path to metadata CSV file 
             that contains all gridMET cell info. By default it is looked
@@ -838,7 +840,7 @@ def interpolate(in_path, layer='all', out=None, scale_factor=0.1,
             :func:`gridwxcomp.calc_bias_ratios`.
 
     Keyword Arguments:
-        layer (str or list): default 'all'. Name of variable in ``in_path`` 
+        layer (str or list): default 'all'. Name of variable(s) in ``in_path``
             to conduct 2-D interpolation. e.g. 'Annual_mean'.
         out (str): default None. Subdirectory to save GeoTIFF raster(s).
         scale_factor (float, int): default 0.1. Scaling factor to apply to 
@@ -993,7 +995,10 @@ def interpolate(in_path, layer='all', out=None, scale_factor=0.1,
         
     """
     # avoid circular import for InterpGdal for gdal interpolation methods
-    from gridwxcomp.interpgdal import InterpGdal
+    try:
+        from gridwxcomp.interpgdal import InterpGdal
+    except: # for use as script, i.e. $ python spatial ...
+        from interpgdal import InterpGdal
 
     if not os.path.isfile(in_path):
         raise FileNotFoundError('Input summary CSV file given'+\
@@ -1464,7 +1469,7 @@ def arg_parse():
         help='Input summary_comp CSV file of climate/gridMET bias ratios '+\
              'created by first running calc_bias_ratios.py')
     optional.add_argument(
-        '-l', '--layer', metavar='', required=False, default='all', nargs='*',
+        '-l', '--layer', metavar='', required=False, default='all', type=str,
         help='Layer(s) to perform spatial interpolation in input summary '+\
              'CSV, if multiple use comma separation e.g. Jan_mean,Aug_mean')
     optional.add_argument(
@@ -1493,7 +1498,7 @@ def arg_parse():
         help='Parameter string e.g. ":power=2:smoothing=.1:nodata=-999" for'+\
             ' gdal_grid spatial interpolation methods')
     optional.add_argument(
-        'z', '--zonal-stats', required=False, default=True, 
+        '-z', '--zonal-stats', required=False, default=True, 
         action='store_false', help='Flag to NOT extract zonal means of'+\
             ' interpolated rasters to gridMET cells.')
     optional.add_argument(
@@ -1525,7 +1530,7 @@ if __name__ == '__main__':
 
     main(
         input_file_path=args.input,
-        layer=args.layer,
+        layer=layer,
         out=args.out_dir,
         buffer=args.buffer,
         scale_factor=args.scale,

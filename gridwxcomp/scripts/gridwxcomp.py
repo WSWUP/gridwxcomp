@@ -6,12 +6,11 @@ import click
 import os
 import logging
 
-from gridwxcomp.calc_bias_ratios import calc_bias_ratios as calc_ratios
-from gridwxcomp.daily_comparison import daily_comparison as daily_comp
-from gridwxcomp.monthly_comparison import monthly_comparison as monthly_comp
-from gridwxcomp.download_gridmet_ee import download_gridmet_ee as download
 from gridwxcomp.prep_input import prep_input as prep
+from gridwxcomp.download_gridmet_ee import download_gridmet_ee as download
+from gridwxcomp.calc_bias_ratios import calc_bias_ratios as calc_ratios
 from gridwxcomp.spatial import main as interp 
+from gridwxcomp.plot import daily_comparison, monthly_comparison, station_bar_plot
 
 logging.basicConfig(level=logging.INFO, format='%(message)s')
 
@@ -19,19 +18,15 @@ logging.basicConfig(level=logging.INFO, format='%(message)s')
 @click.group()
 def gridwxcomp():
     """
-    Access gridwxcomp functionality from the command line.
+    Access gridwxcomp functionality from the command line
     
     The ``gridwxcomp`` tools are accesible via a command line interface using
     the console command "gridwxcomp". To print a list of all available commands
-    from the command line type,
-
-    .. code-block:: sh
+    from the command line type,::
 
         gridwxcomp --help
 
-    Or to print information on a specific command,
-
-    .. code-block:: sh
+    Or to print information on a specific command,::
 
         gridwxcomp COMMAND --help
 
@@ -51,7 +46,7 @@ def gridwxcomp():
         help='Supress command line output')
 def prep_input(station_meta_path, out_path, gridmet_meta, quiet):
     """
-    Pairs climate metadata with gridMET.
+    Pairs climate metadata with gridMET
 
     Read climate station metadata file, e.g. from `PyWeatherQAQC <https://github.com/WSWUP/pyWeatherQAQC>`_
     and match each station with gridMET cell locations, save CSV. The required 
@@ -107,7 +102,7 @@ def prep_input(station_meta_path, out_path, gridmet_meta, quiet):
         help='Supress command line output')
 def download_gridmet_ee(input_csv, out_dir, years, update_years, quiet):
     """
-    Download gridMET climate time series.
+    Download gridMET climate time series
 
     Download gridMET time series for cells that are paired to climate stations
     in a CSV file that is first created by ``gridwxcomp prep-input``. Options 
@@ -146,7 +141,7 @@ def download_gridmet_ee(input_csv, out_dir, years, update_years, quiet):
 def calc_bias_ratios(input_csv, out_dir, gridmet_var, station_var, 
         gridmet_id, day_limit, years, comp, quiet):
     """
-    Bias ratio statistics of station-to-gridMET. 
+    Bias ratio statistics of station-to-gridMET 
 
     Calculates mean bias ratios between climate station to gridMET variables 
     at multiple time periods: monthly, annual, growing season. Other statistics
@@ -218,23 +213,28 @@ def calc_bias_ratios(input_csv, out_dir, gridmet_var, station_var,
 def spatial(summary_comp_csv, layer, out, buffer, scale, function, smooth, 
         params, no_zonal_stats, overwrite_grid, options, gridmet_meta, quiet):
     """
-    Spatially interpolate ratio statistics. 
+    Spatially interpolate ratio statistics 
 
     2-D interpolation of mean bias ratios or other statistics that exist in the
     ``SUMMARY_COMP_CSV`` file created by ``gridwxcomp calc-bias-ratios``. 
     Interpolation algorithms include those provided by `gdal_grid <https://www.gdal.org/gdal_grid.html>`_:
     'invdist' (default), 'invdistnn', 'linear', 'average', and 'nearest' 
-    and :class:`scipy.interpolate.Rbf`: 'multiquadric', 'inverse', 'gaussian', 'linear_rbf', 'cubic', 'quintic', and 'thin_plate'. Parameters for gdal 
+    and :class:`scipy.interpolate.Rbf`: 'multiquadric', 'inverse', 'gaussian', 
+    'linear_rbf', 'cubic', 'quintic', and 'thin_plate'. Parameters for gdal 
     algorithms are set using ``--params`` whereas the ``--smooth`` parameter 
     (default 0) is used by scipy radial basis functions. Default parameters 
     for gdal are stored in :attr:`gridwxcomp.InterpGdal.default_params`. 
+    
     Interpolation resampling resolution can be down- or up-scaled using 
     ``--scale-factor`` (default 0.1) which is applied to gridMET resolution of 
-    4 km. On the first run this command will produce a fishnet of gridMET cells
+    4 km. 
+    
+    On the first run this command will produce a fishnet of gridMET cells
     that bound the climate stations in ``SUMMARY_COMP_CSV`` with optional 
-    buffer of gridMET cells which can later be overwritten. All layers of mean
-    bias ratios found within :attr:`gridwxcomp.InterpGdal.default_layers` are
-    interpolated by default unless ``--layers`` are specified. Interpolated 
+    buffer of gridMET cells which can later be overwritten. 
+    
+    All mean bias ratios found within :attr:`gridwxcomp.InterpGdal.default_layers` 
+    are interpolated by default unless ``--layers`` are specified. Interpolated 
     residuals to station point ratios are also estimated. Zonal means for
     gridMET cells in the fishnet grid are extracted by default and assigned to
     each gridMET cell by its index (GRIDMET_ID) in the full gridMET fishnet 
@@ -271,46 +271,109 @@ def spatial(summary_comp_csv, layer, out, buffer, scale, function, smooth,
 
 @gridwxcomp.command()
 @click.argument('input_csv', nargs=1)
+@click.option('--plot-type', '-t', nargs=1,type=str,default='station-grid-comp',
+        help='Plot type, station comparison bar plot "station-bar" for a '+\
+        'single variable, or station to gridMET time series comparison '+\
+        'for multiple variables "station-grid-comp"')
+@click.option('--variable', '-v', nargs=1, type=str, default='annual_mean',
+        help='Variable to plot for --type="station-bar" plots, default '+\
+        '"annual_mean", can also pass a comma separated list: e.g. '+\
+        '"Jan_mean,Jan_res,Jan_est"')
 @click.option('--freq', '-f', nargs=1, type=str, default='daily',
-        help='Time frequency for comparison plots "daily" or "monthly"')
+        help='Time frequency for station-grid-comp plots "daily" or "monthly"')
 @click.option('--out-dir', '-o', nargs=1, type=str, default=None,
-        help='Folder to save time series comparison plots')
+        help='Folder to save plots')
 @click.option('--year', '-y', nargs=1, type=int, default=None,
-        help='Year to plot, single year (YYYY)')
+        help='Years for time series, single year YYYY or range YYYY-YYYY')
+@click.option('--x-label', nargs=1, type=str, default=None,
+        help='X-axis label for station-bar plot')
+@click.option('--y-label', nargs=1, type=str, default=None,
+        help='Y-axis label for station-bar plot')
+@click.option('--title', nargs=1, type=str, default=None,
+        help='Title for station-bar plot')
+@click.option('--subtitle', nargs=1, type=str, default=None,
+        help='Subtitle for station-bar plot, comma separated list for multiple')
+@click.option('--year-subtitle', default=True, is_flag=True, 
+        help='Print subtitle with years used for station-bar plots')
 @click.option('--quiet', default=False, is_flag=True, 
         help='Supress command line output')
-def plot(input_csv, freq, out_dir, year, quiet):
+def plot(input_csv, plot_type, freq, variable, out_dir, year, x_label,
+        y_label, title, subtitle, year_subtitle, quiet):
     """
-    Create comparison or diagnostic graphics.
+    Create comparison or diagnostic graphics
 
-    Plot time series and scatter comparison plots at daily or monthly average 
-    time periods. Plots are interactive (can be panned and zoomed) HTML format
-    and created for each station if time frequency of plots, i.e. ``--freq``, 
-    is "monthly" and for each month for each station if ``--freq`` is "daily". 
-    By default, if ``--out-dir`` is not specified all plots are saved in 
-    "[freq]_comp_plots" where [freq] is set to ``--freq``. Default time 
-    frequency is "daily".
+    Plot time series and scatter comparison plots between station and gridMET
+    paired variables at daily or monthly average time periods. Also allows for
+    plotting a single variable as a bar plot that compares multiple climate
+    stations. Plots are interactive (can be panned, zoomed, etc.) HTML files.
+
+    Currently there are two major plot types provided which are specified by
+    ``[-t, --plot-type]``: 1) "station-grid-comp" which creates time series 
+    comparison plots of all gridMET variables to station values; and 2)
+    the second type "station-bar" which compares stations for a single variable.
+    For time series comparisons a plot is created for each station if time 
+    frequency of plots, i.e. ``--freq`` is "monthly" and for each month for 
+    each station if ``--freq`` is "daily" (default). For producing a station
+    bar plot you must assign the variable to plot using ``[-v, --variable]``.
+
+    By default, if ``--out-dir`` is not specified time series plots are saved 
+    in "[freq]_comp_plots" in the current directory where [freq] is set to 
+    ``--freq``. Station bar plots are saved by default to "station_bar_plots" 
+    directory created in the same directory containing the summary CSV assigned
+    to ``INPUT_CSV``.
+
+    **Note:**
+    Both daily and monthly comparison plots between station and gridMET
+    i.e. when ``plot-type`` = "station-grid-comp" require station data to
+    be within excel files that follow the format produced by 
+    `PyWeatherQAQC <https://github.com/WSWUP/pyWeatherQAQC>`_. 
     """
     if quiet:
         logging.getLogger().setLevel(logging.ERROR)
     else:
         logging.getLogger().setLevel(logging.INFO)
-    # all options for time aggregation of plotting data
-    time_freqs = ['daily', 'monthly']
-    # check plot frequency option
-    if not freq in time_freqs:
-        click.echo(
-            '\n{} is not a valid time frequency, available options: {}'.\
-            format(freq, ', '.join([t for t in time_freqs]))
-        )
-        return
-    elif freq == 'daily':
-        # call gridwxcomp.daily_comparison
-        daily_comp(input_csv, out_dir, year_filter=year)
-    elif freq == 'monthly':
+
+    if plot_type == 'station-grid-comp':
+        # all options for time aggregation of plotting data
+        time_freqs = ['daily', 'monthly']
+        # check plot frequency option
+        if not freq in time_freqs:
+            click.echo(
+                '\n{} is not a valid time frequency, available options: {}'.\
+                format(freq, ', '.join([t for t in time_freqs]))
+            )
+        elif freq == 'daily':
+            # call gridwxcomp.daily_comparison
+            daily_comparison(input_csv=input_csv, out_dir=out_dir,
+                year_filter=year)
+        elif freq == 'monthly':
+            if year:
+                click.echo('\nWarning: the --year, -y option is not used for'+\
+                    ' creating monthly avg. plots, all years will be used.')
+            monthly_comparison(input_csv=input_csv, out_dir=out_dir)
+
+    elif plot_type == 'station-bar':
         if year:
             click.echo('\nWarning: the --year, -y option is not used for'+\
                 ' creating monthly avg. plots, all years will be used.')
-        monthly_comp(input_csv, out_dir)
+        if subtitle:
+            subtitle = subtitle.split(',')
+        # run one or multiple variables for station bar plots
+        variables = variable.split(',')
+        if len (variables) == 1:
+            station_bar_plot(summary_csv=input_csv, layer=variable,
+                out_dir=out_dir, x_label=x_label, y_label=y_label,
+                title=title, subtitle=subtitle, 
+                year_subtitle=year_subtitle)
+        else:
+            for v in variables:
+                station_bar_plot(summary_csv=input_csv, layer=v, 
+                    out_dir=out_dir, x_label=x_label, 
+                    y_label=y_label, title=title, 
+                    subtitle=subtitle, year_subtitle=year_subtitle)
+    else:
+        click.echo('{} is an invalid option for plot type'.format(plot_type),
+            '\navailable options include: ', 
+            '\n'.join(['station-gridmet','station-station']))
 
 

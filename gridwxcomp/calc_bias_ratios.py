@@ -44,7 +44,12 @@ import warnings
 
 import pandas as pd
 import numpy as np
-from .util import parse_yr_filter
+
+# allows for CL script usage if gridwxcomp not installed
+try:
+    from .util import parse_yr_filter
+except:
+    from util import parse_yr_filter
 
 # keys = gridMET variable name
 # values = climate station variable name

@@ -1,10 +1,27 @@
 Change Log
 **********
 
+Version 0.0.6
+=============
+
+Update all ``gridwxcomp`` modules (with exception of ``interpgdal.py``) to ensure that they can be used as standalone scripts without installing ``gridwxcomp``. For example, the spatial interpolation routines in ``spatial.py`` can be used from the command line
+
+.. code-block:: sh
+
+    $ python spatial.py <options>
+
+The only requirement is that all the files within ``gridwxcomp/gridwxcomp`` are within the same directory. 
+
+Add ``gridwxcomp.plot`` module to consolidate current and future graphics tools. Current tools include the following functions: ``gridwxcomp.plot.daily_comparison``, ``gridwxcomp.plot.monthly_comparison``, and the newly added ``gridwxcomp.plot.station_bar_plot``. Changed the ``gridwxcomp`` command line interface plot command to handle the three options using the new option ``[-t, --plot-type]``. 
+
+Add year range option for ``gridwxcomp.plot.daily_comparison``, useful for adding additional data to scatter plot comparisons using multiple years data for a particular month. 
+
+Changed docs hosting to `GitHub <https://wswup.github.io/gridwxcomp/>`_
+
 Version 0.0.5
 =============
 
-Full functionality of climate station data that was **NOT** created by `PyWeatherQaQc <https://github.com/WSWUP/pyWeatherQAQC>`_ after ``gridwxcomp >= 0.0.55``. Climate station time series files should be in CSV format and need a "date" column with date strings that can be parsed as datetime objects, e.g. '12/01/2018' or '12-01-2018'. 
+Functionality for climate station data that was **NOT** created by `PyWeatherQaQc <https://github.com/WSWUP/pyWeatherQAQC>`_ after ``gridwxcomp >= 0.0.55``. Climate station time series files should be in CSV format and need a "date" column with date strings that can be parsed as datetime objects, e.g. '12/01/2018' or '12-01-2018'. ``daily_comparison.py`` and ``monthly_comparison.py`` plotting modules however still require climate station input data in the format of ``PyWeatherQaQc``. 
 
 Add monthly plotting to command line interface, change command line command "daily-comparison" to
 "plot" with "daily" and "monthly" options. 

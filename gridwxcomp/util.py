@@ -69,7 +69,7 @@ def parse_yr_filter(dt_df, years, label):
             else:
                 year_str = str(years)
                 if not years in dt_df.index:
-                    print('WARNING: station:', label, 'is missing data',
+                    print('WARNING:', label, 'is missing data',
                         'for year:', years)
                 else:
                     
