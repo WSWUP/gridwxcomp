@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>API Reference &mdash; gridwxcomp 0.0.57 documentation</title>
+  <title>API Reference &mdash; gridwxcomp 0.0.65 documentation</title>
   
 
   
@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                0.0.57
+                0.0.65
               </div>
             
           
@@ -112,8 +112,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#download-gridmet-ee">download_gridmet_ee</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-gridwxcomp.calc_bias_ratios">calc_bias_ratios</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-gridwxcomp.spatial">spatial</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-gridwxcomp.daily_comparison">daily_comparison</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#module-gridwxcomp.monthly_comparison">monthly_comparison</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#module-gridwxcomp.plot">plot</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#interpgdal">InterpGdal</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-gridwxcomp.util">util</a></li>
 </ul>
@@ -121,6 +120,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="changelog.html">Change Log</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#version-0-0-6">Version 0.0.6</a></li>
 <li class="toctree-l2"><a class="reference internal" href="changelog.html#version-0-0-5">Version 0.0.5</a></li>
 <li class="toctree-l2"><a class="reference internal" href="changelog.html#version-0-0-4">Version 0.0.4</a></li>
 <li class="toctree-l2"><a class="reference internal" href="changelog.html#version-0-0-3">Version 0.0.3</a></li>
@@ -198,21 +198,20 @@
 <p>This page documents all routines provided by <code class="docutils literal notranslate"><span class="pre">gridwxcomp</span></code>. Tools for different routines are listed roughly in the order that they would normally be used.</p>
 <div class="contents local topic" id="contents">
 <ul class="simple">
-<li><a class="reference internal" href="#command-line-interface" id="id12">Command Line Interface</a><ul>
-<li><a class="reference internal" href="#gridwxcomp" id="id13">gridwxcomp</a></li>
-<li><a class="reference internal" href="#gridwxcomp-prep-input" id="id14">gridwxcomp prep-input</a></li>
-<li><a class="reference internal" href="#gridwxcomp-download-gridmet-ee" id="id15">gridwxcomp download-gridmet-ee</a></li>
-<li><a class="reference internal" href="#gridwxcomp-spatial" id="id16">gridwxcomp spatial</a></li>
-<li><a class="reference internal" href="#gridwxcomp-plot" id="id17">gridwxcomp plot</a></li>
+<li><a class="reference internal" href="#command-line-interface" id="id13">Command Line Interface</a><ul>
+<li><a class="reference internal" href="#gridwxcomp" id="id14">gridwxcomp</a></li>
+<li><a class="reference internal" href="#gridwxcomp-prep-input" id="id15">gridwxcomp prep-input</a></li>
+<li><a class="reference internal" href="#gridwxcomp-download-gridmet-ee" id="id16">gridwxcomp download-gridmet-ee</a></li>
+<li><a class="reference internal" href="#gridwxcomp-spatial" id="id17">gridwxcomp spatial</a></li>
+<li><a class="reference internal" href="#gridwxcomp-plot" id="id18">gridwxcomp plot</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#python-functions-classes-and-modules" id="id18">Python functions, classes, and modules</a><ul>
-<li><a class="reference internal" href="#prep-input" id="id19">prep_input</a></li>
-<li><a class="reference internal" href="#download-gridmet-ee" id="id20">download_gridmet_ee</a></li>
-<li><a class="reference internal" href="#module-gridwxcomp.calc_bias_ratios" id="id21">calc_bias_ratios</a></li>
-<li><a class="reference internal" href="#module-gridwxcomp.spatial" id="id22">spatial</a></li>
-<li><a class="reference internal" href="#module-gridwxcomp.daily_comparison" id="id23">daily_comparison</a></li>
-<li><a class="reference internal" href="#module-gridwxcomp.monthly_comparison" id="id24">monthly_comparison</a></li>
+<li><a class="reference internal" href="#python-functions-classes-and-modules" id="id19">Python functions, classes, and modules</a><ul>
+<li><a class="reference internal" href="#prep-input" id="id20">prep_input</a></li>
+<li><a class="reference internal" href="#download-gridmet-ee" id="id21">download_gridmet_ee</a></li>
+<li><a class="reference internal" href="#module-gridwxcomp.calc_bias_ratios" id="id22">calc_bias_ratios</a></li>
+<li><a class="reference internal" href="#module-gridwxcomp.spatial" id="id23">spatial</a></li>
+<li><a class="reference internal" href="#module-gridwxcomp.plot" id="id24">plot</a></li>
 <li><a class="reference internal" href="#interpgdal" id="id25">InterpGdal</a></li>
 <li><a class="reference internal" href="#module-gridwxcomp.util" id="id26">util</a></li>
 </ul>
@@ -220,18 +219,18 @@
 </ul>
 </div>
 <div class="section" id="command-line-interface">
-<h2><a class="toc-backref" href="#id12">Command Line Interface</a><a class="headerlink" href="#command-line-interface" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id13">Command Line Interface</a><a class="headerlink" href="#command-line-interface" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="gridwxcomp">
-<h3><a class="toc-backref" href="#id13">gridwxcomp</a><a class="headerlink" href="#gridwxcomp" title="Permalink to this headline">¶</a></h3>
-<p>Access gridwxcomp functionality from the command line.</p>
+<h3><a class="toc-backref" href="#id14">gridwxcomp</a><a class="headerlink" href="#gridwxcomp" title="Permalink to this headline">¶</a></h3>
+<p>Access gridwxcomp functionality from the command line</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">gridwxcomp</span></code> tools are accesible via a command line interface using
 the console command &quot;gridwxcomp&quot;. To print a list of all available commands
-from the command line type,</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>gridwxcomp --help
+from the command line type,:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gridwxcomp</span> <span class="o">--</span><span class="n">help</span>
 </pre></div>
 </div>
-<p>Or to print information on a specific command,</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>gridwxcomp COMMAND --help
+<p>Or to print information on a specific command,:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gridwxcomp</span> <span class="n">COMMAND</span> <span class="o">--</span><span class="n">help</span>
 </pre></div>
 </div>
 <p>Basic usage to run a command:</p>
@@ -242,37 +241,37 @@ from the command line type,</p>
 <dl class="object">
 <dt>
 <code class="descname">calc-bias-ratios</code></dt>
-<dd><p>Bias ratio statistics of station-to-gridMET.</p>
+<dd><p>Bias ratio statistics of station-to-gridMET...</p>
 </dd></dl>
 
 <dl class="object">
 <dt>
 <code class="descname">download-gridmet-ee</code></dt>
-<dd><p>Download gridMET climate time series.</p>
+<dd><p>Download gridMET climate time series Download...</p>
 </dd></dl>
 
 <dl class="object">
 <dt>
 <code class="descname">plot</code></dt>
-<dd><p>Create comparison or diagnostic graphics.</p>
+<dd><p>Create comparison or diagnostic graphics Plot...</p>
 </dd></dl>
 
 <dl class="object">
 <dt>
 <code class="descname">prep-input</code></dt>
-<dd><p>Pairs climate metadata with gridMET.</p>
+<dd><p>Pairs climate metadata with gridMET Read...</p>
 </dd></dl>
 
 <dl class="object">
 <dt>
 <code class="descname">spatial</code></dt>
-<dd><p>Spatially interpolate ratio statistics.</p>
+<dd><p>Spatially interpolate ratio statistics 2-D...</p>
 </dd></dl>
 
 </div>
 <div class="section" id="gridwxcomp-prep-input">
-<h3><a class="toc-backref" href="#id14">gridwxcomp prep-input</a><a class="headerlink" href="#gridwxcomp-prep-input" title="Permalink to this headline">¶</a></h3>
-<p>Pairs climate metadata with gridMET.</p>
+<h3><a class="toc-backref" href="#id15">gridwxcomp prep-input</a><a class="headerlink" href="#gridwxcomp-prep-input" title="Permalink to this headline">¶</a></h3>
+<p>Pairs climate metadata with gridMET</p>
 <p>Read climate station metadata file, e.g. from <a class="reference external" href="https://github.com/WSWUP/pyWeatherQAQC">PyWeatherQAQC</a>
 and match each station with gridMET cell locations, save CSV. The required
 argument <code class="docutils literal notranslate"><span class="pre">STATION_META_PATH</span></code> is a file containing metadata of climate
@@ -362,8 +361,8 @@ metadata from climate stations as well as the lat, long, and gridMET ID
 
 </div>
 <div class="section" id="gridwxcomp-download-gridmet-ee">
-<h3><a class="toc-backref" href="#id15">gridwxcomp download-gridmet-ee</a><a class="headerlink" href="#gridwxcomp-download-gridmet-ee" title="Permalink to this headline">¶</a></h3>
-<p>Download gridMET climate time series.</p>
+<h3><a class="toc-backref" href="#id16">gridwxcomp download-gridmet-ee</a><a class="headerlink" href="#gridwxcomp-download-gridmet-ee" title="Permalink to this headline">¶</a></h3>
+<p>Download gridMET climate time series</p>
 <p>Download gridMET time series for cells that are paired to climate stations
 in a CSV file that is first created by <code class="docutils literal notranslate"><span class="pre">gridwxcomp</span> <span class="pre">prep-input</span></code>. Options
 allow for downloading all years available (default) or select years, it is
@@ -408,23 +407,25 @@ current working directory.</p>
 
 </div>
 <div class="section" id="gridwxcomp-spatial">
-<h3><a class="toc-backref" href="#id16">gridwxcomp spatial</a><a class="headerlink" href="#gridwxcomp-spatial" title="Permalink to this headline">¶</a></h3>
-<p>Spatially interpolate ratio statistics.</p>
+<h3><a class="toc-backref" href="#id17">gridwxcomp spatial</a><a class="headerlink" href="#gridwxcomp-spatial" title="Permalink to this headline">¶</a></h3>
+<p>Spatially interpolate ratio statistics</p>
 <p>2-D interpolation of mean bias ratios or other statistics that exist in the
 <code class="docutils literal notranslate"><span class="pre">SUMMARY_COMP_CSV</span></code> file created by <code class="docutils literal notranslate"><span class="pre">gridwxcomp</span> <span class="pre">calc-bias-ratios</span></code>.
 Interpolation algorithms include those provided by <a class="reference external" href="https://www.gdal.org/gdal_grid.html">gdal_grid</a>:
 'invdist' (default), 'invdistnn', 'linear', 'average', and 'nearest'
-and <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.Rbf.html#scipy.interpolate.Rbf" title="(in SciPy v1.2.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">scipy.interpolate.Rbf</span></code></a>: 'multiquadric', 'inverse', 'gaussian', 'linear_rbf', 'cubic', 'quintic', and 'thin_plate'. Parameters for gdal
+and <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.Rbf.html#scipy.interpolate.Rbf" title="(in SciPy v1.2.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">scipy.interpolate.Rbf</span></code></a>: 'multiquadric', 'inverse', 'gaussian',
+'linear_rbf', 'cubic', 'quintic', and 'thin_plate'. Parameters for gdal
 algorithms are set using <code class="docutils literal notranslate"><span class="pre">--params</span></code> whereas the <code class="docutils literal notranslate"><span class="pre">--smooth</span></code> parameter
 (default 0) is used by scipy radial basis functions. Default parameters
-for gdal are stored in <a class="reference internal" href="#gridwxcomp.InterpGdal.default_params" title="gridwxcomp.InterpGdal.default_params"><code class="xref py py-attr docutils literal notranslate"><span class="pre">gridwxcomp.InterpGdal.default_params</span></code></a>.
-Interpolation resampling resolution can be down- or up-scaled using
+for gdal are stored in <a class="reference internal" href="#gridwxcomp.InterpGdal.default_params" title="gridwxcomp.InterpGdal.default_params"><code class="xref py py-attr docutils literal notranslate"><span class="pre">gridwxcomp.InterpGdal.default_params</span></code></a>.</p>
+<p>Interpolation resampling resolution can be down- or up-scaled using
 <code class="docutils literal notranslate"><span class="pre">--scale-factor</span></code> (default 0.1) which is applied to gridMET resolution of
-4 km. On the first run this command will produce a fishnet of gridMET cells
+4 km.</p>
+<p>On the first run this command will produce a fishnet of gridMET cells
 that bound the climate stations in <code class="docutils literal notranslate"><span class="pre">SUMMARY_COMP_CSV</span></code> with optional
-buffer of gridMET cells which can later be overwritten. All layers of mean
-bias ratios found within <a class="reference internal" href="#gridwxcomp.InterpGdal.default_layers" title="gridwxcomp.InterpGdal.default_layers"><code class="xref py py-attr docutils literal notranslate"><span class="pre">gridwxcomp.InterpGdal.default_layers</span></code></a> are
-interpolated by default unless <code class="docutils literal notranslate"><span class="pre">--layers</span></code> are specified. Interpolated
+buffer of gridMET cells which can later be overwritten.</p>
+<p>All mean bias ratios found within <a class="reference internal" href="#gridwxcomp.InterpGdal.default_layers" title="gridwxcomp.InterpGdal.default_layers"><code class="xref py py-attr docutils literal notranslate"><span class="pre">gridwxcomp.InterpGdal.default_layers</span></code></a>
+are interpolated by default unless <code class="docutils literal notranslate"><span class="pre">--layers</span></code> are specified. Interpolated
 residuals to station point ratios are also estimated. Zonal means for
 gridMET cells in the fishnet grid are extracted by default and assigned to
 each gridMET cell by its index (GRIDMET_ID) in the full gridMET fishnet
@@ -517,35 +518,92 @@ in <a class="reference internal" href="#gridwxcomp.spatial.make_grid" title="gri
 
 </div>
 <div class="section" id="gridwxcomp-plot">
-<h3><a class="toc-backref" href="#id17">gridwxcomp plot</a><a class="headerlink" href="#gridwxcomp-plot" title="Permalink to this headline">¶</a></h3>
-<p>Create comparison or diagnostic graphics.</p>
-<p>Plot time series and scatter comparison plots at daily or monthly average
-time periods. Plots are interactive (can be panned and zoomed) HTML format
-and created for each station if time frequency of plots, i.e. <code class="docutils literal notranslate"><span class="pre">--freq</span></code>,
-is &quot;monthly&quot; and for each month for each station if <code class="docutils literal notranslate"><span class="pre">--freq</span></code> is &quot;daily&quot;.
-By default, if <code class="docutils literal notranslate"><span class="pre">--out-dir</span></code> is not specified all plots are saved in
-&quot;[freq]_comp_plots&quot; where [freq] is set to <code class="docutils literal notranslate"><span class="pre">--freq</span></code>. Default time
-frequency is &quot;daily&quot;.</p>
+<h3><a class="toc-backref" href="#id18">gridwxcomp plot</a><a class="headerlink" href="#gridwxcomp-plot" title="Permalink to this headline">¶</a></h3>
+<p>Create comparison or diagnostic graphics</p>
+<p>Plot time series and scatter comparison plots between station and gridMET
+paired variables at daily or monthly average time periods. Also allows for
+plotting a single variable as a bar plot that compares multiple climate
+stations. Plots are interactive (can be panned, zoomed, etc.) HTML files.</p>
+<p>Currently there are two major plot types provided which are specified by
+<code class="docutils literal notranslate"><span class="pre">[-t,</span> <span class="pre">--plot-type]</span></code>: 1) &quot;station-grid-comp&quot; which creates time series
+comparison plots of all gridMET variables to station values; and 2)
+the second type &quot;station-bar&quot; which compares stations for a single variable.
+For time series comparisons a plot is created for each station if time
+frequency of plots, i.e. <code class="docutils literal notranslate"><span class="pre">--freq</span></code> is &quot;monthly&quot; and for each month for
+each station if <code class="docutils literal notranslate"><span class="pre">--freq</span></code> is &quot;daily&quot; (default). For producing a station
+bar plot you must assign the variable to plot using <code class="docutils literal notranslate"><span class="pre">[-v,</span> <span class="pre">--variable]</span></code>.</p>
+<p>By default, if <code class="docutils literal notranslate"><span class="pre">--out-dir</span></code> is not specified time series plots are saved
+in &quot;[freq]_comp_plots&quot; in the current directory where [freq] is set to
+<code class="docutils literal notranslate"><span class="pre">--freq</span></code>. Station bar plots are saved by default to &quot;station_bar_plots&quot;
+directory created in the same directory containing the summary CSV assigned
+to <code class="docutils literal notranslate"><span class="pre">INPUT_CSV</span></code>.</p>
+<p><strong>Note:</strong>
+Both daily and monthly comparison plots between station and gridMET
+i.e. when <code class="docutils literal notranslate"><span class="pre">plot-type</span></code> = &quot;station-grid-comp&quot; require station data to
+be within excel files that follow the format produced by
+<a class="reference external" href="https://github.com/WSWUP/pyWeatherQAQC">PyWeatherQAQC</a>.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>gridwxcomp plot <span class="o">[</span>OPTIONS<span class="o">]</span> INPUT_CSV
 </pre></div>
 </div>
 <p class="rubric">Options</p>
 <dl class="option">
+<dt id="cmdoption-gridwxcomp-plot-t">
+<code class="descname">-t</code><code class="descclassname"></code><code class="descclassname">, </code><code class="descname">--plot-type</code><code class="descclassname"> &lt;plot_type&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-plot-t" title="Permalink to this definition">¶</a></dt>
+<dd><p>Plot type, station comparison bar plot &quot;station-bar&quot; for a single variable, or station to gridMET time series comparison for multiple variables &quot;station-grid-comp&quot;</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-gridwxcomp-plot-v">
+<code class="descname">-v</code><code class="descclassname"></code><code class="descclassname">, </code><code class="descname">--variable</code><code class="descclassname"> &lt;variable&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-plot-v" title="Permalink to this definition">¶</a></dt>
+<dd><p>Variable to plot for --type=&quot;station-bar&quot; plots, default &quot;annual_mean&quot;, can also pass a comma separated list: e.g. &quot;Jan_mean,Jan_res,Jan_est&quot;</p>
+</dd></dl>
+
+<dl class="option">
 <dt id="cmdoption-gridwxcomp-plot-f">
 <code class="descname">-f</code><code class="descclassname"></code><code class="descclassname">, </code><code class="descname">--freq</code><code class="descclassname"> &lt;freq&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-plot-f" title="Permalink to this definition">¶</a></dt>
-<dd><p>Time frequency for comparison plots &quot;daily&quot; or &quot;monthly&quot;</p>
+<dd><p>Time frequency for station-grid-comp plots &quot;daily&quot; or &quot;monthly&quot;</p>
 </dd></dl>
 
 <dl class="option">
 <dt id="cmdoption-gridwxcomp-plot-o">
 <code class="descname">-o</code><code class="descclassname"></code><code class="descclassname">, </code><code class="descname">--out-dir</code><code class="descclassname"> &lt;out_dir&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-plot-o" title="Permalink to this definition">¶</a></dt>
-<dd><p>Folder to save time series comparison plots</p>
+<dd><p>Folder to save plots</p>
 </dd></dl>
 
 <dl class="option">
 <dt id="cmdoption-gridwxcomp-plot-y">
 <code class="descname">-y</code><code class="descclassname"></code><code class="descclassname">, </code><code class="descname">--year</code><code class="descclassname"> &lt;year&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-plot-y" title="Permalink to this definition">¶</a></dt>
-<dd><p>Year to plot, single year (YYYY)</p>
+<dd><p>Years for time series, single year YYYY or range YYYY-YYYY</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-gridwxcomp-plot-x-label">
+<code class="descname">--x-label</code><code class="descclassname"> &lt;x_label&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-plot-x-label" title="Permalink to this definition">¶</a></dt>
+<dd><p>X-axis label for station-bar plot</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-gridwxcomp-plot-y-label">
+<code class="descname">--y-label</code><code class="descclassname"> &lt;y_label&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-plot-y-label" title="Permalink to this definition">¶</a></dt>
+<dd><p>Y-axis label for station-bar plot</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-gridwxcomp-plot-title">
+<code class="descname">--title</code><code class="descclassname"> &lt;title&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-plot-title" title="Permalink to this definition">¶</a></dt>
+<dd><p>Title for station-bar plot</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-gridwxcomp-plot-subtitle">
+<code class="descname">--subtitle</code><code class="descclassname"> &lt;subtitle&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-plot-subtitle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Subtitle for station-bar plot, comma separated list for multiple</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-gridwxcomp-plot-year-subtitle">
+<code class="descname">--year-subtitle</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-gridwxcomp-plot-year-subtitle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Print subtitle with years used for station-bar plots</p>
 </dd></dl>
 
 <dl class="option">
@@ -564,9 +622,9 @@ frequency is &quot;daily&quot;.</p>
 </div>
 </div>
 <div class="section" id="python-functions-classes-and-modules">
-<h2><a class="toc-backref" href="#id18">Python functions, classes, and modules</a><a class="headerlink" href="#python-functions-classes-and-modules" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id19">Python functions, classes, and modules</a><a class="headerlink" href="#python-functions-classes-and-modules" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="prep-input">
-<h3><a class="toc-backref" href="#id19">prep_input</a><a class="headerlink" href="#prep-input" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id20">prep_input</a><a class="headerlink" href="#prep-input" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
 <dt id="gridwxcomp.prep_input">
 <code class="descclassname">gridwxcomp.</code><code class="descname">prep_input</code><span class="sig-paren">(</span><em>station_path</em>, <em>out_path='merged_input.csv'</em>, <em>gridmet_meta_path=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gridwxcomp/prep_input.html#prep_input"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gridwxcomp.prep_input" title="Permalink to this definition">¶</a></dt>
@@ -576,9 +634,9 @@ closest GridMET cell, save CSV with information from both.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>station_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- path to CSV file containing list of climate
-stations that will later be used to calculate monthly
-bias ratios to GridMET reference ET.</p>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>station_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- path to CSV file containing metadata of climate
+stations that will later be used to calculate bias ratios to
+GridMET.</p>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
@@ -630,16 +688,18 @@ created by <a class="reference external" href="https://github.com/WSWUP/pyWeathe
 i.e. microsoft excel files with data stored in a tab named 'corrected'.
 Then station files should be in text (CSV) format with a column
 named 'date' containing datetime strings e.g. '12/01/2018', that are
-able to be parsed by Pandas. The CSV file produced by contains latitude,        longitude, and other fields for both the station and nearest gridMET
-cell centroid. Fields that may refer to both gridMET and station data
-have prefixes to distinguish, the climate station data are prefixed
-with 'STATION' and those refering to gridMET have no prefix.</p>
+able to be parsed by Pandas. The CSV file produced by <a class="reference internal" href="#gridwxcomp.prep_input" title="gridwxcomp.prep_input"><code class="xref py py-func docutils literal notranslate"><span class="pre">prep_input</span></code></a>
+contains latitude, longitude, and other fields for both the station
+and nearest gridMET cell centroid coordinates. Fields that may refer
+to both gridMET and station data have prefixes to distinguish, the
+climate station data are prefixed with 'STATION' and those refering
+to gridMET have no prefix.</p>
 </div>
 </dd></dl>
 
 </div>
 <div class="section" id="download-gridmet-ee">
-<h3><a class="toc-backref" href="#id20">download_gridmet_ee</a><a class="headerlink" href="#download-gridmet-ee" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id21">download_gridmet_ee</a><a class="headerlink" href="#download-gridmet-ee" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
 <dt id="gridwxcomp.download_gridmet_ee">
 <code class="descclassname">gridwxcomp.</code><code class="descname">download_gridmet_ee</code><span class="sig-paren">(</span><em>input_csv</em>, <em>out_folder</em>, <em>year_filter=''</em>, <em>year_update=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gridwxcomp/download_gridmet_ee.html#download_gridmet_ee"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gridwxcomp.download_gridmet_ee" title="Permalink to this definition">¶</a></dt>
@@ -697,7 +757,7 @@ gridMET time series files that are paired with climate stations.</p>
 
 </div>
 <div class="section" id="module-gridwxcomp.calc_bias_ratios">
-<span id="calc-bias-ratios"></span><h3><a class="toc-backref" href="#id21">calc_bias_ratios</a><a class="headerlink" href="#module-gridwxcomp.calc_bias_ratios" title="Permalink to this headline">¶</a></h3>
+<span id="calc-bias-ratios"></span><h3><a class="toc-backref" href="#id22">calc_bias_ratios</a><a class="headerlink" href="#module-gridwxcomp.calc_bias_ratios" title="Permalink to this headline">¶</a></h3>
 <p>Calculate monthly bias ratios of variables from climate station
 to overlapping gridMET cells.</p>
 <p>Input file for this module must first be created by running
@@ -841,7 +901,7 @@ variable names need to be explicitly passed as function arguments.</p>
 
 </div>
 <div class="section" id="module-gridwxcomp.spatial">
-<span id="spatial"></span><h3><a class="toc-backref" href="#id22">spatial</a><a class="headerlink" href="#module-gridwxcomp.spatial" title="Permalink to this headline">¶</a></h3>
+<span id="spatial"></span><h3><a class="toc-backref" href="#id23">spatial</a><a class="headerlink" href="#module-gridwxcomp.spatial" title="Permalink to this headline">¶</a></h3>
 <p>Perform multiple workflows needed to estimate the spatial surface of monthly
 and annual bias ratios for multiple climatic variables. The input file is first
 created by <a class="reference internal" href="#module-gridwxcomp.calc_bias_ratios" title="gridwxcomp.calc_bias_ratios"><code class="xref py py-mod docutils literal notranslate"><span class="pre">gridwxcomp.calc_bias_ratios</span></code></a>.</p>
@@ -1075,7 +1135,7 @@ monthly bias ratios, lat, long, and other data. Created by
 </tr>
 <tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
 <tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first simple">
-<li><strong>layer</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) -- default 'all'. Name of variable in <code class="docutils literal notranslate"><span class="pre">in_path</span></code>
+<li><strong>layer</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) -- default 'all'. Name of variable(s) in <code class="docutils literal notranslate"><span class="pre">in_path</span></code>
 to conduct 2-D interpolation. e.g. 'Annual_mean'.</li>
 <li><strong>out</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- default None. Subdirectory to save GeoTIFF raster(s).</li>
 <li><strong>scale_factor</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- default 0.1. Scaling factor to apply to
@@ -1353,17 +1413,18 @@ gridMET_stats.csv file will be overwritten.</p>
 </dd></dl>
 
 </div>
-<div class="section" id="module-gridwxcomp.daily_comparison">
-<span id="daily-comparison"></span><h3><a class="toc-backref" href="#id23">daily_comparison</a><a class="headerlink" href="#module-gridwxcomp.daily_comparison" title="Permalink to this headline">¶</a></h3>
-<p>Create time series and scatter comparison plots between paired station and
-gridMET climatic variables.</p>
+<div class="section" id="module-gridwxcomp.plot">
+<span id="plot"></span><h3><a class="toc-backref" href="#id24">plot</a><a class="headerlink" href="#module-gridwxcomp.plot" title="Permalink to this headline">¶</a></h3>
+<p>Create interactive HTML comparison plots between paired station and
+gridMET climatic variables or bar comparison plots between interpolated and
+station point data.</p>
 <dl class="function">
-<dt id="gridwxcomp.daily_comparison.daily_comparison">
-<code class="descclassname">gridwxcomp.daily_comparison.</code><code class="descname">daily_comparison</code><span class="sig-paren">(</span><em>input_csv</em>, <em>out_dir=None</em>, <em>year_filter=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gridwxcomp/daily_comparison.html#daily_comparison"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gridwxcomp.daily_comparison.daily_comparison" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compare daily Wx Station Data from
+<dt id="gridwxcomp.plot.daily_comparison">
+<code class="descclassname">gridwxcomp.plot.</code><code class="descname">daily_comparison</code><span class="sig-paren">(</span><em>input_csv</em>, <em>out_dir=None</em>, <em>year_filter=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gridwxcomp/plot.html#daily_comparison"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gridwxcomp.plot.daily_comparison" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compare daily weather station data from
 <a class="reference external" href="https://github.com/WSWUP/pyWeatherQAQC">PyWeatherQAQC</a> with gridMET
 for each month in year specified.</p>
-<p>The <a class="reference internal" href="#gridwxcomp.daily_comparison.daily_comparison" title="gridwxcomp.daily_comparison.daily_comparison"><code class="xref py py-func docutils literal notranslate"><span class="pre">daily_comparison</span></code></a> function produces HTML files with time series
+<p>The <a class="reference internal" href="#gridwxcomp.plot.daily_comparison" title="gridwxcomp.plot.daily_comparison"><code class="xref py py-func docutils literal notranslate"><span class="pre">daily_comparison</span></code></a> function produces HTML files with time series
 and scatter plots of station versus gridMET climate variables. It uses the
 <a class="reference external" href="https://bokeh.pydata.org/en/latest/">bokeh</a> module to create interactive
 plots, e.g. they can be zoomed in/out and panned. Separate plot files are
@@ -1379,9 +1440,10 @@ gridMET metadata. This file is created by running
 </tr>
 <tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
 <tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first simple">
-<li><strong>out_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><em>None</em></a>) -- default None. Directory to save comparison plots,
-if None save to &quot;daily_comp_plots&quot; in currect directory.</li>
-<li><strong>year_filter</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) -- default ''. Single year YYYY or range YYYY-YYYY</li>
+<li><strong>out_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><em>None</em></a>) -- default None. Directory to save comparison
+plots, if None save to &quot;daily_comp_plots&quot; in currect directory.</li>
+<li><strong>year_filter</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><em>None</em></a>) -- default None. Single year YYYY or range
+YYYY-YYYY</li>
 </ul>
 </td>
 </tr>
@@ -1391,17 +1453,18 @@ if None save to &quot;daily_comp_plots&quot; in currect directory.</li>
 </tbody>
 </table>
 <p class="rubric">Example</p>
-<p>The <a class="reference internal" href="#gridwxcomp.daily_comparison.daily_comparison" title="gridwxcomp.daily_comparison.daily_comparison"><code class="xref py py-func docutils literal notranslate"><span class="pre">daily_comparison</span></code></a> function will generate HTML files with
+<p>The <a class="reference internal" href="#gridwxcomp.plot.daily_comparison" title="gridwxcomp.plot.daily_comparison"><code class="xref py py-func docutils literal notranslate"><span class="pre">daily_comparison</span></code></a> function will generate HTML files with
 bokeh plots for paired climate variables, e.g. etr_mm, eto_mm,
 u2_ms, tmin_c, tmax_c, srad_wm2, ea_kpa, and Ko (dew point depression).
 Monthly plots are created for a single year.</p>
-<p>From the command line, use the &quot;plot&quot; command with the <code class="docutils literal notranslate"><span class="pre">[-f,</span> <span class="pre">--freq]</span></code>
-option left as default (&quot;daily&quot;),</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>$ gridwxcomp plot merged_input.csv -o comp_plots_2016 -y <span class="m">2016</span>
+<p>From the command line, use the &quot;plot&quot; command with the
+<code class="docutils literal notranslate"><span class="pre">[-t,</span> <span class="pre">--plot-type]</span></code> option set to station-grid-comp and
+the <code class="docutils literal notranslate"><span class="pre">[-f,</span> <span class="pre">--freq]</span></code> option left as default (&quot;daily&quot;),</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>$ gridwxcomp plot merged_input.csv -t station-grid-comp -o comp_plots_2016 -y <span class="m">2016</span>
 </pre></div>
 </div>
 <p>or within Python,</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gridwxcomp</span> <span class="k">import</span> <span class="n">daily_comparison</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gridwxcomp.plot</span> <span class="k">import</span> <span class="n">daily_comparison</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">daily_comparison</span><span class="p">(</span><span class="s1">&#39;merged_input.csv&#39;</span><span class="p">,</span> <span class="s1">&#39;comp_plots_2016&#39;</span><span class="p">,</span> <span class="s1">&#39;2016&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -1419,17 +1482,12 @@ month will not be created.</p>
 </div>
 </dd></dl>
 
-</div>
-<div class="section" id="module-gridwxcomp.monthly_comparison">
-<span id="monthly-comparison"></span><h3><a class="toc-backref" href="#id24">monthly_comparison</a><a class="headerlink" href="#module-gridwxcomp.monthly_comparison" title="Permalink to this headline">¶</a></h3>
-<p>Create time series and scatter comparison plots between paired station and
-gridMET climatic variables.</p>
 <dl class="function">
-<dt id="gridwxcomp.monthly_comparison.monthly_comparison">
-<code class="descclassname">gridwxcomp.monthly_comparison.</code><code class="descname">monthly_comparison</code><span class="sig-paren">(</span><em>input_csv</em>, <em>out_dir=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gridwxcomp/monthly_comparison.html#monthly_comparison"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gridwxcomp.monthly_comparison.monthly_comparison" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compare monthly average Wx Station Data from
+<dt id="gridwxcomp.plot.monthly_comparison">
+<code class="descclassname">gridwxcomp.plot.</code><code class="descname">monthly_comparison</code><span class="sig-paren">(</span><em>input_csv</em>, <em>out_dir=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gridwxcomp/plot.html#monthly_comparison"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gridwxcomp.plot.monthly_comparison" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compare monthly average weather station data from
 <a class="reference external" href="https://github.com/WSWUP/pyWeatherQAQC">PyWeatherQAQC</a> with gridMET.</p>
-<p>The <a class="reference internal" href="#gridwxcomp.monthly_comparison.monthly_comparison" title="gridwxcomp.monthly_comparison.monthly_comparison"><code class="xref py py-func docutils literal notranslate"><span class="pre">monthly_comparison</span></code></a> function produces HTML files with time series
+<p>The <a class="reference internal" href="#gridwxcomp.plot.monthly_comparison" title="gridwxcomp.plot.monthly_comparison"><code class="xref py py-func docutils literal notranslate"><span class="pre">monthly_comparison</span></code></a> function produces HTML files with time series
 and scatter plots of station versus gridMET climate variables of monthly
 mean data. It uses the <a class="reference external" href="https://bokeh.pydata.org/en/latest/">bokeh</a> module
 to create interactive plots, e.g. they can be zoomed in/out and panned.</p>
@@ -1450,17 +1508,18 @@ created by running <a class="reference internal" href="#gridwxcomp.prep_input" t
 </tbody>
 </table>
 <p class="rubric">Example</p>
-<p>The <a class="reference internal" href="#gridwxcomp.monthly_comparison.monthly_comparison" title="gridwxcomp.monthly_comparison.monthly_comparison"><code class="xref py py-func docutils literal notranslate"><span class="pre">monthly_comparison</span></code></a> function will generate HTML files with
+<p>The <a class="reference internal" href="#gridwxcomp.plot.monthly_comparison" title="gridwxcomp.plot.monthly_comparison"><code class="xref py py-func docutils literal notranslate"><span class="pre">monthly_comparison</span></code></a> function will generate HTML files with
 bokeh plots for paired climate variable, e.g. etr_mm,
 eto_mm, u2_ms, tmin_c, tmax_c, srad_wm2, ea_kpa, and Ko (dew point
 depression).</p>
-<p>From the command line, use the &quot;plot&quot; command with the <code class="docutils literal notranslate"><span class="pre">[-f,</span> <span class="pre">--freq]</span></code>
-option set to &quot;monthly&quot;,</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>$ gridwxcomp plot merged_input.csv -freq monthly -o monthly_plots
+<p>From the command line, use the &quot;plot&quot; command with the
+<code class="docutils literal notranslate"><span class="pre">[-t,</span> <span class="pre">--plot-type]</span></code> option set to station-grid-comp and
+the <code class="docutils literal notranslate"><span class="pre">[-f,</span> <span class="pre">--freq]</span></code> option set to &quot;monthly&quot;,</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>$ gridwxcomp plot merged_input.csv -t station-grid-comp -freq monthly -o monthly_plots
 </pre></div>
 </div>
 <p>or within Python,</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gridwxcomp</span> <span class="k">import</span> <span class="n">monthly_comparison</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gridwxcomp.plot</span> <span class="k">import</span> <span class="n">monthly_comparison</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">monthly_comparison</span><span class="p">(</span><span class="s1">&#39;merged_input.csv&#39;</span><span class="p">,</span> <span class="s1">&#39;monthly_plots&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -1474,6 +1533,77 @@ be saved to a directory named &quot;monthly_comp_plots&quot;.</p>
 <p class="last">If there are less than 2 months of data the plot for that
 station will not be created.</p>
 </div>
+</dd></dl>
+
+<dl class="function">
+<dt id="gridwxcomp.plot.station_bar_plot">
+<code class="descclassname">gridwxcomp.plot.</code><code class="descname">station_bar_plot</code><span class="sig-paren">(</span><em>summary_csv</em>, <em>layer</em>, <em>out_dir=None</em>, <em>x_label=None</em>, <em>y_label=None</em>, <em>title=None</em>, <em>subtitle=None</em>, <em>year_subtitle=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gridwxcomp/plot.html#station_bar_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gridwxcomp.plot.station_bar_plot" title="Permalink to this definition">¶</a></dt>
+<dd><p>Produce an interactive bar chart comparing multiple climate stations to each
+other for a particular variable, e.g. bias ratios or interpolated residuals.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>summary_csv</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- path to summary CSV produced by either <a class="reference internal" href="#module-gridwxcomp.calc_bias_ratios" title="gridwxcomp.calc_bias_ratios"><code class="xref py py-func docutils literal notranslate"><span class="pre">gridwxcomp.calc_bias_ratios</span></code></a>
+or by <code class="xref py py-func docutils literal notranslate"><span class="pre">gridwxcomp.interpolate</span></code>. Should contain <code class="docutils literal notranslate"><span class="pre">layer</span></code>
+data for plot.</li>
+<li><strong>layer</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- name of variable to plot.</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
+<tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first last simple">
+<li><strong>out_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><em>None</em></a>) -- default None. Output directory path, default is
+'station_bar_plots' in parent directory of <code class="docutils literal notranslate"><span class="pre">summary_csv</span></code>.</li>
+<li><strong>x_label</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><em>None</em></a>) -- default None. Label for x-axis.</li>
+<li><strong>y_label</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><em>None</em></a>) -- default None. Label for y-axis, defaults to
+<code class="docutils literal notranslate"><span class="pre">layer</span></code>.</li>
+<li><strong>title</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><em>None</em></a>) -- default None. Title of plot.</li>
+<li><strong>subtitle</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a><em>, or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><em>None</em></a>) -- default None. Additional subtitle(s)
+for plot.</li>
+<li><strong>year_subtitle</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) -- default True. If true print subtitle on plot with
+the max year range used for station data, e.g. 'years: 1995-2005'</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Example</p>
+<p>Let's say we want to compare the mean growing seasion bias ratios of
+reference evapotranspiration (ETr) for the selection of stations we
+used to calculate bias ratios. The summary CSV file containing the
+ratios should be first created using <a class="reference internal" href="#module-gridwxcomp.calc_bias_ratios" title="gridwxcomp.calc_bias_ratios"><code class="xref py py-func docutils literal notranslate"><span class="pre">gridwxcomp.calc_bias_ratios</span></code></a>.</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gridwxcomp.plot</span> <span class="k">import</span> <span class="n">station_bar_plot</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="c1"># path to summary CSV with station data</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">in_file</span> <span class="o">=</span> <span class="s1">&#39;monthly_ratios/etr_mm_summary_all_yrs.csv&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">layer</span> <span class="o">=</span> <span class="s1">&#39;growseason_mean&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">station_bar_plot</span><span class="p">(</span><span class="n">in_file</span><span class="p">,</span> <span class="n">layer</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>The resulting file will be saved using the layer name as a file name:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s1">&#39;monthly_ratios/station_bar_plots/growseason_mean.html&#39;</span>
+</pre></div>
+</div>
+<p>The plot file will contain the mean growing season bias ratios
+of ETr for each station, sorted from smallest to largest values.</p>
+<p>This function may also be used for any numerical data in the summary CSV
+files that are created by <code class="xref py py-func docutils literal notranslate"><span class="pre">gridwxcomp.interpolate</span></code> in addition to
+those created by <a class="reference internal" href="#module-gridwxcomp.calc_bias_ratios" title="gridwxcomp.calc_bias_ratios"><code class="xref py py-func docutils literal notranslate"><span class="pre">gridwxcomp.calc_bias_ratios</span></code></a>. The main
+requirement is that <code class="docutils literal notranslate"><span class="pre">summary_csv</span></code> must contain the column 'STATION_ID'
+and the <code class="docutils literal notranslate"><span class="pre">layer</span></code> keyword argument.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
+<li><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#FileNotFoundError" title="(in Python v3.7)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">FileNotFoundError</span></code></a> -- if <code class="docutils literal notranslate"><span class="pre">summary_csv</span></code> is not found.</li>
+<li><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#KeyError" title="(in Python v3.7)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">KeyError</span></code></a> -- if <code class="docutils literal notranslate"><span class="pre">layer</span></code> does not exist as a column name in <code class="docutils literal notranslate"><span class="pre">summary_csv</span></code>.</li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
 </dd></dl>
 
 </div>

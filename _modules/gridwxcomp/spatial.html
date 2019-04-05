@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>gridwxcomp.spatial &mdash; gridwxcomp 0.0.57 documentation</title>
+  <title>gridwxcomp.spatial &mdash; gridwxcomp 0.0.65 documentation</title>
   
 
   
@@ -64,7 +64,7 @@
             
             
               <div class="version">
-                0.0.57
+                0.0.65
               </div>
             
           
@@ -110,8 +110,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../api.html#download-gridmet-ee">download_gridmet_ee</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api.html#module-gridwxcomp.calc_bias_ratios">calc_bias_ratios</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api.html#module-gridwxcomp.spatial">spatial</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../api.html#module-gridwxcomp.daily_comparison">daily_comparison</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../api.html#module-gridwxcomp.monthly_comparison">monthly_comparison</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api.html#module-gridwxcomp.plot">plot</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api.html#interpgdal">InterpGdal</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api.html#module-gridwxcomp.util">util</a></li>
 </ul>
@@ -119,6 +118,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Change Log</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-0-6">Version 0.0.6</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-0-5">Version 0.0.5</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-0-4">Version 0.0.4</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-0-3">Version 0.0.3</a></li>
@@ -251,6 +251,8 @@
 <span class="sd">            ``input_file_path`` under a subdirectory named &quot;spatial&quot;.</span>
 
 <span class="sd">    Keyword Arguments:</span>
+<span class="sd">        layer (str or list): default &#39;all&#39;. Name of variable(s) in ``in_path``</span>
+<span class="sd">            to conduct 2-D interpolation. e.g. &#39;Annual_mean&#39;.</span>
 <span class="sd">        out (str): default None. Subdirectory to save GeoTIFF rasters.</span>
 <span class="sd">        gridmet_meta_path (str): default None. Path to metadata CSV file </span>
 <span class="sd">            that contains all gridMET cell info. By default it is looked</span>
@@ -1030,7 +1032,7 @@
 <span class="sd">            :func:`gridwxcomp.calc_bias_ratios`.</span>
 
 <span class="sd">    Keyword Arguments:</span>
-<span class="sd">        layer (str or list): default &#39;all&#39;. Name of variable in ``in_path`` </span>
+<span class="sd">        layer (str or list): default &#39;all&#39;. Name of variable(s) in ``in_path``</span>
 <span class="sd">            to conduct 2-D interpolation. e.g. &#39;Annual_mean&#39;.</span>
 <span class="sd">        out (str): default None. Subdirectory to save GeoTIFF raster(s).</span>
 <span class="sd">        scale_factor (float, int): default 0.1. Scaling factor to apply to </span>
@@ -1185,7 +1187,10 @@
 <span class="sd">        </span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># avoid circular import for InterpGdal for gdal interpolation methods</span>
-    <span class="kn">from</span> <span class="nn">gridwxcomp.interpgdal</span> <span class="k">import</span> <span class="n">InterpGdal</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="kn">from</span> <span class="nn">gridwxcomp.interpgdal</span> <span class="k">import</span> <span class="n">InterpGdal</span>
+    <span class="k">except</span><span class="p">:</span> <span class="c1"># for use as script, i.e. $ python spatial ...</span>
+        <span class="kn">from</span> <span class="nn">interpgdal</span> <span class="k">import</span> <span class="n">InterpGdal</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">in_path</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="s1">&#39;Input summary CSV file given&#39;</span><span class="o">+</span>\
@@ -1656,7 +1661,7 @@
         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Input summary_comp CSV file of climate/gridMET bias ratios &#39;</span><span class="o">+</span>\
              <span class="s1">&#39;created by first running calc_bias_ratios.py&#39;</span><span class="p">)</span>
     <span class="n">optional</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s1">&#39;-l&#39;</span><span class="p">,</span> <span class="s1">&#39;--layer&#39;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">nargs</span><span class="o">=</span><span class="s1">&#39;*&#39;</span><span class="p">,</span>
+        <span class="s1">&#39;-l&#39;</span><span class="p">,</span> <span class="s1">&#39;--layer&#39;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Layer(s) to perform spatial interpolation in input summary &#39;</span><span class="o">+</span>\
              <span class="s1">&#39;CSV, if multiple use comma separation e.g. Jan_mean,Aug_mean&#39;</span><span class="p">)</span>
     <span class="n">optional</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
@@ -1685,7 +1690,7 @@
         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Parameter string e.g. &quot;:power=2:smoothing=.1:nodata=-999&quot; for&#39;</span><span class="o">+</span>\
             <span class="s1">&#39; gdal_grid spatial interpolation methods&#39;</span><span class="p">)</span>
     <span class="n">optional</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s1">&#39;z&#39;</span><span class="p">,</span> <span class="s1">&#39;--zonal-stats&#39;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> 
+        <span class="s1">&#39;-z&#39;</span><span class="p">,</span> <span class="s1">&#39;--zonal-stats&#39;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> 
         <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_false&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Flag to NOT extract zonal means of&#39;</span><span class="o">+</span>\
             <span class="s1">&#39; interpolated rasters to gridMET cells.&#39;</span><span class="p">)</span>
     <span class="n">optional</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
@@ -1717,7 +1722,7 @@
 
     <span class="n">main</span><span class="p">(</span>
         <span class="n">input_file_path</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">input</span><span class="p">,</span>
-        <span class="n">layer</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">layer</span><span class="p">,</span>
+        <span class="n">layer</span><span class="o">=</span><span class="n">layer</span><span class="p">,</span>
         <span class="n">out</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">out_dir</span><span class="p">,</span>
         <span class="n">buffer</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">buffer</span><span class="p">,</span>
         <span class="n">scale_factor</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">scale</span><span class="p">,</span>

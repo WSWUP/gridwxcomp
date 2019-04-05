@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Change Log &mdash; gridwxcomp 0.0.57 documentation</title>
+  <title>Change Log &mdash; gridwxcomp 0.0.65 documentation</title>
   
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0.0.57
+                0.0.65
               </div>
             
           
@@ -111,8 +111,7 @@
 <li class="toctree-l3"><a class="reference internal" href="api.html#download-gridmet-ee">download_gridmet_ee</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api.html#module-gridwxcomp.calc_bias_ratios">calc_bias_ratios</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api.html#module-gridwxcomp.spatial">spatial</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api.html#module-gridwxcomp.daily_comparison">daily_comparison</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api.html#module-gridwxcomp.monthly_comparison">monthly_comparison</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#module-gridwxcomp.plot">plot</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api.html#interpgdal">InterpGdal</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api.html#module-gridwxcomp.util">util</a></li>
 </ul>
@@ -120,6 +119,7 @@
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Change Log</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-0-6">Version 0.0.6</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#version-0-0-5">Version 0.0.5</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#version-0-0-4">Version 0.0.4</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#version-0-0-3">Version 0.0.3</a></li>
@@ -194,9 +194,20 @@
             
   <div class="section" id="change-log">
 <h1>Change Log<a class="headerlink" href="#change-log" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="version-0-0-6">
+<h2>Version 0.0.6<a class="headerlink" href="#version-0-0-6" title="Permalink to this headline">¶</a></h2>
+<p>Update all <code class="docutils literal notranslate"><span class="pre">gridwxcomp</span></code> modules (with exception of <code class="docutils literal notranslate"><span class="pre">interpgdal.py</span></code>) to ensure that they can be used as standalone scripts without installing <code class="docutils literal notranslate"><span class="pre">gridwxcomp</span></code>. For example, the spatial interpolation routines in <code class="docutils literal notranslate"><span class="pre">spatial.py</span></code> can be used from the command line</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>$ python spatial.py &lt;options&gt;
+</pre></div>
+</div>
+<p>The only requirement is that all the files within <code class="docutils literal notranslate"><span class="pre">gridwxcomp/gridwxcomp</span></code> are within the same directory.</p>
+<p>Add <code class="docutils literal notranslate"><span class="pre">gridwxcomp.plot</span></code> module to consolidate current and future graphics tools. Current tools include the following functions: <code class="docutils literal notranslate"><span class="pre">gridwxcomp.plot.daily_comparison</span></code>, <code class="docutils literal notranslate"><span class="pre">gridwxcomp.plot.monthly_comparison</span></code>, and the newly added <code class="docutils literal notranslate"><span class="pre">gridwxcomp.plot.station_bar_plot</span></code>. Changed the <code class="docutils literal notranslate"><span class="pre">gridwxcomp</span></code> command line interface plot command to handle the three options using the new option <code class="docutils literal notranslate"><span class="pre">[-t,</span> <span class="pre">--plot-type]</span></code>.</p>
+<p>Add year range option for <code class="docutils literal notranslate"><span class="pre">gridwxcomp.plot.daily_comparison</span></code>, useful for adding additional data to scatter plot comparisons using multiple years data for a particular month.</p>
+<p>Changed docs hosting to <a class="reference external" href="https://wswup.github.io/gridwxcomp/">GitHub</a></p>
+</div>
 <div class="section" id="version-0-0-5">
 <h2>Version 0.0.5<a class="headerlink" href="#version-0-0-5" title="Permalink to this headline">¶</a></h2>
-<p>Full functionality of climate station data that was <strong>NOT</strong> created by <a class="reference external" href="https://github.com/WSWUP/pyWeatherQAQC">PyWeatherQaQc</a> after <code class="docutils literal notranslate"><span class="pre">gridwxcomp</span> <span class="pre">&gt;=</span> <span class="pre">0.0.55</span></code>. Climate station time series files should be in CSV format and need a &quot;date&quot; column with date strings that can be parsed as datetime objects, e.g. '12/01/2018' or '12-01-2018'.</p>
+<p>Functionality for climate station data that was <strong>NOT</strong> created by <a class="reference external" href="https://github.com/WSWUP/pyWeatherQAQC">PyWeatherQaQc</a> after <code class="docutils literal notranslate"><span class="pre">gridwxcomp</span> <span class="pre">&gt;=</span> <span class="pre">0.0.55</span></code>. Climate station time series files should be in CSV format and need a &quot;date&quot; column with date strings that can be parsed as datetime objects, e.g. '12/01/2018' or '12-01-2018'. <code class="docutils literal notranslate"><span class="pre">daily_comparison.py</span></code> and <code class="docutils literal notranslate"><span class="pre">monthly_comparison.py</span></code> plotting modules however still require climate station input data in the format of <code class="docutils literal notranslate"><span class="pre">PyWeatherQaQc</span></code>.</p>
 <p>Add monthly plotting to command line interface, change command line command &quot;daily-comparison&quot; to
 &quot;plot&quot; with &quot;daily&quot; and &quot;monthly&quot; options.</p>
 <p>Add documentation page at <a class="reference external" href="http://gridwxcomp.readthedocs.io/">ReadTheDocs</a></p>

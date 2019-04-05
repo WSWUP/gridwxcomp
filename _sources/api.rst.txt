@@ -59,19 +59,10 @@ spatial
     :show-inheritance:
 
 
-daily\_comparison
+plot
 -----------------------------------
 
-.. automodule:: gridwxcomp.daily_comparison
-    :members:
-    :exclude-members: arg_parse
-    :undoc-members:
-    :show-inheritance:
-
-monthly\_comparison
--------------------------------------
-
-.. automodule:: gridwxcomp.monthly_comparison
+.. automodule:: gridwxcomp.plot
     :members:
     :exclude-members: arg_parse
     :undoc-members:

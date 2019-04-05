@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>gridwxcomp.prep_input &mdash; gridwxcomp 0.0.57 documentation</title>
+  <title>gridwxcomp.prep_input &mdash; gridwxcomp 0.0.65 documentation</title>
   
 
   
@@ -64,7 +64,7 @@
             
             
               <div class="version">
-                0.0.57
+                0.0.65
               </div>
             
           
@@ -110,8 +110,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../api.html#download-gridmet-ee">download_gridmet_ee</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api.html#module-gridwxcomp.calc_bias_ratios">calc_bias_ratios</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api.html#module-gridwxcomp.spatial">spatial</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../api.html#module-gridwxcomp.daily_comparison">daily_comparison</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../api.html#module-gridwxcomp.monthly_comparison">monthly_comparison</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api.html#module-gridwxcomp.plot">plot</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api.html#interpgdal">InterpGdal</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api.html#module-gridwxcomp.util">util</a></li>
 </ul>
@@ -119,6 +118,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Change Log</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-0-6">Version 0.0.6</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-0-5">Version 0.0.5</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-0-4">Version 0.0.4</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-0-3">Version 0.0.3</a></li>
@@ -209,8 +209,6 @@
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>                                                             
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>        
 <span class="kn">from</span> <span class="nn">scipy</span> <span class="k">import</span> <span class="n">spatial</span>
-
-
 
 <span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">station_file</span><span class="p">,</span> <span class="n">out_path</span><span class="p">,</span> <span class="n">gridmet_meta_file</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -373,9 +371,9 @@
 <span class="sd">    closest GridMET cell, save CSV with information from both.</span>
 
 <span class="sd">    Arguments:</span>
-<span class="sd">        station_path (str): path to CSV file containing list of climate</span>
-<span class="sd">            stations that will later be used to calculate monthly</span>
-<span class="sd">            bias ratios to GridMET reference ET.</span>
+<span class="sd">        station_path (str): path to CSV file containing metadata of climate</span>
+<span class="sd">            stations that will later be used to calculate bias ratios to </span>
+<span class="sd">            GridMET.</span>
 
 <span class="sd">    Keyword Arguments:</span>
 <span class="sd">        out_path (str): path to save output CSV, default is to save as </span>
@@ -413,10 +411,12 @@
 <span class="sd">        i.e. microsoft excel files with data stored in a tab named &#39;corrected&#39;.</span>
 <span class="sd">        Then station files should be in text (CSV) format with a column</span>
 <span class="sd">        named &#39;date&#39; containing datetime strings e.g. &#39;12/01/2018&#39;, that are </span>
-<span class="sd">        able to be parsed by Pandas. The CSV file produced by contains latitude,        longitude, and other fields for both the station and nearest gridMET </span>
-<span class="sd">        cell centroid. Fields that may refer to both gridMET and station data </span>
-<span class="sd">        have prefixes to distinguish, the climate station data are prefixed </span>
-<span class="sd">        with &#39;STATION&#39; and those refering to gridMET have no prefix. </span>
+<span class="sd">        able to be parsed by Pandas. The CSV file produced by :func:`prep_input`</span>
+<span class="sd">        contains latitude, longitude, and other fields for both the station </span>
+<span class="sd">        and nearest gridMET cell centroid coordinates. Fields that may refer </span>
+<span class="sd">        to both gridMET and station data have prefixes to distinguish, the </span>
+<span class="sd">        climate station data are prefixed with &#39;STATION&#39; and those refering </span>
+<span class="sd">        to gridMET have no prefix. </span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># look for pacakged gridmet_cell_data.csv if path not given</span>
@@ -511,13 +511,13 @@
     <span class="n">required</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s1">&#39;required arguments&#39;</span><span class="p">)</span>
     <span class="n">required</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;-i&#39;</span><span class="p">,</span> <span class="s1">&#39;--input&#39;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;PATH&#39;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Input CSV file of climate stations&#39;</span><span class="p">)</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Climate station metadata CSV file&#39;</span><span class="p">)</span>
     <span class="n">optional</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;-g&#39;</span><span class="p">,</span> <span class="s1">&#39;--gridmet-meta&#39;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;PATH&#39;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
         <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;GridMET metadata CSV file with cell data, packaged with &#39;</span><span class="o">+</span>\
              <span class="s1">&#39;gridwxcomp and automatically found if pip was used to install &#39;</span><span class="o">+</span>\
-             <span class="s1">&#39;if not given it needs to be located in the currect directory&#39;</span><span class="p">)</span>
+             <span class="s1">&#39;if not given it needs to be located in the current directory&#39;</span><span class="p">)</span>
     <span class="n">optional</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;-o&#39;</span><span class="p">,</span> <span class="s1">&#39;--out&#39;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;PATH&#39;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> 
         <span class="n">default</span><span class="o">=</span><span class="s1">&#39;merged_input.csv&#39;</span><span class="p">,</span>

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>gridwxcomp.util &mdash; gridwxcomp 0.0.57 documentation</title>
+  <title>gridwxcomp.util &mdash; gridwxcomp 0.0.65 documentation</title>
   
 
   
@@ -64,7 +64,7 @@
             
             
               <div class="version">
-                0.0.57
+                0.0.65
               </div>
             
           
@@ -110,8 +110,7 @@
 <li class="toctree-l3"><a class="reference internal" href="../../api.html#download-gridmet-ee">download_gridmet_ee</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api.html#module-gridwxcomp.calc_bias_ratios">calc_bias_ratios</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api.html#module-gridwxcomp.spatial">spatial</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../api.html#module-gridwxcomp.daily_comparison">daily_comparison</a></li>
-<li class="toctree-l3"><a class="reference internal" href="../../api.html#module-gridwxcomp.monthly_comparison">monthly_comparison</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api.html#module-gridwxcomp.plot">plot</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api.html#interpgdal">InterpGdal</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api.html#module-gridwxcomp.util">util</a></li>
 </ul>
@@ -119,6 +118,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Change Log</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-0-6">Version 0.0.6</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-0-5">Version 0.0.5</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-0-4">Version 0.0.4</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-0-3">Version 0.0.3</a></li>
@@ -261,7 +261,7 @@
             <span class="k">else</span><span class="p">:</span>
                 <span class="n">year_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">years</span><span class="p">)</span>
                 <span class="k">if</span> <span class="ow">not</span> <span class="n">years</span> <span class="ow">in</span> <span class="n">dt_df</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>
-                    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;WARNING: station:&#39;</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="s1">&#39;is missing data&#39;</span><span class="p">,</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;WARNING:&#39;</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="s1">&#39;is missing data&#39;</span><span class="p">,</span>
                         <span class="s1">&#39;for year:&#39;</span><span class="p">,</span> <span class="n">years</span><span class="p">)</span>
                 <span class="k">else</span><span class="p">:</span>
                     

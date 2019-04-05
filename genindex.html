@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Index &mdash; gridwxcomp 0.0.57 documentation</title>
+  <title>Index &mdash; gridwxcomp 0.0.65 documentation</title>
   
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0.0.57
+                0.0.65
               </div>
             
           
@@ -111,8 +111,7 @@
 <li class="toctree-l3"><a class="reference internal" href="api.html#download-gridmet-ee">download_gridmet_ee</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api.html#module-gridwxcomp.calc_bias_ratios">calc_bias_ratios</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api.html#module-gridwxcomp.spatial">spatial</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api.html#module-gridwxcomp.daily_comparison">daily_comparison</a></li>
-<li class="toctree-l3"><a class="reference internal" href="api.html#module-gridwxcomp.monthly_comparison">monthly_comparison</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#module-gridwxcomp.plot">plot</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api.html#interpgdal">InterpGdal</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api.html#module-gridwxcomp.util">util</a></li>
 </ul>
@@ -120,6 +119,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="changelog.html">Change Log</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#version-0-0-6">Version 0.0.6</a></li>
 <li class="toctree-l2"><a class="reference internal" href="changelog.html#version-0-0-5">Version 0.0.5</a></li>
 <li class="toctree-l2"><a class="reference internal" href="changelog.html#version-0-0-4">Version 0.0.4</a></li>
 <li class="toctree-l2"><a class="reference internal" href="changelog.html#version-0-0-3">Version 0.0.3</a></li>
@@ -243,6 +243,41 @@
 </li>
       </ul></li>
       <li>
+    --subtitle &lt;subtitle&gt;
+
+      <ul>
+        <li><a href="api.html#cmdoption-gridwxcomp-plot-subtitle">gridwxcomp-plot command line option</a>
+</li>
+      </ul></li>
+      <li>
+    --title &lt;title&gt;
+
+      <ul>
+        <li><a href="api.html#cmdoption-gridwxcomp-plot-title">gridwxcomp-plot command line option</a>
+</li>
+      </ul></li>
+      <li>
+    --x-label &lt;x_label&gt;
+
+      <ul>
+        <li><a href="api.html#cmdoption-gridwxcomp-plot-x-label">gridwxcomp-plot command line option</a>
+</li>
+      </ul></li>
+      <li>
+    --y-label &lt;y_label&gt;
+
+      <ul>
+        <li><a href="api.html#cmdoption-gridwxcomp-plot-y-label">gridwxcomp-plot command line option</a>
+</li>
+      </ul></li>
+      <li>
+    --year-subtitle
+
+      <ul>
+        <li><a href="api.html#cmdoption-gridwxcomp-plot-year-subtitle">gridwxcomp-plot command line option</a>
+</li>
+      </ul></li>
+      <li>
     -b, --buffer &lt;buffer&gt;
 
       <ul>
@@ -263,6 +298,8 @@
         <li><a href="api.html#cmdoption-gridwxcomp-spatial-f">gridwxcomp-spatial command line option</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     -g, --gridmet-meta &lt;gridmet_meta&gt;
 
@@ -272,8 +309,6 @@
         <li><a href="api.html#cmdoption-gridwxcomp-spatial-g">gridwxcomp-spatial command line option</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     -l, --layer &lt;layer&gt;
 
@@ -319,10 +354,24 @@
 </li>
       </ul></li>
       <li>
+    -t, --plot-type &lt;plot_type&gt;
+
+      <ul>
+        <li><a href="api.html#cmdoption-gridwxcomp-plot-t">gridwxcomp-plot command line option</a>
+</li>
+      </ul></li>
+      <li>
     -u, --update-years &lt;update_years&gt;
 
       <ul>
         <li><a href="api.html#cmdoption-gridwxcomp-download-gridmet-ee-u">gridwxcomp-download-gridmet-ee command line option</a>
+</li>
+      </ul></li>
+      <li>
+    -v, --variable &lt;variable&gt;
+
+      <ul>
+        <li><a href="api.html#cmdoption-gridwxcomp-plot-v">gridwxcomp-plot command line option</a>
 </li>
       </ul></li>
       <li>
@@ -370,7 +419,7 @@
 <h2 id="D">D</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="api.html#gridwxcomp.daily_comparison.daily_comparison">daily_comparison() (in module gridwxcomp.daily_comparison)</a>
+      <li><a href="api.html#gridwxcomp.plot.daily_comparison">daily_comparison() (in module gridwxcomp.plot)</a>
 </li>
       <li><a href="api.html#gridwxcomp.InterpGdal.default_layers">default_layers (gridwxcomp.InterpGdal attribute)</a>, <a href="api.html#gridwxcomp.InterpGdal.default_layers">[1]</a>
 </li>
@@ -417,15 +466,31 @@
       <ul>
         <li><a href="api.html#cmdoption-gridwxcomp-plot-quiet">--quiet</a>
 </li>
+        <li><a href="api.html#cmdoption-gridwxcomp-plot-subtitle">--subtitle &lt;subtitle&gt;</a>
+</li>
+        <li><a href="api.html#cmdoption-gridwxcomp-plot-title">--title &lt;title&gt;</a>
+</li>
+        <li><a href="api.html#cmdoption-gridwxcomp-plot-x-label">--x-label &lt;x_label&gt;</a>
+</li>
+        <li><a href="api.html#cmdoption-gridwxcomp-plot-y-label">--y-label &lt;y_label&gt;</a>
+</li>
+        <li><a href="api.html#cmdoption-gridwxcomp-plot-year-subtitle">--year-subtitle</a>
+</li>
         <li><a href="api.html#cmdoption-gridwxcomp-plot-f">-f, --freq &lt;freq&gt;</a>
 </li>
         <li><a href="api.html#cmdoption-gridwxcomp-plot-o">-o, --out-dir &lt;out_dir&gt;</a>
+</li>
+        <li><a href="api.html#cmdoption-gridwxcomp-plot-t">-t, --plot-type &lt;plot_type&gt;</a>
+</li>
+        <li><a href="api.html#cmdoption-gridwxcomp-plot-v">-v, --variable &lt;variable&gt;</a>
 </li>
         <li><a href="api.html#cmdoption-gridwxcomp-plot-y">-y, --year &lt;year&gt;</a>
 </li>
         <li><a href="api.html#cmdoption-gridwxcomp-plot-arg-input-csv">INPUT_CSV</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     gridwxcomp-prep-input command line option
 
@@ -439,8 +504,6 @@
         <li><a href="api.html#cmdoption-gridwxcomp-prep-input-arg-station-meta-path">STATION_META_PATH</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     gridwxcomp-spatial command line option
 
@@ -474,9 +537,7 @@
       </ul></li>
       <li><a href="api.html#module-gridwxcomp.calc_bias_ratios">gridwxcomp.calc_bias_ratios (module)</a>
 </li>
-      <li><a href="api.html#module-gridwxcomp.daily_comparison">gridwxcomp.daily_comparison (module)</a>
-</li>
-      <li><a href="api.html#module-gridwxcomp.monthly_comparison">gridwxcomp.monthly_comparison (module)</a>
+      <li><a href="api.html#module-gridwxcomp.plot">gridwxcomp.plot (module)</a>
 </li>
       <li><a href="api.html#module-gridwxcomp.spatial">gridwxcomp.spatial (module)</a>
 </li>
@@ -529,7 +590,7 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="api.html#gridwxcomp.spatial.make_points_file">make_points_file() (in module gridwxcomp.spatial)</a>
 </li>
-      <li><a href="api.html#gridwxcomp.monthly_comparison.monthly_comparison">monthly_comparison() (in module gridwxcomp.monthly_comparison)</a>
+      <li><a href="api.html#gridwxcomp.plot.monthly_comparison">monthly_comparison() (in module gridwxcomp.plot)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -551,6 +612,8 @@
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api.html#gridwxcomp.plot.station_bar_plot">station_bar_plot() (in module gridwxcomp.plot)</a>
+</li>
       <li>
     STATION_META_PATH
 
