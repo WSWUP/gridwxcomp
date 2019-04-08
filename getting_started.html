@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Getting Started &mdash; gridwxcomp 0.0.65 documentation</title>
+  <title>Getting Started &mdash; gridwxcomp 0.0.68 documentation</title>
   
 
   
@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                0.0.65
+                0.0.68
               </div>
             
           
@@ -255,7 +255,7 @@ $ pip install -e .
 </div>
 <p>The <code class="docutils literal notranslate"><span class="pre">[-b</span> <span class="pre">5]</span></code> option indicates that we want to expand the rectangular bounding area for interpolation by five gridMET cells (extrapolation in the outer regions).</p>
 <p>GeoTIFF rasters of interpolated ratios will be saved to &quot;monthly_ratios/spatial/etr_mm_invdist_400m/&quot;. Note, the gridMET variable name (etr_mm), the interpolation method (invdist), and the raster resolution (400m) are specified in the output directory. A fishnet grid with gridMET id values and a point shapefile of station ratios should all be created and saved in the &quot;monthly_ratios/spatial/&quot; directory.</p>
-<p>The final output file &quot;monthly_ratios/spatial/etr_mm_invdist_400m/gridMET_stats.csv&quot; contains monthly bias ratios for each gridMET cell in the interpolation region, similar to what is shown below.</p>
+<p>The output file &quot;monthly_ratios/spatial/etr_mm_invdist_400m/gridMET_stats.csv&quot; contains monthly bias ratios for each gridMET cell in the interpolation region, similar to what is shown below.</p>
 <blockquote>
 <div><table border="1" class="docutils">
 <colgroup>
@@ -314,6 +314,7 @@ $ pip install -e .
 </table>
 </div></blockquote>
 <p>Note <code class="docutils literal notranslate"><span class="pre">GRIDMET_ID</span></code> is the index of the master gridMET dataset 4 km fishnet grid starting at 0 in the upper left corner and moving across rows and down columns. This value can be joined with previously created data, e.g. the ID values can be joined to centroid coordinates of gridMET cells.</p>
+<p>Bar plots that show the residual between station mean ratios and interpolated estimates are saved to &quot;monthly_ratios/spatial/etr_mm_invdist_400m/residual_plots/&quot;.</p>
 <p>To get abbreviated descriptions for any of the above <code class="docutils literal notranslate"><span class="pre">gridwxcomp</span></code> commands use the <code class="docutils literal notranslate"><span class="pre">[--help]</span></code> option, e.g.</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ gridwxcomp spatial --help
 </pre></div>

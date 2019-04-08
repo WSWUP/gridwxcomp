@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>API Reference &mdash; gridwxcomp 0.0.65 documentation</title>
+  <title>API Reference &mdash; gridwxcomp 0.0.68 documentation</title>
   
 
   
@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                0.0.65
+                0.0.68
               </div>
             
           
@@ -489,6 +489,12 @@ in <a class="reference internal" href="#gridwxcomp.spatial.make_grid" title="gri
 <dt id="cmdoption-gridwxcomp-spatial-overwrite-grid">
 <code class="descname">--overwrite-grid</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-gridwxcomp-spatial-overwrite-grid" title="Permalink to this definition">¶</a></dt>
 <dd><p>Flag to overwrite grid for zonal stats if already exists</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-gridwxcomp-spatial-r">
+<code class="descname">-r</code><code class="descclassname"></code><code class="descclassname">, </code><code class="descname">--no-resid-plot</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-gridwxcomp-spatial-r" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flag to NOT plot station residuals between observed and interpolated data for layer</p>
 </dd></dl>
 
 <dl class="option">
@@ -1115,7 +1121,7 @@ to -999.</p>
 
 <dl class="function">
 <dt id="gridwxcomp.spatial.interpolate">
-<code class="descclassname">gridwxcomp.spatial.</code><code class="descname">interpolate</code><span class="sig-paren">(</span><em>in_path</em>, <em>layer='all'</em>, <em>out=None</em>, <em>scale_factor=0.1</em>, <em>function='invdist'</em>, <em>smooth=0</em>, <em>params=None</em>, <em>bounds=None</em>, <em>buffer=25</em>, <em>zonal_stats=True</em>, <em>options=None</em>, <em>gridmet_meta_path=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gridwxcomp/spatial.html#interpolate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gridwxcomp.spatial.interpolate" title="Permalink to this definition">¶</a></dt>
+<code class="descclassname">gridwxcomp.spatial.</code><code class="descname">interpolate</code><span class="sig-paren">(</span><em>in_path</em>, <em>layer='all'</em>, <em>out=None</em>, <em>scale_factor=0.1</em>, <em>function='invdist'</em>, <em>smooth=0</em>, <em>params=None</em>, <em>bounds=None</em>, <em>buffer=25</em>, <em>zonal_stats=True</em>, <em>res_plot=True</em>, <em>options=None</em>, <em>gridmet_meta_path=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gridwxcomp/spatial.html#interpolate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gridwxcomp.spatial.interpolate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Use various methods to interpolate a 2-dimensional surface of
 calculated bias ratios or other statistics for station/gridMET
 pairs found in input comprehensive summary CSV.</p>
@@ -1164,6 +1170,8 @@ output raster.</li>
 surface to gridMET cells in fishnet and save to a CSV file.
 The CSV file will be saved to the same directory as the interpolated
 raster file(s).</li>
+<li><strong>res_plot</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) -- default True. Make bar plot for residual (error)
+between interpolated and station value for <code class="docutils literal notranslate"><span class="pre">layer</span></code>.</li>
 <li><strong>options</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><em>None</em></a>) -- default None. Extra command line arguments
 for gdal interpolation.</li>
 <li><strong>gridmet_meta_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><em>None</em></a>) -- default None. Path to metadata CSV
@@ -1192,7 +1200,7 @@ zonal (gridMET cell) means are also extracted and stored in a CSV.</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gridwxcomp</span> <span class="k">import</span> <span class="n">spatial</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">summary_file</span> <span class="o">=</span> <span class="s1">&#39;monthly_ratios/etr_mm_summary_comp_all_yrs.csv&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">buffer</span> <span class="o">=</span> <span class="mi">10</span>
-<span class="gp">&gt;&gt;&gt; </span><span class="n">layer</span> <span class="o">=</span> <span class="s1">&#39;Annual_mean&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">layer</span> <span class="o">=</span> <span class="s1">&#39;annual_mean&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">params</span> <span class="o">=</span> <span class="p">{</span><span class="s1">&#39;power&#39;</span><span class="p">:</span><span class="mi">1</span><span class="p">,</span> <span class="s1">&#39;smooth&#39;</span><span class="p">:</span><span class="mi">20</span><span class="p">}</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">out_dir</span> <span class="o">=</span> <span class="s1">&#39;s20_p1&#39;</span> <span class="c1"># optional subdir name for saving rasters</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">interpolate</span><span class="p">(</span><span class="n">summary_file</span><span class="p">,</span> <span class="n">layer</span><span class="o">=</span><span class="n">layer</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="n">out_dir</span><span class="p">,</span>
@@ -1214,7 +1222,9 @@ zonal (gridMET cell) means are also extracted and stored in a CSV.</p>
     │       ├── etr_mm_summary_pts.prj
     │       ├── etr_mm_summary_pts.shp
     │       ├── etr_mm_summary_pts.shx
-    │       └── gridMET_stats.csv
+    │       ├── gridMET_stats.csv
+    │       └── residual_plots
+    │           └── annual_res.html
     ├── grid.cpg
     ├── grid.dbf
     ├── grid.prj
@@ -1688,6 +1698,22 @@ parameter names keys and corresponding values.</p>
 </dd></dl>
 
 <dl class="attribute">
+<dt id="gridwxcomp.InterpGdal.var_residual_names">
+<code class="descname">var_residual_names</code><a class="headerlink" href="#gridwxcomp.InterpGdal.var_residual_names" title="Permalink to this definition">¶</a></dt>
+<dd><p>dictionary that maps names of bias ratios
+to the name of their intepolated residual if they are too long for
+storing as a field name in an ESRI shapefile (i.e. &gt; 10 chars).</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Type:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)">dict</a></td>
+</tr>
+</tbody>
+</table>
+</dd></dl>
+
+<dl class="attribute">
 <dt id="gridwxcomp.InterpGdal.summary_csv_path">
 <code class="descname">summary_csv_path</code><a class="headerlink" href="#gridwxcomp.InterpGdal.summary_csv_path" title="Permalink to this definition">¶</a></dt>
 <dd><p>absolute path object to
@@ -1833,9 +1859,14 @@ metadata on parameters used for each run.</p>
 <code class="descname">default_params</code><em class="property"> = {'average': {'angle': 0, 'min_points': 0, 'nodata': -999, 'radius1': 2, 'radius2': 2}, 'invdist': {'angle': 0, 'max_points': 0, 'min_points': 0, 'nodata': -999, 'power': 4, 'radius1': 0, 'radius2': 0, 'smoothing': 0.2}, 'invdistnn': {'max_points': 12, 'min_points': 0, 'nodata': -999, 'power': 4, 'radius': 10, 'smoothing': 0.2}, 'linear': {'nodata': -999, 'radius': -1}, 'nearest': {'angle': 0, 'nodata': -999, 'radius1': 0, 'radius2': 0}}</em></dt>
 <dd></dd></dl>
 
+<dl class="attribute">
+<dt>
+<code class="descname">var_residual_names</code><em class="property"> = {'annual_mean': 'annual_res', 'growseason_mean': 'grow_res', 'summer_mean': 'summer_res'}</em></dt>
+<dd></dd></dl>
+
 <dl class="method">
 <dt id="gridwxcomp.InterpGdal.gdal_grid">
-<code class="descname">gdal_grid</code><span class="sig-paren">(</span><em>layer='all'</em>, <em>out_dir=''</em>, <em>interp_meth='invdist'</em>, <em>params=None</em>, <em>bounds=None</em>, <em>nx_cells=None</em>, <em>ny_cells=None</em>, <em>scale_factor=0.1</em>, <em>zonal_stats=True</em>, <em>options=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gridwxcomp/interpgdal.html#InterpGdal.gdal_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gridwxcomp.InterpGdal.gdal_grid" title="Permalink to this definition">¶</a></dt>
+<code class="descname">gdal_grid</code><span class="sig-paren">(</span><em>layer='all'</em>, <em>out_dir=''</em>, <em>interp_meth='invdist'</em>, <em>params=None</em>, <em>bounds=None</em>, <em>nx_cells=None</em>, <em>ny_cells=None</em>, <em>scale_factor=0.1</em>, <em>zonal_stats=True</em>, <em>res_plot=True</em>, <em>options=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gridwxcomp/interpgdal.html#InterpGdal.gdal_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gridwxcomp.InterpGdal.gdal_grid" title="Permalink to this definition">¶</a></dt>
 <dd><p>Run gdal_grid command line tool to interpolate point ratios.</p>
 <p>For further information on theinterpolation algorithms including
 their function, parameters, and options see
@@ -1872,6 +1903,8 @@ resolution or 400 m.</li>
 interpolated surface to gridMET cells in fishnet and save to a
 CSV file. The CSV file will be saved to the same directory as
 the interpolated raster file(s).</li>
+<li><strong>res_plot</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) -- default True. Make bar plot for residual (error)
+between interpolated and station value for <code class="docutils literal notranslate"><span class="pre">layer</span></code>.</li>
 <li><strong>options</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><em>None</em></a>) -- default None. Extra command line options for
 gdal_grid spatial interpolation.</li>
 </ul>
@@ -1902,17 +1935,27 @@ annual mean bias ratios,</p>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">test</span><span class="o">.</span><span class="n">gdal_grid</span><span class="p">(</span><span class="n">out_dir</span><span class="o">=</span><span class="n">out_dir</span><span class="p">,</span> <span class="n">layer</span><span class="o">=</span><span class="n">layers</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Note, zonal statistics on gridMET cells in a fishnet grid are
-calculated by default, to avoid an error the fishnet must have been
-previously created using <a class="reference internal" href="#gridwxcomp.spatial.make_grid" title="gridwxcomp.spatial.make_grid"><code class="xref py py-func docutils literal notranslate"><span class="pre">gridwxcomp.spatial.make_grid</span></code></a>. After            running the code above the following files will be created in the
-'default_params' directory which will be build in the same location
-as the input summary CSV:</p>
+<p>Note, zonal statistics to gridMET cells and interpolated residual
+plots are computed by default. A gridMET fishnet must have been
+previously created using <a class="reference internal" href="#gridwxcomp.spatial.make_grid" title="gridwxcomp.spatial.make_grid"><code class="xref py py-func docutils literal notranslate"><span class="pre">gridwxcomp.spatial.make_grid</span></code></a>.</p>
+<p>After running the code above the following files will be created
+in the 'default_params' directory which will be build in the same
+location as the input summary CSV:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>default_params/
 ├── annual_mean.tiff
 ├── annual_mean.vrt
+├── etr_mm_summary_comp_all_yrs.csv
+├── etr_mm_summary_pts.cpg
+├── etr_mm_summary_pts.dbf
+├── etr_mm_summary_pts.prj
+├── etr_mm_summary_pts.shp
+├── etr_mm_summary_pts.shx
+├── gridMET_stats.csv
 ├── growseason_mean.tiff
 ├── growseason_mean.vrt
-└── gridMET_stats.csv
+└── residual_plots/
+    ├── annual_res.html
+    └── grow_res.html
 </pre></div>
 </div>
 <p>GeoTiff interpolated raster files are now created for select layers
@@ -1949,9 +1992,9 @@ example,</p>
 </tbody>
 </table>
 </div></blockquote>
-<p>On a final note, there are several <a class="reference internal" href="#gridwxcomp.InterpGdal" title="gridwxcomp.InterpGdal"><code class="xref py py-class docutils literal notranslate"><span class="pre">InterpGdal</span></code></a> instance
-attributes that may be useful, for example to see the parameters
-that were used for the last call to <a class="reference internal" href="#gridwxcomp.InterpGdal.gdal_grid" title="gridwxcomp.InterpGdal.gdal_grid"><code class="xref py py-meth docutils literal notranslate"><span class="pre">InterpGdal.gdal_grid</span></code></a></p>
+<p>There are several <a class="reference internal" href="#gridwxcomp.InterpGdal" title="gridwxcomp.InterpGdal"><code class="xref py py-class docutils literal notranslate"><span class="pre">InterpGdal</span></code></a> instance attributes that
+may be useful, for example to see the parameters that were used
+for the last call to <a class="reference internal" href="#gridwxcomp.InterpGdal.gdal_grid" title="gridwxcomp.InterpGdal.gdal_grid"><code class="xref py py-meth docutils literal notranslate"><span class="pre">InterpGdal.gdal_grid</span></code></a></p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">test</span><span class="o">.</span><span class="n">params</span>
 <span class="go">{&#39;power&#39;: 4,</span>
 <span class="go"> &#39;smoothing&#39;: 0.2,</span>

@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>gridwxcomp.spatial &mdash; gridwxcomp 0.0.65 documentation</title>
+  <title>gridwxcomp.spatial &mdash; gridwxcomp 0.0.68 documentation</title>
   
 
   
@@ -64,7 +64,7 @@
             
             
               <div class="version">
-                0.0.65
+                0.0.68
               </div>
             
           
@@ -229,6 +229,12 @@
 <span class="kn">from</span> <span class="nn">osgeo</span> <span class="k">import</span> <span class="n">gdal</span><span class="p">,</span> <span class="n">osr</span><span class="p">,</span> <span class="n">ogr</span>
 <span class="kn">from</span> <span class="nn">rasterstats</span> <span class="k">import</span> <span class="n">zonal_stats</span>
 
+<span class="c1"># allows for CL script usage if gridwxcomp not installed</span>
+<span class="k">try</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">.plot</span> <span class="k">import</span> <span class="n">station_bar_plot</span>
+<span class="k">except</span><span class="p">:</span>
+    <span class="kn">from</span> <span class="nn">plot</span> <span class="k">import</span> <span class="n">station_bar_plot</span>
+
 <span class="c1"># constant gridmet resolution in decimal degrees</span>
 <span class="n">CELL_SIZE</span> <span class="o">=</span> <span class="mf">0.041666666666666664</span>
 
@@ -236,7 +242,7 @@
    
 <span class="k">def</span> <span class="nf">main</span><span class="p">(</span><span class="n">input_file_path</span><span class="p">,</span> <span class="n">layer</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">buffer</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">scale_factor</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> 
          <span class="n">function</span><span class="o">=</span><span class="s1">&#39;invdist&#39;</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">zonal_stats</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-         <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">gridmet_meta_path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+         <span class="n">res_plot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">gridmet_meta_path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Create point shapefile of monthly mean bias ratios from comprehensive</span>
 <span class="sd">    CSV file created by :mod:`gridwxcomp.calc_bias_ratios`. Build fishnet grid </span>
@@ -290,6 +296,8 @@
 <span class="sd">            surface to gridMET cells in fishnet and save to a CSV file. </span>
 <span class="sd">            The CSV file will be saved to the same directory as the interpolated</span>
 <span class="sd">            raster file(s).</span>
+<span class="sd">        res_plot (bool): default True. Make bar plot for residual (error)</span>
+<span class="sd">            between interpolated and station value for ``layer``.</span>
 <span class="sd">        options (str or None): default None. Extra command line arguments</span>
 <span class="sd">            for gdal interpolation.</span>
 <span class="sd">        gridmet_meta_path (str): default None. Path to metadata CSV file </span>
@@ -403,6 +411,7 @@
         <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span>
         <span class="n">buffer</span><span class="o">=</span><span class="n">buffer</span><span class="p">,</span>
         <span class="n">zonal_stats</span><span class="o">=</span><span class="n">zonal_stats</span><span class="p">,</span>
+        <span class="n">res_plot</span><span class="o">=</span><span class="n">res_plot</span><span class="p">,</span>
         <span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">,</span>
         <span class="n">gridmet_meta_path</span><span class="o">=</span><span class="n">gridmet_meta_path</span><span class="p">)</span> 
 
@@ -1013,7 +1022,7 @@
     
 <div class="viewcode-block" id="interpolate"><a class="viewcode-back" href="../../api.html#gridwxcomp.spatial.interpolate">[docs]</a><span class="k">def</span> <span class="nf">interpolate</span><span class="p">(</span><span class="n">in_path</span><span class="p">,</span> <span class="n">layer</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">out</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">scale_factor</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> 
                 <span class="n">function</span><span class="o">=</span><span class="s1">&#39;invdist&#39;</span><span class="p">,</span> <span class="n">smooth</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
-                <span class="n">buffer</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">zonal_stats</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
+                <span class="n">buffer</span><span class="o">=</span><span class="mi">25</span><span class="p">,</span> <span class="n">zonal_stats</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">res_plot</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
                 <span class="n">gridmet_meta_path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Use various methods to interpolate a 2-dimensional surface of</span>
@@ -1059,7 +1068,9 @@
 <span class="sd">        zonal_stats (bool): default True. Calculate zonal means of interpolated</span>
 <span class="sd">            surface to gridMET cells in fishnet and save to a CSV file. </span>
 <span class="sd">            The CSV file will be saved to the same directory as the interpolated</span>
-<span class="sd">            raster file(s).</span>
+<span class="sd">            raster file(s).            </span>
+<span class="sd">        res_plot (bool): default True. Make bar plot for residual (error)</span>
+<span class="sd">            between interpolated and station value for ``layer``.</span>
 <span class="sd">        options (str or None): default None. Extra command line arguments</span>
 <span class="sd">            for gdal interpolation.</span>
 <span class="sd">        gridmet_meta_path (str or None): default None. Path to metadata CSV </span>
@@ -1085,7 +1096,7 @@
 <span class="sd">        &gt;&gt;&gt; from gridwxcomp import spatial</span>
 <span class="sd">        &gt;&gt;&gt; summary_file = &#39;monthly_ratios/etr_mm_summary_comp_all_yrs.csv&#39;</span>
 <span class="sd">        &gt;&gt;&gt; buffer = 10</span>
-<span class="sd">        &gt;&gt;&gt; layer = &#39;Annual_mean&#39;</span>
+<span class="sd">        &gt;&gt;&gt; layer = &#39;annual_mean&#39;</span>
 <span class="sd">        &gt;&gt;&gt; params = {&#39;power&#39;:1, &#39;smooth&#39;:20}</span>
 <span class="sd">        &gt;&gt;&gt; out_dir = &#39;s20_p1&#39; # optional subdir name for saving rasters</span>
 <span class="sd">        &gt;&gt;&gt; interpolate(summary_file, layer=layer, out=out_dir, </span>
@@ -1107,13 +1118,15 @@
 <span class="sd">                │       ├── etr_mm_summary_pts.prj</span>
 <span class="sd">                │       ├── etr_mm_summary_pts.shp</span>
 <span class="sd">                │       ├── etr_mm_summary_pts.shx</span>
-<span class="sd">                │       └── gridMET_stats.csv</span>
+<span class="sd">                │       ├── gridMET_stats.csv</span>
+<span class="sd">                │       └── residual_plots</span>
+<span class="sd">                │           └── annual_res.html</span>
 <span class="sd">                ├── grid.cpg</span>
 <span class="sd">                ├── grid.dbf</span>
 <span class="sd">                ├── grid.prj</span>
 <span class="sd">                ├── grid.shp</span>
 <span class="sd">                └── grid.shx</span>
-<span class="sd">                    </span>
+<span class="sd">            </span>
 <span class="sd">        Specifically, the interpolated raster is saved to::</span>
 <span class="sd">        </span>
 <span class="sd">            &#39;monthly_ratios/spatial/etr_mm_invdist_400m/s20_p1/Annual_mean.tiff&#39;</span>
@@ -1217,15 +1230,13 @@
     <span class="n">path_root</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">in_path</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
     <span class="n">file_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">in_path</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
     <span class="c1"># get variable name from input file prefix</span>
-    <span class="n">grid_var</span> <span class="o">=</span> <span class="n">file_name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_summ&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+    <span class="n">grid_var</span> <span class="o">=</span> <span class="n">file_name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_summary&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
     
     <span class="k">if</span> <span class="ow">not</span> <span class="n">out</span><span class="p">:</span> 
-        <span class="n">out_dir</span> <span class="o">=</span> <span class="n">OPJ</span><span class="p">(</span><span class="n">path_root</span><span class="p">,</span>
-                      <span class="s1">&#39;spatial&#39;</span><span class="p">,</span> 
+        <span class="n">out_dir</span> <span class="o">=</span> <span class="n">OPJ</span><span class="p">(</span><span class="s1">&#39;spatial&#39;</span><span class="p">,</span> 
                       <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">_</span><span class="si">{}</span><span class="s1">_</span><span class="si">{}</span><span class="s1">m&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">grid_var</span><span class="p">,</span> <span class="n">function</span><span class="p">,</span> <span class="n">res</span><span class="p">))</span>
     <span class="k">else</span><span class="p">:</span>
-        <span class="n">out_dir</span> <span class="o">=</span> <span class="n">OPJ</span><span class="p">(</span><span class="n">path_root</span><span class="p">,</span>
-                      <span class="s1">&#39;spatial&#39;</span><span class="p">,</span>
+        <span class="n">out_dir</span> <span class="o">=</span> <span class="n">OPJ</span><span class="p">(</span><span class="s1">&#39;spatial&#39;</span><span class="p">,</span>
                       <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">_</span><span class="si">{}</span><span class="s1">_</span><span class="si">{}</span><span class="s1">m&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">grid_var</span><span class="p">,</span> <span class="n">function</span><span class="p">,</span> <span class="n">res</span><span class="p">),</span>
                       <span class="n">out</span><span class="p">)</span>
         
@@ -1238,7 +1249,7 @@
         <span class="n">Path</span><span class="p">(</span><span class="n">out_dir</span><span class="p">)</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
     
     
-    <span class="k">def</span> <span class="nf">_run_rbf_interpolation</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="n">bounds</span><span class="p">,</span> <span class="n">function</span><span class="p">,</span> <span class="n">smooth</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_run_rbf_interpolation</span><span class="p">(</span><span class="n">out_dir</span><span class="p">,</span> <span class="n">layer</span><span class="p">,</span> <span class="n">bounds</span><span class="p">,</span> <span class="n">function</span><span class="p">,</span> <span class="n">smooth</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Workflow for running scipy Rbf interpolation of scatter points&quot;&quot;&quot;</span>
         <span class="n">out_file</span> <span class="o">=</span> <span class="n">OPJ</span><span class="p">(</span>
             <span class="n">out_dir</span><span class="p">,</span> 
@@ -1261,7 +1272,7 @@
         <span class="c1"># check if layer is in summary CSV </span>
         <span class="n">existing_layers</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">in_path</span><span class="p">)</span><span class="o">.</span><span class="n">columns</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">layer</span> <span class="ow">in</span> <span class="n">existing_layers</span><span class="p">:</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;column </span><span class="si">{}</span><span class="s1"> does not exist in input CSV:</span><span class="se">\n</span><span class="s1"> </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Column </span><span class="si">{}</span><span class="s1"> does not exist in input CSV:</span><span class="se">\n</span><span class="s1"> </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                <span class="n">layer</span><span class="p">,</span> <span class="n">in_path</span><span class="p">),</span>
                  <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Skipping interpolation.&#39;</span>
             <span class="p">)</span>
@@ -1372,6 +1383,22 @@
         <span class="c1"># calculate zonal statistics save means for each gridMET cell</span>
         <span class="k">if</span> <span class="n">zonal_stats</span><span class="p">:</span>
             <span class="n">gridmet_zonal_stats</span><span class="p">(</span><span class="n">in_path</span><span class="p">,</span> <span class="n">out_file</span><span class="p">)</span>
+            
+        <span class="c1"># plot layer&#39;s interpolated residuals as bar plot witheach Wx station           </span>
+        <span class="k">if</span> <span class="n">res_plot</span><span class="p">:</span>
+            <span class="n">layer</span> <span class="o">=</span> <span class="n">InterpGdal</span><span class="o">.</span><span class="n">var_residual_names</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
+                <span class="n">layer</span><span class="p">,</span> 
+                <span class="n">layer</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;mean&#39;</span><span class="p">,</span><span class="s1">&#39;res&#39;</span><span class="p">)</span>
+            <span class="p">)</span>
+            <span class="n">y_label</span> <span class="o">=</span> <span class="s1">&#39;residual (interpolated minus station value)&#39;</span>
+            <span class="n">title</span> <span class="o">=</span> <span class="s1">&#39;layer: </span><span class="si">{}</span><span class="s1"> algorithm: </span><span class="si">{}</span><span class="s1"> (RBF) resolution: </span><span class="si">{}</span><span class="s1">m&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">layer</span><span class="p">,</span> <span class="n">function</span> <span class="p">,</span><span class="n">res</span><span class="p">)</span>
+            <span class="n">res_plot_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">out_dir</span><span class="p">)</span><span class="o">/</span><span class="s1">&#39;residual_plots&#39;</span>
+            <span class="n">subtitle</span><span class="o">=</span><span class="s1">&#39;parameters: smooth=</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">smooth</span><span class="p">)</span>
+            <span class="n">source_file</span> <span class="o">=</span>  <span class="n">Path</span><span class="p">(</span><span class="n">out_dir</span><span class="p">)</span><span class="o">/</span><span class="n">Path</span><span class="p">(</span><span class="n">in_path</span><span class="p">)</span><span class="o">.</span><span class="n">name</span>
+
+            <span class="n">station_bar_plot</span><span class="p">(</span><span class="n">source_file</span><span class="p">,</span> <span class="n">layer</span><span class="p">,</span> <span class="n">out_dir</span><span class="o">=</span><span class="n">res_plot_dir</span><span class="p">,</span> 
+                <span class="n">y_label</span><span class="o">=</span><span class="n">y_label</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="n">title</span><span class="p">,</span> <span class="n">subtitle</span><span class="o">=</span><span class="n">subtitle</span><span class="p">)</span>
 
         
     <span class="c1"># run gdal_grid interpolation </span>
@@ -1382,21 +1409,22 @@
         <span class="n">gg</span> <span class="o">=</span> <span class="n">InterpGdal</span><span class="p">(</span><span class="n">in_path</span><span class="p">)</span>
         <span class="n">gg</span><span class="o">.</span><span class="n">gdal_grid</span><span class="p">(</span><span class="n">layer</span><span class="o">=</span><span class="n">layer</span><span class="p">,</span> <span class="n">out_dir</span><span class="o">=</span><span class="n">out_dir</span><span class="p">,</span> <span class="n">interp_meth</span><span class="o">=</span><span class="n">function</span><span class="p">,</span>
                     <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">,</span> <span class="n">bounds</span><span class="o">=</span><span class="n">bounds</span><span class="p">,</span> <span class="n">scale_factor</span><span class="o">=</span><span class="n">scale_factor</span><span class="p">,</span>
-                    <span class="n">zonal_stats</span><span class="o">=</span><span class="n">zonal_stats</span><span class="p">,</span> <span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">)</span>
+                    <span class="n">zonal_stats</span><span class="o">=</span><span class="n">zonal_stats</span><span class="p">,</span> <span class="n">res_plot</span><span class="o">=</span><span class="n">res_plot</span><span class="p">,</span> 
+                    <span class="n">options</span><span class="o">=</span><span class="n">options</span><span class="p">)</span>
         
     <span class="c1"># scipy radial basis function interpolation for now</span>
     <span class="c1"># run interpolation and zonal statistics depending on layer kwarg</span>
     <span class="k">else</span><span class="p">:</span> 
         <span class="k">if</span> <span class="n">layer</span> <span class="o">==</span> <span class="s1">&#39;all&#39;</span><span class="p">:</span> <span class="c1"># potential for multiprocessing</span>
             <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">InterpGdal</span><span class="o">.</span><span class="n">default_layers</span><span class="p">:</span>
-                <span class="n">_run_rbf_interpolation</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">bounds</span><span class="p">,</span> <span class="n">function</span><span class="p">,</span> <span class="n">smooth</span><span class="p">)</span>
+                <span class="n">_run_rbf_interpolation</span><span class="p">(</span><span class="n">out_dir</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">bounds</span><span class="p">,</span> <span class="n">function</span><span class="p">,</span> <span class="n">smooth</span><span class="p">)</span>
         <span class="c1"># single layer option</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
-            <span class="n">_run_rbf_interpolation</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="n">bounds</span><span class="p">,</span> <span class="n">function</span><span class="p">,</span> <span class="n">smooth</span><span class="p">)</span>
+            <span class="n">_run_rbf_interpolation</span><span class="p">(</span><span class="n">out_dir</span><span class="p">,</span> <span class="n">layer</span><span class="p">,</span> <span class="n">bounds</span><span class="p">,</span> <span class="n">function</span><span class="p">,</span> <span class="n">smooth</span><span class="p">)</span>
         <span class="c1"># run select list or tuple of layers</span>
         <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="p">(</span><span class="nb">list</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">)):</span>
             <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">layer</span><span class="p">:</span>
-                <span class="n">_run_rbf_interpolation</span><span class="p">(</span><span class="n">l</span><span class="p">,</span> <span class="n">bounds</span><span class="p">,</span> <span class="n">function</span><span class="p">,</span> <span class="n">smooth</span><span class="p">)</span></div>
+                <span class="n">_run_rbf_interpolation</span><span class="p">(</span><span class="n">out_dir</span><span class="p">,</span> <span class="n">l</span><span class="p">,</span> <span class="n">bounds</span><span class="p">,</span> <span class="n">function</span><span class="p">,</span> <span class="n">smooth</span><span class="p">)</span></div>
 
 <div class="viewcode-block" id="calc_pt_error"><a class="viewcode-back" href="../../api.html#gridwxcomp.spatial.calc_pt_error">[docs]</a><span class="k">def</span> <span class="nf">calc_pt_error</span><span class="p">(</span><span class="n">in_path</span><span class="p">,</span> <span class="n">out_dir</span><span class="p">,</span> <span class="n">layer</span><span class="p">,</span> <span class="n">grid_var</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -1681,7 +1709,7 @@
         <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Function to use for spatial interpolation, gdal&#39;</span><span class="o">+</span>\
                 <span class="s1">&#39; methods include invdist, invdistnn, average, nearest,&#39;</span><span class="o">+</span>\
                 <span class="s1">&#39; and linear. Radial basis functions include: multiquadric,&#39;</span><span class="o">+</span>\
-                <span class="s1">&#39; inverse, gaussian, linear_rbf, cubic, quintic, thin_plate.&#39;</span><span class="p">)</span> 
+                <span class="s1">&#39; inverse, gaussian, linear_rbf, cubic, quintic, thin_plate&#39;</span><span class="p">)</span> 
     <span class="n">optional</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--smooth&#39;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">float</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Smooth parameter for radial basis func interpolation methods&#39;</span><span class="p">)</span>
@@ -1692,10 +1720,14 @@
     <span class="n">optional</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;-z&#39;</span><span class="p">,</span> <span class="s1">&#39;--zonal-stats&#39;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> 
         <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_false&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Flag to NOT extract zonal means of&#39;</span><span class="o">+</span>\
-            <span class="s1">&#39; interpolated rasters to gridMET cells.&#39;</span><span class="p">)</span>
+            <span class="s1">&#39; interpolated rasters to gridMET cells&#39;</span><span class="p">)</span>
     <span class="n">optional</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--overwrite-grid&#39;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> 
         <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Flag to overwrite existing fishnet grid&#39;</span><span class="p">)</span>
+    <span class="n">optional</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;-r&#39;</span><span class="p">,</span> <span class="s1">&#39;--no-resid-plot&#39;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> 
+        <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_false&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Flag to NOT generate residual plot&#39;</span><span class="o">+</span>\
+            <span class="s1">&#39; between observed and interpolated station values&#39;</span><span class="p">)</span>    
     <span class="n">optional</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--options&#39;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Additional command line options for gdal_grid interpolation&#39;</span><span class="p">)</span>
@@ -1719,7 +1751,7 @@
     <span class="n">layer</span> <span class="o">=</span> <span class="n">layer</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
     <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">layer</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
         <span class="n">layer</span> <span class="o">=</span> <span class="n">layer</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="c1"># get single layer as string</span>
-
+        
     <span class="n">main</span><span class="p">(</span>
         <span class="n">input_file_path</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">input</span><span class="p">,</span>
         <span class="n">layer</span><span class="o">=</span><span class="n">layer</span><span class="p">,</span>
@@ -1729,8 +1761,9 @@
         <span class="n">function</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">function</span><span class="p">,</span>
         <span class="n">smooth</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">smooth</span><span class="p">,</span>
         <span class="n">params</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">params</span><span class="p">,</span>
-        <span class="n">zonal_stats</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">zonal_stats</span><span class="p">,</span>
+        <span class="n">zonal_stats</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">no_zonal_stats</span><span class="p">,</span>
         <span class="n">overwrite</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">overwrite_grid</span><span class="p">,</span>
+        <span class="n">res_plot</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">no_resid_plot</span><span class="p">,</span>
         <span class="n">options</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">options</span><span class="p">,</span>
         <span class="n">gridmet_meta_path</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">gridmet_meta</span>
     <span class="p">)</span>

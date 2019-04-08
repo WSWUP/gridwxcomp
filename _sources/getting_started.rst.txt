@@ -95,7 +95,7 @@ The ``[-b 5]`` option indicates that we want to expand the rectangular bounding 
 
 GeoTIFF rasters of interpolated ratios will be saved to "monthly_ratios/spatial/etr_mm_invdist_400m/". Note, the gridMET variable name (etr_mm), the interpolation method (invdist), and the raster resolution (400m) are specified in the output directory. A fishnet grid with gridMET id values and a point shapefile of station ratios should all be created and saved in the "monthly_ratios/spatial/" directory.
 
-The final output file "monthly_ratios/spatial/etr_mm_invdist_400m/gridMET_stats.csv" contains monthly bias ratios for each gridMET cell in the interpolation region, similar to what is shown below. 
+The output file "monthly_ratios/spatial/etr_mm_invdist_400m/gridMET_stats.csv" contains monthly bias ratios for each gridMET cell in the interpolation region, similar to what is shown below. 
 
     ========== ======== ======== ======== ===
     GRIDMET_ID Jan_mean Feb_mean Mar_mean ...
@@ -109,6 +109,8 @@ The final output file "monthly_ratios/spatial/etr_mm_invdist_400m/gridMET_stats.
     ========== ======== ======== ======== ===
 
 Note ``GRIDMET_ID`` is the index of the master gridMET dataset 4 km fishnet grid starting at 0 in the upper left corner and moving across rows and down columns. This value can be joined with previously created data, e.g. the ID values can be joined to centroid coordinates of gridMET cells. 
+
+Bar plots that show the residual between station mean ratios and interpolated estimates are saved to "monthly_ratios/spatial/etr_mm_invdist_400m/residual_plots/".
 
 To get abbreviated descriptions for any of the above ``gridwxcomp`` commands use the ``[--help]`` option, e.g.
 

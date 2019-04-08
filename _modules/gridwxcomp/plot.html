@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>gridwxcomp.plot &mdash; gridwxcomp 0.0.65 documentation</title>
+  <title>gridwxcomp.plot &mdash; gridwxcomp 0.0.68 documentation</title>
   
 
   
@@ -64,7 +64,7 @@
             
             
               <div class="version">
-                0.0.65
+                0.0.68
               </div>
             
           
@@ -880,10 +880,10 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">Path</span><span class="p">(</span><span class="n">summary_csv</span><span class="p">)</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
         <span class="n">err_msg</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="si">{}</span><span class="s1"> is not a valid path to a summary CSV file!&#39;</span><span class="o">.</span>\
-                <span class="nb">format</span><span class="p">(</span><span class="n">in_path</span><span class="p">)</span>
+                <span class="nb">format</span><span class="p">(</span><span class="n">summary_csv</span><span class="p">)</span>
         <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="n">err_msg</span><span class="p">)</span>
         
-    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">summary_csv</span><span class="p">)</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">summary_csv</span><span class="p">,</span> <span class="n">na_values</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">999</span><span class="p">])</span>
     
     <span class="k">if</span> <span class="ow">not</span> <span class="n">layer</span> <span class="ow">in</span> <span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
         <span class="n">err_msg</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Column </span><span class="si">{}</span><span class="s1"> was not found in </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">layer</span><span class="p">,</span> <span class="n">summary_csv</span><span class="p">)</span>
@@ -903,10 +903,13 @@
     <span class="c1"># save to working directory in &#39;station_bar_plots&#39; if not specified</span>
     <span class="k">if</span> <span class="ow">not</span> <span class="n">out_dir</span><span class="p">:</span>
         <span class="n">out_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">summary_csv</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="o">/</span><span class="s1">&#39;station_bar_plots&#39;</span>
-        <span class="k">if</span> <span class="ow">not</span> <span class="n">out_dir</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
-            <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="si">{}</span><span class="s1"> does not exist, making directory&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">out_dir</span><span class="p">))</span>
-            <span class="n">out_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-    
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">out_dir</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="n">out_dir</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">out_dir</span><span class="o">.</span><span class="n">is_dir</span><span class="p">():</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="si">{}</span><span class="se">\n</span><span class="s1">Does not exist, making directory&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="n">out_dir</span><span class="o">.</span><span class="n">absolute</span><span class="p">()))</span>
+        <span class="n">out_dir</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
     <span class="n">out_file</span> <span class="o">=</span> <span class="n">out_dir</span><span class="o">/</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">.html&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">layer</span><span class="p">)</span>
     <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Creating station bar plot for variable: &#39;</span><span class="p">,</span> <span class="n">layer</span><span class="p">,</span>
          <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Using data from file: &#39;</span><span class="p">,</span> <span class="n">Path</span><span class="p">(</span><span class="n">summary_csv</span><span class="p">)</span><span class="o">.</span><span class="n">absolute</span><span class="p">())</span>
