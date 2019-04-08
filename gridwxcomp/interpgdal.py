@@ -16,8 +16,10 @@ import pandas as pd
 # allows for CL script usage if gridwxcomp not installed
 try:
     from .spatial import get_subgrid_bounds, gridmet_zonal_stats, calc_pt_error
+    from .plot import station_bar_plot
 except:
     from spatial import get_subgrid_bounds, gridmet_zonal_stats, calc_pt_error
+    from plot import station_bar_plot
 
 class InterpGdal(object):
     """
@@ -40,6 +42,9 @@ class InterpGdal(object):
             interpolation algorithm, slightly modified from gdal defaults.
             Keys are interpolation method names, keys are dictionaries with
             parameter names keys and corresponding values.
+        var_residual_names (dict): dictionary that maps names of bias ratios 
+            to the name of their intepolated residual if they are too long for
+            storing as a field name in an ESRI shapefile (i.e. > 10 chars).
         summary_csv_path (:obj:`pathlib.Path`): absolute path object to 
             input ``summary_csv_path``.
         layers (list): list of layers in ``summary_csv_path`` to interpolate
@@ -54,7 +59,7 @@ class InterpGdal(object):
         params (dict or None): default None. After :meth:`InterpGdal.gdal_grid`
             ``params`` is updated with the last used interpolation parameters
             in the form of a dictionary with parameter names as keys.
-            
+
     Example:
         The :class:`InterpGdal` class is useful for experimenting with multiple 
         interpolation algorithms provided by gdal which are optimized and
@@ -155,6 +160,15 @@ class InterpGdal(object):
             'nodata': -999
         }
     }
+
+    # maps bias ratio variables names to residual names for point shapefile
+    # which must be shorter (< 11 characters) to be stored as fields
+    var_residual_names = {
+        'annual_mean': 'annual_res',
+        'growseason_mean': 'grow_res',
+        'summer_mean': 'summer_res'
+    }
+
     def __init__(self, summary_csv_path):
         
         if not Path(summary_csv_path).is_file():
@@ -179,8 +193,6 @@ class InterpGdal(object):
         """
         if not Path(out_dir).is_dir():
             os.makedirs(out_dir)
-        # old method
-        #summary_file = Path(self.summary_csv_path).name
         
         point_data = Path(self.summary_csv_path).name.replace(
                 '.csv', '_tmp.csv')
@@ -257,7 +269,8 @@ class InterpGdal(object):
 
     def gdal_grid(self, layer='all', out_dir='', interp_meth='invdist', 
                   params=None, bounds=None, nx_cells=None, ny_cells=None, 
-                  scale_factor=0.1, zonal_stats=True, options=None):
+                  scale_factor=0.1, zonal_stats=True, res_plot=True,
+                  options=None):
         """
         Run gdal_grid command line tool to interpolate point ratios.
         
@@ -292,6 +305,8 @@ class InterpGdal(object):
                 interpolated surface to gridMET cells in fishnet and save to a 
                 CSV file. The CSV file will be saved to the same directory as 
                 the interpolated raster file(s).
+            res_plot (bool): default True. Make bar plot for residual (error)
+                between interpolated and station value for ``layer``.
             options (str or None): default None. Extra command line options for
                 gdal_grid spatial interpolation.
                 
@@ -318,18 +333,29 @@ class InterpGdal(object):
             >>> # run inverse distance interpolation
             >>> test.gdal_grid(out_dir=out_dir, layer=layers)
             
-            Note, zonal statistics on gridMET cells in a fishnet grid are 
-            calculated by default, to avoid an error the fishnet must have been
-            previously created using :func:`gridwxcomp.spatial.make_grid`. After            running the code above the following files will be created in the 
-            'default_params' directory which will be build in the same location
-            as the input summary CSV::
+            Note, zonal statistics to gridMET cells and interpolated residual 
+            plots are computed by default. A gridMET fishnet must have been
+            previously created using :func:`gridwxcomp.spatial.make_grid`. 
             
-                default_params/
+            After running the code above the following files will be created 
+            in the 'default_params' directory which will be build in the same 
+            location as the input summary CSV::
+
+                default_params/           
                 ├── annual_mean.tiff
                 ├── annual_mean.vrt
+                ├── etr_mm_summary_comp_all_yrs.csv
+                ├── etr_mm_summary_pts.cpg
+                ├── etr_mm_summary_pts.dbf
+                ├── etr_mm_summary_pts.prj
+                ├── etr_mm_summary_pts.shp
+                ├── etr_mm_summary_pts.shx
+                ├── gridMET_stats.csv
                 ├── growseason_mean.tiff
                 ├── growseason_mean.vrt
-                └── gridMET_stats.csv
+                └── residual_plots/
+                    ├── annual_res.html
+                    └── grow_res.html
 
             GeoTiff interpolated raster files are now created for select layers
             as well as VRT (virtual raster) meta files that store info
@@ -345,9 +371,9 @@ class InterpGdal(object):
                 508975     0.9667075970344162 0.9117676407214926 
                 ========== ================== ================== 
                 
-            On a final note, there are several :class:`InterpGdal` instance
-            attributes that may be useful, for example to see the parameters
-            that were used for the last call to :meth:`InterpGdal.gdal_grid`
+            There are several :class:`InterpGdal` instance attributes that 
+            may be useful, for example to see the parameters that were used 
+            for the last call to :meth:`InterpGdal.gdal_grid`
             
             >>> test.params
             {'power': 4,
@@ -391,8 +417,15 @@ class InterpGdal(object):
         
         cwd = os.getcwd()
         
-        out_dir = Path(self.summary_csv_path).parent / Path(out_dir).resolve()
+        res = round(4 * scale_factor * 1000)
+        # file structure to match gridwxcomp.spatial.interpolate
+        grid_var = str(self.summary_csv_path).split('_summary')[0]
+        
+        # out_dir as subdir from dir with summary CSV 
+        out_dir = (Path(self.summary_csv_path).parent/Path(out_dir)).resolve()
+
         if not out_dir.is_dir():
+            print('{}\nDoes not exist, creating directory'.format(str(out_dir)))
             out_dir.mkdir(parents=True, exist_ok=True)
     
         source_file = Path(self.summary_csv_path).name
@@ -489,8 +522,24 @@ class InterpGdal(object):
 
             # calculate interpolated values and error at stations
             calc_pt_error(self.summary_csv_path, out_dir, layer, grid_var)
+            # zonal means extracted to GRIDMET_ID (cell index) 
             if zonal_stats:
                 gridmet_zonal_stats(self.summary_csv_path, out_file)
+            # residual (error) bar plot
+            if res_plot:
+                layer = self.var_residual_names.get(
+                    layer, 
+                    layer.replace('mean','res')
+                )
+                y_label = 'residual (interpolated minus station value)'
+                title = 'layer: {} algorithm: {} (gdal_grid) resolution: {}m'.\
+                        format(layer, self.interp_meth, res)
+                res_plot_dir = Path(out_dir)/'residual_plots'
+                subtitle = 'parameters: {}'.format(params)
+                source_file =  Path(out_dir)/Path(self.summary_csv_path).name
+
+                station_bar_plot(source_file, layer, out_dir=res_plot_dir,
+                    y_label=y_label, title=title, subtitle=subtitle)
 
             
         # run interpolation and zonal statistics depending on layer kwarg

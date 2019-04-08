@@ -204,6 +204,9 @@ def calc_bias_ratios(input_csv, out_dir, gridmet_var, station_var,
         help='Flag to NOT extract zonal means of interpolated results')
 @click.option('--overwrite-grid', default=False, is_flag=True,
         help='Flag to overwrite grid for zonal stats if already exists')
+@click.option('--no-resid-plot', '-r', default=True, is_flag=True,
+        help='Flag to NOT plot station residuals between observed and '+\
+                'interpolated data for layer')
 @click.option('--options', nargs=1, type=str, default=None, is_flag=False,
         help='Extra command line arguments for gdal_grid interpolation')
 @click.option('--gridmet-meta', '-g', nargs=1, type=str, default=None,
@@ -211,7 +214,8 @@ def calc_bias_ratios(input_csv, out_dir, gridmet_var, station_var,
 @click.option('--quiet', default=False, is_flag=True, 
         help='Supress command line output')
 def spatial(summary_comp_csv, layer, out, buffer, scale, function, smooth, 
-        params, no_zonal_stats, overwrite_grid, options, gridmet_meta, quiet):
+        params, no_zonal_stats, overwrite_grid, no_resid_plot, options, 
+        gridmet_meta, quiet):
     """
     Spatially interpolate ratio statistics 
 
@@ -265,6 +269,7 @@ def spatial(summary_comp_csv, layer, out, buffer, scale, function, smooth,
         params=params,
         zonal_stats=no_zonal_stats,
         overwrite=overwrite_grid,
+        res_plot=no_resid_plot,
         options=options,
         gridmet_meta_path=gridmet_meta
     )

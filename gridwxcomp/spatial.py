@@ -37,6 +37,12 @@ from fiona.crs import from_epsg
 from osgeo import gdal, osr, ogr
 from rasterstats import zonal_stats
 
+# allows for CL script usage if gridwxcomp not installed
+try:
+    from .plot import station_bar_plot
+except:
+    from plot import station_bar_plot
+
 # constant gridmet resolution in decimal degrees
 CELL_SIZE = 0.041666666666666664
 
@@ -44,7 +50,7 @@ OPJ = os.path.join
    
 def main(input_file_path, layer='all', out=None, buffer=25, scale_factor=0.1, 
          function='invdist', smooth=0, params=None, zonal_stats=True,
-         overwrite=False, options=None, gridmet_meta_path=None):
+         res_plot=True, overwrite=False, options=None, gridmet_meta_path=None):
     """
     Create point shapefile of monthly mean bias ratios from comprehensive
     CSV file created by :mod:`gridwxcomp.calc_bias_ratios`. Build fishnet grid 
@@ -98,6 +104,8 @@ def main(input_file_path, layer='all', out=None, buffer=25, scale_factor=0.1,
             surface to gridMET cells in fishnet and save to a CSV file. 
             The CSV file will be saved to the same directory as the interpolated
             raster file(s).
+        res_plot (bool): default True. Make bar plot for residual (error)
+            between interpolated and station value for ``layer``.
         options (str or None): default None. Extra command line arguments
             for gdal interpolation.
         gridmet_meta_path (str): default None. Path to metadata CSV file 
@@ -211,6 +219,7 @@ def main(input_file_path, layer='all', out=None, buffer=25, scale_factor=0.1,
         params=params,
         buffer=buffer,
         zonal_stats=zonal_stats,
+        res_plot=res_plot,
         options=options,
         gridmet_meta_path=gridmet_meta_path) 
 
@@ -821,7 +830,7 @@ def _update_subgrid(grid_path, gridmet_meta_path=None):
     
 def interpolate(in_path, layer='all', out=None, scale_factor=0.1, 
                 function='invdist', smooth=0, params=None, bounds=None, 
-                buffer=25, zonal_stats=True, options=None, 
+                buffer=25, zonal_stats=True, res_plot=True, options=None, 
                 gridmet_meta_path=None):
     """
     Use various methods to interpolate a 2-dimensional surface of
@@ -867,7 +876,9 @@ def interpolate(in_path, layer='all', out=None, scale_factor=0.1,
         zonal_stats (bool): default True. Calculate zonal means of interpolated
             surface to gridMET cells in fishnet and save to a CSV file. 
             The CSV file will be saved to the same directory as the interpolated
-            raster file(s).
+            raster file(s).            
+        res_plot (bool): default True. Make bar plot for residual (error)
+            between interpolated and station value for ``layer``.
         options (str or None): default None. Extra command line arguments
             for gdal interpolation.
         gridmet_meta_path (str or None): default None. Path to metadata CSV 
@@ -893,7 +904,7 @@ def interpolate(in_path, layer='all', out=None, scale_factor=0.1,
         >>> from gridwxcomp import spatial
         >>> summary_file = 'monthly_ratios/etr_mm_summary_comp_all_yrs.csv'
         >>> buffer = 10
-        >>> layer = 'Annual_mean'
+        >>> layer = 'annual_mean'
         >>> params = {'power':1, 'smooth':20}
         >>> out_dir = 's20_p1' # optional subdir name for saving rasters
         >>> interpolate(summary_file, layer=layer, out=out_dir, 
@@ -915,13 +926,15 @@ def interpolate(in_path, layer='all', out=None, scale_factor=0.1,
                 │       ├── etr_mm_summary_pts.prj
                 │       ├── etr_mm_summary_pts.shp
                 │       ├── etr_mm_summary_pts.shx
-                │       └── gridMET_stats.csv
+                │       ├── gridMET_stats.csv
+                │       └── residual_plots
+                │           └── annual_res.html
                 ├── grid.cpg
                 ├── grid.dbf
                 ├── grid.prj
                 ├── grid.shp
                 └── grid.shx
-                    
+            
         Specifically, the interpolated raster is saved to::
         
             'monthly_ratios/spatial/etr_mm_invdist_400m/s20_p1/Annual_mean.tiff'
@@ -1025,15 +1038,13 @@ def interpolate(in_path, layer='all', out=None, scale_factor=0.1,
     path_root = os.path.split(in_path)[0]
     file_name = os.path.split(in_path)[1]
     # get variable name from input file prefix
-    grid_var = file_name.split('_summ')[0]
+    grid_var = file_name.split('_summary')[0]
     
     if not out: 
-        out_dir = OPJ(path_root,
-                      'spatial', 
+        out_dir = OPJ('spatial', 
                       '{}_{}_{}m'.format(grid_var, function, res))
     else:
-        out_dir = OPJ(path_root,
-                      'spatial',
+        out_dir = OPJ('spatial',
                       '{}_{}_{}m'.format(grid_var, function, res),
                       out)
         
@@ -1046,7 +1057,7 @@ def interpolate(in_path, layer='all', out=None, scale_factor=0.1,
         Path(out_dir).mkdir(parents=True, exist_ok=True)
     
     
-    def _run_rbf_interpolation(layer, bounds, function, smooth):
+    def _run_rbf_interpolation(out_dir, layer, bounds, function, smooth):
         """Workflow for running scipy Rbf interpolation of scatter points"""
         out_file = OPJ(
             out_dir, 
@@ -1069,7 +1080,7 @@ def interpolate(in_path, layer='all', out=None, scale_factor=0.1,
         # check if layer is in summary CSV 
         existing_layers = pd.read_csv(in_path).columns
         if not layer in existing_layers:
-            print('column {} does not exist in input CSV:\n {}'.format(
+            print('Column {} does not exist in input CSV:\n {}'.format(
                layer, in_path),
                  '\nSkipping interpolation.'
             )
@@ -1180,6 +1191,22 @@ def interpolate(in_path, layer='all', out=None, scale_factor=0.1,
         # calculate zonal statistics save means for each gridMET cell
         if zonal_stats:
             gridmet_zonal_stats(in_path, out_file)
+            
+        # plot layer's interpolated residuals as bar plot witheach Wx station           
+        if res_plot:
+            layer = InterpGdal.var_residual_names.get(
+                layer, 
+                layer.replace('mean','res')
+            )
+            y_label = 'residual (interpolated minus station value)'
+            title = 'layer: {} algorithm: {} (RBF) resolution: {}m'.format(
+                layer, function ,res)
+            res_plot_dir = Path(out_dir)/'residual_plots'
+            subtitle='parameters: smooth={}'.format(smooth)
+            source_file =  Path(out_dir)/Path(in_path).name
+
+            station_bar_plot(source_file, layer, out_dir=res_plot_dir, 
+                y_label=y_label, title=title, subtitle=subtitle)
 
         
     # run gdal_grid interpolation 
@@ -1190,21 +1217,22 @@ def interpolate(in_path, layer='all', out=None, scale_factor=0.1,
         gg = InterpGdal(in_path)
         gg.gdal_grid(layer=layer, out_dir=out_dir, interp_meth=function,
                     params=params, bounds=bounds, scale_factor=scale_factor,
-                    zonal_stats=zonal_stats, options=options)
+                    zonal_stats=zonal_stats, res_plot=res_plot, 
+                    options=options)
         
     # scipy radial basis function interpolation for now
     # run interpolation and zonal statistics depending on layer kwarg
     else: 
         if layer == 'all': # potential for multiprocessing
             for l in InterpGdal.default_layers:
-                _run_rbf_interpolation(l, bounds, function, smooth)
+                _run_rbf_interpolation(out_dir, l, bounds, function, smooth)
         # single layer option
         elif isinstance(layer, str):
-            _run_rbf_interpolation(layer, bounds, function, smooth)
+            _run_rbf_interpolation(out_dir, layer, bounds, function, smooth)
         # run select list or tuple of layers
         elif isinstance(layer, (list, tuple)):
             for l in layer:
-                _run_rbf_interpolation(l, bounds, function, smooth)
+                _run_rbf_interpolation(out_dir, l, bounds, function, smooth)
 
 def calc_pt_error(in_path, out_dir, layer, grid_var):
     """
@@ -1489,7 +1517,7 @@ def arg_parse():
         metavar='', help='Function to use for spatial interpolation, gdal'+\
                 ' methods include invdist, invdistnn, average, nearest,'+\
                 ' and linear. Radial basis functions include: multiquadric,'+\
-                ' inverse, gaussian, linear_rbf, cubic, quintic, thin_plate.') 
+                ' inverse, gaussian, linear_rbf, cubic, quintic, thin_plate') 
     optional.add_argument(
         '--smooth', required=False, default=0, type=float, metavar='',
         help='Smooth parameter for radial basis func interpolation methods')
@@ -1500,10 +1528,14 @@ def arg_parse():
     optional.add_argument(
         '-z', '--zonal-stats', required=False, default=True, 
         action='store_false', help='Flag to NOT extract zonal means of'+\
-            ' interpolated rasters to gridMET cells.')
+            ' interpolated rasters to gridMET cells')
     optional.add_argument(
         '--overwrite-grid', required=False, default=False, 
         action='store_true', help='Flag to overwrite existing fishnet grid')
+    optional.add_argument(
+        '-r', '--no-resid-plot', required=False, default=True, 
+        action='store_false', help='Flag to NOT generate residual plot'+\
+            ' between observed and interpolated station values')    
     optional.add_argument(
         '--options', required=False, default=None, type=str, metavar='',
         help='Additional command line options for gdal_grid interpolation')
@@ -1527,7 +1559,7 @@ if __name__ == '__main__':
     layer = layer.split(',')
     if len(layer) == 1:
         layer = layer[0] # get single layer as string
-
+        
     main(
         input_file_path=args.input,
         layer=layer,
@@ -1537,8 +1569,9 @@ if __name__ == '__main__':
         function=args.function,
         smooth=args.smooth,
         params=args.params,
-        zonal_stats=args.zonal_stats,
+        zonal_stats=args.no_zonal_stats,
         overwrite=args.overwrite_grid,
+        res_plot=args.no_resid_plot,
         options=args.options,
         gridmet_meta_path=args.gridmet_meta
     )

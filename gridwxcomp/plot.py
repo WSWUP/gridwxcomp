@@ -688,10 +688,10 @@ def station_bar_plot(summary_csv, layer, out_dir=None, x_label=None,
     """
     if not Path(summary_csv).is_file():
         err_msg = '\n{} is not a valid path to a summary CSV file!'.\
-                format(in_path)
+                format(summary_csv)
         raise FileNotFoundError(err_msg)
         
-    df = pd.read_csv(summary_csv)
+    df = pd.read_csv(summary_csv, na_values=[-999])
     
     if not layer in df.columns:
         err_msg = '\nColumn {} was not found in {}'.format(layer, summary_csv)
@@ -711,10 +711,13 @@ def station_bar_plot(summary_csv, layer, out_dir=None, x_label=None,
     # save to working directory in 'station_bar_plots' if not specified
     if not out_dir:
         out_dir = Path(summary_csv).parent/'station_bar_plots'
-        if not out_dir.is_dir():
-            print('\n{} does not exist, making directory'.format(out_dir))
-            out_dir.mkdir(parents=True, exist_ok=True)
-    
+    else:
+        out_dir = Path(out_dir)
+    if not out_dir.is_dir():
+        print('\n{}\nDoes not exist, making directory'.format(
+            out_dir.absolute()))
+        out_dir.mkdir(parents=True, exist_ok=True)
+
     out_file = out_dir/'{}.html'.format(layer)
     print('\nCreating station bar plot for variable: ', layer,
          '\nUsing data from file: ', Path(summary_csv).absolute())
