@@ -1059,6 +1059,15 @@ def interpolate(in_path, layer='all', out=None, scale_factor=0.1,
     
     def _run_rbf_interpolation(out_dir, layer, bounds, function, smooth):
         """Workflow for running scipy Rbf interpolation of scatter points"""
+        # if running scipy methods prepend root dir to out path
+        out_dir = OPJ(path_root, out_dir)
+        if not os.path.isdir(out_dir):
+            print(
+                os.path.abspath(out_dir),
+                ' does not exist, creating directory.\n'
+            )
+            Path(out_dir).mkdir(parents=True, exist_ok=True)
+
         out_file = OPJ(
             out_dir, 
             '{time_agg}.tiff'.format(time_agg=layer)

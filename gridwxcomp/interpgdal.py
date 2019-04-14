@@ -500,7 +500,7 @@ class InterpGdal(object):
             _interp_msg(grid_var, layer, self.interp_meth, res, out_file) 
             # build command line arguments
             cmd = (r'gdal_grid -a {meth}{p} -txe {xmin} {xmax} -tye {ymax}' 
-                  ' {ymin} -outsize {nx} {ny} -of GTiff -ot Float64 -l {source}'
+                  ' {ymin} -outsize {nx} {ny} -of GTiff -ot Float32 -l {source}'
                   ' {vrt} {out} {options}'.format(meth=interp_meth, p=param_str,
                       xmin=xmin, xmax=xmax, ymin=ymin, ymax=ymax, nx=nx_cells, 
                       ny=ny_cells, source=source, vrt=vrt_file, out=tiff_file, 
