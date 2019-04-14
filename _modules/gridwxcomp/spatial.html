@@ -1251,6 +1251,15 @@
     
     <span class="k">def</span> <span class="nf">_run_rbf_interpolation</span><span class="p">(</span><span class="n">out_dir</span><span class="p">,</span> <span class="n">layer</span><span class="p">,</span> <span class="n">bounds</span><span class="p">,</span> <span class="n">function</span><span class="p">,</span> <span class="n">smooth</span><span class="p">):</span>
         <span class="sd">&quot;&quot;&quot;Workflow for running scipy Rbf interpolation of scatter points&quot;&quot;&quot;</span>
+        <span class="c1"># if running scipy methods prepend root dir to out path</span>
+        <span class="n">out_dir</span> <span class="o">=</span> <span class="n">OPJ</span><span class="p">(</span><span class="n">path_root</span><span class="p">,</span> <span class="n">out_dir</span><span class="p">)</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isdir</span><span class="p">(</span><span class="n">out_dir</span><span class="p">):</span>
+            <span class="nb">print</span><span class="p">(</span>
+                <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">out_dir</span><span class="p">),</span>
+                <span class="s1">&#39; does not exist, creating directory.</span><span class="se">\n</span><span class="s1">&#39;</span>
+            <span class="p">)</span>
+            <span class="n">Path</span><span class="p">(</span><span class="n">out_dir</span><span class="p">)</span><span class="o">.</span><span class="n">mkdir</span><span class="p">(</span><span class="n">parents</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
         <span class="n">out_file</span> <span class="o">=</span> <span class="n">OPJ</span><span class="p">(</span>
             <span class="n">out_dir</span><span class="p">,</span> 
             <span class="s1">&#39;</span><span class="si">{time_agg}</span><span class="s1">.tiff&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">time_agg</span><span class="o">=</span><span class="n">layer</span><span class="p">)</span>
