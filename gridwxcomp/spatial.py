@@ -40,8 +40,10 @@ from rasterstats import zonal_stats
 # allows for CL script usage if gridwxcomp not installed
 try:
     from .plot import station_bar_plot
+    from .util import get_gridmet_meta_csv
 except:
     from plot import station_bar_plot
+    from util import get_gridmet_meta_csv
 
 # constant gridmet resolution in decimal degrees
 CELL_SIZE = 0.041666666666666664
@@ -765,22 +767,9 @@ def _update_subgrid(grid_path, gridmet_meta_path=None):
         raise FileNotFoundError('The file path for the gridMET fishnet '\
                                +'was invalid or does not exist. ')
     # look for pacakged gridmet_cell_data.csv if path not given
-    if not gridmet_meta_path:
-        try:
-            if pkg_resources.resource_exists('gridwxcomp', 
-                    "gridmet_cell_data.csv"):
-                gridmet_meta_path = pkg_resources.resource_filename(
-                    'gridwxcomp', 
-                    "gridmet_cell_data.csv"
-                    )
-        except:
-            gridmet_meta_path = 'gridmet_cell_data.csv'
-    if not os.path.exists(gridmet_meta_path):
-        raise FileNotFoundError('GridMET file path was not given and '+\
-                'gridmet_cell_data.csv was not found in the gridwxcomp '+\
-                'install directory. Please assign the path or put '+\
-                '"gridmet_cell_data.csv" in the current working directory.\n')
-      
+    gridmet_meta_path = get_gridmet_meta_csv(
+            gridmet_meta_path=gridmet_meta_path)
+
     tmp_out = grid_path.replace('.shp', '_tmp.shp')
 
     # load gridMET metadata file for looking up gridMET IDs
@@ -1016,22 +1005,11 @@ def interpolate(in_path, layer='all', out=None, scale_factor=0.1,
     if not os.path.isfile(in_path):
         raise FileNotFoundError('Input summary CSV file given'+\
                                 ' was invalid or not found')
+    
     # look for packaged gridmet_cell_data.csv if path not given
-    if not gridmet_meta_path:
-        try:
-            if pkg_resources.resource_exists('gridwxcomp', 
-                    "gridmet_cell_data.csv"):
-                gridmet_meta_path = pkg_resources.resource_filename(
-                    'gridwxcomp', 
-                    "gridmet_cell_data.csv"
-                    )
-        except:
-            gridmet_meta_path = 'gridmet_cell_data.csv'
-    if not os.path.exists(gridmet_meta_path):
-        raise FileNotFoundError('GridMET file path was not given and '+\
-                'gridmet_cell_data.csv was not found in the gridwxcomp '+\
-                'install directory. Please assign the path or put '+\
-                '"gridmet_cell_data.csv" in the current working directory.\n')
+    gridmet_meta_path = get_gridmet_meta_csv(
+            gridmet_meta_path=gridmet_meta_path)
+
     # calc raster resolution in meters (as frac of 4 km)
     res = int(4 * scale_factor * 1000)
     # path to save raster of interpolated grid scaled by scale_factor
@@ -1426,7 +1404,7 @@ def gridmet_zonal_stats(in_path, raster):
     # get variable names from input file prefix
     grid_var = file_name.split('_summ')[0]
     var_name = Path(raster).name.split('.')[0]
-    # grid is always in the "spatial" subdir of in_path
+    # grid is in the "spatial" subdir of in_path
     grid_file = OPJ(path_root, 'spatial', 'grid.shp')
     # save zonal stats to summary CSV in same dir as raster as of version 0.3
     raster_root = os.path.split(raster)[0]

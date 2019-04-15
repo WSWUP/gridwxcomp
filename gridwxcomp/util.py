@@ -3,6 +3,30 @@
 Utility functions or classes for ``gridwxcomp`` package
 """
 
+import pkg_resources
+from pathlib import Path
+
+def get_gridmet_meta_csv(gridmet_meta_path=None):
+    """Find path to 'gridmet_cell_data.csv' packaged with gridwxcomp"""
+    # look for pacakged gridmet_cell_data.csv if path not given
+    if not gridmet_meta_path:
+        try:
+            if pkg_resources.resource_exists('gridwxcomp',
+                    'gridmet_cell_data.csv'):
+                gridmet_meta_path = pkg_resources.resource_filename(
+                    'gridwxcomp',
+                    'gridmet_cell_data.csv'
+                    )
+        except:
+            gridmet_meta_path = 'gridmet_cell_data.csv'
+    if not Path(gridmet_meta_path).is_file():
+        raise FileNotFoundError('GridMET file path was not given and '+\
+                'gridmet_cell_data.csv was not found in the gridwxcomp '+\
+                'install directory. Please assign the path or put '+\
+                '"gridmet_cell_data.csv" in the current working directory.\n')
+    return gridmet_meta_path
+
+
 def parse_yr_filter(dt_df, years, label):
     """
     Parse string year filter and apply it to datetime-indexed
@@ -38,15 +62,14 @@ def parse_yr_filter(dt_df, years, label):
             in time series index of DataFrame.
 
     """
+    err_msg = ('{} is not a valid years option,\n'.format(years),
+                    'use single or range e.g. 2015 or 2000-2010')
     if years == 'all':
-        dt_df = dt_df
         year_str = 'all_yrs'
     else:
         try:
-            if years and '-' in years:
-                err_msg = '{} is not a valid years option,\n'.format(years) +\
-                    'use single or range e.g. 2015 or 2000-2010'
-                start, end = years.split('-')
+            if years and isinstance(years, str) and '-' in years:
+                start, end = years.strip().split('-')
                 year_str = '{}_{}'.format(start, end)
                 data_start = start
                 data_end = end
@@ -67,12 +90,17 @@ def parse_yr_filter(dt_df, years, label):
                     print('Years used will only include {} to {}'\
                               .format(data_start, data_end))
             else:
-                year_str = str(years)
+                year_str = str(int(years))
+                if not len(year_str) == 4:
+                    raise ValueError(err_msg)
                 if not years in dt_df.index:
                     print('WARNING:', label, 'is missing data',
                         'for year:', years)
+                    data_start = dt_df.index.year.min()
+                    data_end = dt_df.index.year.max()
+                    print('Years used will only include {} to {}'\
+                              .format(data_start, data_end))
                 else:
-                    
                     dt_df = dt_df.loc[years]
         except:
             raise ValueError(err_msg)

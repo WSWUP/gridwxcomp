@@ -18,6 +18,12 @@ import pandas as pd
 import numpy as np        
 from scipy import spatial
 
+# allows for CL script usage if gridwxcomp not installed
+try:
+    from .util import get_gridmet_meta_csv
+except:
+    from util import get_gridmet_meta_csv
+
 def main(station_file, out_path, gridmet_meta_file):
     """
     Take list of climate stations and merge each with overlapping gridMET cell
@@ -228,21 +234,8 @@ def prep_input(station_path, out_path='merged_input.csv',
 
     """
     # look for pacakged gridmet_cell_data.csv if path not given
-    if not gridmet_meta_path:
-        try:
-            if pkg_resources.resource_exists('gridwxcomp', 
-                    'gridmet_cell_data.csv'):
-                gridmet_meta_path = pkg_resources.resource_filename(
-                    'gridwxcomp', 
-                    'gridmet_cell_data.csv'
-                    )
-        except:
-            gridmet_meta_path = 'gridmet_cell_data.csv'
-    if not os.path.exists(gridmet_meta_path):
-        raise FileNotFoundError('GridMET file path was not given and '+\
-                'gridmet_cell_data.csv was not found in the gridwxcomp '+\
-                'install directory. Please assign the path or put '+\
-                '"gridmet_cell_data.csv" in the current working directory.\n')
+    gridmet_meta_path = get_gridmet_meta_csv(
+            gridmet_meta_path=gridmet_meta_path)
 
     path_root = os.path.split(os.path.abspath(out_path))[0]
     if not os.path.exists(path_root):
