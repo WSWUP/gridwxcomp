@@ -273,28 +273,9 @@ def prep_input(station_path, out_path='merged_input.csv',
             print('Failed to find matching gridMET info for climate '\
                     +'station with STATION_ID = ', row.STATION_ID,'\n')  
     stations.GRIDMET_ID = stations.GRIDMET_ID.astype(int)
-    out_df = stations.merge(gridmet_meta,on='GRIDMET_ID')
-    out_df['ELEV_FT'] = out_df.ELEV_M * 3.28084 # m to ft
-    out_df = out_df.reindex(
-             columns=['GRIDMET_ID',
-                      'LAT',
-                      'LON',
-                      'ELEV_M',
-                      'ELEV_FT',
-                      'STATION_ID',
-                      'FID',
-                      'STATION_LAT',
-                      'STATION_LON',
-                      'STATION_ELEV_M',
-                      'STATION_ELEV_FT',
-                      'STATION_FILE_PATH',
-                      'State',
-                      'Source',
-                      'Station',
-                      'Website',
-                      'Comments',
-                      'Irrigation'
-            ])
+    out_df = stations.merge(gridmet_meta, on='GRIDMET_ID')
+    if 'ELEV_M' in out_df.columns:
+        out_df['ELEV_FT'] = out_df.ELEV_M * 3.28084 # m to ft
     # save CSV 
     out_df.to_csv(out_path, index=False)
 
