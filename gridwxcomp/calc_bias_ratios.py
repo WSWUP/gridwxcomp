@@ -191,7 +191,8 @@ def _save_output(out_df, comp_out_df, out_dir, gridmet_ID, var_name, yrs):
     def __save_update(out_df, out_file):
         """
         Helper function that is reused for both short and long summary
-        files.        
+        files. Saves station ratio data by appending to existing file or
+        overwriting data for a station if it was previously calculated.
         """
         # if short file exists add/overwrite row for station
         if os.path.isfile(out_file):
