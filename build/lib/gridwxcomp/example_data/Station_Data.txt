@@ -1,0 +1,5 @@
+FID,OBJECTID,Id,State,Source,Status,Station,Latitude,Longitude,Date,Station_ID,Elev_FT,Comments,Location,Filename,Irrigation,Website,Elev_m
+0,2,0,UT,AgWeather,Existing,Bluebell (Neola Area),40.3723213601075,-110.209184085302,First Date of Observation: 04/20/2016,blbu,6186, ,UCRB,BluebellUT_Daily, ,https://climate.usurf.usu.edu/mchd/index.php,1885.4899902
+1,3,0,UT,AgWeather,Existing,Loa,38.3834675639262,-111.635832870077,First Date of Observation:4/21/2016,loau,7116, ,UCRB,LoaUT_Daily, ,https://climate.usurf.usu.edu/mchd/index.php,2168.9599609
+2,9,0,CO,COAGM,Existing,Bedrock,38.328297440752,-108.855494308994,First Date of Observation: 11/7/2013,BRK01,4973, ,UCRB,BedrockCO_Daily,Dry Land,http://www.coagmet.colostate.edu/,1515.7700195
+3,15,0,UT,AgriMet,Existing,Castle Valley near Moab,38.6429447999517,-109.398808843297,First Date of Observation: 3/13/2015,csvu,4687, ,UCRB,CastleValleyUT_Daily, ,https://www.usbr.gov/pn/agrimet/wxdata.html,1428.5999756
