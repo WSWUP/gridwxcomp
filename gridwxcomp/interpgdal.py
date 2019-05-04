@@ -459,7 +459,18 @@ class InterpGdal(object):
             self.grid_bounds = bounds
         # raster extent
         xmin,xmax,ymin,ymax = self.grid_bounds
-        
+        # fix any minor adjustments to make raster fit gridMET fishnet extent
+        # if scale_factor=1 make sure raster pixels align exactly w/gridcells
+        if scale_factor:
+            nxcells = np.abs(xmin-xmax) / (InterpGdal.CELL_SIZE*scale_factor)
+            nycells = np.abs(ymin-ymax) / (InterpGdal.CELL_SIZE*scale_factor)
+            remainder_x = int(nxcells) - nxcells
+            remainder_y = int(nycells) - nycells
+            xmin -= remainder_x
+            xmax += InterpGdal.CELL_SIZE
+            ymin -= remainder_y
+            ymin -= InterpGdal.CELL_SIZE
+
         # if not given get pixels in lon lat using gridMET resolution
         # add one cell to avoid unfilled extent in case of large upscaling
         if not nx_cells:
@@ -476,7 +487,7 @@ class InterpGdal(object):
             """reuse if running multiple layers"""
             existing_layers = pd.read_csv(self.summary_csv_path).columns
             if not layer in existing_layers:
-                print('column {} does not exist in input CSV:\n {}'.format(
+                print('\nError: {} does not exist in input CSV:\n {}'.format(
                    layer, self.summary_csv_path),
                      '\nSkipping interpolation.'
                )
@@ -495,9 +506,9 @@ class InterpGdal(object):
             grid_var = Path(self.summary_csv_path).name.split('_summ')[0]
             # recalculate raster resolution from bounds
             n4km_xcells = int(round(np.abs(xmin - xmax) / InterpGdal.CELL_SIZE))
-            scale_factor = n4km_xcells / nx_cells
-            res = round(4 * scale_factor * 1000)
-            _interp_msg(grid_var, layer, self.interp_meth, res, out_file) 
+            scale_factor_actual = n4km_xcells / nx_cells
+            res_actual = round(4 * scale_factor * 1000)
+            _interp_msg(grid_var, layer, self.interp_meth, res_actual, out_file)
             # build command line arguments
             cmd = (r'gdal_grid -a {meth}{p} -txe {xmin} {xmax} -tye {ymax}' 
                   ' {ymin} -outsize {nx} {ny} -of GTiff -ot Float32 -l {source}'

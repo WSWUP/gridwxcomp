@@ -1026,15 +1026,6 @@ def interpolate(in_path, layer='all', out=None, scale_factor=0.1,
                       '{}_{}_{}m'.format(grid_var, function, res),
                       out)
         
-    # create output directory if does not exist
-    if not os.path.isdir(out_dir):
-        print(
-            os.path.abspath(out_dir), 
-            ' does not exist, creating directory.\n'
-        )
-        Path(out_dir).mkdir(parents=True, exist_ok=True)
-    
-    
     def _run_rbf_interpolation(out_dir, layer, bounds, function, smooth):
         """Workflow for running scipy Rbf interpolation of scatter points"""
         # if running scipy methods prepend root dir to out path
@@ -1064,6 +1055,20 @@ def interpolate(in_path, layer='all', out=None, scale_factor=0.1,
         if not bounds:
             bounds = get_subgrid_bounds(in_path, buffer=buffer) 
         lon_min, lon_max, lat_min, lat_max = bounds
+        # fix any minor adjustments to make raster fit gridMET fishnet extent
+        # if scale_factor=1 make sure raster pixels align exactly w/gridcells
+        # raster extent may exceed fishnet grid to fill gaps for zonal stats
+        if scale_factor:
+            nxcells = np.abs(lon_min-lon_max) / \
+                    (InterpGdal.CELL_SIZE*scale_factor)
+            nycells = np.abs(lat_min-lat_max) / \
+                    (InterpGdal.CELL_SIZE*scale_factor)
+            remainder_x = int(nxcells) - nxcells
+            remainder_y = int(nycells) - nycells
+            lon_min -= remainder_x
+            lon_max += InterpGdal.CELL_SIZE
+            lat_min -= remainder_y
+            lat_min -= InterpGdal.CELL_SIZE
         # check if layer is in summary CSV 
         existing_layers = pd.read_csv(in_path).columns
         if not layer in existing_layers:
