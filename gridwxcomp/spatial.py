@@ -1058,17 +1058,21 @@ def interpolate(in_path, layer='all', out=None, scale_factor=0.1,
         # fix any minor adjustments to make raster fit gridMET fishnet extent
         # if scale_factor=1 make sure raster pixels align exactly w/gridcells
         # raster extent may exceed fishnet grid to fill gaps for zonal stats
+        CS = InterpGdal.CELL_SIZE
         if scale_factor:
-            nxcells = np.abs(lon_min-lon_max) / \
-                    (InterpGdal.CELL_SIZE*scale_factor)
-            nycells = np.abs(lat_min-lat_max) / \
-                    (InterpGdal.CELL_SIZE*scale_factor)
+            nxcells = abs(lon_min-lon_max) / (CS*scale_factor)
+            nycells = abs(lat_min-lat_max) / (CS*scale_factor)
             remainder_x = int(nxcells) - nxcells
             remainder_y = int(nycells) - nycells
+            if abs(remainder_x) > CS:
+                remainder_x -= CS * (remainder_x / CS) 
+            if abs(remainder_y) > CS:
+                remainder_y -= CS * (remainder_y / CS)
             lon_min -= remainder_x
-            lon_max += InterpGdal.CELL_SIZE
+            lon_max += CS
             lat_min -= remainder_y
-            lat_min -= InterpGdal.CELL_SIZE
+            lat_min -= CS
+
         # check if layer is in summary CSV 
         existing_layers = pd.read_csv(in_path).columns
         if not layer in existing_layers:

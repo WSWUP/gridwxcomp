@@ -448,7 +448,7 @@ class InterpGdal(object):
         # update instance parameters for later reference
         self.params = params
         # parameters to command line input str :name=value:name=value ...
-        param_str = ':'+':'.join('{!s}={!r}'.format(key,val) 
+        param_str = ':'+':'.join('{}={}'.format(key,val) 
                                  for (key,val) in params.items()) 
         # get boundary info and update instance attribute
         if not bounds and not self.grid_bounds:
@@ -461,15 +461,20 @@ class InterpGdal(object):
         xmin,xmax,ymin,ymax = self.grid_bounds
         # fix any minor adjustments to make raster fit gridMET fishnet extent
         # if scale_factor=1 make sure raster pixels align exactly w/gridcells
+        CS = InterpGdal.CELL_SIZE
         if scale_factor:
-            nxcells = np.abs(xmin-xmax) / (InterpGdal.CELL_SIZE*scale_factor)
-            nycells = np.abs(ymin-ymax) / (InterpGdal.CELL_SIZE*scale_factor)
+            nxcells = abs(xmin-xmax) / (CS*scale_factor)
+            nycells = abs(ymin-ymax) / (CS*scale_factor)
             remainder_x = int(nxcells) - nxcells
             remainder_y = int(nycells) - nycells
+            if abs(remainder_x) > CS:
+                remainder_x -= CS * (remainder_x / CS) 
+            if abs(remainder_y) > CS:
+                remainder_y -= CS * (remainder_y / CS) 
             xmin -= remainder_x
-            xmax += InterpGdal.CELL_SIZE
+            xmax += CS
             ymin -= remainder_y
-            ymin -= InterpGdal.CELL_SIZE
+            ymin -= CS
 
         # if not given get pixels in lon lat using gridMET resolution
         # add one cell to avoid unfilled extent in case of large upscaling
