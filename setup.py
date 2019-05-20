@@ -25,7 +25,7 @@ requires = [
     'xlrd==1.2.0'
 ]
 
-tests_require = []
+tests_require = ['pytest']
 
 classifiers = [
     'License :: OSI Approved :: Apache Software License',

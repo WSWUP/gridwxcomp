@@ -13,6 +13,7 @@ import pandas as pd
 from gridwxcomp.util import get_gridmet_meta_csv, parse_yr_filter
 from gridwxcomp.prep_input import main, prep_input, _read_station_list
 from gridwxcomp.download_gridmet_ee import download_gridmet_ee
+from gridwxcomp.download_gridmet_opendap import download_gridmet_opendap
 from gridwxcomp.calc_bias_ratios import calc_bias_ratios
 
 @pytest.fixture(scope="session")
@@ -54,17 +55,26 @@ def data(request):
         d.get('station_meta_path').parent.parent/'merged_input.csv'
     d['prep_input_outpath_copy'] =\
         d.get('station_meta_path').parent.parent/'merged_input_cp.csv'
-    d['download_dir'] = d.get('prep_input_outpath').parent/'gridmet_data'
+    d['od_download_dir'] = d.get('prep_input_outpath').parent/'od_gridmet_data'
+    d['ee_download_dir'] = d.get('prep_input_outpath').parent/'ee_gridmet_data'
     d['ratio_dir'] = d.get('prep_input_outpath').parent/'test_ratios'
 
     def teardown():
         rmtree(Path('tests')/'example_data')
-        d['gridmet_cell_data_copy'].unlink()
-        d['prep_input_outpath'].unlink()
-        d['prep_input_outpath_copy'].unlink()
-        rmtree(d['download_dir'])
-        rmtree(d['ratio_dir'])
-        rmtree(Path('tests')/'__pycache__')
+        if d['gridmet_cell_data_copy'].is_file:
+            d['gridmet_cell_data_copy'].unlink()
+        if d['prep_input_outpath'].is_file():
+            d['prep_input_outpath'].unlink()
+        if d['prep_input_outpath_copy'].is_file():
+            d['prep_input_outpath_copy'].unlink()
+        if d['od_download_dir'].is_dir():
+            rmtree(d['od_download_dir'])
+        if d['ee_download_dir'].is_dir():
+            rmtree(d['ee_download_dir'])
+        if d['ratio_dir'].is_dir():
+            rmtree(d['ratio_dir'])
+        if (Path('tests')/'__pycache__').is_dir():
+            rmtree(Path('tests')/'__pycache__')
     request.addfinalizer(teardown)
 
     return d
@@ -173,8 +183,7 @@ class TestPrepInput(object):
         test_lon = df.loc[df['STATION_ID']=='Loa']['STATION_LON'].values[0]
         assert np.isclose(test_lon, -111.635832870077)
 
-
-class TestDownloadGridmetEe(object):
+class TestDownloadGridmetOpenDap(object):
 
     def setup_method(self):
         self.gridmet_cols = ('date', 'year', 'month', 'day', 'centroid_lat',
@@ -183,13 +192,13 @@ class TestDownloadGridmetEe(object):
 
         self.gridmet_ids = ('441130', '443835', '452205', '509011')
 
-    def test_download_gridmet_ee_single_year(self, data):
-        download_dir = data['prep_input_outpath'].parent/'gridmet_data'
-        download_gridmet_ee(
+    def test_download_gridmet_od_single_year(self, data):
+        download_dir = data['prep_input_outpath'].parent/'od_gridmet_data'
+        download_gridmet_opendap(
             data['prep_input_outpath'],
             out_folder=download_dir,
             year_filter='2016',
-            year_update=False
+            update_data=False
         )
         assert download_dir.is_dir()
         # check all four gridMET cells time series were downloaded
@@ -207,16 +216,130 @@ class TestDownloadGridmetEe(object):
         assert 'GRIDMET_FILE_PATH' in df.columns
         # check correct path to gridmet time series file
         assert not set(
+            df.loc[0,'GRIDMET_FILE_PATH'].split(os.sep)).isdisjoint(
+                ['tests','od_gridmet_data','gridmet_historical_509011.csv'])
+
+    def test_download_gridmet_od_multiple_years(self, data):
+        download_dir = data['prep_input_outpath'].parent/'od_gridmet_data'
+        download_gridmet_opendap(
+            data['prep_input_outpath'],
+            out_folder=download_dir,
+            year_filter='2016-2018',
+            update_data=False
+        )
+        for id in self.gridmet_ids:
+            gridmet_file = download_dir.joinpath(
+                'gridmet_historical_{}.csv'.format(id)
+            )
+            assert gridmet_file.is_file()
+        df = pd.read_csv(download_dir/'gridmet_historical_441130.csv',
+            parse_dates=True, index_col='date')
+        # make sure new years data exists and full range
+        assert df.index.year.min() == 2016
+        assert df.index.year.max() == 2018
+        assert not set(df.columns).isdisjoint(self.gridmet_cols)
+        assert df.notna().all().all()
+        assert df.etr_mm.dtype == 'float'
+        #### test is input file from prep_input is updated with gridmet ts path
+        df = pd.read_csv(data['prep_input_outpath'])
+        assert 'GRIDMET_FILE_PATH' in df.columns
+        # check correct path to gridmet time series file
+        assert not set(
+            df.loc[0,'GRIDMET_FILE_PATH'].split(os.sep)).isdisjoint(
+                ['tests','od_gridmet_data','gridmet_historical_509011.csv'])
+
+    def test_download_gridmet_od_update_years(self, data):
+        """
+        Open one gridmet time series file after downloading and change
+        etr values to -1 for April 2016, redownload with update option and 
+        check that they are not -1 (i.e. they should have correct values)
+        """
+        download_dir = data['prep_input_outpath'].parent/'od_gridmet_data'
+        # first download only if this test is run first
+        if not download_dir.joinpath('gridmet_historical_441130.csv').is_file():
+            download_gridmet_opendap(
+                data['prep_input_outpath'],
+                out_folder=download_dir,
+                year_filter='2016',
+                update_data=False
+            )
+        df = pd.read_csv(download_dir/'gridmet_historical_441130.csv',
+            parse_dates=True, index_col='date')
+        df.loc['04/2016', 'etr_mm'] = -1
+        assert (df.loc['04/2016', 'etr_mm'] == -1).all()
+        # second download should update 2016
+        download_gridmet_opendap(
+            data['prep_input_outpath'],
+            out_folder=download_dir,
+            year_filter='2016',
+            update_data=True
+        )
+        # should be updated and no values of -1
+        df = pd.read_csv(download_dir/'gridmet_historical_441130.csv',
+            parse_dates=True, index_col='date')
+        assert not (df.loc['04/2016', 'etr_mm'] == -1).any()
+        # make sure other tests also pass
+        for id in self.gridmet_ids:
+            gridmet_file = download_dir.joinpath(
+                'gridmet_historical_{}.csv'.format(id)
+            )
+            assert gridmet_file.is_file()
+
+        assert not set(df.columns).isdisjoint(self.gridmet_cols)
+        assert df.notna().all().all()
+        assert df.etr_mm.dtype == 'float'
+        #### test is input file from prep_input is updated with gridmet ts path
+        df = pd.read_csv(data['prep_input_outpath'])
+        assert 'GRIDMET_FILE_PATH' in df.columns
+        # check correct path to gridmet time series file
+        assert not set(
             df.loc[0,'GRIDMET_FILE_PATH'].split(os.sep)
         ).isdisjoint(['tests','gridmet_data','gridmet_historical_509011.csv'])
 
+
+class TestDownloadGridmetEe(object):
+
+    def setup_method(self):
+        self.gridmet_cols = ('date', 'year', 'month', 'day', 'centroid_lat',
+                    'centroid_lon', 'elev_m', 'u2_ms', 'tmin_c', 'tmax_c',
+                    'srad_wm2', 'ea_kpa', 'prcp_mm', 'etr_mm', 'eto_mm')
+
+        self.gridmet_ids = ('441130', '443835', '452205', '509011')
+
+    def test_download_gridmet_ee_single_year(self, data):
+        download_dir = data['prep_input_outpath'].parent/'ee_gridmet_data'
+        download_gridmet_ee(
+            data['prep_input_outpath'],
+            out_folder=download_dir,
+            year_filter='2016',
+            year_update=''
+        )
+        assert download_dir.is_dir()
+        # check all four gridMET cells time series were downloaded
+        for id in self.gridmet_ids:
+            gridmet_file = download_dir.joinpath(
+                'gridmet_historical_{}.csv'.format(id)
+            )
+            assert gridmet_file.is_file()
+        df = pd.read_csv(download_dir/'gridmet_historical_441130.csv')
+        assert not set(df.columns).isdisjoint(self.gridmet_cols)
+        assert df.notna().all().all()
+        assert df.etr_mm.dtype == 'float'
+        #### test is input file from prep_input is updated with gridmet ts path
+        df = pd.read_csv(data['prep_input_outpath'])
+        assert 'GRIDMET_FILE_PATH' in df.columns
+        # check correct path to gridmet time series file
+        assert not set(
+            df.loc[0,'GRIDMET_FILE_PATH'].split(os.sep)).isdisjoint(
+                ['tests','ee_gridmet_data','gridmet_historical_509011.csv'])
+
     def test_download_gridmet_ee_multiple_years(self, data):
-        download_dir = data['prep_input_outpath'].parent/'gridmet_data'
+        download_dir = data['prep_input_outpath'].parent/'ee_gridmet_data'
         download_gridmet_ee(
             data['prep_input_outpath'],
             out_folder=download_dir,
             year_filter='2016-2018',
-            year_update=False
+            year_update=''
         )
         for id in self.gridmet_ids:
             gridmet_file = download_dir.joinpath(
@@ -239,54 +362,54 @@ class TestDownloadGridmetEe(object):
             df.loc[0,'GRIDMET_FILE_PATH'].split(os.sep)
         ).isdisjoint(['tests','gridmet_data','gridmet_historical_509011.csv'])
 
-#    def test_download_gridmet_ee_update_years(self, data):
-#        """
-#        Open one gridmet time series file after downloading and change
-#        etr values to -1 for April 2016, redownload with update option and 
-#        check that they are not -1 (i.e. they should have correct values)
-#        """
-#        download_dir = data['prep_input_outpath'].parent/'gridmet_data'
-#        # first download only if this test is run first
-#        if not download_dir.joinpath('gridmet_historical_441130.csv').is_file():
-#            download_gridmet_ee(
-#                data['prep_input_outpath'],
-#                out_folder=download_dir,
-#                year_filter='2016',
-#                year_update=False
-#            )
-#        df = pd.read_csv(download_dir/'gridmet_historical_441130.csv',
-#            parse_dates=True, index_col='date')
-#        df.loc['04/2016', 'etr_mm'] = -1
-#        assert (df.loc['04/2016', 'etr_mm'] == -1).all()
-#        # second download should update 2016
-#        download_gridmet_ee(
-#            data['prep_input_outpath'],
-#            out_folder=download_dir,
-#            year_filter='2016',
-#            year_update='2016'
-#        )
-#        # should be updated and no values of -1
-#        df = pd.read_csv(download_dir/'gridmet_historical_441130.csv',
-#            parse_dates=True, index_col='date')
-#        assert not (df.loc['04/2016', 'etr_mm'] == -1).any()
-#        # make sure other tests also pass
-#        for id in self.gridmet_ids:
-#            gridmet_file = download_dir.joinpath(
-#                'gridmet_historical_{}.csv'.format(id)
-#            )
-#            assert gridmet_file.is_file()
-#
-#        assert not set(df.columns).isdisjoint(self.gridmet_cols)
-#        assert df.notna().all().all()
-#        assert df.etr_mm.dtype == 'float'
-#        #### test is input file from prep_input is updated with gridmet ts path
-#        df = pd.read_csv(data['prep_input_outpath'])
-#        assert 'GRIDMET_FILE_PATH' in df.columns
-#        # check correct path to gridmet time series file
-#        assert not set(
-#            df.loc[0,'GRIDMET_FILE_PATH'].split(os.sep)
-#        ).isdisjoint(['tests','gridmet_data','gridmet_historical_509011.csv'])
-#
+    def test_download_gridmet_ee_update_years(self, data):
+        """
+        Open one gridmet time series file after downloading and change
+        etr values to -1 for April 2016, redownload with update option and 
+        check that they are not -1 (i.e. they should have correct values)
+        """
+        download_dir = data['prep_input_outpath'].parent/'ee_gridmet_data'
+        # first download only if this test is run first
+        if not download_dir.joinpath('gridmet_historical_441130.csv').is_file():
+            download_gridmet_ee(
+                data['prep_input_outpath'],
+                out_folder=download_dir,
+                year_filter='2016',
+                year_update=''
+            )
+        df = pd.read_csv(download_dir/'gridmet_historical_441130.csv',
+            parse_dates=True, index_col='date')
+        df.loc['04/2016', 'etr_mm'] = -1
+        assert (df.loc['04/2016', 'etr_mm'] == -1).all()
+        # second download should update 2016
+        download_gridmet_ee(
+            data['prep_input_outpath'],
+            out_folder=download_dir,
+            year_filter='2016',
+            year_update='2016'
+        )
+        # should be updated and no values of -1
+        df = pd.read_csv(download_dir/'gridmet_historical_441130.csv',
+            parse_dates=True, index_col='date')
+        assert not (df.loc['04/2016', 'etr_mm'] == -1).any()
+        # make sure other tests also pass
+        for id in self.gridmet_ids:
+            gridmet_file = download_dir.joinpath(
+                'gridmet_historical_{}.csv'.format(id)
+            )
+            assert gridmet_file.is_file()
+
+        assert not set(df.columns).isdisjoint(self.gridmet_cols)
+        assert df.notna().all().all()
+        assert df.etr_mm.dtype == 'float'
+        #### test is input file from prep_input is updated with gridmet ts path
+        df = pd.read_csv(data['prep_input_outpath'])
+        assert 'GRIDMET_FILE_PATH' in df.columns
+        # check correct path to gridmet time series file
+        assert not set(
+            df.loc[0,'GRIDMET_FILE_PATH'].split(os.sep)
+        ).isdisjoint(['tests','gridmet_data','gridmet_historical_509011.csv'])
+
 
 class TestCalcBiasRatios(object):
 

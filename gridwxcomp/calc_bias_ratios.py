@@ -386,8 +386,9 @@ def calc_bias_ratios(input_path, out_dir, gridmet_var='etr_mm',
             continue
 
         if not station_var in station_df.columns:
-            raise KeyError('{v} not found in the station file: \n{p}'.\
-                           format(v=station_var, p=row.STATION_FILE_PATH))
+            err_msg = '{v} not found in the station file: {p}'.\
+                format(v=station_var, p=row.STATION_FILE_PATH)
+            raise KeyError(err_msg)
         print(
              '\nCalculating {v} bias ratios for station:'.format(v=gridmet_var),
              row.STATION_ID

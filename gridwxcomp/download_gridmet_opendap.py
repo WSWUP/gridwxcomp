@@ -179,7 +179,7 @@ def download_gridmet_opendap(input_csv, out_folder, year_filter='',
                 yr_rng = min(date_list.year)
             else:
                 yr_rng = '{}-{}'.format(
-                        min(date_list.year), max(date_list.year))
+                    min(date_list.year), max(date_list.year))
             logging.info('Updating data for years: {}'.format(yr_rng))
             start_date = min(date_list)
             end_date = max(date_list)

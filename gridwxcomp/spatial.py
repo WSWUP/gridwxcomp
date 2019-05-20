@@ -1276,8 +1276,13 @@ def calc_pt_error(in_path, out_dir, layer, grid_var):
             coords = feature['geometry']['coordinates']
             # Read pixel value at the given coordinates using Rasterio
             # sample() returns an iterable of ndarrays.
-            with rasterio.open(raster) as src:
-                value = [v for v in src.sample([coords])][0][0]
+            try:
+                with rasterio.open(raster) as src:
+                    value = [v for v in src.sample([coords])][0][0]
+            except:
+                err_msg = ('ERROR: at least one station location does not'
+                    ' overlap with the interpolated raster')
+                raise Exception(err_msg)
             # store interpolated point estimates of ratios 
             pt_err.loc[STATION_ID, pt_est] = value
 

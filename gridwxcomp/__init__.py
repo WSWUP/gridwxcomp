@@ -4,11 +4,12 @@ A package for comparing climate station time series data to `gridMET <http://www
 
 __name__ = 'gridwxcomp'
 __author__ = 'John Volk and Chris Pearson'
-__version__ = '0.0.68'
+__version__ = '0.0.75'
 
 
 from gridwxcomp.prep_input import prep_input
 from gridwxcomp.download_gridmet_ee import download_gridmet_ee
+from gridwxcomp.download_gridmet_opendap import download_gridmet_opendap
 from gridwxcomp.calc_bias_ratios import calc_bias_ratios
 from gridwxcomp.interpgdal import InterpGdal
 from gridwxcomp.spatial import make_points_file, make_grid, interpolate

@@ -432,8 +432,8 @@ class InterpGdal(object):
         source = source_file.replace('.csv', '_tmp')
         
         if interp_meth not in InterpGdal.interp_methods:
-            raise KeyError('{} not a valid interpolation method'.format(
-                interp_meth))
+            err_msg = '{} not a valid interpolation method'.format(interp_meth)
+            raise KeyError(err_msg)
         self.interp_meth = interp_meth
             
         # look up default parameters for interpolation method
