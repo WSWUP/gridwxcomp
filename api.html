@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>API Reference &mdash; gridwxcomp 0.0.68 documentation</title>
+  <title>API Reference &mdash; gridwxcomp 0.0.76 documentation</title>
   
 
   
@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                0.0.68
+                0.0.76
               </div>
             
           
@@ -86,6 +86,7 @@
         
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
+    
             
             
               
@@ -102,6 +103,8 @@
 <li class="toctree-l2"><a class="reference internal" href="#command-line-interface">Command Line Interface</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#gridwxcomp">gridwxcomp</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#gridwxcomp-prep-input">gridwxcomp prep-input</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gridwxcomp-calc-bias-ratios">gridwxcomp calc-bias-ratios</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#gridwxcomp-download-gridmet-opendap">gridwxcomp download-gridmet-opendap</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#gridwxcomp-download-gridmet-ee">gridwxcomp download-gridmet-ee</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#gridwxcomp-spatial">gridwxcomp spatial</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#gridwxcomp-plot">gridwxcomp plot</a></li>
@@ -109,6 +112,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#python-functions-classes-and-modules">Python functions, classes, and modules</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#prep-input">prep_input</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#download-gridmet-opendap">download_gridmet_opendap</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#download-gridmet-ee">download_gridmet_ee</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-gridwxcomp.calc_bias_ratios">calc_bias_ratios</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#module-gridwxcomp.spatial">spatial</a></li>
@@ -120,18 +124,21 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="changelog.html">Change Log</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#version-0-0-6">Version 0.0.6</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#version-0-0-5">Version 0.0.5</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#version-0-0-4">Version 0.0.4</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#version-0-0-3">Version 0.0.3</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#version-0-0-2">Version 0.0.2</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#version-0-0-1">Version 0.0.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#version-0-0-7x">Version 0.0.7x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#version-0-0-6x">Version 0.0.6x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#version-0-0-5x">Version 0.0.5x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#version-0-0-4x">Version 0.0.4x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#version-0-0-3x">Version 0.0.3x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#version-0-0-2x">Version 0.0.2x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#version-0-0-1x">Version 0.0.1x</a></li>
 </ul>
 </li>
 </ul>
 
             
           
+    <a href="genindex.html">Index</a>
+  
         </div>
         
       </div>
@@ -198,30 +205,33 @@
 <p>This page documents all routines provided by <code class="docutils literal notranslate"><span class="pre">gridwxcomp</span></code>. Tools for different routines are listed roughly in the order that they would normally be used.</p>
 <div class="contents local topic" id="contents">
 <ul class="simple">
-<li><a class="reference internal" href="#command-line-interface" id="id13">Command Line Interface</a><ul>
-<li><a class="reference internal" href="#gridwxcomp" id="id14">gridwxcomp</a></li>
-<li><a class="reference internal" href="#gridwxcomp-prep-input" id="id15">gridwxcomp prep-input</a></li>
-<li><a class="reference internal" href="#gridwxcomp-download-gridmet-ee" id="id16">gridwxcomp download-gridmet-ee</a></li>
-<li><a class="reference internal" href="#gridwxcomp-spatial" id="id17">gridwxcomp spatial</a></li>
-<li><a class="reference internal" href="#gridwxcomp-plot" id="id18">gridwxcomp plot</a></li>
+<li><a class="reference internal" href="#command-line-interface" id="id15">Command Line Interface</a><ul>
+<li><a class="reference internal" href="#gridwxcomp" id="id16">gridwxcomp</a></li>
+<li><a class="reference internal" href="#gridwxcomp-prep-input" id="id17">gridwxcomp prep-input</a></li>
+<li><a class="reference internal" href="#gridwxcomp-calc-bias-ratios" id="id18">gridwxcomp calc-bias-ratios</a></li>
+<li><a class="reference internal" href="#gridwxcomp-download-gridmet-opendap" id="id19">gridwxcomp download-gridmet-opendap</a></li>
+<li><a class="reference internal" href="#gridwxcomp-download-gridmet-ee" id="id20">gridwxcomp download-gridmet-ee</a></li>
+<li><a class="reference internal" href="#gridwxcomp-spatial" id="id21">gridwxcomp spatial</a></li>
+<li><a class="reference internal" href="#gridwxcomp-plot" id="id22">gridwxcomp plot</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#python-functions-classes-and-modules" id="id19">Python functions, classes, and modules</a><ul>
-<li><a class="reference internal" href="#prep-input" id="id20">prep_input</a></li>
-<li><a class="reference internal" href="#download-gridmet-ee" id="id21">download_gridmet_ee</a></li>
-<li><a class="reference internal" href="#module-gridwxcomp.calc_bias_ratios" id="id22">calc_bias_ratios</a></li>
-<li><a class="reference internal" href="#module-gridwxcomp.spatial" id="id23">spatial</a></li>
-<li><a class="reference internal" href="#module-gridwxcomp.plot" id="id24">plot</a></li>
-<li><a class="reference internal" href="#interpgdal" id="id25">InterpGdal</a></li>
-<li><a class="reference internal" href="#module-gridwxcomp.util" id="id26">util</a></li>
+<li><a class="reference internal" href="#python-functions-classes-and-modules" id="id23">Python functions, classes, and modules</a><ul>
+<li><a class="reference internal" href="#prep-input" id="id24">prep_input</a></li>
+<li><a class="reference internal" href="#download-gridmet-opendap" id="id25">download_gridmet_opendap</a></li>
+<li><a class="reference internal" href="#download-gridmet-ee" id="id26">download_gridmet_ee</a></li>
+<li><a class="reference internal" href="#module-gridwxcomp.calc_bias_ratios" id="id27">calc_bias_ratios</a></li>
+<li><a class="reference internal" href="#module-gridwxcomp.spatial" id="id28">spatial</a></li>
+<li><a class="reference internal" href="#module-gridwxcomp.plot" id="id29">plot</a></li>
+<li><a class="reference internal" href="#interpgdal" id="id30">InterpGdal</a></li>
+<li><a class="reference internal" href="#module-gridwxcomp.util" id="id31">util</a></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="section" id="command-line-interface">
-<h2><a class="toc-backref" href="#id13">Command Line Interface</a><a class="headerlink" href="#command-line-interface" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id15">Command Line Interface</a><a class="headerlink" href="#command-line-interface" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="gridwxcomp">
-<h3><a class="toc-backref" href="#id14">gridwxcomp</a><a class="headerlink" href="#gridwxcomp" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id16">gridwxcomp</a><a class="headerlink" href="#gridwxcomp" title="Permalink to this headline">¶</a></h3>
 <p>Access gridwxcomp functionality from the command line</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">gridwxcomp</span></code> tools are accesible via a command line interface using
 the console command &quot;gridwxcomp&quot;. To print a list of all available commands
@@ -247,7 +257,13 @@ from the command line type,:</p>
 <dl class="object">
 <dt>
 <code class="descname">download-gridmet-ee</code></dt>
-<dd><p>Download gridMET climate time series Download...</p>
+<dd><p>Download gridMET climate time series using...</p>
+</dd></dl>
+
+<dl class="object">
+<dt>
+<code class="descname">download-gridmet-opendap</code></dt>
+<dd><p>Download gridMET climate time series using...</p>
 </dd></dl>
 
 <dl class="object">
@@ -270,7 +286,7 @@ from the command line type,:</p>
 
 </div>
 <div class="section" id="gridwxcomp-prep-input">
-<h3><a class="toc-backref" href="#id15">gridwxcomp prep-input</a><a class="headerlink" href="#gridwxcomp-prep-input" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id17">gridwxcomp prep-input</a><a class="headerlink" href="#gridwxcomp-prep-input" title="Permalink to this headline">¶</a></h3>
 <p>Pairs climate metadata with gridMET</p>
 <p>Read climate station metadata file, e.g. from <a class="reference external" href="https://github.com/WSWUP/pyWeatherQAQC">PyWeatherQAQC</a>
 and match each station with gridMET cell locations, save CSV. The required
@@ -360,16 +376,176 @@ metadata from climate stations as well as the lat, long, and gridMET ID
 </dd></dl>
 
 </div>
-<div class="section" id="gridwxcomp-download-gridmet-ee">
-<h3><a class="toc-backref" href="#id16">gridwxcomp download-gridmet-ee</a><a class="headerlink" href="#gridwxcomp-download-gridmet-ee" title="Permalink to this headline">¶</a></h3>
-<p>Download gridMET climate time series</p>
+<div class="section" id="gridwxcomp-calc-bias-ratios">
+<h3><a class="toc-backref" href="#id18">gridwxcomp calc-bias-ratios</a><a class="headerlink" href="#gridwxcomp-calc-bias-ratios" title="Permalink to this headline">¶</a></h3>
+<p>Bias ratio statistics of station-to-gridMET</p>
+<p>Calculates mean bias ratios between climate station to gridMET variables
+at multiple time periods: monthly, annual, growing season. Other statistics
+include day counts, standard deviation, and coefficient of variation.
+Options allow for excluding statistics on months with less than a certain
+number of days (default 10). gridMET variable names available and their
+default paired climate variable names include:</p>
+<blockquote>
+<div><table border="1" class="docutils">
+<colgroup>
+<col width="36%" />
+<col width="64%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">gridMET</th>
+<th class="head">station</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>'u2_ms'</td>
+<td>'ws_2m (m/s)'</td>
+</tr>
+<tr class="row-odd"><td>'tmin_c'</td>
+<td>'TMin (C)'</td>
+</tr>
+<tr class="row-even"><td>'tmax_c'</td>
+<td>'TMax (C)'</td>
+</tr>
+<tr class="row-odd"><td>'srad_wm2'</td>
+<td>'Rs (w/m2)'</td>
+</tr>
+<tr class="row-even"><td>'ea_kpa'</td>
+<td>'Vapor Pres (kPa)'</td>
+</tr>
+<tr class="row-odd"><td>'prcp_mm'</td>
+<td>'Precip (mm)'</td>
+</tr>
+<tr class="row-even"><td>'etr_mm'</td>
+<td>'Calc_ETr (mm)'</td>
+</tr>
+<tr class="row-odd"><td>'eto_mm'</td>
+<td>'Calc_ETo (mm)'</td>
+</tr>
+</tbody>
+</table>
+</div></blockquote>
+<p>If <code class="docutils literal notranslate"><span class="pre">--gridmet-var</span></code> is given from the default options, the corresponding
+default station variable name will be looked up in the input station data
+and used, otherwise you must assign both the gridMET name (from table above)
+and station variable based on the variable names in your station time series
+CSV file(s).</p>
+<p>The required argument <code class="docutils literal notranslate"><span class="pre">INPUT_CSV</span></code> is the CSV file that is
+produced by <code class="docutils literal notranslate"><span class="pre">prep-input</span></code> and <code class="docutils literal notranslate"><span class="pre">download-gridmet-opendap</span></code> or
+<code class="docutils literal notranslate"><span class="pre">download-gridmet-ee</span></code>.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>gridwxcomp calc-bias-ratios <span class="o">[</span>OPTIONS<span class="o">]</span> INPUT_CSV
+</pre></div>
+</div>
+<p class="rubric">Options</p>
+<dl class="option">
+<dt id="cmdoption-gridwxcomp-calc-bias-ratios-o">
+<code class="descname">-o</code><code class="descclassname"></code><code class="descclassname">, </code><code class="descname">--out-dir</code><code class="descclassname"> &lt;out_dir&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-calc-bias-ratios-o" title="Permalink to this definition">¶</a></dt>
+<dd><p>Folder to save correction ratio summary CSV files</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-gridwxcomp-calc-bias-ratios-gv">
+<code class="descname">-gv</code><code class="descclassname"></code><code class="descclassname">, </code><code class="descname">--gridmet-var</code><code class="descclassname"> &lt;gridmet_var&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-calc-bias-ratios-gv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Name of gridMET climatic variable, e.g. etr_mm</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-gridwxcomp-calc-bias-ratios-sv">
+<code class="descname">-sv</code><code class="descclassname"></code><code class="descclassname">, </code><code class="descname">--station-var</code><code class="descclassname"> &lt;station_var&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-calc-bias-ratios-sv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Name of station climatic variable</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-gridwxcomp-calc-bias-ratios-id">
+<code class="descname">-id</code><code class="descclassname"></code><code class="descclassname">, </code><code class="descname">--gridmet-id</code><code class="descclassname"> &lt;gridmet_id&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-calc-bias-ratios-id" title="Permalink to this definition">¶</a></dt>
+<dd><p>gridMET ID for calculating ratios only for stations in that cell</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-gridwxcomp-calc-bias-ratios-d">
+<code class="descname">-d</code><code class="descclassname"></code><code class="descclassname">, </code><code class="descname">--day-limit</code><code class="descclassname"> &lt;day_limit&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-calc-bias-ratios-d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Monthly day threshold, if missing more exclude month from calc</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-gridwxcomp-calc-bias-ratios-y">
+<code class="descname">-y</code><code class="descclassname"></code><code class="descclassname">, </code><code class="descname">--years</code><code class="descclassname"> &lt;years&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-calc-bias-ratios-y" title="Permalink to this definition">¶</a></dt>
+<dd><p>Year(s) to use, e.g. 2010 or 2000-2010</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-gridwxcomp-calc-bias-ratios-c">
+<code class="descname">-c</code><code class="descclassname"></code><code class="descclassname">, </code><code class="descname">--comp</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-gridwxcomp-calc-bias-ratios-c" title="Permalink to this definition">¶</a></dt>
+<dd><p>Flag to NOT save comprehensive output CSV</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-gridwxcomp-calc-bias-ratios-quiet">
+<code class="descname">--quiet</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-gridwxcomp-calc-bias-ratios-quiet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Supress command line output</p>
+</dd></dl>
+
+<p class="rubric">Arguments</p>
+<dl class="option">
+<dt id="cmdoption-gridwxcomp-calc-bias-ratios-arg-input-csv">
+<code class="descname">INPUT_CSV</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-gridwxcomp-calc-bias-ratios-arg-input-csv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Required argument</p>
+</dd></dl>
+
+</div>
+<div class="section" id="gridwxcomp-download-gridmet-opendap">
+<h3><a class="toc-backref" href="#id19">gridwxcomp download-gridmet-opendap</a><a class="headerlink" href="#gridwxcomp-download-gridmet-opendap" title="Permalink to this headline">¶</a></h3>
+<p>Download gridMET climate time series using <a class="reference external" href="https://www.opendap.org">OpeNDAP</a></p>
 <p>Download gridMET time series for cells that are paired to climate stations
 in a CSV file that is first created by <code class="docutils literal notranslate"><span class="pre">gridwxcomp</span> <span class="pre">prep-input</span></code>. Options
 allow for downloading all years available (default) or select years, it is
-also possible to redownload data for specified year(s). Uses the Google
-Earth Engine Python API. If <code class="docutils literal notranslate"><span class="pre">--out-dir</span></code> is not specified, gridMET time
-series CSVs are saved to a new directory named &quot;gridmet_data&quot; within the
-current working directory.</p>
+also possible to redownload data for specified year(s). If <code class="docutils literal notranslate"><span class="pre">--out-dir</span></code> is
+not specified, gridMET time series CSVs are saved to a new directory named
+&quot;gridmet_data&quot; within the current working directory.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>gridwxcomp download-gridmet-opendap <span class="o">[</span>OPTIONS<span class="o">]</span> INPUT_CSV
+</pre></div>
+</div>
+<p class="rubric">Options</p>
+<dl class="option">
+<dt id="cmdoption-gridwxcomp-download-gridmet-opendap-o">
+<code class="descname">-o</code><code class="descclassname"></code><code class="descclassname">, </code><code class="descname">--out-dir</code><code class="descclassname"> &lt;out_dir&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-download-gridmet-opendap-o" title="Permalink to this definition">¶</a></dt>
+<dd><p>Folder to save downloaded gridMET time series</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-gridwxcomp-download-gridmet-opendap-y">
+<code class="descname">-y</code><code class="descclassname"></code><code class="descclassname">, </code><code class="descname">--years</code><code class="descclassname"> &lt;years&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-download-gridmet-opendap-y" title="Permalink to this definition">¶</a></dt>
+<dd><p>Year(s) to download, single year (YYYY) or range (YYYY-YYYY)</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-gridwxcomp-download-gridmet-opendap-u">
+<code class="descname">-u</code><code class="descclassname"></code><code class="descclassname">, </code><code class="descname">--update-data</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-gridwxcomp-download-gridmet-opendap-u" title="Permalink to this definition">¶</a></dt>
+<dd><p>Redownload existing data for given year(s)</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-gridwxcomp-download-gridmet-opendap-quiet">
+<code class="descname">--quiet</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-gridwxcomp-download-gridmet-opendap-quiet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Supress command line output</p>
+</dd></dl>
+
+<p class="rubric">Arguments</p>
+<dl class="option">
+<dt id="cmdoption-gridwxcomp-download-gridmet-opendap-arg-input-csv">
+<code class="descname">INPUT_CSV</code><code class="descclassname"></code><a class="headerlink" href="#cmdoption-gridwxcomp-download-gridmet-opendap-arg-input-csv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Required argument</p>
+</dd></dl>
+
+</div>
+<div class="section" id="gridwxcomp-download-gridmet-ee">
+<h3><a class="toc-backref" href="#id20">gridwxcomp download-gridmet-ee</a><a class="headerlink" href="#gridwxcomp-download-gridmet-ee" title="Permalink to this headline">¶</a></h3>
+<p>Download gridMET climate time series using the <a class="reference external" href="https://developers.google.com/earth-engine/">Google Earth Engine API</a></p>
+<p>Download gridMET time series for cells that are paired to climate stations
+in a CSV file that is first created by <code class="docutils literal notranslate"><span class="pre">gridwxcomp</span> <span class="pre">prep-input</span></code>. Options
+allow for downloading all years available (default) or select years, it is
+also possible to redownload data for specified year(s). If <code class="docutils literal notranslate"><span class="pre">--out-dir</span></code> is
+not specified, gridMET time series CSVs are saved to a new directory named
+&quot;gridmet_data&quot; within the current working directory.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>gridwxcomp download-gridmet-ee <span class="o">[</span>OPTIONS<span class="o">]</span> INPUT_CSV
 </pre></div>
 </div>
@@ -407,13 +583,13 @@ current working directory.</p>
 
 </div>
 <div class="section" id="gridwxcomp-spatial">
-<h3><a class="toc-backref" href="#id17">gridwxcomp spatial</a><a class="headerlink" href="#gridwxcomp-spatial" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id21">gridwxcomp spatial</a><a class="headerlink" href="#gridwxcomp-spatial" title="Permalink to this headline">¶</a></h3>
 <p>Spatially interpolate ratio statistics</p>
 <p>2-D interpolation of mean bias ratios or other statistics that exist in the
 <code class="docutils literal notranslate"><span class="pre">SUMMARY_COMP_CSV</span></code> file created by <code class="docutils literal notranslate"><span class="pre">gridwxcomp</span> <span class="pre">calc-bias-ratios</span></code>.
 Interpolation algorithms include those provided by <a class="reference external" href="https://www.gdal.org/gdal_grid.html">gdal_grid</a>:
 'invdist' (default), 'invdistnn', 'linear', 'average', and 'nearest'
-and <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.Rbf.html#scipy.interpolate.Rbf" title="(in SciPy v1.2.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">scipy.interpolate.Rbf</span></code></a>: 'multiquadric', 'inverse', 'gaussian',
+and <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.Rbf.html#scipy.interpolate.Rbf" title="(in SciPy v1.3.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">scipy.interpolate.Rbf</span></code></a>: 'multiquadric', 'inverse', 'gaussian',
 'linear_rbf', 'cubic', 'quintic', and 'thin_plate'. Parameters for gdal
 algorithms are set using <code class="docutils literal notranslate"><span class="pre">--params</span></code> whereas the <code class="docutils literal notranslate"><span class="pre">--smooth</span></code> parameter
 (default 0) is used by scipy radial basis functions. Default parameters
@@ -524,7 +700,7 @@ in <a class="reference internal" href="#gridwxcomp.spatial.make_grid" title="gri
 
 </div>
 <div class="section" id="gridwxcomp-plot">
-<h3><a class="toc-backref" href="#id18">gridwxcomp plot</a><a class="headerlink" href="#gridwxcomp-plot" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id22">gridwxcomp plot</a><a class="headerlink" href="#gridwxcomp-plot" title="Permalink to this headline">¶</a></h3>
 <p>Create comparison or diagnostic graphics</p>
 <p>Plot time series and scatter comparison plots between station and gridMET
 paired variables at daily or monthly average time periods. Also allows for
@@ -628,9 +804,9 @@ be within excel files that follow the format produced by
 </div>
 </div>
 <div class="section" id="python-functions-classes-and-modules">
-<h2><a class="toc-backref" href="#id19">Python functions, classes, and modules</a><a class="headerlink" href="#python-functions-classes-and-modules" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id23">Python functions, classes, and modules</a><a class="headerlink" href="#python-functions-classes-and-modules" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="prep-input">
-<h3><a class="toc-backref" href="#id20">prep_input</a><a class="headerlink" href="#prep-input" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id24">prep_input</a><a class="headerlink" href="#prep-input" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
 <dt id="gridwxcomp.prep_input">
 <code class="descclassname">gridwxcomp.</code><code class="descname">prep_input</code><span class="sig-paren">(</span><em>station_path</em>, <em>out_path='merged_input.csv'</em>, <em>gridmet_meta_path=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gridwxcomp/prep_input.html#prep_input"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gridwxcomp.prep_input" title="Permalink to this definition">¶</a></dt>
@@ -704,13 +880,69 @@ to gridMET have no prefix.</p>
 </dd></dl>
 
 </div>
+<div class="section" id="download-gridmet-opendap">
+<h3><a class="toc-backref" href="#id25">download_gridmet_opendap</a><a class="headerlink" href="#download-gridmet-opendap" title="Permalink to this headline">¶</a></h3>
+<dl class="function">
+<dt id="gridwxcomp.download_gridmet_opendap">
+<code class="descclassname">gridwxcomp.</code><code class="descname">download_gridmet_opendap</code><span class="sig-paren">(</span><em>input_csv</em>, <em>out_folder</em>, <em>year_filter=''</em>, <em>update_data=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gridwxcomp/download_gridmet_opendap.html#download_gridmet_opendap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gridwxcomp.download_gridmet_opendap" title="Permalink to this definition">¶</a></dt>
+<dd><p>Download gridMET time series data for multiple climate variables for
+select gridMET cells as listed in <code class="docutils literal notranslate"><span class="pre">input_csv</span></code>. Uses <a class="reference external" href="https://www.opendap.org">OpeNDAP</a>.</p>
+<table class="docutils field-list" frame="void" rules="none">
+<col class="field-name" />
+<col class="field-body" />
+<tbody valign="top">
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>input_csv</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- file path of input CSV produced by
+<code class="xref py py-mod docutils literal notranslate"><span class="pre">prep_input.py</span></code></li>
+<li><strong>out_folder</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- directory path to save gridmet timeseries CSV files</li>
+<li><strong>year_filter</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) -- default ''. Single year or range to download</li>
+<li><strong>update_data</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) -- default False. Re-download existing data</li>
+</ul>
+</td>
+</tr>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first last">None</p>
+</td>
+</tr>
+</tbody>
+</table>
+<p class="rubric">Examples</p>
+<p>Say we wanted to download data for 2016 through 2018, from the command
+line,</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>$ download_gridmet_opendap.py -i merged_input.csv -o gridmet_data -y <span class="m">2016</span>-2018
+</pre></div>
+</div>
+<p>note, &quot;merged_input.csv&quot; should have been created by first running
+<code class="xref py py-mod docutils literal notranslate"><span class="pre">prep_input.py</span></code>. If the <code class="docutils literal notranslate"><span class="pre">[-y,</span> <span class="pre">--years]</span></code> option is note given
+the default behaviour is to download gridMET data from 1979 up through
+yesterday.</p>
+<p>If the data for 2018 has changed since the last run or for debugging
+purposes you can re-download data for all or select years with the
+<code class="docutils literal notranslate"><span class="pre">[-u,</span> <span class="pre">--update-data]</span></code> option</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>$ download_gridmet_opendap.py -i merged_input.csv -o gridmet_data -y <span class="m">2018</span> -u
+</pre></div>
+</div>
+<p>To download the same gridMET data within Python</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gridwxcomp</span> <span class="k">import</span> <span class="n">download_gridmet_opendap</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">download_gridmet_opendap</span><span class="p">(</span><span class="s1">&#39;merged_input.csv&#39;</span><span class="p">,</span>
+<span class="go">        &#39;gridmet_data&#39;,</span>
+<span class="go">        &#39;2016-2018&#39;</span>
+<span class="go">    )</span>
+</pre></div>
+</div>
+<p>Running <code class="xref py py-func docutils literal notranslate"><span class="pre">download_gridmet_opendap.py</span></code> also updates the CSV file
+produced from <code class="xref py py-mod docutils literal notranslate"><span class="pre">prep_input.py</span></code> to include file paths to gridMET
+time series files that are paired with climate stations.</p>
+</dd></dl>
+
+</div>
 <div class="section" id="download-gridmet-ee">
-<h3><a class="toc-backref" href="#id21">download_gridmet_ee</a><a class="headerlink" href="#download-gridmet-ee" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id26">download_gridmet_ee</a><a class="headerlink" href="#download-gridmet-ee" title="Permalink to this headline">¶</a></h3>
 <dl class="function">
 <dt id="gridwxcomp.download_gridmet_ee">
 <code class="descclassname">gridwxcomp.</code><code class="descname">download_gridmet_ee</code><span class="sig-paren">(</span><em>input_csv</em>, <em>out_folder</em>, <em>year_filter=''</em>, <em>year_update=''</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gridwxcomp/download_gridmet_ee.html#download_gridmet_ee"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gridwxcomp.download_gridmet_ee" title="Permalink to this definition">¶</a></dt>
 <dd><p>Download gridMET time series data for multiple climate variables for
-select gridMET cells as listed in <code class="docutils literal notranslate"><span class="pre">input_csv</span></code>.</p>
+select gridMET cells as listed in <code class="docutils literal notranslate"><span class="pre">input_csv</span></code>. Uses the <a class="reference external" href="https://developers.google.com/earth-engine/">Google Earth
+Engine API</a>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -747,8 +979,8 @@ given the default behaviour is to download gridMET data from 1979 up
 through yesterday.</p>
 <p>If the data for 2018 has changed since the last run or for debugging
 purposes you can re-download data for all or select years with the
-<code class="docutils literal notranslate"><span class="pre">[-u,</span> <span class="pre">--update-data]</span></code> option</p>
-<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>$ python download_gridmet_ee.py -i merged_input.csv -o gridmet_data -y <span class="m">2018</span> -u
+<code class="docutils literal notranslate"><span class="pre">[-u,</span> <span class="pre">--year-update]</span></code> option</p>
+<div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>$ python download_gridmet_ee.py -i merged_input.csv -o gridmet_data -y <span class="m">2018</span> -u <span class="m">2018</span>
 </pre></div>
 </div>
 <p>To download the same gridMET data within Python</p>
@@ -763,7 +995,7 @@ gridMET time series files that are paired with climate stations.</p>
 
 </div>
 <div class="section" id="module-gridwxcomp.calc_bias_ratios">
-<span id="calc-bias-ratios"></span><h3><a class="toc-backref" href="#id22">calc_bias_ratios</a><a class="headerlink" href="#module-gridwxcomp.calc_bias_ratios" title="Permalink to this headline">¶</a></h3>
+<span id="calc-bias-ratios"></span><h3><a class="toc-backref" href="#id27">calc_bias_ratios</a><a class="headerlink" href="#module-gridwxcomp.calc_bias_ratios" title="Permalink to this headline">¶</a></h3>
 <p>Calculate monthly bias ratios of variables from climate station
 to overlapping gridMET cells.</p>
 <p>Input file for this module must first be created by running
@@ -907,7 +1139,7 @@ variable names need to be explicitly passed as function arguments.</p>
 
 </div>
 <div class="section" id="module-gridwxcomp.spatial">
-<span id="spatial"></span><h3><a class="toc-backref" href="#id23">spatial</a><a class="headerlink" href="#module-gridwxcomp.spatial" title="Permalink to this headline">¶</a></h3>
+<span id="spatial"></span><h3><a class="toc-backref" href="#id28">spatial</a><a class="headerlink" href="#module-gridwxcomp.spatial" title="Permalink to this headline">¶</a></h3>
 <p>Perform multiple workflows needed to estimate the spatial surface of monthly
 and annual bias ratios for multiple climatic variables. The input file is first
 created by <a class="reference internal" href="#module-gridwxcomp.calc_bias_ratios" title="gridwxcomp.calc_bias_ratios"><code class="xref py py-mod docutils literal notranslate"><span class="pre">gridwxcomp.calc_bias_ratios</span></code></a>.</p>
@@ -1151,7 +1383,7 @@ resolution or 400 m.</li>
 <li><strong>function</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- <p>default 'invdist'. Interpolation method, gdal
 methods include: 'invdist', 'indistnn', 'linear', 'average',
 and 'nearest' see <a class="reference external" href="https://www.gdal.org/gdal_grid.html">gdal_grid</a>.
-Radial basis functions, see <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.Rbf.html#scipy.interpolate.Rbf" title="(in SciPy v1.2.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">scipy.interpolate.Rbf</span></code></a>,
+Radial basis functions, see <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.Rbf.html#scipy.interpolate.Rbf" title="(in SciPy v1.3.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">scipy.interpolate.Rbf</span></code></a>,
 include: 'multiquadric', 'inverse', 'gaussian', 'linear_rbf',
 'cubic', 'quintic', and 'thin_plate'.</p>
 </li>
@@ -1424,7 +1656,7 @@ gridMET_stats.csv file will be overwritten.</p>
 
 </div>
 <div class="section" id="module-gridwxcomp.plot">
-<span id="plot"></span><h3><a class="toc-backref" href="#id24">plot</a><a class="headerlink" href="#module-gridwxcomp.plot" title="Permalink to this headline">¶</a></h3>
+<span id="plot"></span><h3><a class="toc-backref" href="#id29">plot</a><a class="headerlink" href="#module-gridwxcomp.plot" title="Permalink to this headline">¶</a></h3>
 <p>Create interactive HTML comparison plots between paired station and
 gridMET climatic variables or bar comparison plots between interpolated and
 station point data.</p>
@@ -1618,7 +1850,7 @@ and the <code class="docutils literal notranslate"><span class="pre">layer</span
 
 </div>
 <div class="section" id="interpgdal">
-<h3><a class="toc-backref" href="#id25">InterpGdal</a><a class="headerlink" href="#interpgdal" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id30">InterpGdal</a><a class="headerlink" href="#interpgdal" title="Permalink to this headline">¶</a></h3>
 <dl class="class">
 <dt id="gridwxcomp.InterpGdal">
 <em class="property">class </em><code class="descclassname">gridwxcomp.</code><code class="descname">InterpGdal</code><span class="sig-paren">(</span><em>summary_csv_path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gridwxcomp/interpgdal.html#InterpGdal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gridwxcomp.InterpGdal" title="Permalink to this definition">¶</a></dt>
@@ -2047,7 +2279,7 @@ algorithm name.</td>
 
 </div>
 <div class="section" id="module-gridwxcomp.util">
-<span id="util"></span><h3><a class="toc-backref" href="#id26">util</a><a class="headerlink" href="#module-gridwxcomp.util" title="Permalink to this headline">¶</a></h3>
+<span id="util"></span><h3><a class="toc-backref" href="#id31">util</a><a class="headerlink" href="#module-gridwxcomp.util" title="Permalink to this headline">¶</a></h3>
 <p>Utility functions or classes for <code class="docutils literal notranslate"><span class="pre">gridwxcomp</span></code> package</p>
 <dl class="function">
 <dt id="gridwxcomp.util.get_gridmet_meta_csv">
@@ -2110,10 +2342,6 @@ in time series index of DataFrame.</td>
 </table>
 </dd></dl>
 
-<ul class="simple">
-<li><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></li>
-<li><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></li>
-</ul>
 </div>
 </div>
 </div>

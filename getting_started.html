@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Getting Started &mdash; gridwxcomp 0.0.68 documentation</title>
+  <title>Getting Started &mdash; gridwxcomp 0.0.76 documentation</title>
   
 
   
@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                0.0.68
+                0.0.76
               </div>
             
           
@@ -86,6 +86,7 @@
         
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
+    
             
             
               
@@ -102,6 +103,8 @@
 <li class="toctree-l2"><a class="reference internal" href="api.html#command-line-interface">Command Line Interface</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="api.html#gridwxcomp">gridwxcomp</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api.html#gridwxcomp-prep-input">gridwxcomp prep-input</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#gridwxcomp-calc-bias-ratios">gridwxcomp calc-bias-ratios</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#gridwxcomp-download-gridmet-opendap">gridwxcomp download-gridmet-opendap</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api.html#gridwxcomp-download-gridmet-ee">gridwxcomp download-gridmet-ee</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api.html#gridwxcomp-spatial">gridwxcomp spatial</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api.html#gridwxcomp-plot">gridwxcomp plot</a></li>
@@ -109,6 +112,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="api.html#python-functions-classes-and-modules">Python functions, classes, and modules</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="api.html#prep-input">prep_input</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#download-gridmet-opendap">download_gridmet_opendap</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api.html#download-gridmet-ee">download_gridmet_ee</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api.html#module-gridwxcomp.calc_bias_ratios">calc_bias_ratios</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api.html#module-gridwxcomp.spatial">spatial</a></li>
@@ -120,18 +124,21 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="changelog.html">Change Log</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#version-0-0-6">Version 0.0.6</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#version-0-0-5">Version 0.0.5</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#version-0-0-4">Version 0.0.4</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#version-0-0-3">Version 0.0.3</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#version-0-0-2">Version 0.0.2</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#version-0-0-1">Version 0.0.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#version-0-0-7x">Version 0.0.7x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#version-0-0-6x">Version 0.0.6x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#version-0-0-5x">Version 0.0.5x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#version-0-0-4x">Version 0.0.4x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#version-0-0-3x">Version 0.0.3x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#version-0-0-2x">Version 0.0.2x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#version-0-0-1x">Version 0.0.1x</a></li>
 </ul>
 </li>
 </ul>
 
             
           
+    <a href="genindex.html">Index</a>
+  
         </div>
         
       </div>
@@ -221,11 +228,11 @@ $ pip install -e .
 </pre></div>
 </div>
 <p>If you downloaded the source distribution then run <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">install</span> <span class="pre">-e</span> <span class="pre">.</span></code> in the root directory where the setup.py file is located. This installation method is ideal if you want to be able to modify the source code.</p>
-<p>Lastly, <code class="docutils literal notranslate"><span class="pre">gridwxcomp</span></code> uses the Google Earth Engine API to download gridMET data, therefore you will need a Google account and before the first use on a machine you will need to verify your account. From the command line type:</p>
+<p>Optionally, <code class="docutils literal notranslate"><span class="pre">gridwxcomp</span></code> can use the <a class="reference external" href="https://developers.google.com/earth-engine/">Google Earth Engine API</a> to download gridMET data, although it also allows for download without it. If you want to use Google Earth Engine you will need a Google account and before the first use on a machine you will need to verify your account. From the command line type:</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ python -c <span class="s2">&quot;import ee; ee.Initialize()&quot;</span>
 </pre></div>
 </div>
-<p>and follow the instructions.</p>
+<p>and follow the instructions. Note, the method below uses <a class="reference external" href="https://www.opendap.org">OpeNDAP</a> to download gridMET time series data and is typically faster than the provided Earth Engine download routine.</p>
 </div>
 <div class="section" id="quick-start-from-command-line">
 <h2>Quick start from command line<a class="headerlink" href="#quick-start-from-command-line" title="Permalink to this headline">¶</a></h2>

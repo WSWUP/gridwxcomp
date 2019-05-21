@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>gridwxcomp.calc_bias_ratios &mdash; gridwxcomp 0.0.68 documentation</title>
+  <title>gridwxcomp.calc_bias_ratios &mdash; gridwxcomp 0.0.76 documentation</title>
   
 
   
@@ -64,7 +64,7 @@
             
             
               <div class="version">
-                0.0.68
+                0.0.76
               </div>
             
           
@@ -84,6 +84,7 @@
         
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
+    
             
             
               
@@ -100,6 +101,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../../api.html#command-line-interface">Command Line Interface</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../api.html#gridwxcomp">gridwxcomp</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api.html#gridwxcomp-prep-input">gridwxcomp prep-input</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api.html#gridwxcomp-calc-bias-ratios">gridwxcomp calc-bias-ratios</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api.html#gridwxcomp-download-gridmet-opendap">gridwxcomp download-gridmet-opendap</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api.html#gridwxcomp-download-gridmet-ee">gridwxcomp download-gridmet-ee</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api.html#gridwxcomp-spatial">gridwxcomp spatial</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api.html#gridwxcomp-plot">gridwxcomp plot</a></li>
@@ -107,6 +110,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../api.html#python-functions-classes-and-modules">Python functions, classes, and modules</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../api.html#prep-input">prep_input</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api.html#download-gridmet-opendap">download_gridmet_opendap</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api.html#download-gridmet-ee">download_gridmet_ee</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api.html#module-gridwxcomp.calc_bias_ratios">calc_bias_ratios</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api.html#module-gridwxcomp.spatial">spatial</a></li>
@@ -118,18 +122,21 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Change Log</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-0-6">Version 0.0.6</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-0-5">Version 0.0.5</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-0-4">Version 0.0.4</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-0-3">Version 0.0.3</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-0-2">Version 0.0.2</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-0-1">Version 0.0.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-0-7x">Version 0.0.7x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-0-6x">Version 0.0.6x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-0-5x">Version 0.0.5x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-0-4x">Version 0.0.4x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-0-3x">Version 0.0.3x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-0-2x">Version 0.0.2x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-0-1x">Version 0.0.1x</a></li>
 </ul>
 </li>
 </ul>
 
             
           
+    <a href="genindex.html">Index</a>
+  
         </div>
         
       </div>
@@ -578,8 +585,9 @@
             <span class="k">continue</span>
 
         <span class="k">if</span> <span class="ow">not</span> <span class="n">station_var</span> <span class="ow">in</span> <span class="n">station_df</span><span class="o">.</span><span class="n">columns</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{v}</span><span class="s1"> not found in the station file: </span><span class="se">\n</span><span class="si">{p}</span><span class="s1">&#39;</span><span class="o">.</span>\
-                           <span class="nb">format</span><span class="p">(</span><span class="n">v</span><span class="o">=</span><span class="n">station_var</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="n">row</span><span class="o">.</span><span class="n">STATION_FILE_PATH</span><span class="p">))</span>
+            <span class="n">err_msg</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{v}</span><span class="s1"> not found in the station file: </span><span class="si">{p}</span><span class="s1">&#39;</span><span class="o">.</span>\
+                <span class="nb">format</span><span class="p">(</span><span class="n">v</span><span class="o">=</span><span class="n">station_var</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="n">row</span><span class="o">.</span><span class="n">STATION_FILE_PATH</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="n">err_msg</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span>
              <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Calculating </span><span class="si">{v}</span><span class="s1"> bias ratios for station:&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">v</span><span class="o">=</span><span class="n">gridmet_var</span><span class="p">),</span>
              <span class="n">row</span><span class="o">.</span><span class="n">STATION_ID</span>

@@ -9,7 +9,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Index &mdash; gridwxcomp 0.0.68 documentation</title>
+  <title>Index &mdash; gridwxcomp 0.0.76 documentation</title>
   
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0.0.68
+                0.0.76
               </div>
             
           
@@ -85,6 +85,7 @@
         
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
+    
             
             
               
@@ -101,6 +102,8 @@
 <li class="toctree-l2"><a class="reference internal" href="api.html#command-line-interface">Command Line Interface</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="api.html#gridwxcomp">gridwxcomp</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api.html#gridwxcomp-prep-input">gridwxcomp prep-input</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#gridwxcomp-calc-bias-ratios">gridwxcomp calc-bias-ratios</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#gridwxcomp-download-gridmet-opendap">gridwxcomp download-gridmet-opendap</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api.html#gridwxcomp-download-gridmet-ee">gridwxcomp download-gridmet-ee</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api.html#gridwxcomp-spatial">gridwxcomp spatial</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api.html#gridwxcomp-plot">gridwxcomp plot</a></li>
@@ -108,6 +111,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="api.html#python-functions-classes-and-modules">Python functions, classes, and modules</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="api.html#prep-input">prep_input</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#download-gridmet-opendap">download_gridmet_opendap</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api.html#download-gridmet-ee">download_gridmet_ee</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api.html#module-gridwxcomp.calc_bias_ratios">calc_bias_ratios</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api.html#module-gridwxcomp.spatial">spatial</a></li>
@@ -119,18 +123,21 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="changelog.html">Change Log</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#version-0-0-6">Version 0.0.6</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#version-0-0-5">Version 0.0.5</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#version-0-0-4">Version 0.0.4</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#version-0-0-3">Version 0.0.3</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#version-0-0-2">Version 0.0.2</a></li>
-<li class="toctree-l2"><a class="reference internal" href="changelog.html#version-0-0-1">Version 0.0.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#version-0-0-7x">Version 0.0.7x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#version-0-0-6x">Version 0.0.6x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#version-0-0-5x">Version 0.0.5x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#version-0-0-4x">Version 0.0.4x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#version-0-0-3x">Version 0.0.3x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#version-0-0-2x">Version 0.0.2x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#version-0-0-1x">Version 0.0.1x</a></li>
 </ul>
 </li>
 </ul>
 
             
           
+    <a href="genindex.html">Index</a>
+  
         </div>
         
       </div>
@@ -227,7 +234,11 @@
     --quiet
 
       <ul>
+        <li><a href="api.html#cmdoption-gridwxcomp-calc-bias-ratios-quiet">gridwxcomp-calc-bias-ratios command line option</a>
+</li>
         <li><a href="api.html#cmdoption-gridwxcomp-download-gridmet-ee-quiet">gridwxcomp-download-gridmet-ee command line option</a>
+</li>
+        <li><a href="api.html#cmdoption-gridwxcomp-download-gridmet-opendap-quiet">gridwxcomp-download-gridmet-opendap command line option</a>
 </li>
         <li><a href="api.html#cmdoption-gridwxcomp-plot-quiet">gridwxcomp-plot command line option</a>
 </li>
@@ -286,6 +297,20 @@
 </li>
       </ul></li>
       <li>
+    -c, --comp
+
+      <ul>
+        <li><a href="api.html#cmdoption-gridwxcomp-calc-bias-ratios-c">gridwxcomp-calc-bias-ratios command line option</a>
+</li>
+      </ul></li>
+      <li>
+    -d, --day-limit &lt;day_limit&gt;
+
+      <ul>
+        <li><a href="api.html#cmdoption-gridwxcomp-calc-bias-ratios-d">gridwxcomp-calc-bias-ratios command line option</a>
+</li>
+      </ul></li>
+      <li>
     -f, --freq &lt;freq&gt;
 
       <ul>
@@ -308,8 +333,22 @@
         <li><a href="api.html#cmdoption-gridwxcomp-spatial-g">gridwxcomp-spatial command line option</a>
 </li>
       </ul></li>
+      <li>
+    -gv, --gridmet-var &lt;gridmet_var&gt;
+
+      <ul>
+        <li><a href="api.html#cmdoption-gridwxcomp-calc-bias-ratios-gv">gridwxcomp-calc-bias-ratios command line option</a>
+</li>
+      </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li>
+    -id, --gridmet-id &lt;gridmet_id&gt;
+
+      <ul>
+        <li><a href="api.html#cmdoption-gridwxcomp-calc-bias-ratios-id">gridwxcomp-calc-bias-ratios command line option</a>
+</li>
+      </ul></li>
       <li>
     -l, --layer &lt;layer&gt;
 
@@ -328,7 +367,11 @@
     -o, --out-dir &lt;out_dir&gt;
 
       <ul>
+        <li><a href="api.html#cmdoption-gridwxcomp-calc-bias-ratios-o">gridwxcomp-calc-bias-ratios command line option</a>
+</li>
         <li><a href="api.html#cmdoption-gridwxcomp-download-gridmet-ee-o">gridwxcomp-download-gridmet-ee command line option</a>
+</li>
+        <li><a href="api.html#cmdoption-gridwxcomp-download-gridmet-opendap-o">gridwxcomp-download-gridmet-opendap command line option</a>
 </li>
         <li><a href="api.html#cmdoption-gridwxcomp-plot-o">gridwxcomp-plot command line option</a>
 </li>
@@ -362,10 +405,24 @@
 </li>
       </ul></li>
       <li>
+    -sv, --station-var &lt;station_var&gt;
+
+      <ul>
+        <li><a href="api.html#cmdoption-gridwxcomp-calc-bias-ratios-sv">gridwxcomp-calc-bias-ratios command line option</a>
+</li>
+      </ul></li>
+      <li>
     -t, --plot-type &lt;plot_type&gt;
 
       <ul>
         <li><a href="api.html#cmdoption-gridwxcomp-plot-t">gridwxcomp-plot command line option</a>
+</li>
+      </ul></li>
+      <li>
+    -u, --update-data
+
+      <ul>
+        <li><a href="api.html#cmdoption-gridwxcomp-download-gridmet-opendap-u">gridwxcomp-download-gridmet-opendap command line option</a>
 </li>
       </ul></li>
       <li>
@@ -393,7 +450,11 @@
     -y, --years &lt;years&gt;
 
       <ul>
+        <li><a href="api.html#cmdoption-gridwxcomp-calc-bias-ratios-y">gridwxcomp-calc-bias-ratios command line option</a>
+</li>
         <li><a href="api.html#cmdoption-gridwxcomp-download-gridmet-ee-y">gridwxcomp-download-gridmet-ee command line option</a>
+</li>
+        <li><a href="api.html#cmdoption-gridwxcomp-download-gridmet-opendap-y">gridwxcomp-download-gridmet-opendap command line option</a>
 </li>
       </ul></li>
       <li>
@@ -437,6 +498,8 @@
 </li>
       <li><a href="api.html#gridwxcomp.download_gridmet_ee">download_gridmet_ee() (in module gridwxcomp)</a>
 </li>
+      <li><a href="api.html#gridwxcomp.download_gridmet_opendap">download_gridmet_opendap() (in module gridwxcomp)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -456,6 +519,29 @@
       <li><a href="api.html#gridwxcomp.spatial.gridmet_zonal_stats">gridmet_zonal_stats() (in module gridwxcomp.spatial)</a>
 </li>
       <li>
+    gridwxcomp-calc-bias-ratios command line option
+
+      <ul>
+        <li><a href="api.html#cmdoption-gridwxcomp-calc-bias-ratios-quiet">--quiet</a>
+</li>
+        <li><a href="api.html#cmdoption-gridwxcomp-calc-bias-ratios-c">-c, --comp</a>
+</li>
+        <li><a href="api.html#cmdoption-gridwxcomp-calc-bias-ratios-d">-d, --day-limit &lt;day_limit&gt;</a>
+</li>
+        <li><a href="api.html#cmdoption-gridwxcomp-calc-bias-ratios-gv">-gv, --gridmet-var &lt;gridmet_var&gt;</a>
+</li>
+        <li><a href="api.html#cmdoption-gridwxcomp-calc-bias-ratios-id">-id, --gridmet-id &lt;gridmet_id&gt;</a>
+</li>
+        <li><a href="api.html#cmdoption-gridwxcomp-calc-bias-ratios-o">-o, --out-dir &lt;out_dir&gt;</a>
+</li>
+        <li><a href="api.html#cmdoption-gridwxcomp-calc-bias-ratios-sv">-sv, --station-var &lt;station_var&gt;</a>
+</li>
+        <li><a href="api.html#cmdoption-gridwxcomp-calc-bias-ratios-y">-y, --years &lt;years&gt;</a>
+</li>
+        <li><a href="api.html#cmdoption-gridwxcomp-calc-bias-ratios-arg-input-csv">INPUT_CSV</a>
+</li>
+      </ul></li>
+      <li>
     gridwxcomp-download-gridmet-ee command line option
 
       <ul>
@@ -468,6 +554,21 @@
         <li><a href="api.html#cmdoption-gridwxcomp-download-gridmet-ee-y">-y, --years &lt;years&gt;</a>
 </li>
         <li><a href="api.html#cmdoption-gridwxcomp-download-gridmet-ee-arg-input-csv">INPUT_CSV</a>
+</li>
+      </ul></li>
+      <li>
+    gridwxcomp-download-gridmet-opendap command line option
+
+      <ul>
+        <li><a href="api.html#cmdoption-gridwxcomp-download-gridmet-opendap-quiet">--quiet</a>
+</li>
+        <li><a href="api.html#cmdoption-gridwxcomp-download-gridmet-opendap-o">-o, --out-dir &lt;out_dir&gt;</a>
+</li>
+        <li><a href="api.html#cmdoption-gridwxcomp-download-gridmet-opendap-u">-u, --update-data</a>
+</li>
+        <li><a href="api.html#cmdoption-gridwxcomp-download-gridmet-opendap-y">-y, --years &lt;years&gt;</a>
+</li>
+        <li><a href="api.html#cmdoption-gridwxcomp-download-gridmet-opendap-arg-input-csv">INPUT_CSV</a>
 </li>
       </ul></li>
       <li>
@@ -565,15 +666,19 @@
     INPUT_CSV
 
       <ul>
+        <li><a href="api.html#cmdoption-gridwxcomp-calc-bias-ratios-arg-input-csv">gridwxcomp-calc-bias-ratios command line option</a>
+</li>
         <li><a href="api.html#cmdoption-gridwxcomp-download-gridmet-ee-arg-input-csv">gridwxcomp-download-gridmet-ee command line option</a>
+</li>
+        <li><a href="api.html#cmdoption-gridwxcomp-download-gridmet-opendap-arg-input-csv">gridwxcomp-download-gridmet-opendap command line option</a>
 </li>
         <li><a href="api.html#cmdoption-gridwxcomp-plot-arg-input-csv">gridwxcomp-plot command line option</a>
 </li>
       </ul></li>
-      <li><a href="api.html#gridwxcomp.InterpGdal.interp_meth">interp_meth (gridwxcomp.InterpGdal attribute)</a>
-</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="api.html#gridwxcomp.InterpGdal.interp_meth">interp_meth (gridwxcomp.InterpGdal attribute)</a>
+</li>
       <li><a href="api.html#gridwxcomp.InterpGdal.interp_methods">interp_methods (gridwxcomp.InterpGdal attribute)</a>, <a href="api.html#gridwxcomp.InterpGdal.interp_methods">[1]</a>
 </li>
       <li><a href="api.html#gridwxcomp.InterpGdal.interped_rasters">interped_rasters (gridwxcomp.InterpGdal attribute)</a>

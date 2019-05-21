@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>gridwxcomp.interpgdal &mdash; gridwxcomp 0.0.68 documentation</title>
+  <title>gridwxcomp.interpgdal &mdash; gridwxcomp 0.0.76 documentation</title>
   
 
   
@@ -64,7 +64,7 @@
             
             
               <div class="version">
-                0.0.68
+                0.0.76
               </div>
             
           
@@ -84,6 +84,7 @@
         
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
+    
             
             
               
@@ -100,6 +101,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../../api.html#command-line-interface">Command Line Interface</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../api.html#gridwxcomp">gridwxcomp</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api.html#gridwxcomp-prep-input">gridwxcomp prep-input</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api.html#gridwxcomp-calc-bias-ratios">gridwxcomp calc-bias-ratios</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api.html#gridwxcomp-download-gridmet-opendap">gridwxcomp download-gridmet-opendap</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api.html#gridwxcomp-download-gridmet-ee">gridwxcomp download-gridmet-ee</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api.html#gridwxcomp-spatial">gridwxcomp spatial</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api.html#gridwxcomp-plot">gridwxcomp plot</a></li>
@@ -107,6 +110,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../api.html#python-functions-classes-and-modules">Python functions, classes, and modules</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../api.html#prep-input">prep_input</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api.html#download-gridmet-opendap">download_gridmet_opendap</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api.html#download-gridmet-ee">download_gridmet_ee</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api.html#module-gridwxcomp.calc_bias_ratios">calc_bias_ratios</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api.html#module-gridwxcomp.spatial">spatial</a></li>
@@ -118,18 +122,21 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Change Log</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-0-6">Version 0.0.6</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-0-5">Version 0.0.5</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-0-4">Version 0.0.4</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-0-3">Version 0.0.3</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-0-2">Version 0.0.2</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-0-1">Version 0.0.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-0-7x">Version 0.0.7x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-0-6x">Version 0.0.6x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-0-5x">Version 0.0.5x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-0-4x">Version 0.0.4x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-0-3x">Version 0.0.3x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-0-2x">Version 0.0.2x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-0-1x">Version 0.0.1x</a></li>
 </ul>
 </li>
 </ul>
 
             
           
+    <a href="genindex.html">Index</a>
+  
         </div>
         
       </div>
@@ -624,8 +631,8 @@
         <span class="n">source</span> <span class="o">=</span> <span class="n">source_file</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.csv&#39;</span><span class="p">,</span> <span class="s1">&#39;_tmp&#39;</span><span class="p">)</span>
         
         <span class="k">if</span> <span class="n">interp_meth</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">InterpGdal</span><span class="o">.</span><span class="n">interp_methods</span><span class="p">:</span>
-            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> not a valid interpolation method&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
-                <span class="n">interp_meth</span><span class="p">))</span>
+            <span class="n">err_msg</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> not a valid interpolation method&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">interp_meth</span><span class="p">)</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="n">err_msg</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">interp_meth</span> <span class="o">=</span> <span class="n">interp_meth</span>
             
         <span class="c1"># look up default parameters for interpolation method</span>
@@ -640,7 +647,7 @@
         <span class="c1"># update instance parameters for later reference</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">params</span> <span class="o">=</span> <span class="n">params</span>
         <span class="c1"># parameters to command line input str :name=value:name=value ...</span>
-        <span class="n">param_str</span> <span class="o">=</span> <span class="s1">&#39;:&#39;</span><span class="o">+</span><span class="s1">&#39;:&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{!s}</span><span class="s1">=</span><span class="si">{!r}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">,</span><span class="n">val</span><span class="p">)</span> 
+        <span class="n">param_str</span> <span class="o">=</span> <span class="s1">&#39;:&#39;</span><span class="o">+</span><span class="s1">&#39;:&#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">=</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">key</span><span class="p">,</span><span class="n">val</span><span class="p">)</span> 
                                  <span class="k">for</span> <span class="p">(</span><span class="n">key</span><span class="p">,</span><span class="n">val</span><span class="p">)</span> <span class="ow">in</span> <span class="n">params</span><span class="o">.</span><span class="n">items</span><span class="p">())</span> 
         <span class="c1"># get boundary info and update instance attribute</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">bounds</span> <span class="ow">and</span> <span class="ow">not</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid_bounds</span><span class="p">:</span>
@@ -651,7 +658,23 @@
             <span class="bp">self</span><span class="o">.</span><span class="n">grid_bounds</span> <span class="o">=</span> <span class="n">bounds</span>
         <span class="c1"># raster extent</span>
         <span class="n">xmin</span><span class="p">,</span><span class="n">xmax</span><span class="p">,</span><span class="n">ymin</span><span class="p">,</span><span class="n">ymax</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">grid_bounds</span>
-        
+        <span class="c1"># fix any minor adjustments to make raster fit gridMET fishnet extent</span>
+        <span class="c1"># if scale_factor=1 make sure raster pixels align exactly w/gridcells</span>
+        <span class="n">CS</span> <span class="o">=</span> <span class="n">InterpGdal</span><span class="o">.</span><span class="n">CELL_SIZE</span>
+        <span class="k">if</span> <span class="n">scale_factor</span><span class="p">:</span>
+            <span class="n">nxcells</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">xmin</span><span class="o">-</span><span class="n">xmax</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">CS</span><span class="o">*</span><span class="n">scale_factor</span><span class="p">)</span>
+            <span class="n">nycells</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">ymin</span><span class="o">-</span><span class="n">ymax</span><span class="p">)</span> <span class="o">/</span> <span class="p">(</span><span class="n">CS</span><span class="o">*</span><span class="n">scale_factor</span><span class="p">)</span>
+            <span class="n">remainder_x</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">nxcells</span><span class="p">)</span> <span class="o">-</span> <span class="n">nxcells</span>
+            <span class="n">remainder_y</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="n">nycells</span><span class="p">)</span> <span class="o">-</span> <span class="n">nycells</span>
+            <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">remainder_x</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">CS</span><span class="p">:</span>
+                <span class="n">remainder_x</span> <span class="o">-=</span> <span class="n">CS</span> <span class="o">*</span> <span class="p">(</span><span class="n">remainder_x</span> <span class="o">/</span> <span class="n">CS</span><span class="p">)</span> 
+            <span class="k">if</span> <span class="nb">abs</span><span class="p">(</span><span class="n">remainder_y</span><span class="p">)</span> <span class="o">&gt;</span> <span class="n">CS</span><span class="p">:</span>
+                <span class="n">remainder_y</span> <span class="o">-=</span> <span class="n">CS</span> <span class="o">*</span> <span class="p">(</span><span class="n">remainder_y</span> <span class="o">/</span> <span class="n">CS</span><span class="p">)</span> 
+            <span class="n">xmin</span> <span class="o">-=</span> <span class="n">remainder_x</span>
+            <span class="n">xmax</span> <span class="o">+=</span> <span class="n">CS</span>
+            <span class="n">ymin</span> <span class="o">-=</span> <span class="n">remainder_y</span>
+            <span class="n">ymin</span> <span class="o">-=</span> <span class="n">CS</span>
+
         <span class="c1"># if not given get pixels in lon lat using gridMET resolution</span>
         <span class="c1"># add one cell to avoid unfilled extent in case of large upscaling</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">nx_cells</span><span class="p">:</span>
@@ -668,7 +691,7 @@
             <span class="sd">&quot;&quot;&quot;reuse if running multiple layers&quot;&quot;&quot;</span>
             <span class="n">existing_layers</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">summary_csv_path</span><span class="p">)</span><span class="o">.</span><span class="n">columns</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">layer</span> <span class="ow">in</span> <span class="n">existing_layers</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;column </span><span class="si">{}</span><span class="s1"> does not exist in input CSV:</span><span class="se">\n</span><span class="s1"> </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Error: </span><span class="si">{}</span><span class="s1"> does not exist in input CSV:</span><span class="se">\n</span><span class="s1"> </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                    <span class="n">layer</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">summary_csv_path</span><span class="p">),</span>
                      <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Skipping interpolation.&#39;</span>
                <span class="p">)</span>
@@ -687,9 +710,9 @@
             <span class="n">grid_var</span> <span class="o">=</span> <span class="n">Path</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">summary_csv_path</span><span class="p">)</span><span class="o">.</span><span class="n">name</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;_summ&#39;</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
             <span class="c1"># recalculate raster resolution from bounds</span>
             <span class="n">n4km_xcells</span> <span class="o">=</span> <span class="nb">int</span><span class="p">(</span><span class="nb">round</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">xmin</span> <span class="o">-</span> <span class="n">xmax</span><span class="p">)</span> <span class="o">/</span> <span class="n">InterpGdal</span><span class="o">.</span><span class="n">CELL_SIZE</span><span class="p">))</span>
-            <span class="n">scale_factor</span> <span class="o">=</span> <span class="n">n4km_xcells</span> <span class="o">/</span> <span class="n">nx_cells</span>
-            <span class="n">res</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="n">scale_factor</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">)</span>
-            <span class="n">_interp_msg</span><span class="p">(</span><span class="n">grid_var</span><span class="p">,</span> <span class="n">layer</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">interp_meth</span><span class="p">,</span> <span class="n">res</span><span class="p">,</span> <span class="n">out_file</span><span class="p">)</span> 
+            <span class="n">scale_factor_actual</span> <span class="o">=</span> <span class="n">n4km_xcells</span> <span class="o">/</span> <span class="n">nx_cells</span>
+            <span class="n">res_actual</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="mi">4</span> <span class="o">*</span> <span class="n">scale_factor</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">)</span>
+            <span class="n">_interp_msg</span><span class="p">(</span><span class="n">grid_var</span><span class="p">,</span> <span class="n">layer</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">interp_meth</span><span class="p">,</span> <span class="n">res_actual</span><span class="p">,</span> <span class="n">out_file</span><span class="p">)</span>
             <span class="c1"># build command line arguments</span>
             <span class="n">cmd</span> <span class="o">=</span> <span class="p">(</span><span class="sa">r</span><span class="s1">&#39;gdal_grid -a </span><span class="si">{meth}{p}</span><span class="s1"> -txe </span><span class="si">{xmin}</span><span class="s1"> </span><span class="si">{xmax}</span><span class="s1"> -tye </span><span class="si">{ymax}</span><span class="s1">&#39;</span> 
                   <span class="s1">&#39; </span><span class="si">{ymin}</span><span class="s1"> -outsize </span><span class="si">{nx}</span><span class="s1"> </span><span class="si">{ny}</span><span class="s1"> -of GTiff -ot Float32 -l </span><span class="si">{source}</span><span class="s1">&#39;</span>
@@ -713,12 +736,21 @@
             <span class="n">os</span><span class="o">.</span><span class="n">chdir</span><span class="p">(</span><span class="n">cwd</span><span class="p">)</span>
 
             <span class="c1"># calculate interpolated values and error at stations</span>
-            <span class="n">calc_pt_error</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">summary_csv_path</span><span class="p">,</span> <span class="n">out_dir</span><span class="p">,</span> <span class="n">layer</span><span class="p">,</span> <span class="n">grid_var</span><span class="p">)</span>
+            <span class="c1"># only calc residuals for mean bias ratios, i.e. not std dev, etc.</span>
+            <span class="k">if</span> <span class="n">layer</span> <span class="ow">in</span> <span class="n">InterpGdal</span><span class="o">.</span><span class="n">default_layers</span><span class="p">:</span>
+                <span class="n">calc_pt_error</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">summary_csv_path</span><span class="p">,</span> <span class="n">out_dir</span><span class="p">,</span> <span class="n">layer</span><span class="p">,</span> <span class="n">grid_var</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="c1"># delete tmp summary csv used in interpgdal _make_pt_vrt method </span>
+                <span class="c1"># normally deleted in calc_pt_error</span>
+                <span class="n">tmp_csv</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">summary_csv_path</span><span class="p">)</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;.csv&#39;</span><span class="p">,</span><span class="s1">&#39;_tmp.csv&#39;</span><span class="p">)</span>
+                <span class="k">if</span> <span class="n">Path</span><span class="p">(</span><span class="n">tmp_csv</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+                    <span class="n">Path</span><span class="p">(</span><span class="n">tmp_csv</span><span class="p">)</span><span class="o">.</span><span class="n">resolve</span><span class="p">()</span><span class="o">.</span><span class="n">unlink</span><span class="p">()</span>
+
             <span class="c1"># zonal means extracted to GRIDMET_ID (cell index) </span>
             <span class="k">if</span> <span class="n">zonal_stats</span><span class="p">:</span>
                 <span class="n">gridmet_zonal_stats</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">summary_csv_path</span><span class="p">,</span> <span class="n">out_file</span><span class="p">)</span>
-            <span class="c1"># residual (error) bar plot</span>
-            <span class="k">if</span> <span class="n">res_plot</span><span class="p">:</span>
+            <span class="c1"># residual (error) bar plot, only for mean bias ratios</span>
+            <span class="k">if</span> <span class="n">res_plot</span> <span class="ow">and</span> <span class="n">layer</span> <span class="ow">in</span> <span class="n">InterpGdal</span><span class="o">.</span><span class="n">default_layers</span><span class="p">:</span>
                 <span class="n">layer</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">var_residual_names</span><span class="o">.</span><span class="n">get</span><span class="p">(</span>
                     <span class="n">layer</span><span class="p">,</span> 
                     <span class="n">layer</span><span class="o">.</span><span class="n">replace</span><span class="p">(</span><span class="s1">&#39;mean&#39;</span><span class="p">,</span><span class="s1">&#39;res&#39;</span><span class="p">)</span>

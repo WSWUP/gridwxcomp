@@ -40,13 +40,13 @@ Alternatively, or if there are installation issues, you can manually install. Fi
 
 If you downloaded the source distribution then run ``pip install -e .`` in the root directory where the setup.py file is located. This installation method is ideal if you want to be able to modify the source code.
 
-Lastly, ``gridwxcomp`` uses the Google Earth Engine API to download gridMET data, therefore you will need a Google account and before the first use on a machine you will need to verify your account. From the command line type:
+Optionally, ``gridwxcomp`` can use the `Google Earth Engine API <https://developers.google.com/earth-engine/>`_ to download gridMET data, although it also allows for download without it. If you want to use Google Earth Engine you will need a Google account and before the first use on a machine you will need to verify your account. From the command line type:
 
 .. code-block:: bash
 
     $ python -c "import ee; ee.Initialize()"
 
-and follow the instructions.
+and follow the instructions. Note, the method below uses `OpeNDAP <https://www.opendap.org>`_ to download gridMET time series data and is typically faster than the provided Earth Engine download routine.
 
 
 Quick start from command line

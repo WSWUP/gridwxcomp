@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Change Log &mdash; gridwxcomp 0.0.68 documentation</title>
+  <title>Change Log &mdash; gridwxcomp 0.0.76 documentation</title>
   
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0.0.68
+                0.0.76
               </div>
             
           
@@ -85,6 +85,7 @@
         
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
+    
             
             
               
@@ -101,6 +102,8 @@
 <li class="toctree-l2"><a class="reference internal" href="api.html#command-line-interface">Command Line Interface</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="api.html#gridwxcomp">gridwxcomp</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api.html#gridwxcomp-prep-input">gridwxcomp prep-input</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#gridwxcomp-calc-bias-ratios">gridwxcomp calc-bias-ratios</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#gridwxcomp-download-gridmet-opendap">gridwxcomp download-gridmet-opendap</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api.html#gridwxcomp-download-gridmet-ee">gridwxcomp download-gridmet-ee</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api.html#gridwxcomp-spatial">gridwxcomp spatial</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api.html#gridwxcomp-plot">gridwxcomp plot</a></li>
@@ -108,6 +111,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="api.html#python-functions-classes-and-modules">Python functions, classes, and modules</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="api.html#prep-input">prep_input</a></li>
+<li class="toctree-l3"><a class="reference internal" href="api.html#download-gridmet-opendap">download_gridmet_opendap</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api.html#download-gridmet-ee">download_gridmet_ee</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api.html#module-gridwxcomp.calc_bias_ratios">calc_bias_ratios</a></li>
 <li class="toctree-l3"><a class="reference internal" href="api.html#module-gridwxcomp.spatial">spatial</a></li>
@@ -119,18 +123,21 @@
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Change Log</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#version-0-0-6">Version 0.0.6</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#version-0-0-5">Version 0.0.5</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#version-0-0-4">Version 0.0.4</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#version-0-0-3">Version 0.0.3</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#version-0-0-2">Version 0.0.2</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#version-0-0-1">Version 0.0.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-0-7x">Version 0.0.7x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-0-6x">Version 0.0.6x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-0-5x">Version 0.0.5x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-0-4x">Version 0.0.4x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-0-3x">Version 0.0.3x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-0-2x">Version 0.0.2x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-0-1x">Version 0.0.1x</a></li>
 </ul>
 </li>
 </ul>
 
             
           
+    <a href="genindex.html">Index</a>
+  
         </div>
         
       </div>
@@ -194,8 +201,16 @@
             
   <div class="section" id="change-log">
 <h1>Change Log<a class="headerlink" href="#change-log" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="version-0-0-6">
-<h2>Version 0.0.6<a class="headerlink" href="#version-0-0-6" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="version-0-0-7x">
+<h2>Version 0.0.7x<a class="headerlink" href="#version-0-0-7x" title="Permalink to this headline">¶</a></h2>
+<p>Add download tool using <a class="reference external" href="https://www.opendap.org">OpeNDAP</a>, and add unit and integration tests.</p>
+<p>Force interpolated rasters to exactly align to gridMET cell locations when scale factor = 1.</p>
+<p>Remove residual calculations including adding to point shapefile and creation of station residual bar plots for all variables that are not listed in <code class="docutils literal notranslate"><span class="pre">InterpGdal.default_layers</span></code>, i.e. variables other than mean bias ratios such as coefficient of variation or standard deviation interpolations. These can still be calculated when using <code class="docutils literal notranslate"><span class="pre">spatial.calc_pt_error</span></code> and <code class="docutils literal notranslate"><span class="pre">plot.station_bar_plot</span></code> directly. This change prevents unwanted residual calculations and plots from being added to the point shapefile or residual plots from being created when using the main <code class="docutils literal notranslate"><span class="pre">spatial</span></code> routine.</p>
+<p>Add package index to documentations sidebar and other docs related improvements.</p>
+</div>
+<div class="section" id="version-0-0-6x">
+<h2>Version 0.0.6x<a class="headerlink" href="#version-0-0-6x" title="Permalink to this headline">¶</a></h2>
+<p>Add unit and integration tests with <code class="docutils literal notranslate"><span class="pre">pytest</span></code> for example data, <code class="docutils literal notranslate"><span class="pre">prep_input.py</span></code>, <code class="docutils literal notranslate"><span class="pre">download_gridmet_ee.py</span></code>, and <code class="docutils literal notranslate"><span class="pre">calc_bias_ratios.py</span></code>.</p>
 <p>Update all <code class="docutils literal notranslate"><span class="pre">gridwxcomp</span></code> modules (with exception of <code class="docutils literal notranslate"><span class="pre">interpgdal.py</span></code>) to ensure that they can be used as standalone scripts without installing <code class="docutils literal notranslate"><span class="pre">gridwxcomp</span></code>. For example, the spatial interpolation routines in <code class="docutils literal notranslate"><span class="pre">spatial.py</span></code> can be used from the command line</p>
 <div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>$ python spatial.py &lt;options&gt;
 </pre></div>
@@ -205,16 +220,16 @@
 <p>Add year range option for <code class="docutils literal notranslate"><span class="pre">gridwxcomp.plot.daily_comparison</span></code>, useful for adding additional data to scatter plot comparisons using multiple years data for a particular month.</p>
 <p>Changed docs hosting to <a class="reference external" href="https://wswup.github.io/gridwxcomp/">GitHub</a></p>
 </div>
-<div class="section" id="version-0-0-5">
-<h2>Version 0.0.5<a class="headerlink" href="#version-0-0-5" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="version-0-0-5x">
+<h2>Version 0.0.5x<a class="headerlink" href="#version-0-0-5x" title="Permalink to this headline">¶</a></h2>
 <p>Functionality for climate station data that was <strong>NOT</strong> created by <a class="reference external" href="https://github.com/WSWUP/pyWeatherQAQC">PyWeatherQaQc</a> after <code class="docutils literal notranslate"><span class="pre">gridwxcomp</span> <span class="pre">&gt;=</span> <span class="pre">0.0.55</span></code>. Climate station time series files should be in CSV format and need a &quot;date&quot; column with date strings that can be parsed as datetime objects, e.g. '12/01/2018' or '12-01-2018'. <code class="docutils literal notranslate"><span class="pre">daily_comparison.py</span></code> and <code class="docutils literal notranslate"><span class="pre">monthly_comparison.py</span></code> plotting modules however still require climate station input data in the format of <code class="docutils literal notranslate"><span class="pre">PyWeatherQaQc</span></code>.</p>
 <p>Add monthly plotting to command line interface, change command line command &quot;daily-comparison&quot; to
 &quot;plot&quot; with &quot;daily&quot; and &quot;monthly&quot; options.</p>
 <p>Add documentation page at <a class="reference external" href="http://gridwxcomp.readthedocs.io/">ReadTheDocs</a></p>
 <p>Add option to re-download gridMET time series data using <code class="docutils literal notranslate"><span class="pre">download_gridmet_ee</span></code> for specified year range.</p>
 </div>
-<div class="section" id="version-0-0-4">
-<h2>Version 0.0.4<a class="headerlink" href="#version-0-0-4" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="version-0-0-4x">
+<h2>Version 0.0.4x<a class="headerlink" href="#version-0-0-4x" title="Permalink to this headline">¶</a></h2>
 <p>Improve handling of missing data, if ratio data is missing it is generally represented by <code class="docutils literal notranslate"><span class="pre">-999</span></code> in text files (i.e. CSVs) and by <code class="docutils literal notranslate"><span class="pre">nan</span></code> in geospatial files, e.g. within point shapefiles of bias ratios. Importantly, fixed bug where gdal interpolation methods used missing data in interpolation as zeros.</p>
 <p>Add <code class="docutils literal notranslate"><span class="pre">util.py</span></code> module to hold utility functions or classes which may be useful to multiple <code class="docutils literal notranslate"><span class="pre">gridwxcomp</span></code> modules. Added function to index a pandas DataFrame or Series that has a datetime index based on a user input year filter.</p>
 <p>Add year filter option to <code class="docutils literal notranslate"><span class="pre">calc_bias_ratios.py</span></code>, so that certain years or ranges of years are only used to calculate bias ratios and statistics, the file names of the summary CSV files are also modified with the year or range added as a suffix so that they can be distinguished and used for spatial interpolation.</p>
@@ -248,8 +263,8 @@
 <p>Note, now there is a copy of the summary_comp.csv file in the directory containing the interpolated rasters, and the point shapefile is also saved there as opposed to the &quot;spatial&quot; dir in previous versions. The CSV in the root directory is needed for running additional interpolations, the copy also contains newly added interpolation estimates at points and error residuals which are unique to a specific interpolation run.</p>
 <p>Change calculations of annual, growing season, and summer bias ratios to use period sum of data as opposed to mean of monthly ratios. Same for standard deviation calculations and coefficient of variation. Results in slightly more accurate values. Also add total day accounts for these time periods, add all of these fields to georeferenced point shapefile as opposed to only bias ratios in previous versions.</p>
 </div>
-<div class="section" id="version-0-0-3">
-<h2>Version 0.0.3<a class="headerlink" href="#version-0-0-3" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="version-0-0-3x">
+<h2>Version 0.0.3x<a class="headerlink" href="#version-0-0-3x" title="Permalink to this headline">¶</a></h2>
 <p>First version available on <a class="reference external" href="https://pypi.org/project/gridwxcomp/">PyPI</a>.</p>
 <p>Add class <code class="docutils literal notranslate"><span class="pre">gridwxcomp.interpgdal.InterpGdal</span></code> for interpolation methods provided by the <a class="reference external" href="https://www.gdal.org/gdal_grid.html">gdal_grid</a> command, the most useful being inverse distance weighting to a power and inverse distance weighting to a power with n nearest neighbors. The <code class="docutils literal notranslate"><span class="pre">InterpGdal</span></code> object can be used on its own within Python to efficiently produce interpolated rasters of arbitrary variables from point data that is calculated by <code class="docutils literal notranslate"><span class="pre">gridwxcomp.calc_bias_ratios</span></code>, it is also used in the main spatial interpolation workflow, e.g. the command line usage of <code class="docutils literal notranslate"><span class="pre">gridwxcomp.spatial</span></code>, by providing additional interpolation routines in addition to the radial basis functions. Instance attributes allow for managing metadata of different interpolation outcomes such as parameter values and paths to output files.</p>
 <p>Added calculation of standard deviation and coefficient of variation for bias ratios to the <code class="docutils literal notranslate"><span class="pre">gridwxcomp.calc_bias_ratios</span></code> function.</p>
@@ -259,8 +274,8 @@
 </div>
 <p>which was saved to the output directory of <code class="docutils literal notranslate"><span class="pre">calc_bias_ratios</span></code>, i.e. where the CSV file containing station point ratios and other statistics exists. This was problematic for tracking results created by multiple interpolation parameters such as changing the power parameter of the inverse distance weighting algorithm. So the new structure is saving a file named 'gridMET_stats.csv' to the output directory where interpolated rasters are saved for any interpolation routine, which can now be modified when conducting any interpolation. The columns in the CSV are updatedwhen layers are interpolated and zonal stats are extracted with the same out directory specified.</p>
 </div>
-<div class="section" id="version-0-0-2">
-<h2>Version 0.0.2<a class="headerlink" href="#version-0-0-2" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="version-0-0-2x">
+<h2>Version 0.0.2x<a class="headerlink" href="#version-0-0-2x" title="Permalink to this headline">¶</a></h2>
 <p>Add more robust and intuitive command line interface <code class="docutils literal notranslate"><span class="pre">gridwxcomp</span></code> which interfaces with all major workflows of the module as opposed to needing to access multiple submodules of <code class="docutils literal notranslate"><span class="pre">gridwxcomp</span></code>, e.g. <code class="docutils literal notranslate"><span class="pre">gridwxcomp.prep_input</span></code>. Also add changelog. Example use of new CLI</p>
 <div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>$ gridwxcomp prep-input &lt;station_metadata_file&gt;
 </pre></div>
@@ -274,8 +289,8 @@
 <li><a class="reference external" href="https://click.palletsprojects.com/en/7.x/">click &gt;= 7.0</a></li>
 </ul>
 </div>
-<div class="section" id="version-0-0-1">
-<h2>Version 0.0.1<a class="headerlink" href="#version-0-0-1" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="version-0-0-1x">
+<h2>Version 0.0.1x<a class="headerlink" href="#version-0-0-1x" title="Permalink to this headline">¶</a></h2>
 <p>First numbered version. Many changes occured for initial development under this version which were not released or registered to PyPI. Main workflow has beed tested on Linux and Windows including:</p>
 <ul class="simple">
 <li>pairing climate stations with gridMET cells</li>

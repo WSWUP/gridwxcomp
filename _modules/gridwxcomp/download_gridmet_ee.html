@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>gridwxcomp.download_gridmet_ee &mdash; gridwxcomp 0.0.68 documentation</title>
+  <title>gridwxcomp.download_gridmet_ee &mdash; gridwxcomp 0.0.76 documentation</title>
   
 
   
@@ -64,7 +64,7 @@
             
             
               <div class="version">
-                0.0.68
+                0.0.76
               </div>
             
           
@@ -84,6 +84,7 @@
         
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
+    
             
             
               
@@ -100,6 +101,8 @@
 <li class="toctree-l2"><a class="reference internal" href="../../api.html#command-line-interface">Command Line Interface</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../api.html#gridwxcomp">gridwxcomp</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api.html#gridwxcomp-prep-input">gridwxcomp prep-input</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api.html#gridwxcomp-calc-bias-ratios">gridwxcomp calc-bias-ratios</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api.html#gridwxcomp-download-gridmet-opendap">gridwxcomp download-gridmet-opendap</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api.html#gridwxcomp-download-gridmet-ee">gridwxcomp download-gridmet-ee</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api.html#gridwxcomp-spatial">gridwxcomp spatial</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api.html#gridwxcomp-plot">gridwxcomp plot</a></li>
@@ -107,6 +110,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="../../api.html#python-functions-classes-and-modules">Python functions, classes, and modules</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../api.html#prep-input">prep_input</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api.html#download-gridmet-opendap">download_gridmet_opendap</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api.html#download-gridmet-ee">download_gridmet_ee</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api.html#module-gridwxcomp.calc_bias_ratios">calc_bias_ratios</a></li>
 <li class="toctree-l3"><a class="reference internal" href="../../api.html#module-gridwxcomp.spatial">spatial</a></li>
@@ -118,18 +122,21 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Change Log</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-0-6">Version 0.0.6</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-0-5">Version 0.0.5</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-0-4">Version 0.0.4</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-0-3">Version 0.0.3</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-0-2">Version 0.0.2</a></li>
-<li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-0-1">Version 0.0.1</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-0-7x">Version 0.0.7x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-0-6x">Version 0.0.6x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-0-5x">Version 0.0.5x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-0-4x">Version 0.0.4x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-0-3x">Version 0.0.3x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-0-2x">Version 0.0.2x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-0-1x">Version 0.0.1x</a></li>
 </ul>
 </li>
 </ul>
 
             
           
+    <a href="genindex.html">Index</a>
+  
         </div>
         
       </div>
@@ -193,7 +200,7 @@
 <span></span><span class="c1"># -*- coding: utf-8 -*-</span>
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">Download gridMET climatic time series for multiple variables, e.g. ETr, temp,</span>
-<span class="sd">wind speed 2m, swrad, etc. </span>
+<span class="sd">wind speed 2m, swrad, etc. using the `Google Earth Engine API &lt;https://developers.google.com/earth-engine/&gt;`_.</span>
 
 <span class="sd">&quot;&quot;&quot;</span>
 <span class="kn">import</span> <span class="nn">argparse</span>
@@ -214,7 +221,8 @@
 <div class="viewcode-block" id="download_gridmet_ee"><a class="viewcode-back" href="../../api.html#gridwxcomp.download_gridmet_ee">[docs]</a><span class="k">def</span> <span class="nf">download_gridmet_ee</span><span class="p">(</span><span class="n">input_csv</span><span class="p">,</span> <span class="n">out_folder</span><span class="p">,</span> <span class="n">year_filter</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">year_update</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">):</span> 
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Download gridMET time series data for multiple climate variables for </span>
-<span class="sd">    select gridMET cells as listed in ``input_csv``.</span>
+<span class="sd">    select gridMET cells as listed in ``input_csv``. Uses the `Google Earth </span>
+<span class="sd">    Engine API &lt;https://developers.google.com/earth-engine/&gt;`_.</span>
 
 <span class="sd">    Arguments:</span>
 <span class="sd">        input_csv (str): file path of input CSV produced by :mod:`gridwxcomp.prep_input`</span>
@@ -244,11 +252,11 @@
 
 <span class="sd">        If the data for 2018 has changed since the last run or for debugging</span>
 <span class="sd">        purposes you can re-download data for all or select years with the</span>
-<span class="sd">        ``[-u, --update-data]`` option</span>
+<span class="sd">        ``[-u, --year-update]`` option</span>
 
 <span class="sd">        .. code-block:: sh</span>
 
-<span class="sd">            $ python download_gridmet_ee.py -i merged_input.csv -o gridmet_data -y 2018 -u</span>
+<span class="sd">            $ python download_gridmet_ee.py -i merged_input.csv -o gridmet_data -y 2018 -u 2018</span>
 
 <span class="sd">        To download the same gridMET data within Python</span>
 
