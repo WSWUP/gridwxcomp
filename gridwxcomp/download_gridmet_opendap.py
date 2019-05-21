@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Download gridMET climatic time series for multiple variables, e.g. ETr, temp,
-wind speed 2m, swrad, etc. 
+wind speed 2m, swrad, etc. Uses `OpeNDAP <https://www.opendap.org>`_.
 
 """
 import argparse
@@ -25,7 +25,7 @@ def download_gridmet_opendap(input_csv, out_folder, year_filter='',
 
     """
     Download gridMET time series data for multiple climate variables for 
-    select gridMET cells as listed in ``input_csv``.
+    select gridMET cells as listed in ``input_csv``. Uses `OpeNDAP <https://www.opendap.org>`_.
 
     Arguments:
         input_csv (str): file path of input CSV produced by 
@@ -41,7 +41,8 @@ def download_gridmet_opendap(input_csv, out_folder, year_filter='',
         Say we wanted to download data for 2016 through 2018, from the command 
         line,
 
-        .. code::
+        .. code-block:: sh
+
             $ download_gridmet_opendap.py -i merged_input.csv -o gridmet_data -y 2016-2018
 
         note, "merged_input.csv" should have been created by first running 
@@ -53,7 +54,8 @@ def download_gridmet_opendap(input_csv, out_folder, year_filter='',
         purposes you can re-download data for all or select years with the
         ``[-u, --update-data]`` option
 
-        .. code::
+        .. code-block:: sh
+
             $ download_gridmet_opendap.py -i merged_input.csv -o gridmet_data -y 2018 -u
 
         To download the same gridMET data within Python

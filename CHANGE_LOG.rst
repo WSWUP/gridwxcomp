@@ -1,8 +1,21 @@
 Change Log
 **********
 
-Version 0.0.6
-=============
+Version 0.0.7x
+==============
+
+Add download tool using `OpeNDAP <https://www.opendap.org>`_, and add unit and integration tests.
+
+Force interpolated rasters to exactly align to gridMET cell locations when scale factor = 1.
+
+Remove residual calculations including adding to point shapefile and creation of station residual bar plots for all variables that are not listed in ``InterpGdal.default_layers``, i.e. variables other than mean bias ratios such as coefficient of variation or standard deviation interpolations. These can still be calculated when using ``spatial.calc_pt_error`` and ``plot.station_bar_plot`` directly. This change prevents unwanted residual calculations and plots from being added to the point shapefile or residual plots from being created when using the main ``spatial`` routine.
+
+Add package index to documentations sidebar and other docs related improvements.
+
+Version 0.0.6x
+==============
+
+Add unit and integration tests with ``pytest`` for example data, ``prep_input.py``, ``download_gridmet_ee.py``, and ``calc_bias_ratios.py``.
 
 Update all ``gridwxcomp`` modules (with exception of ``interpgdal.py``) to ensure that they can be used as standalone scripts without installing ``gridwxcomp``. For example, the spatial interpolation routines in ``spatial.py`` can be used from the command line
 
@@ -18,8 +31,8 @@ Add year range option for ``gridwxcomp.plot.daily_comparison``, useful for addin
 
 Changed docs hosting to `GitHub <https://wswup.github.io/gridwxcomp/>`_
 
-Version 0.0.5
-=============
+Version 0.0.5x
+==============
 
 Functionality for climate station data that was **NOT** created by `PyWeatherQaQc <https://github.com/WSWUP/pyWeatherQAQC>`_ after ``gridwxcomp >= 0.0.55``. Climate station time series files should be in CSV format and need a "date" column with date strings that can be parsed as datetime objects, e.g. '12/01/2018' or '12-01-2018'. ``daily_comparison.py`` and ``monthly_comparison.py`` plotting modules however still require climate station input data in the format of ``PyWeatherQaQc``. 
 
@@ -30,8 +43,8 @@ Add documentation page at `ReadTheDocs <http://gridwxcomp.readthedocs.io/>`_
 
 Add option to re-download gridMET time series data using ``download_gridmet_ee`` for specified year range.
 
-Version 0.0.4
-=============
+Version 0.0.4x
+==============
 
 Improve handling of missing data, if ratio data is missing it is generally represented by ``-999`` in text files (i.e. CSVs) and by ``nan`` in geospatial files, e.g. within point shapefiles of bias ratios. Importantly, fixed bug where gdal interpolation methods used missing data in interpolation as zeros.
 
@@ -71,8 +84,8 @@ Note, now there is a copy of the summary_comp.csv file in the directory containi
 
 Change calculations of annual, growing season, and summer bias ratios to use period sum of data as opposed to mean of monthly ratios. Same for standard deviation calculations and coefficient of variation. Results in slightly more accurate values. Also add total day accounts for these time periods, add all of these fields to georeferenced point shapefile as opposed to only bias ratios in previous versions.
 
-Version 0.0.3
-=============
+Version 0.0.3x
+==============
 
 First version available on `PyPI <https://pypi.org/project/gridwxcomp/>`_.
 
@@ -87,8 +100,8 @@ Update file structure format for spatial interpolation and calculation of zonal 
 which was saved to the output directory of ``calc_bias_ratios``, i.e. where the CSV file containing station point ratios and other statistics exists. This was problematic for tracking results created by multiple interpolation parameters such as changing the power parameter of the inverse distance weighting algorithm. So the new structure is saving a file named 'gridMET_stats.csv' to the output directory where interpolated rasters are saved for any interpolation routine, which can now be modified when conducting any interpolation. The columns in the CSV are updatedwhen layers are interpolated and zonal stats are extracted with the same out directory specified. 
 
 
-Version 0.0.2
-=============
+Version 0.0.2x
+==============
 
 Add more robust and intuitive command line interface ``gridwxcomp`` which interfaces with all major workflows of the module as opposed to needing to access multiple submodules of ``gridwxcomp``, e.g. ``gridwxcomp.prep_input``. Also add changelog. Example use of new CLI
 
@@ -106,8 +119,8 @@ Added dependencies:
 
 * `click >= 7.0 <https://click.palletsprojects.com/en/7.x/>`_
 
-Version 0.0.1
-=============
+Version 0.0.1x
+==============
 
 First numbered version. Many changes occured for initial development under this version which were not released or registered to PyPI. Main workflow has beed tested on Linux and Windows including: 
 

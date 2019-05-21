@@ -8,6 +8,7 @@ import logging
 
 from gridwxcomp.prep_input import prep_input as prep
 from gridwxcomp.download_gridmet_ee import download_gridmet_ee as download
+from gridwxcomp.download_gridmet_opendap import download_gridmet_opendap as download_od
 from gridwxcomp.calc_bias_ratios import calc_bias_ratios as calc_ratios
 from gridwxcomp.spatial import main as interp 
 from gridwxcomp.plot import daily_comparison, monthly_comparison, station_bar_plot
@@ -96,21 +97,49 @@ def prep_input(station_meta_path, out_path, gridmet_meta, quiet):
         help='Folder to save downloaded gridMET time series')
 @click.option('--years', '-y', nargs=1, type=str, default=None,
         help='Year(s) to download, single year (YYYY) or range (YYYY-YYYY)')
+@click.option('--update-data', '-u', default=False, is_flag=True,
+        help='Redownload existing data for given year(s)')
+@click.option('--quiet', default=False, is_flag=True, 
+        help='Supress command line output')
+def download_gridmet_opendap(input_csv, out_dir, years, update_data, quiet):
+    """
+    Download gridMET climate time series using `OpeNDAP <https://www.opendap.org>`_
+
+    Download gridMET time series for cells that are paired to climate stations
+    in a CSV file that is first created by ``gridwxcomp prep-input``. Options 
+    allow for downloading all years available (default) or select years, it is 
+    also possible to redownload data for specified year(s). If ``--out-dir`` is
+    not specified, gridMET time series CSVs are saved to a new directory named 
+    "gridmet_data" within the current working directory.
+    """
+    if quiet:
+        logging.getLogger().setLevel(logging.ERROR)
+    else:
+        logging.getLogger().setLevel(logging.INFO)
+    # call gridwxcomp.download_gridmet_opendap
+    download_od(
+        input_csv, out_dir, year_filter=years, update_data=update_data)
+
+@gridwxcomp.command()
+@click.argument('input_csv', nargs=1)
+@click.option('--out-dir', '-o', nargs=1, type=str, default='gridmet_data',
+        help='Folder to save downloaded gridMET time series')
+@click.option('--years', '-y', nargs=1, type=str, default=None,
+        help='Year(s) to download, single year (YYYY) or range (YYYY-YYYY)')
 @click.option('--update-years', '-u', nargs=1, type=str, default=None,
         help='Year(s) to redownload or update, YYYY or YYYY-YYYY')
 @click.option('--quiet', default=False, is_flag=True, 
         help='Supress command line output')
 def download_gridmet_ee(input_csv, out_dir, years, update_years, quiet):
     """
-    Download gridMET climate time series
+    Download gridMET climate time series using the `Google Earth Engine API <https://developers.google.com/earth-engine/>`_
 
     Download gridMET time series for cells that are paired to climate stations
     in a CSV file that is first created by ``gridwxcomp prep-input``. Options 
     allow for downloading all years available (default) or select years, it is 
-    also possible to redownload data for specified year(s). Uses the Google 
-    Earth Engine Python API. If ``--out-dir`` is not specified, gridMET time 
-    series CSVs are saved to a new directory named "gridmet_data" within the
-    current working directory.
+    also possible to redownload data for specified year(s). If ``--out-dir`` is 
+    not specified, gridMET time series CSVs are saved to a new directory named 
+    "gridmet_data" within the current working directory.
     """
     if quiet:
         logging.getLogger().setLevel(logging.ERROR)
@@ -163,9 +192,15 @@ def calc_bias_ratios(input_csv, out_dir, gridmet_var, station_var,
         'eto_mm'    'Calc_ETo (mm)'
         ==========  ==================
 
-    If ``--station-var`` is given from the default options, the corresponding
-    default gridMET variable will be used, otherwise you may assign these based
-    on the variable names in your station or gridMET time series files. 
+    If ``--gridmet-var`` is given from the default options, the corresponding
+    default station variable name will be looked up in the input station data 
+    and used, otherwise you must assign both the gridMET name (from table above)
+    and station variable based on the variable names in your station time series
+    CSV file(s). 
+    
+    The required argument ``INPUT_CSV`` is the CSV file that is 
+    produced by ``prep-input`` and ``download-gridmet-opendap`` or 
+    ``download-gridmet-ee``.
     """
     if quiet:
         logging.getLogger().setLevel(logging.ERROR)

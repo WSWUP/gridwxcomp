@@ -16,6 +16,12 @@ Command Line Interface
 .. click:: gridwxcomp.scripts.gridwxcomp:prep_input
   :prog: gridwxcomp prep-input
 
+.. click:: gridwxcomp.scripts.gridwxcomp:calc_bias_ratios
+  :prog: gridwxcomp calc-bias-ratios
+
+.. click:: gridwxcomp.scripts.gridwxcomp:download_gridmet_opendap
+  :prog: gridwxcomp download-gridmet-opendap
+
 .. click:: gridwxcomp.scripts.gridwxcomp:download_gridmet_ee
   :prog: gridwxcomp download-gridmet-ee
 
@@ -34,6 +40,12 @@ prep\_input
 .. autofunction:: gridwxcomp.prep_input
 
 
+download\_gridmet\_opendap
+--------------------------
+
+.. autofunction:: gridwxcomp.download_gridmet_opendap
+
+
 download\_gridmet\_ee
 ---------------------
 
@@ -41,7 +53,7 @@ download\_gridmet\_ee
 
 
 calc\_bias\_ratios
-------------------------------------
+------------------
 
 .. automodule:: gridwxcomp.calc_bias_ratios
     :members:
@@ -50,7 +62,7 @@ calc\_bias\_ratios
     :show-inheritance:
 
 spatial
--------------------------
+-------
 
 .. automodule:: gridwxcomp.spatial
     :members:
@@ -60,7 +72,7 @@ spatial
 
 
 plot
------------------------------------
+----
 
 .. automodule:: gridwxcomp.plot
     :members:
@@ -69,7 +81,7 @@ plot
     :show-inheritance:
 
 InterpGdal
-----------------------------
+----------
 
 .. autoclass:: gridwxcomp.InterpGdal
     :members:
@@ -77,14 +89,10 @@ InterpGdal
     :show-inheritance:
 
 util
-----------------------
+----
 
 .. automodule:: gridwxcomp.util
     :members:
     :undoc-members:
     :show-inheritance:
-
-
-* :ref:`genindex`
-* :ref:`search`
 

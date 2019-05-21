@@ -20,7 +20,7 @@ sys.path.insert(0, os.path.abspath('../../'))
 # for ReadTheDocs to prevent C-based module import issues
 autodoc_mock_imports = ['bokeh', 'click', 'ee', 'numpy', 'pandas', 'refet', 
                        'fiona', 'gdal', 'rasterio', 'rasterstats', 'shapely', 
-                       'osgeo', 'scipy']
+                       'osgeo', 'scipy', 'xarray', 'netCDF4']
 
 # -- Project information -----------------------------------------------------
 
@@ -131,6 +131,7 @@ html_theme_options = {
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 
+templates_path = ['_templates']
 # Custom sidebar templates, must be a dictionary that maps document names
 # to template names.
 #

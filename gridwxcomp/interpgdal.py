@@ -537,12 +537,21 @@ class InterpGdal(object):
             os.chdir(cwd)
 
             # calculate interpolated values and error at stations
-            calc_pt_error(self.summary_csv_path, out_dir, layer, grid_var)
+            # only calc residuals for mean bias ratios, i.e. not std dev, etc.
+            if layer in InterpGdal.default_layers:
+                calc_pt_error(self.summary_csv_path, out_dir, layer, grid_var)
+            else:
+                # delete tmp summary csv used in interpgdal _make_pt_vrt method 
+                # normally deleted in calc_pt_error
+                tmp_csv = str(self.summary_csv_path).replace('.csv','_tmp.csv')
+                if Path(tmp_csv).resolve().is_file():
+                    Path(tmp_csv).resolve().unlink()
+
             # zonal means extracted to GRIDMET_ID (cell index) 
             if zonal_stats:
                 gridmet_zonal_stats(self.summary_csv_path, out_file)
-            # residual (error) bar plot
-            if res_plot:
+            # residual (error) bar plot, only for mean bias ratios
+            if res_plot and layer in InterpGdal.default_layers:
                 layer = self.var_residual_names.get(
                     layer, 
                     layer.replace('mean','res')

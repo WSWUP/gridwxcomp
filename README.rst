@@ -58,13 +58,13 @@ Alternatively, or if there are installation issues, you can manually install. Fi
 
 If you downloaded the source distribution then run ``pip install -e .`` in the root directory where the setup.py file is located. This installation method is ideal if you want to be able to modify the source code.
 
-Lastly, ``gridwxcomp`` uses the Google Earth Engine API to download gridMET data, therefore you will need a Google account and before the first use on a machine you will need to verify your account. From the command line type:
+Optionally, ``gridwxcomp`` can use the `Google Earth Engine API <https://developers.google.com/earth-engine/>`_ to download gridMET data, although it also allows for download without it. If you want to use Google Earth Engine you will need a Google account and before the first use on a machine you will need to verify your account. From the command line type:
 
 .. code-block:: bash
 
     $ python -c "import ee; ee.Initialize()"
 
-and follow the instructions.
+and follow the instructions. Note, the method below uses `OpeNDAP <https://www.opendap.org>`_ to download gridMET time series data and is typically faster than the provided Earth Engine download routine.
 
 
 Quick start from command line
@@ -89,11 +89,11 @@ After installing with pip the ``gridwxcomp`` command line interface can be used 
 
     $ gridwxcomp prep-input <PATH_TO example_data/Station_Data.txt>  
 
-This will result in the file "merged_input.csv". Next download matching gridMET climate time series with Google Earth Engine by running
+This will result in the file "merged_input.csv". Next download matching gridMET climate time series with `OpeNDAP <https://www.opendap.org>`_ by running
 
 .. code-block:: bash
 
-    $ gridwxcomp download-gridmet-ee merged_input.csv -y 2016-2017
+    $ gridwxcomp download-gridmet-opendap merged_input.csv -y 2016-2017
 
 The time series of gridMET data that correpond with the stations in "merged_input.csv" will be saved to a new folder called "gridmet_data" by defualt. In this case only the years 2016-2017 are used. 
 

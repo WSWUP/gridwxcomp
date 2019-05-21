@@ -1183,13 +1183,16 @@ def interpolate(in_path, layer='all', out=None, scale_factor=0.1,
         ds = None
 
         # calc residuals add to shapefile and in_path CSV, move shape to out_dir
-        calc_pt_error(in_path, out_dir, layer, grid_var)
+        # only residuals for bias ratios, i.e. not for std dev, etc
+        if layer in InterpGdal.default_layers:
+            calc_pt_error(in_path, out_dir, layer, grid_var)
         # calculate zonal statistics save means for each gridMET cell
         if zonal_stats:
             gridmet_zonal_stats(in_path, out_file)
             
-        # plot layer's interpolated residuals as bar plot witheach Wx station           
-        if res_plot:
+        # plot layer's interpolated residuals as bar plot witheach Wx station   
+        # only produce residual plots for bias ratios, i.e. not for std dev, etc
+        if res_plot and layer in InterpGdal.default_layers:
             layer = InterpGdal.var_residual_names.get(
                 layer, 
                 layer.replace('mean','res')

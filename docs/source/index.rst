@@ -22,8 +22,4 @@ Bias ratios calculated by ``gridwxcomp`` can be used to correct bias of gridMET 
    api
    changelog
 
-Indices and tables
-==================
 
-* :ref:`genindex`
-* :ref:`search`

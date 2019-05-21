@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Download gridMET climatic time series for multiple variables, e.g. ETr, temp,
-wind speed 2m, swrad, etc. 
+wind speed 2m, swrad, etc. using the `Google Earth Engine API <https://developers.google.com/earth-engine/>`_.
 
 """
 import argparse
@@ -22,7 +22,8 @@ ee.Initialize()
 def download_gridmet_ee(input_csv, out_folder, year_filter='', year_update=''): 
     """
     Download gridMET time series data for multiple climate variables for 
-    select gridMET cells as listed in ``input_csv``.
+    select gridMET cells as listed in ``input_csv``. Uses the `Google Earth 
+    Engine API <https://developers.google.com/earth-engine/>`_.
 
     Arguments:
         input_csv (str): file path of input CSV produced by :mod:`gridwxcomp.prep_input`
@@ -52,11 +53,11 @@ def download_gridmet_ee(input_csv, out_folder, year_filter='', year_update=''):
 
         If the data for 2018 has changed since the last run or for debugging
         purposes you can re-download data for all or select years with the
-        ``[-u, --update-data]`` option
+        ``[-u, --year-update]`` option
 
         .. code-block:: sh
 
-            $ python download_gridmet_ee.py -i merged_input.csv -o gridmet_data -y 2018 -u
+            $ python download_gridmet_ee.py -i merged_input.csv -o gridmet_data -y 2018 -u 2018
 
         To download the same gridMET data within Python
 
