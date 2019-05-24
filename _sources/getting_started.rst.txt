@@ -14,13 +14,7 @@ To activate the environment before using ``gridwxcomp`` run
 
 .. code-block:: bash
 
-    $ activate gridwxcomp
-
-on Windows, or on Linux, Mac
-
-.. code-block:: bash
-
-    $ source activate gridwxcomp
+    $ conda activate gridwxcomp
 
 Next install using `pip <https://pip.pypa.io/en/stable/installing/>`_,
 
