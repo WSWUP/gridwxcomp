@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-#!/usr/bin/env python
 """
 Read a CSV of climate station information and match each with nearest gridMET
 cell information. Produce a CSV file that will be used for input for main
@@ -274,10 +273,23 @@ def build_grid_meta(grid_path, grid_id_name, out_path=None):
 
 
 def prep_input(station_path, out_path='merged_input.csv', grid_meta_path=None, 
-        grid_path=None, grid_id_name=None):
+        grid_path=None, grid_id_name=None, grid_data_dir=None):
     """
     Read list of climate stations and match each with its closest gridcell, 
     save CSV with information from both.
+
+    Station time series files must be in the same directory as `station_path`
+    metadata file and each file must begin with the name specifed as 'Station'
+    in the station metadata file.
+
+    If using gridded data other than gridMET this function may be used to 
+    create a metadata CSV file of cell data for any arbitrary rectangular grid.
+    The grid must be passed to `grid_path` and it must contain a cell identifier
+    attribute (name must be passed in as `grid_id_name`) that is an integer 
+    which increases monotonically by steps of 1 without gaps, e.g. 1,2,3,4,...
+    although the cell order does not have to follow any rule. In other words
+    the first cell may be in any location and the next may be anywhere and so
+    forth.
 
     Arguments:
         station_path (str): path to CSV file containing metadata of climate
@@ -295,6 +307,10 @@ def prep_input(station_path, out_path='merged_input.csv', grid_meta_path=None,
         grid_path (str): path to grid vector file
         grid_id_name (str): name of gridcell identifier present in grid,
             ID data values should be integers.
+        grid_data_dir (str): directory that contains grid time series files,
+            each file should have the integer grid ID value in its name and 
+            should be in CSV format. Only used when gridded time series data 
+            already exists on disk.
 
     Returns:
         None
@@ -309,10 +325,11 @@ def prep_input(station_path, out_path='merged_input.csv', grid_meta_path=None,
         :mod:`gridwxcomp.download_gridmet_ee` and :mod:`gridwxcomp.calc_bias_ratios`.
         
     Raises:
-        FileNotFoundError: if the ``gridmet_meta_path`` is not passed as a 
+        FileNotFoundError: if the ``grid_meta_path`` is not passed as a 
             command line argument and it is not in the current working directory
-            and named "gridmet_cell_data.csv" and if ``gridwxcomp`` was not 
-            installed to the user's PATH, i.e. pip or python setup.py install.
+            and named "gridmet_cell_data.csv" (i.e. if other grid data is not 
+            given) and if ``gridwxcomp`` was not installed to the user's PATH, 
+            i.e. pip or python setup.py install.
         ValueError: if one or more of the following mandatory columns are 
             missing from the input CSV file (``station_path`` parameter): 
             'Longitude', 'Latitude', 'Station', or 'Filename'.   
@@ -355,8 +372,14 @@ def prep_input(station_path, out_path='merged_input.csv', grid_meta_path=None,
           'station list CSV: ',
           os.path.abspath(station_path),
           '\ngridcell meta info CSV: ',
-          os.path.abspath(grid_meta_path),
-          '\nmerged CSV will be saved to: ',
+          os.path.abspath(grid_meta_path)
+    )
+
+    if grid_data_dir is not None:
+        print('grid data files in dir: ', Path(grid_data_dir).absolute())
+
+    print(
+          'merged CSV will be saved to: ',
           os.path.abspath(out_path)
     )
 
@@ -387,9 +410,76 @@ def prep_input(station_path, out_path='merged_input.csv', grid_meta_path=None,
     if 'ELEV_M' in out_df.columns:
         out_df['ELEV_FT'] = out_df.ELEV_M * 3.28084 # m to ft
 
-    # TODO: if grid_data_dir is given look their to add grid_file_paths
+    # if grid_data_dir is given look their to add grid_file_paths
+    if grid_data_dir is not None:
+        out_df = find_grid_files(out_df, grid_data_dir, grid_id_name)
     # save CSV 
     out_df.to_csv(out_path, index=False)
+
+def find_grid_files(merged_df, grid_data_dir, grid_id_name):
+    """
+    Given a directory that contains time series climate files from a gridded
+    dataset, find all file paths that match the grid ID for each 
+    station-gridcell pair.
+
+    This is used when the gridded data has already been downloaded or otherwise
+    exists on the file system. For example, when using gridded products other 
+    than gridMET or when creating a new gridMET merged input file that reuses
+    predownloaded gridMET data with a different set of climate station data.
+
+    Arguments:
+        merged_df (:obj:`pandas.DataFrame`): dataframe created by 
+            :func:`prep_input` that contains the integer grid ID or identifier 
+            for each grid cell that needs to be matched to overlapping stations.
+        grid_data_dir (str): directory that contains grid time series files,
+            each file should have the integer grid ID value in its name and 
+            should be in CSV format. 
+        grid_id_name (str): name of gridcell integer identifier present in grid.
+
+    Returns:
+        merged_df (:obj:`pandas.DataFrame`): dataframe passed in as an argument
+            modified to include the column 'GRID_FILE_PATH' which contains full
+            paths to each grid time series file that corresponds with 
+            overlapping station locations. 
+    """
+    if grid_data_dir is not None:
+        grid_data_dir = Path(grid_data_dir).absolute()
+
+    if not Path(grid_data_dir).is_dir():
+        print('ERROR: the directory given for gridded time series was not' 
+            'found at:\n{}\nThe merged input file will not include paths to'
+            'paired gridded time series, fix and rerun this routine.'\
+                .format(grid_data_dir)
+        )
+        return merged_df
+
+    if grid_id_name is None:
+        print('ERROR: please specify the name of the integer grid ID used'
+            'in your grid and gridded time series names\nThe merged input'
+            'file will not include paths to paired gridded time series,\n'
+            'fix and rerun this routine.'
+        )
+        return merged_df
+
+    grid_data_files = [str(f) for f in grid_data_dir.glob('*') if f.is_file()]
+
+    for index, row in merged_df.iterrows():
+        grid_id = row[grid_id_name]
+        try:
+            match = [f for f in grid_data_files if str(grid_id) in f][0]
+        except:
+            match = None
+        if match:
+            merged_df.loc[index, 'GRID_FILE_PATH'] = match
+        else:
+            print('WARNING: no grid file was found for {} = {}'
+                '\nin directory: {} \nskipping.\n'.format(
+                    grid_id_name, grid_id, grid_data_dir
+                )
+            )
+            continue
+            
+    return merged_df
 
 def arg_parse():
     """
