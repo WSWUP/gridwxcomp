@@ -21,7 +21,6 @@ import os
 import re
 import argparse
 import copy
-import pkg_resources
 from math import ceil, pow, sqrt
 from pathlib import Path
 from shutil import move
