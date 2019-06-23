@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
 Calculate monthly bias ratios of variables from climate station 
-to overlapping gridMET cells. 
+to overlapping gridMET (or other gridded dataset) cells. 
 
 Input file for this module must first be created by running 
 :mod:`gridwxcomp.prep_input` followed by :mod:`gridwxcomp.download_gridmet_ee`. 
@@ -25,15 +25,14 @@ Default values::
         'eto_mm' : 'Calc_ETo (mm)'
     }
 
-Note:
-    The module attribute ``GRIDMET_STATION_VARS`` can be manually adjusted, 
+Note: The module attribute ``GRIDMET_STATION_VARS`` can be manually adjusted,
     if ``gridwxcomp`` is installed in editable mode or used as scripts from the
-    root directory. New pairs of station-to-gridMET variables can then be made 
-    or removed to efficiently use :mod:`gridwxcomp` on custom
-    station data that was **not** created by 
-    `PyWeatherQAQC <https://github.com/WSWUP/pyWeatherQAQC>`_. Otherwise, the 
-    same can be achieved by the ``gridmet_var`` and ``station_var`` arguments
-    to :func:`calc_bias_ratios`.
+    root directory. New pairs of station-to-grid variables can then be made
+    or removed to efficiently use :mod:`gridwxcomp` on station data that was
+    **not** created by `PyWeatherQAQC
+    <https://github.com/WSWUP/pyWeatherQAQC>`_.  Otherwise, the same can be
+    achieved by the ``grid_var`` and ``station_var`` arguments to
+    :func:`calc_bias_ratios`.
     
 """
 
@@ -66,8 +65,8 @@ GRIDMET_STATION_VARS = {
 
 OPJ = os.path.join
 
-def main(input_file_path, out_dir, gridmet_var='etr_mm', station_var=None,
-         gridmet_id=None, day_limit=10, years='all', comp=True):
+def main(input_file_path, out_dir, grid_var='etr_mm', station_var=None,
+         grid_id=None, day_limit=10, years='all', comp=True):
     """
     Calculate monthly bias ratios between station climate and gridMET
     cells that correspond with each other geographically. Saves data
@@ -84,13 +83,13 @@ def main(input_file_path, out_dir, gridmet_var='etr_mm', station_var=None,
             monthly bias ratios of etr.
             
     Keyword Arguments:
-        gridmet_var (str): default 'etr_mm'. GridMET climate variable
+        grid_var (str): default 'etr_mm'. GridMET climate variable
             to calculate bias ratios.
         station_var (str): default None. Climate station variable to use
-            to calculate bias ratios. If None, look up using ``gridmet_var`` 
-            as a key to ``GRIDMET_STATION_VARS`` dictionary which is a 
+            to calculate bias ratios. If None, look up using ``grid_var`` 
+            as a key to :attr:`GRIDMET_STATION_VARS` dictionary which is a 
             module attribute to :mod:`gridwxcomp.calc_bias_ratios`.
-        gridmet_ID (str): optional gridMET ID number to only calculate bias 
+        grid_ID (str): optional gridMET ID number to only calculate bias 
             ratios for a single gridMET cell.
         day_limit (int): default 10. Threshold number of days in month
             of missing data, if less exclude month from calculations.
@@ -121,7 +120,7 @@ def main(input_file_path, out_dir, gridmet_var='etr_mm', station_var=None,
         variable name if, for example, they are using station data that was
         **not** created by `PyWeatherQAQC <https://github.com/WSWUP/pyWeatherQAQC>`_.
         Let's say our station time series has ETo named as 'EO' then 
-        use the ``[-sv, --station-var]`` and ``[-gv, --gridmet-var]`` options
+        use the ``[-sv, --station-var]`` and ``[-gv, --grid-var]`` options
         
         .. code-block:: sh
 
@@ -135,7 +134,7 @@ def main(input_file_path, out_dir, gridmet_var='etr_mm', station_var=None,
         For use within Python see :func:`calc_bias_ratios`.
 
     Note:
-        If ``[-gv, --gridmet-var]`` command line option or ``gridmet_var`` 
+        If ``[-gv, --grid-var]`` command line option or ``grid_var`` 
         keyword argument is given but the station variable is left as default 
         (None), the corresponding station variable is looked up from the mapping
         dictionary in :mod:`gridwxcomp.calc_bias_ratios` named 
@@ -152,14 +151,14 @@ def main(input_file_path, out_dir, gridmet_var='etr_mm', station_var=None,
     calc_bias_ratios(
         input_file_path, 
         out_dir, 
-        gridmet_var=gridmet_var,
+        grid_var=grid_var,
         station_var=station_var, 
-        gridmet_ID=gridmet_id, 
+        grid_ID=grid_id, 
         day_limit=day_limit,
         comp=comp
     )
 
-def _save_output(out_df, comp_out_df, out_dir, gridmet_ID, var_name, yrs):
+def _save_output(out_df, comp_out_df, out_dir, grid_ID, var_name, yrs):
     """
     Save short summary file or overwrite existing data for a single
     climate station.
@@ -175,7 +174,7 @@ def _save_output(out_df, comp_out_df, out_dir, gridmet_ID, var_name, yrs):
             is passed then save or update existing file.
         out_dir (str): path to directory to save or update summary data
             for monthly bias ratios.
-        gridmet_ID (int, optional): depends on ``gridmet_ID`` argument
+        grid_ID (int, optional): depends on ``grid_ID`` argument
             passed to :func:`calc_bias_ratios`. If not None (default)
             then save summary files for stations that correspond with
             the given gridMET ID with the suffix "_X" where X is the
@@ -189,11 +188,16 @@ def _save_output(out_df, comp_out_df, out_dir, gridmet_ID, var_name, yrs):
     """
         
     def __save_update(out_df, out_file):
+
+        """ 
+        Helper function that is reused to save or update both short and
+        long summary files one station or row at a time. Saves station ratio
+        data by appending to existing file or overwriting data for a station if
+        it was previously calculated. `out_df` is a single row from the ratio
+        results table representing data for a single climate station-gridcell
+        pair. 
         """
-        Helper function that is reused for both short and long summary
-        files. Saves station ratio data by appending to existing file or
-        overwriting data for a station if it was previously calculated.
-        """
+
         # if short file exists add/overwrite row for station
         if os.path.isfile(out_file):
             existing_df = pd.read_csv(out_file, index_col='STATION_ID')
@@ -214,7 +218,7 @@ def _save_output(out_df, comp_out_df, out_dir, gridmet_ID, var_name, yrs):
         os.mkdir(out_dir)   
         
     # save/update short summary file or update existing with new station
-    if not gridmet_ID:
+    if not grid_ID:
         out_file = OPJ(
             out_dir, 
             '{v}_summary_{y}.csv'.format(v=var_name, y=yrs)
@@ -223,13 +227,13 @@ def _save_output(out_df, comp_out_df, out_dir, gridmet_ID, var_name, yrs):
         out_file = OPJ(
             out_dir,
             '{v}_summary_grid_{g}_{y}.csv'.format(
-                v=var_name, g=gridmet_ID, y=yrs)
+                v=var_name, g=grid_ID, y=yrs)
         )
     __save_update(out_df, out_file)
 
     # if comprehensive summary is requested save/update
     if isinstance(comp_out_df, pd.DataFrame):
-        if not gridmet_ID:
+        if not grid_ID:
             comp_out_file = OPJ(
                 out_dir, 
                 '{v}_summary_comp_{y}.csv'.format(v=var_name, y=yrs)
@@ -238,35 +242,36 @@ def _save_output(out_df, comp_out_df, out_dir, gridmet_ID, var_name, yrs):
             comp_out_file = OPJ(
                 out_dir,
                 '{v}_summary_comp_{g}_{y}.csv'.format(
-                    v=var_name, g=gridmet_ID, y=yrs)
+                    v=var_name, g=grid_ID, y=yrs)
             )
         __save_update(comp_out_df, comp_out_file)
     
-def calc_bias_ratios(input_path, out_dir, gridmet_var='etr_mm', 
-             station_var=None, gridmet_ID=None, day_limit=10, years='all',
-             comp=True):
+def calc_bias_ratios(input_path, out_dir, grid_id_name='GRIDMET_ID', 
+        grid_var='etr_mm', station_var=None, var_dict=None, 
+        station_date_name='date', grid_date_name='date', grid_ID=None, 
+        day_limit=10, years='all', comp=True):
     """
     Read input CSV file and calculate mean monthly bias ratios between
-    station to corresponding gridMET cells for all station and gridMET 
+    station to corresponding grid cells for all station and gridMET 
     pairs, optionally calculate ratios for a single gridMET cell.
     
     Arguments:
         input_path (str): path to input CSV file with matching
-            station climate and gridMET metadata. This file is 
+            station climate and grid metadata. This file is 
             created by running :func:`gridwxcomp.prep_input` followed by 
             :func:`gridwxcomp.download_gridmet_ee`.
         out_dir (str): path to directory to save CSV files with
             monthly bias ratios of etr.
             
     Keyword Arguments:
-        gridmet_var (str): default 'etr_mm'. GridMET climate variable
+        grid_var (str): default 'etr_mm'. Grid climate variable
             to calculate bias ratios.
         station_var (str): default None. Climate station variable to use
-            to calculate bias ratios. If None, look up using ``gridmet_var`` 
+            to calculate bias ratios. If None, look up using ``grid_var`` 
             as a key to :attr:`GRIDMET_STATION_VARS` dictionary found as a 
             module attribute to :mod:`gridwxcomp.calc_bias_ratios`.
-        gridmet_ID (int): default None. GridMET ID (index) to only calculate 
-            bias ratios for a single gridMET cell.
+        grid_ID (int): default None. Grid ID (int cell identifier) to only 
+            calculate bias ratios for a single gridcell.
         day_limit (int): default 10. Threshold number of days in month
             of missing data, if less exclude month from calculations.
         years (int or str): default 'all'. Years to use for calculations
@@ -284,14 +289,14 @@ def calc_bias_ratios(input_path, out_dir, gridmet_var='etr_mm',
         >>> from gridwxcomp import calc_bias_ratios
         >>> input_path = 'merged_input.csv'
         >>> out_dir = 'monthly_ratios'
-        >>> gridmet_variable = 'eto_mm'
-        >>> calc_bias_ratios(input_path, out_dir, gridmet_var=gridmet_variable)
+        >>> grid_variable = 'eto_mm'
+        >>> calc_bias_ratios(input_path, out_dir, grid_var=grid_variable)
         
         To use custom station data, give the keyword argument ``station_var``, 
         e.g. if we had climate daily time series data for precipitation 
         with the column named "p" then,
         
-        >>> calc_bias_ratios(input_path, out_dir, gridmet_var='prcp_mm', 
+        >>> calc_bias_ratios(input_path, out_dir, grid_var='prcp_mm', 
         >>>     station_var='p')
                 
         This results in two CSV files in ``out_dir`` named 
@@ -303,15 +308,16 @@ def calc_bias_ratios(input_path, out_dir, gridmet_var='etr_mm',
             the climate station and gridMET time series files. This
             occurs if, for example, the :mod:`gridwxcomp.prep_input` and/or 
             the :mod:`gridwxcomp.download_gridmet_ee` scripts have not been 
-            run first. Also raised if the given ``gridmet_var`` or 
-            ``station_var`` kwargs are invalid.
+            run first (if using gridMET data). Also raised if the given 
+            ``grid_var``, ``station_var``, or values of ``var_dict`` kwargs 
+            are invalid.
     
     Note:
         If an existing summary file contains a climate station that is being 
         reprocessed its monthly bias ratios and other data will be overwritten. 
         Also, to proceed with spatial analysis scripts, the comprehensive 
         summary file must be produced using this function first. If 
-        ``gridmet_var`` keyword argument is given but the ``station_var`` is 
+        ``grid_var`` keyword argument is given but the ``station_var`` is 
         left as default (None), the corresponding station variable is looked 
         up from the mapping dictionary in :mod:`calc_bias_ratios.py` 
         named :attr:`GRIDMET_STATION_VARS`. To use climate data 
@@ -326,13 +332,16 @@ def calc_bias_ratios(input_path, out_dir, gridmet_var='etr_mm',
     std_warning = "Degrees of freedom <= 0 for slice"
     warnings.filterwarnings("ignore", message=std_warning)
 
-    if not GRIDMET_STATION_VARS.get(gridmet_var, None):
+    if var_dict is None:
+        var_dict = GRIDMET_STATION_VARS
+
+    if not var_dict.get(grid_var, None):
         print(
-            'Valid gridMET variable names:\n',
-            '\n'.join([i for i in GRIDMET_STATION_VARS.keys()]),
+            'Valid grid variable names:\n',
+            '\n'.join([i for i in var_dict.keys()]),
             '\n'
         )
-        err_msg = 'Invalid gridMET variable name {}'.format(gridmet_var)
+        err_msg = 'Invalid grid variable name {}'.format(grid_var)
         raise KeyError(err_msg)
 
     if not os.path.isdir(out_dir):
@@ -344,37 +353,37 @@ def calc_bias_ratios(input_path, out_dir, gridmet_var='etr_mm',
     input_df = pd.read_csv(input_path)
     # get matching station variable name
     if not station_var:
-        station_var = GRIDMET_STATION_VARS.get(gridmet_var)
+        station_var = var_dict.get(grid_var)
     # If only calculating ratios for a single cell, change console message
-    if gridmet_ID:
-        single_gridmet_cell_msg = \
-            'For gridmet cell ID: {g}\n'.format(g=gridmet_ID)
+    if grid_ID:
+        single_grid_cell_msg = \
+            'For grid cell ID: {g}\n'.format(g=grid_ID)
     else:
-        single_gridmet_cell_msg = ''
+        single_grid_cell_msg = ''
     print(
         'Calculating bias ratios between climate station variable: ',
         station_var,
         '\n',
-        'and gridMET climate variable: ',
-        gridmet_var,
-        '\n{g}'.format(g=single_gridmet_cell_msg)
+        'and grid climate variable: ',
+        grid_var,
+        '\n{g}'.format(g=single_grid_cell_msg)
     )
     # loop through each station and calculate monthly ratio
     for index, row in input_df.iterrows():
-        if not 'STATION_FILE_PATH' in row or not 'GRIDMET_FILE_PATH' in row:
-            raise KeyError('Missing station and/or gridMET file paths in '+\
+        if not 'STATION_FILE_PATH' in row or not 'GRID_FILE_PATH' in row:
+            raise KeyError('Missing station and/or grid file paths in '+\
                            'input file. Run prep_input.py followed '+\
                            'by download_gridmet_ee.py first.')
-        # if only doing a single gridMET cell check for matching ID
-        if gridmet_ID and int(gridmet_ID) != row.GRIDMET_ID:
+        # if only doing a single grid cell check for matching ID
+        if grid_ID and int(grid_ID) != row[grid_id_name]:
             continue
 
-        # load station and gridMET time series files
+        # load station and grid time series files
         try:
             # if time series not from PyWeatherQaQc, CSV with 'date' column
             if not row.STATION_FILE_PATH.endswith('.xlsx'):
                 station_df = pd.read_csv(row.STATION_FILE_PATH,parse_dates=True,
-                                index_col='date')
+                                index_col=station_date_name)
                 station_df.index = station_df.index.date # for joining
             # if excel file, assume PyWeatherQaQc format
             else:
@@ -390,14 +399,14 @@ def calc_bias_ratios(input_path, out_dir, gridmet_var='etr_mm',
                 format(v=station_var, p=row.STATION_FILE_PATH)
             raise KeyError(err_msg)
         print(
-             '\nCalculating {v} bias ratios for station:'.format(v=gridmet_var),
+             '\nCalculating {v} bias ratios for station:'.format(v=grid_var),
              row.STATION_ID
              )
-        gridmet_df = pd.read_csv(row.GRIDMET_FILE_PATH, parse_dates=True, 
-                                 index_col='date')
+        grid_df = pd.read_csv(row.GRID_FILE_PATH, parse_dates=True, 
+                                 index_col=grid_date_name)
         # merge both datasets drop missing days
         result = pd.concat([station_df[station_var], 
-                            gridmet_df[gridmet_var]], axis=1, 
+                            grid_df[grid_var]], axis=1, 
                            join_axes=[station_df.index])
         result.dropna(inplace=True)
         # make datetime index
@@ -410,29 +419,29 @@ def calc_bias_ratios(input_path, out_dir, gridmet_var='etr_mm',
                 .agg(['sum','count'])
         result.index.set_names(['year', 'month'], inplace=True)
         # remove totals with less than XX days
-        result = result[result[gridmet_var,'count']>=day_limit]
+        result = result[result[grid_var,'count']>=day_limit]
         # calc mean growing season and June to August ratios with month sums
         grow_season = result.loc[
             result.index.get_level_values('month').isin([4,5,6,7,8,9]),\
                     (station_var)]['sum'].sum() / result.loc[
                 result.index.get_level_values('month').isin([4,5,6,7,8,9]),\
-                        (gridmet_var)]['sum'].sum()
+                        (grid_var)]['sum'].sum()
         june_to_aug = result.loc[
             result.index.get_level_values('month').isin([6,7,8]), (station_var)
             ]['sum'].sum() / result.loc[result.index.get_level_values('month')\
-                    .isin([6,7,8]), (gridmet_var)]['sum'].sum()
+                    .isin([6,7,8]), (grid_var)]['sum'].sum()
         ann_months = list(range(1,13))
         annual = result.loc[
             result.index.get_level_values('month').isin(ann_months),\
                     (station_var)]['sum'].sum() / result.loc[
                 result.index.get_level_values('month').isin(ann_months),\
-                        (gridmet_var)]['sum'].sum()
+                        (grid_var)]['sum'].sum()
         
         ratio = pd.DataFrame(columns = ['ratio', 'count'])
         # ratio of monthly sums for each year
-        ratio['ratio'] = (result[station_var,'sum'])/(result[gridmet_var,'sum'])
+        ratio['ratio'] = (result[station_var,'sum'])/(result[grid_var,'sum'])
         # monthly counts and stddev
-        ratio['count'] = result.loc[:,(gridmet_var,'count')]
+        ratio['count'] = result.loc[:,(grid_var,'count')]
 
         # rebuild Index DateTime
         ratio['year'] = ratio.index.get_level_values(0).values.astype(int)
@@ -523,9 +532,9 @@ def calc_bias_ratios(input_path, out_dir, gridmet_var='etr_mm',
         out = final_ratio.copy()
         out.drop(count_cols+stddev_cols+coef_var_cols, axis=1, inplace=True)
 
-        # save GRIDMET_ID for merging with input table
-        final_ratio['GRIDMET_ID'] = row.GRIDMET_ID    
-        final_ratio = final_ratio.merge(input_df, on='GRIDMET_ID')
+        # save grid ID for merging with input table
+        final_ratio[grid_id_name] = row[grid_id_name]    
+        final_ratio = final_ratio.merge(input_df, on=grid_id_name)
 
         # round numeric columns
         final_ratio = final_ratio.round({
@@ -565,20 +574,20 @@ def calc_bias_ratios(input_path, out_dir, gridmet_var='etr_mm',
             final_ratio.loc[:,cols] = np.nan
 
         if comp:
-            out['GRIDMET_ID'] = row.GRIDMET_ID
-            out['GRIDMET_ID'] = final_ratio.GRIDMET_ID.unique()
+            out[grid_id_name] = row[grid_id_name]
+            out[grid_id_name] = final_ratio[grid_id_name].unique()
             # build comprehensive output summary 
             comp_out = final_ratio
             comp_out.set_index('STATION_ID', inplace=True)
 
-            # no longer need GRIDMET_ID in short summary 
-            out.drop(columns='GRIDMET_ID', inplace=True)
+            # no longer need grid ID in short summary 
+            out.drop(columns=grid_id_name, inplace=True)
         # if comp False
         else:
             comp_out = comp
 
         # save output depending on options
-        _save_output(out, comp_out, out_dir, gridmet_ID, gridmet_var, years_str)
+        _save_output(out, comp_out, out_dir, grid_ID, grid_var, years_str)
 
     print(
         '\nSummary file(s) for bias ratios saved to: \n', 
@@ -588,7 +597,7 @@ def calc_bias_ratios(input_path, out_dir, gridmet_var='etr_mm',
 def arg_parse():
     """
     Command line usage of calc_bias_ratios.py which calculates monthly bias 
-    ratios between station climate and gridMET cells that correspond with 
+    ratios between station climate and grid cells that correspond with 
     each other geographically. Saves data to CSV files in the given output 
     directory. If run later with new station data, bias ratios for new 
     stations will be appended to existing output summary CSV.
@@ -600,7 +609,7 @@ def arg_parse():
     required = parser.add_argument_group('required arguments')
     required.add_argument(
         '-i', '--input', metavar='PATH', required=True,
-        help='Input CSV file of merged climate/gridMET data that '+\
+        help='Input CSV file of merged climate/grid data that '+\
              'was created by running prep_input.py and download_gridmet_ee.py')
     required.add_argument(
         '-o', '--out', metavar='PATH', required=True,
@@ -609,15 +618,15 @@ def arg_parse():
         '-y', '--years', metavar='', required=False, default='all',
         help='Years to use, single or range e.g. 2018 or 1995-2010')
     optional.add_argument(
-        '-gv', '--gridmet-var', metavar='', required=False, default='etr_mm',
-        help='GridMET variable name for bias ratio calculation')
+        '-gv', '--grid-var', metavar='', required=False, default='etr_mm',
+        help='Grid variable name for bias ratio calculation')
     optional.add_argument(
         '-sv', '--station-var', metavar='', required=False, default=None,
         help='Station variable name for bias ratio calculation')
     optional.add_argument(
-        '-id', '--gridmet-id', metavar='', required=False, default=None,
-        help='Optional gridMET ID to calculate bias ratios for a single '+\
-             'gridMET cell')
+        '-id', '--grid-id', metavar='', required=False, default=None,
+        help='Optional grid ID to calculate bias ratios for a single '+\
+             'gridcell')
     optional.add_argument('-d', '--day-limit', metavar='', required=False, 
         default=10, help='Number of days of valid data per month to '+\
               'include it in bias correction calculation.')
@@ -636,6 +645,6 @@ if __name__ == '__main__':
     args = arg_parse()
 
     main(input_file_path=args.input, out_dir=args.out,
-         gridmet_var=args.gridmet_var, station_var=args.station_var,
-         gridmet_id=args.gridmet_id, day_limit=args.day_limit,
+         grid_var=args.grid_var, station_var=args.station_var,
+         grid_id=args.grid_id, day_limit=args.day_limit,
          years=args.years, comp=args.comprehensive)
