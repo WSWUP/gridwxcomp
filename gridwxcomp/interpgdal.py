@@ -15,10 +15,10 @@ import pandas as pd
 
 # allows for CL script usage if gridwxcomp not installed
 try:
-    from .spatial import get_subgrid_bounds, gridmet_zonal_stats, calc_pt_error
+    from .spatial import get_subgrid_bounds, zonal_stats, calc_pt_error
     from .plot import station_bar_plot
 except:
-    from spatial import get_subgrid_bounds, gridmet_zonal_stats, calc_pt_error
+    from spatial import get_subgrid_bounds, zonal_stats, calc_pt_error
     from plot import station_bar_plot
 
 class InterpGdal(object):
@@ -97,7 +97,7 @@ class InterpGdal(object):
         
     """
     # constant gridMET cell size in degrees
-    CELL_SIZE = 0.041666666666666664
+    GRIDMET_RES = 0.041666666666666664
     # gdal_grid interpolation methods
     interp_methods = ('average',
                      'invdist',
@@ -269,8 +269,8 @@ class InterpGdal(object):
 
     def gdal_grid(self, layer='all', out_dir='', interp_meth='invdist', 
                   params=None, bounds=None, nx_cells=None, ny_cells=None, 
-                  scale_factor=0.1, zonal_stats=True, res_plot=True,
-                  options=None):
+                  scale_factor=0.1, z_stats=True, res_plot=True, grid_res=None,
+                  grid_id_name='GRIDMET_ID', options=None):
         """
         Run gdal_grid command line tool to interpolate point ratios.
         
@@ -301,7 +301,7 @@ class InterpGdal(object):
                 original gridMET fishnet to create resampling resolution. If 
                 scale_factor = 0.1, the resolution will be one tenth gridMET 
                 resolution or 400 m.
-            zonal_stats (bool): default True. Calculate zonal means of 
+            z_stats (bool): default True. Calculate zonal means of 
                 interpolated surface to gridMET cells in fishnet and save to a 
                 CSV file. The CSV file will be saved to the same directory as 
                 the interpolated raster file(s).
@@ -350,7 +350,7 @@ class InterpGdal(object):
                 ├── etr_mm_summary_pts.prj
                 ├── etr_mm_summary_pts.shp
                 ├── etr_mm_summary_pts.shx
-                ├── gridMET_stats.csv
+                ├── zonal_stats.csv
                 ├── growseason_mean.tiff
                 ├── growseason_mean.vrt
                 └── residual_plots/
@@ -417,7 +417,15 @@ class InterpGdal(object):
         
         cwd = os.getcwd()
         
-        res = round(4 * scale_factor * 1000)
+        # user provided uniform grid, cell size should be in dec. degrees
+        if grid_res is not None:
+            CS = grid_res
+        else: # assume gridMET
+            CS = self.GRIDMET_RES
+        self.grid_res = CS
+        
+        # grid resolution in decimal degrees
+        res = scale_factor * CS
         # file structure to match gridwxcomp.spatial.interpolate
         grid_var = str(self.summary_csv_path).split('_summary')[0]
         
@@ -454,36 +462,25 @@ class InterpGdal(object):
         if not bounds and not self.grid_bounds:
             # use gridwxcomp.spatial function, assume 25 cell buffer
             self.grid_bounds = get_subgrid_bounds(self.summary_csv_path, 
-                    buffer=25)
+                buffer=25, grid_res=CS)
         elif bounds:
             self.grid_bounds = bounds
         # raster extent
         xmin,xmax,ymin,ymax = self.grid_bounds
-        # fix any minor adjustments to make raster fit gridMET fishnet extent
-        # if scale_factor=1 make sure raster pixels align exactly w/gridcells
-        CS = InterpGdal.CELL_SIZE
-        if scale_factor:
-            nxcells = abs(xmin-xmax) / (CS*scale_factor)
-            nycells = abs(ymin-ymax) / (CS*scale_factor)
-            remainder_x = int(nxcells) - nxcells
-            remainder_y = int(nycells) - nycells
-            if abs(remainder_x) > CS:
-                remainder_x -= CS * (remainder_x / CS) 
-            if abs(remainder_y) > CS:
-                remainder_y -= CS * (remainder_y / CS) 
-            xmin -= remainder_x
-            xmax += CS
-            ymin -= remainder_y
-            ymin -= CS
 
-        # if not given get pixels in lon lat using gridMET resolution
+        # if not given get pixels in lon lat 
         # add one cell to avoid unfilled extent in case of large upscaling
         if not nx_cells:
             nx_cells = int(np.abs(xmin - xmax) / \
-                    (InterpGdal.CELL_SIZE * scale_factor)) + 1
+                    (CS * scale_factor)) + 1
         if not ny_cells:
             ny_cells = int(np.abs(ymin - ymax) / \
-                    (InterpGdal.CELL_SIZE * scale_factor)) + 1
+                    (CS * scale_factor)) + 1
+        # fix any minor adjustments to make raster fit gridMET fishnet extent
+        # if scale_factor=1 make sure raster pixels align exactly w/gridcells
+        xmax = xmin + nx_cells * CS * scale_factor
+        ymin = ymax - ny_cells * CS * scale_factor
+
         # to parse options, like --config GDAL_NUM_THREADS update here
         if not options:
             options = ''
@@ -509,11 +506,7 @@ class InterpGdal(object):
             out_file = out_dir.joinpath(tiff_file)
             # print message to console/logging about interpolation
             grid_var = Path(self.summary_csv_path).name.split('_summ')[0]
-            # recalculate raster resolution from bounds
-            n4km_xcells = int(round(np.abs(xmin - xmax) / InterpGdal.CELL_SIZE))
-            scale_factor_actual = n4km_xcells / nx_cells
-            res_actual = round(4 * scale_factor * 1000)
-            _interp_msg(grid_var, layer, self.interp_meth, res_actual, out_file)
+            _interp_msg(grid_var, layer, self.interp_meth, res, out_file)
             # build command line arguments
             cmd = (r'gdal_grid -a {meth}{p} -txe {xmin} {xmax} -tye {ymax}' 
                   ' {ymin} -outsize {nx} {ny} -of GTiff -ot Float32 -l {source}'
@@ -539,7 +532,9 @@ class InterpGdal(object):
             # calculate interpolated values and error at stations
             # only calc residuals for mean bias ratios, i.e. not std dev, etc.
             if layer in InterpGdal.default_layers:
-                calc_pt_error(self.summary_csv_path, out_dir, layer, grid_var)
+                calc_pt_error(self.summary_csv_path, out_dir, layer, grid_var,
+                    grid_id_name=grid_id_name
+                )
             else:
                 # delete tmp summary csv used in interpgdal _make_pt_vrt method 
                 # normally deleted in calc_pt_error
@@ -548,8 +543,10 @@ class InterpGdal(object):
                     Path(tmp_csv).resolve().unlink()
 
             # zonal means extracted to GRIDMET_ID (cell index) 
-            if zonal_stats:
-                gridmet_zonal_stats(self.summary_csv_path, out_file)
+            if z_stats:
+                zonal_stats(self.summary_csv_path, out_file,
+                    grid_id_name=grid_id_name
+                )
             # residual (error) bar plot, only for mean bias ratios
             if res_plot and layer in InterpGdal.default_layers:
                 layer = self.var_residual_names.get(
@@ -557,7 +554,7 @@ class InterpGdal(object):
                     layer.replace('mean','res')
                 )
                 y_label = 'residual (interpolated minus station value)'
-                title = 'layer: {} algorithm: {} (gdal_grid) resolution: {}m'.\
+                title = 'layer: {} algorithm: {} (gdal_grid) res: {} deg.'.\
                         format(layer, self.interp_meth, res)
                 res_plot_dir = Path(out_dir)/'residual_plots'
                 subtitle = 'parameters: {}'.format(params)
@@ -593,7 +590,7 @@ def _interp_msg(grid_var, layer, function, res, out_file):
         '\nInterpolating {g} point bias ratios for: {t}\n'.\
             format(g=grid_var, t=layer),
         'Using the "{}" method\n'.format(function),
-        'Resolution (pixel size) of output raster: {} m'.format(res)
+        'Resolution (pixel size) of output raster: {} degrees'.format(res)
     )
     print(
         'GeoTIFF raster will be saved to: \n',
