@@ -172,7 +172,7 @@ def download_gridmet_opendap(input_csv, out_folder, year_filter='',
             logging.info('No missing data found. Skipping')
             # Add gridMET file path to input table if not already there
             input_df.loc[input_df.GRIDMET_ID == row.GRIDMET_ID,\
-                'GRIDMET_FILE_PATH'] = os.path.abspath(output_file)
+                'GRID_FILE_PATH'] = os.path.abspath(output_file)
             input_df.to_csv(input_csv, index=False)
             continue
         # for option to redownload all data in given year range
@@ -310,7 +310,7 @@ def download_gridmet_opendap(input_csv, out_folder, year_filter='',
 
         # Add gridMET file path to input table
         input_df.loc[input_df.GRIDMET_ID == row.GRIDMET_ID,\
-                'GRIDMET_FILE_PATH'] = os.path.abspath(output_file)
+                'GRID_FILE_PATH'] = os.path.abspath(output_file)
         input_df.to_csv(input_csv, index=False)
 
         # Write csv files to working directory
