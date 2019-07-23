@@ -168,7 +168,7 @@ class TestPrepInput(object):
         prep_input(
             data['station_meta_path'], 
             out_path=data['prep_input_outpath_copy'],
-            gridmet_meta_path=data['gridmet_cell_data_copy']
+            grid_meta_path=data['gridmet_cell_data_copy']
         )
         assert data['prep_input_outpath_copy'].is_file()
 
@@ -213,10 +213,10 @@ class TestDownloadGridmetOpenDap(object):
         assert df.etr_mm.dtype == 'float'
         #### test is input file from prep_input is updated with gridmet ts path
         df = pd.read_csv(data['prep_input_outpath'])
-        assert 'GRIDMET_FILE_PATH' in df.columns
+        assert 'GRID_FILE_PATH' in df.columns
         # check correct path to gridmet time series file
         assert not set(
-            df.loc[0,'GRIDMET_FILE_PATH'].split(os.sep)).isdisjoint(
+            df.loc[0,'GRID_FILE_PATH'].split(os.sep)).isdisjoint(
                 ['tests','od_gridmet_data','gridmet_historical_509011.csv'])
 
     def test_download_gridmet_od_multiple_years(self, data):
@@ -242,10 +242,10 @@ class TestDownloadGridmetOpenDap(object):
         assert df.etr_mm.dtype == 'float'
         #### test is input file from prep_input is updated with gridmet ts path
         df = pd.read_csv(data['prep_input_outpath'])
-        assert 'GRIDMET_FILE_PATH' in df.columns
+        assert 'GRID_FILE_PATH' in df.columns
         # check correct path to gridmet time series file
         assert not set(
-            df.loc[0,'GRIDMET_FILE_PATH'].split(os.sep)).isdisjoint(
+            df.loc[0,'GRID_FILE_PATH'].split(os.sep)).isdisjoint(
                 ['tests','od_gridmet_data','gridmet_historical_509011.csv'])
 
     def test_download_gridmet_od_update_years(self, data):
@@ -290,10 +290,10 @@ class TestDownloadGridmetOpenDap(object):
         assert df.etr_mm.dtype == 'float'
         #### test is input file from prep_input is updated with gridmet ts path
         df = pd.read_csv(data['prep_input_outpath'])
-        assert 'GRIDMET_FILE_PATH' in df.columns
+        assert 'GRID_FILE_PATH' in df.columns
         # check correct path to gridmet time series file
         assert not set(
-            df.loc[0,'GRIDMET_FILE_PATH'].split(os.sep)
+            df.loc[0,'GRID_FILE_PATH'].split(os.sep)
         ).isdisjoint(['tests','gridmet_data','gridmet_historical_509011.csv'])
 
 
@@ -327,10 +327,10 @@ class TestDownloadGridmetEe(object):
         assert df.etr_mm.dtype == 'float'
         #### test is input file from prep_input is updated with gridmet ts path
         df = pd.read_csv(data['prep_input_outpath'])
-        assert 'GRIDMET_FILE_PATH' in df.columns
+        assert 'GRID_FILE_PATH' in df.columns
         # check correct path to gridmet time series file
         assert not set(
-            df.loc[0,'GRIDMET_FILE_PATH'].split(os.sep)).isdisjoint(
+            df.loc[0,'GRID_FILE_PATH'].split(os.sep)).isdisjoint(
                 ['tests','ee_gridmet_data','gridmet_historical_509011.csv'])
 
     def test_download_gridmet_ee_multiple_years(self, data):
@@ -356,10 +356,10 @@ class TestDownloadGridmetEe(object):
         assert df.etr_mm.dtype == 'float'
         #### test is input file from prep_input is updated with gridmet ts path
         df = pd.read_csv(data['prep_input_outpath'])
-        assert 'GRIDMET_FILE_PATH' in df.columns
+        assert 'GRID_FILE_PATH' in df.columns
         # check correct path to gridmet time series file
         assert not set(
-            df.loc[0,'GRIDMET_FILE_PATH'].split(os.sep)
+            df.loc[0,'GRID_FILE_PATH'].split(os.sep)
         ).isdisjoint(['tests','gridmet_data','gridmet_historical_509011.csv'])
 
     def test_download_gridmet_ee_update_years(self, data):
@@ -404,10 +404,10 @@ class TestDownloadGridmetEe(object):
         assert df.etr_mm.dtype == 'float'
         #### test is input file from prep_input is updated with gridmet ts path
         df = pd.read_csv(data['prep_input_outpath'])
-        assert 'GRIDMET_FILE_PATH' in df.columns
+        assert 'GRID_FILE_PATH' in df.columns
         # check correct path to gridmet time series file
         assert not set(
-            df.loc[0,'GRIDMET_FILE_PATH'].split(os.sep)
+            df.loc[0,'GRID_FILE_PATH'].split(os.sep)
         ).isdisjoint(['tests','gridmet_data','gridmet_historical_509011.csv'])
 
 
@@ -433,7 +433,7 @@ class TestCalcBiasRatios(object):
            'Station_ID', 'STATION_ELEV_FT', 'Comments', 'Location', 
            'STATION_FILE_PATH', 'Irrigation', 'Website', 'STATION_ELEV_M', 
            'LAT', 'LON', 'ELEV_M', 'ELEV_FT', 'FIPS_C', 'STPO', 'COUNTYNAME', 
-           'CNTYCATEGO', 'STATENAME', 'HUC8', 'GRIDMET_FILE_PATH'
+           'CNTYCATEGO', 'STATENAME', 'HUC8', 'GRID_FILE_PATH'
         )
 
     def test_calc_bias_ratios_default_options(self, data):

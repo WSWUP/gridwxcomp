@@ -21,8 +21,8 @@ Default values::
         'srad_wm2' : 'Rs (w/m2)',
         'ea_kpa' : 'Vapor Pres (kPa)',
         'prcp_mm' : 'Precip (mm)',
-        'etr_mm' : 'Calc_ETr (mm)',
-        'eto_mm' : 'Calc_ETo (mm)'
+        'etr_mm' : 'ETr (mm)',
+        'eto_mm' : 'ETo (mm)'
     }
 
 Note: The module attribute ``GRIDMET_STATION_VARS`` can be manually adjusted,
@@ -59,8 +59,8 @@ GRIDMET_STATION_VARS = {
     'srad_wm2' : 'Rs (w/m2)',
     'ea_kpa' : 'Vapor Pres (kPa)',
     'prcp_mm' : 'Precip (mm)',
-    'etr_mm' : 'Calc_ETr (mm)',
-    'eto_mm' : 'Calc_ETo (mm)'
+    'etr_mm' : 'ETr (mm)',
+    'eto_mm' : 'ETo (mm)'
 }
 
 OPJ = os.path.join

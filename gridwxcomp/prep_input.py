@@ -25,7 +25,7 @@ try:
 except:
     from util import get_gridmet_meta_csv
 
-def main(station_file, out_path, gridmet_meta_file):
+def main(station_file, out_path, grid_meta_file):
     """
     Take list of climate stations and merge each with overlapping gridMET cell
     information, write new CSV for next step in bias correction workflow.
@@ -34,7 +34,7 @@ def main(station_file, out_path, gridmet_meta_file):
         station_file (str): path to CSV file containing list of climate
             stations that will later be used to calculate monthly
             bias ratios to gridMET reference ET.
-        gridmet_meta_file (str): path to metadata CSV file that contains
+        grid_meta_file (str): path to metadata CSV file that contains
             all gridMET cells for the contiguous United States. Can be
             found at ``gridwxcomp/gridmet_cell_data.csv``.
         out_path (str or None): path to save output CSV, default is to save 
@@ -69,7 +69,7 @@ def main(station_file, out_path, gridmet_meta_file):
     prep_input(
         station_file, 
         out_path,
-        gridmet_meta_path=gridmet_meta_file 
+        grid_meta_path=gridmet_meta_file 
     )
 
 
@@ -497,7 +497,7 @@ def arg_parse():
         '-i', '--input', metavar='PATH', required=True,
         help='Climate station metadata CSV file')
     optional.add_argument(
-        '-g', '--gridmet-meta', metavar='PATH', required=False,
+        '-g', '--grid-meta', metavar='PATH', required=False,
         default=None,
         help='GridMET metadata CSV file with cell data, packaged with '+\
              'gridwxcomp and automatically found if pip was used to install '+\
@@ -518,5 +518,5 @@ if __name__ == '__main__':
 
     main(station_file=args.input, 
          out_path=args.out,
-         gridmet_meta_file=args.gridmet_meta
+         grid_meta_file=args.grid_meta
          )

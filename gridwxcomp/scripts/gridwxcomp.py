@@ -41,11 +41,11 @@ def gridwxcomp():
 @click.argument('station_meta_path', nargs=1)
 @click.option('--out-path', '-o', nargs=1, type=str, default='merged_input.csv',
               help='File path to save output CSV')
-@click.option('--gridmet-meta', '-g', nargs=1, type=str, default=None,
-              help='File path to gridmet_cell_data.csv metadata')
+@click.option('--grid-meta', '-g', nargs=1, type=str, default=None,
+              help='File path to grid metadata, e.g. gridmet_cell_data.csv ')
 @click.option('--quiet', default=False, is_flag=True, 
         help='Supress command line output')
-def prep_input(station_meta_path, out_path, gridmet_meta, quiet):
+def prep_input(station_meta_path, out_path, grid_meta, quiet):
     """
     Pairs climate metadata with gridMET
 
@@ -88,7 +88,7 @@ def prep_input(station_meta_path, out_path, gridmet_meta, quiet):
     prep(
             station_meta_path, 
             out_path=out_path, 
-            gridmet_meta_path=gridmet_meta
+            grid_meta_path=grid_meta
         )
 
 @gridwxcomp.command()
@@ -210,9 +210,9 @@ def calc_bias_ratios(input_csv, out_dir, gridmet_var, station_var,
     calc_ratios(
         input_csv, 
         out_dir, 
-        gridmet_var=gridmet_var,
+        grid_var=gridmet_var,
         station_var=station_var, 
-        gridmet_ID=gridmet_id, 
+        grid_ID=gridmet_id, 
         day_limit=day_limit,
         years=years,
         comp=comp

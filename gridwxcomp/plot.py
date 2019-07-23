@@ -99,7 +99,7 @@ def daily_comparison(input_csv, out_dir=None, year_filter=None):
     # List of variables to compare (STATION/gridMET ORDER SHOULD MATCH)
     station_vars = ['TMin (C)', 'TMax (C)', 'wx_Ko_c', 'Rs (w/m2)',
                     'ws_2m (m/s)', 'Vapor Pres (kPa)', 'RHAvg (%)',
-                    'Precip (mm)', 'Calc_ETo (mm)', 'Calc_ETr (mm)']
+                    'Precip (mm)', 'ETo (mm)', 'ETr (mm)']
 
     gridmet_vars = ['tmin_c', 'tmax_c', 'grid_Ko_c', 'srad_wm2', 'u2_ms',
                     'ea_kpa', 'rh_avg', 'prcp_mm', 'eto_mm', 'etr_mm']
@@ -145,7 +145,7 @@ def daily_comparison(input_csv, out_dir=None, year_filter=None):
                 year_str = '{}_{}'.format(start_yr, end_yr)
 
         # Import GRIDMET Data
-        grid_path = row.GRIDMET_FILE_PATH
+        grid_path = row.GRID_FILE_PATH
         # Skip if GRIDMET FILE DOES NOT EXIST
         if not os.path.exists(grid_path):
             print('SKIPPING {}. NO GRIDMET FILE FOUND.'.format(grid_path))
@@ -210,7 +210,7 @@ def daily_comparison(input_csv, out_dir=None, year_filter=None):
 
                 station_vars = ['TMin (C)', 'TMax (C)', 'wx_Ko_c', 'Rs (w/m2)',
                                 'ws_2m (m/s)', 'Vapor Pres (kPa)', 'RHAvg (%)',
-                                'Precip (mm)', 'Calc_ETo (mm)', 'Calc_ETr (mm)']
+                                'Precip (mm)', 'ETo (mm)', 'ETr (mm)']
 
                 gridmet_vars = ['tmin_c', 'tmax_c', 'grid_Ko_c', 'srad_wm2',
                                 'u2_ms',
@@ -391,7 +391,7 @@ def monthly_comparison(input_csv, out_dir=None):
     # List of variables to compare (STATION/gridMET ORDER SHOULD MATCH)
     station_vars = ['TMin (C)', 'TMax (C)', 'wx_Ko_c', 'Rs (w/m2)',
                     'ws_2m (m/s)', 'Vapor Pres (kPa)', 'RHAvg (%)',
-                    'Precip (mm)', 'Calc_ETo (mm)', 'Calc_ETr (mm)']
+                    'Precip (mm)', 'ETo (mm)', 'ETr (mm)']
 
     gridmet_vars = ['tmin_c', 'tmax_c', 'grid_Ko_c', 'srad_wm2', 'u2_ms',
                     'ea_kpa', 'rh_avg', 'prcp_mm', 'eto_mm', 'etr_mm']
@@ -430,7 +430,7 @@ def monthly_comparison(input_csv, out_dir=None):
                                          sheet_name='Corrected Data')
 
         # Import GRIDMET Data
-        grid_path = row.GRIDMET_FILE_PATH
+        grid_path = row.GRID_FILE_PATH
         # Skip if GRIDMET FILE DOES NOT EXIST
         if not os.path.exists(grid_path):
             print('SKIPPING {}. NO GRIDMET FILE FOUND.'.format(grid_path))
@@ -477,7 +477,7 @@ def monthly_comparison(input_csv, out_dir=None):
 
             # Remove months with Less Than XX Days in average
             day_limit = 10
-            monthly = monthly[monthly['Calc_ETr (mm)', 'count'] >= day_limit]
+            monthly = monthly[monthly['ETr (mm)', 'count'] >= day_limit]
 
             # Rebuild Index DateTime
             monthly['year'] = monthly.index.get_level_values(0).values
@@ -507,7 +507,7 @@ def monthly_comparison(input_csv, out_dir=None):
             station_vars = ['TMin (C)', 'TMax (C)', 'wx_Ko_c', 'Rs (w/m2)',
                             'ws_2m (m/s)', 'Vapor Pres (kPa)', 'RHAvg (%)',
                                                                'Precip (mm)',
-                            'Calc_ETo (mm)', 'Calc_ETr (mm)']
+                            'ETo (mm)', 'ETr (mm)']
 
             gridmet_vars = ['tmin_c', 'tmax_c', 'grid_Ko_c', 'srad_wm2',
                             'u2_ms',
