@@ -1,0 +1,366 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="Python" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="Python" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>gridwxcomp.util &mdash; gridwxcomp 0.0.90 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+        <script type="text/javascript" src="../../_static/copybutton.js"></script>
+        <script type="text/javascript" src="../../_static/custom.js"></script>
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@1/dist/clipboard.min.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> gridwxcomp
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.90
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started.html">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../getting_started.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../getting_started.html#quick-start-from-command-line">Quick start from command line</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#command-line-interface">Command Line Interface</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api.html#gridwxcomp">gridwxcomp</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api.html#gridwxcomp-prep-input">gridwxcomp prep-input</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api.html#gridwxcomp-calc-bias-ratios">gridwxcomp calc-bias-ratios</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api.html#gridwxcomp-download-gridmet-opendap">gridwxcomp download-gridmet-opendap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api.html#gridwxcomp-download-gridmet-ee">gridwxcomp download-gridmet-ee</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api.html#gridwxcomp-spatial">gridwxcomp spatial</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api.html#gridwxcomp-plot">gridwxcomp plot</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#python-functions-classes-and-modules">Python functions, classes, and modules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api.html#prep-input">prep_input</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api.html#download-gridmet-opendap">download_gridmet_opendap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api.html#download-gridmet-ee">download_gridmet_ee</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api.html#module-gridwxcomp.calc_bias_ratios">calc_bias_ratios</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api.html#module-gridwxcomp.spatial">spatial</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api.html#module-gridwxcomp.plot">plot</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api.html#interpgdal">InterpGdal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api.html#module-gridwxcomp.util">util</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Change Log</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-0-9x">Version 0.0.9x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-0-7x">Version 0.0.7x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-0-6x">Version 0.0.6x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-0-5x">Version 0.0.5x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-0-4x">Version 0.0.4x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-0-3x">Version 0.0.3x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-0-2x">Version 0.0.2x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-0-1x">Version 0.0.1x</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+    <a href="genindex.html">Index</a>
+  
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">gridwxcomp</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>gridwxcomp.util</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for gridwxcomp.util</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Utility functions or classes for ``gridwxcomp`` package</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+<span class="kn">import</span> <span class="nn">pkg_resources</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="k">import</span> <span class="n">Path</span>
+
+<div class="viewcode-block" id="get_gridmet_meta_csv"><a class="viewcode-back" href="../../api.html#gridwxcomp.util.get_gridmet_meta_csv">[docs]</a><span class="k">def</span> <span class="nf">get_gridmet_meta_csv</span><span class="p">(</span><span class="n">gridmet_meta_path</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Find path to &#39;gridmet_cell_data.csv&#39; packaged with gridwxcomp&quot;&quot;&quot;</span>
+    <span class="c1"># look for pacakged gridmet_cell_data.csv if path not given</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">gridmet_meta_path</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">resource_exists</span><span class="p">(</span><span class="s1">&#39;gridwxcomp&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;gridmet_cell_data.csv&#39;</span><span class="p">):</span>
+                <span class="n">gridmet_meta_path</span> <span class="o">=</span> <span class="n">pkg_resources</span><span class="o">.</span><span class="n">resource_filename</span><span class="p">(</span>
+                    <span class="s1">&#39;gridwxcomp&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;gridmet_cell_data.csv&#39;</span>
+                    <span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="n">gridmet_meta_path</span> <span class="o">=</span> <span class="s1">&#39;gridmet_cell_data.csv&#39;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">Path</span><span class="p">(</span><span class="n">gridmet_meta_path</span><span class="p">)</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
+        <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="s1">&#39;GridMET file path was not given and &#39;</span><span class="o">+</span>\
+                <span class="s1">&#39;gridmet_cell_data.csv was not found in the gridwxcomp &#39;</span><span class="o">+</span>\
+                <span class="s1">&#39;install directory. Please assign the path or put &#39;</span><span class="o">+</span>\
+                <span class="s1">&#39;&quot;gridmet_cell_data.csv&quot; in the current working directory.</span><span class="se">\n</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">gridmet_meta_path</span></div>
+
+
+<div class="viewcode-block" id="parse_yr_filter"><a class="viewcode-back" href="../../api.html#gridwxcomp.util.parse_yr_filter">[docs]</a><span class="k">def</span> <span class="nf">parse_yr_filter</span><span class="p">(</span><span class="n">dt_df</span><span class="p">,</span> <span class="n">years</span><span class="p">,</span> <span class="n">label</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Parse string year filter and apply it to datetime-indexed</span>
+<span class="sd">    DataFrame.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        dt_df (:obj:`pandas.DataFrame`): datetime-indexed DataFrame</span>
+<span class="sd">        years (str or int): years to select, e.g. 2015 or 2000-2010</span>
+<span class="sd">        label (str): identifier to print warning message if ``years``</span>
+<span class="sd">            filter partially overlaps with actual date index</span>
+
+<span class="sd">    Returns:</span>
+
+<span class="sd">        ret (tuple of (:obj:`pandas.DataFrame`, str)): first element is</span>
+<span class="sd">            input DataFrame ``dt_df`` indexed to ``years`` filter,</span>
+<span class="sd">            second element is string of year range, e.g. &#39;2001_2011&#39;</span>
+
+<span class="sd">    Example:</span>
+
+<span class="sd">        &gt;&gt;&gt; df = pd.DataFrame(index=pd.date_range(&#39;2000&#39;, &#39;2015&#39;))</span>
+<span class="sd">        &gt;&gt;&gt; df, yr_str = parse_yr_filter(df, &#39;1998-2002&#39;, &#39;station1&#39;)</span>
+<span class="sd">        WARNING: data for station1 starts in 2000 but you gave 1998</span>
+<span class="sd">        Years used will only include 2000 to 2002</span>
+
+<span class="sd">        Now df will only contain indices with dates between 2000 and</span>
+<span class="sd">        2002 and</span>
+
+<span class="sd">        &gt;&gt;&gt; yr_str</span>
+<span class="sd">        &#39;1998_2002&#39;</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        ValueError: if ``years`` is invalid or not found</span>
+<span class="sd">            in time series index of DataFrame.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">err_msg</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> is not a valid years option,</span><span class="se">\n</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">years</span><span class="p">),</span>
+                    <span class="s1">&#39;use single or range e.g. 2015 or 2000-2010&#39;</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">years</span> <span class="o">==</span> <span class="s1">&#39;all&#39;</span><span class="p">:</span>
+        <span class="n">year_str</span> <span class="o">=</span> <span class="s1">&#39;all_yrs&#39;</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">years</span> <span class="ow">and</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">years</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="s1">&#39;-&#39;</span> <span class="ow">in</span> <span class="n">years</span><span class="p">:</span>
+                <span class="n">start</span><span class="p">,</span> <span class="n">end</span> <span class="o">=</span> <span class="n">years</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)</span>
+                <span class="n">year_str</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">_</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">start</span><span class="p">,</span> <span class="n">end</span><span class="p">)</span>
+                <span class="n">data_start</span> <span class="o">=</span> <span class="n">start</span>
+                <span class="n">data_end</span> <span class="o">=</span> <span class="n">end</span>
+                <span class="c1"># the assignment on the next line will not raise an</span>
+                <span class="c1"># exception even if the full date range is missing</span>
+                <span class="n">dt_df</span> <span class="o">=</span> <span class="n">dt_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">start</span><span class="p">:</span><span class="n">end</span><span class="p">]</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">start</span> <span class="ow">in</span> <span class="n">dt_df</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>
+                    <span class="n">data_start</span> <span class="o">=</span> <span class="n">dt_df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">year</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;WARNING: data for </span><span class="si">{l}</span><span class="s1"> starts in </span><span class="si">{d}</span><span class="s1">&#39;</span>\
+                              <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">l</span><span class="o">=</span><span class="n">label</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="n">data_start</span><span class="p">)</span> <span class="o">+</span>\
+                         <span class="s1">&#39; but you gave </span><span class="si">{s}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">s</span><span class="o">=</span><span class="n">start</span><span class="p">))</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">end</span> <span class="ow">in</span> <span class="n">dt_df</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>
+                    <span class="n">data_end</span> <span class="o">=</span> <span class="n">dt_df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">year</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;WARNING: data for </span><span class="si">{l}</span><span class="s1"> ends in </span><span class="si">{d}</span><span class="s1">&#39;</span>\
+                              <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">l</span><span class="o">=</span><span class="n">label</span><span class="p">,</span> <span class="n">d</span><span class="o">=</span><span class="n">data_end</span><span class="p">)</span> <span class="o">+</span>\
+                         <span class="s1">&#39; but you gave </span><span class="si">{e}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">e</span><span class="o">=</span><span class="n">end</span><span class="p">))</span>
+                <span class="k">if</span> <span class="n">data_start</span> <span class="o">!=</span> <span class="n">start</span> <span class="ow">or</span> <span class="n">data_end</span> <span class="o">!=</span> <span class="n">end</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Years used will only include </span><span class="si">{}</span><span class="s1"> to </span><span class="si">{}</span><span class="s1">&#39;</span>\
+                              <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">data_start</span><span class="p">,</span> <span class="n">data_end</span><span class="p">))</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">year_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">years</span><span class="p">))</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="nb">len</span><span class="p">(</span><span class="n">year_str</span><span class="p">)</span> <span class="o">==</span> <span class="mi">4</span><span class="p">:</span>
+                    <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">err_msg</span><span class="p">)</span>
+                <span class="k">if</span> <span class="ow">not</span> <span class="n">years</span> <span class="ow">in</span> <span class="n">dt_df</span><span class="o">.</span><span class="n">index</span><span class="p">:</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;WARNING:&#39;</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="s1">&#39;is missing data&#39;</span><span class="p">,</span>
+                        <span class="s1">&#39;for year:&#39;</span><span class="p">,</span> <span class="n">years</span><span class="p">)</span>
+                    <span class="n">data_start</span> <span class="o">=</span> <span class="n">dt_df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">year</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+                    <span class="n">data_end</span> <span class="o">=</span> <span class="n">dt_df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">year</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+                    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Years used will only include </span><span class="si">{}</span><span class="s1"> to </span><span class="si">{}</span><span class="s1">&#39;</span>\
+                              <span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">data_start</span><span class="p">,</span> <span class="n">data_end</span><span class="p">))</span>
+                <span class="k">else</span><span class="p">:</span>
+                    <span class="n">dt_df</span> <span class="o">=</span> <span class="n">dt_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">years</span><span class="p">]</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">err_msg</span><span class="p">)</span>
+
+    <span class="n">ret</span> <span class="o">=</span> <span class="n">dt_df</span><span class="p">,</span> <span class="n">year_str</span>
+    <span class="k">return</span> <span class="n">ret</span></div>
+
+
+
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, John Volk and Chris Pearson
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+    <!-- Theme Analytics -->
+    <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-XXXXXXX-1', 'auto');
+    ga('send', 'pageview');
+    </script>
+
+    
+   
+
+</body>
+</html>

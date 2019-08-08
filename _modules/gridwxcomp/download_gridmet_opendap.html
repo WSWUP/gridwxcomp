@@ -1,0 +1,671 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="Python" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="Python" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>gridwxcomp.download_gridmet_opendap &mdash; gridwxcomp 0.0.90 documentation</title>
+  
+
+  
+  
+    <link rel="shortcut icon" href="../../_static/favicon.ico"/>
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../../" src="../../_static/documentation_options.js"></script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+        <script type="text/javascript" src="../../_static/language_data.js"></script>
+        <script type="text/javascript" src="../../_static/copybutton.js"></script>
+        <script type="text/javascript" src="../../_static/custom.js"></script>
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@1/dist/clipboard.min.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/custom.css" type="text/css" />
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> gridwxcomp
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                0.0.90
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+    
+            
+            
+              
+            
+            
+              <p class="caption"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../getting_started.html">Getting Started</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../getting_started.html#installation">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../getting_started.html#quick-start-from-command-line">Quick start from command line</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../api.html">API Reference</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#command-line-interface">Command Line Interface</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api.html#gridwxcomp">gridwxcomp</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api.html#gridwxcomp-prep-input">gridwxcomp prep-input</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api.html#gridwxcomp-calc-bias-ratios">gridwxcomp calc-bias-ratios</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api.html#gridwxcomp-download-gridmet-opendap">gridwxcomp download-gridmet-opendap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api.html#gridwxcomp-download-gridmet-ee">gridwxcomp download-gridmet-ee</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api.html#gridwxcomp-spatial">gridwxcomp spatial</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api.html#gridwxcomp-plot">gridwxcomp plot</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="../../api.html#python-functions-classes-and-modules">Python functions, classes, and modules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="../../api.html#prep-input">prep_input</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api.html#download-gridmet-opendap">download_gridmet_opendap</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api.html#download-gridmet-ee">download_gridmet_ee</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api.html#module-gridwxcomp.calc_bias_ratios">calc_bias_ratios</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api.html#module-gridwxcomp.spatial">spatial</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api.html#module-gridwxcomp.plot">plot</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api.html#interpgdal">InterpGdal</a></li>
+<li class="toctree-l3"><a class="reference internal" href="../../api.html#module-gridwxcomp.util">util</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Change Log</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-0-9x">Version 0.0.9x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-0-7x">Version 0.0.7x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-0-6x">Version 0.0.6x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-0-5x">Version 0.0.5x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-0-4x">Version 0.0.4x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-0-3x">Version 0.0.3x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-0-2x">Version 0.0.2x</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-0-1x">Version 0.0.1x</a></li>
+</ul>
+</li>
+</ul>
+
+            
+          
+    <a href="genindex.html">Index</a>
+  
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">gridwxcomp</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>gridwxcomp.download_gridmet_opendap</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for gridwxcomp.download_gridmet_opendap</h1><div class="highlight"><pre>
+<span></span><span class="c1"># -*- coding: utf-8 -*-</span>
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">Download gridMET climatic time series for multiple variables, e.g. ETr, temp,</span>
+<span class="sd">wind speed 2m, swrad, etc. Uses `OpeNDAP &lt;https://www.opendap.org&gt;`_.</span>
+
+<span class="sd">&quot;&quot;&quot;</span>
+<span class="kn">import</span> <span class="nn">argparse</span>
+<span class="kn">import</span> <span class="nn">datetime</span> <span class="k">as</span> <span class="nn">dt</span>
+<span class="kn">import</span> <span class="nn">logging</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">sys</span>
+<span class="kn">import</span> <span class="nn">timeit</span>
+<span class="kn">from</span> <span class="nn">time</span> <span class="k">import</span> <span class="n">sleep</span>
+
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="n">pd</span><span class="o">.</span><span class="n">options</span><span class="o">.</span><span class="n">display</span><span class="o">.</span><span class="n">float_format</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{:,.10f}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span>
+<span class="kn">import</span> <span class="nn">refet</span>
+<span class="kn">import</span> <span class="nn">xarray</span>
+
+<span class="c1"># for connection to Earth Engine</span>
+<span class="c1"># ee.Initialize() </span>
+
+<div class="viewcode-block" id="download_gridmet_opendap"><a class="viewcode-back" href="../../api.html#gridwxcomp.download_gridmet_opendap">[docs]</a><span class="k">def</span> <span class="nf">download_gridmet_opendap</span><span class="p">(</span><span class="n">input_csv</span><span class="p">,</span> <span class="n">out_folder</span><span class="p">,</span> <span class="n">year_filter</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> 
+        <span class="n">update_data</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Download gridMET time series data for multiple climate variables for </span>
+<span class="sd">    select gridMET cells as listed in ``input_csv``. Uses `OpeNDAP &lt;https://www.opendap.org&gt;`_.</span>
+
+<span class="sd">    Arguments:</span>
+<span class="sd">        input_csv (str): file path of input CSV produced by </span>
+<span class="sd">            :mod:`prep_input.py`</span>
+<span class="sd">        out_folder (str): directory path to save gridmet timeseries CSV files</span>
+<span class="sd">        year_filter (list): default &#39;&#39;. Single year or range to download</span>
+<span class="sd">        update_data (bool): default False. Re-download existing data</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        None</span>
+
+<span class="sd">    Examples:</span>
+<span class="sd">        Say we wanted to download data for 2016 through 2018, from the command </span>
+<span class="sd">        line,</span>
+
+<span class="sd">        .. code-block:: sh</span>
+
+<span class="sd">            $ download_gridmet_opendap.py -i merged_input.csv -o gridmet_data -y 2016-2018</span>
+
+<span class="sd">        note, &quot;merged_input.csv&quot; should have been created by first running </span>
+<span class="sd">        :mod:`prep_input.py`. If the ``[-y, --years]`` option is note given </span>
+<span class="sd">        the default behaviour is to download gridMET data from 1979 up through</span>
+<span class="sd">        yesterday.</span>
+
+<span class="sd">        If the data for 2018 has changed since the last run or for debugging</span>
+<span class="sd">        purposes you can re-download data for all or select years with the</span>
+<span class="sd">        ``[-u, --update-data]`` option</span>
+
+<span class="sd">        .. code-block:: sh</span>
+
+<span class="sd">            $ download_gridmet_opendap.py -i merged_input.csv -o gridmet_data -y 2018 -u</span>
+
+<span class="sd">        To download the same gridMET data within Python</span>
+
+<span class="sd">        &gt;&gt;&gt; from gridwxcomp import download_gridmet_opendap</span>
+<span class="sd">        &gt;&gt;&gt; download_gridmet_opendap(&#39;merged_input.csv&#39;,</span>
+<span class="sd">                &#39;gridmet_data&#39;,</span>
+<span class="sd">                &#39;2016-2018&#39;</span>
+<span class="sd">            )</span>
+
+<span class="sd">        Running :func:`download_gridmet_opendap.py` also updates the CSV file</span>
+<span class="sd">        produced from :mod:`prep_input.py` to include file paths to gridMET</span>
+<span class="sd">        time series files that are paired with climate stations. </span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">exists</span><span class="p">(</span><span class="n">out_folder</span><span class="p">):</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Creating output folder: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">out_folder</span><span class="p">))</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">out_folder</span><span class="p">)</span>
+
+    <span class="c1"># Input .csv containing GRIDMET_ID, LAT, LON</span>
+    <span class="n">input_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">input_csv</span><span class="p">)</span>
+
+    <span class="c1"># Specify column order for output .csv Variables:</span>
+    <span class="n">output_order</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">,</span> <span class="s1">&#39;year&#39;</span><span class="p">,</span> <span class="s1">&#39;month&#39;</span><span class="p">,</span> <span class="s1">&#39;day&#39;</span><span class="p">,</span> <span class="s1">&#39;centroid_lat&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;centroid_lon&#39;</span><span class="p">,</span> <span class="s1">&#39;elev_m&#39;</span><span class="p">,</span> <span class="s1">&#39;u2_ms&#39;</span><span class="p">,</span> <span class="s1">&#39;tmin_c&#39;</span><span class="p">,</span> <span class="s1">&#39;tmax_c&#39;</span><span class="p">,</span>
+                    <span class="s1">&#39;srad_wm2&#39;</span><span class="p">,</span> <span class="s1">&#39;ea_kpa&#39;</span><span class="p">,</span> <span class="s1">&#39;prcp_mm&#39;</span><span class="p">,</span> <span class="s1">&#39;etr_mm&#39;</span><span class="p">,</span> <span class="s1">&#39;eto_mm&#39;</span><span class="p">]</span>
+
+    <span class="n">opendap_url</span> <span class="o">=</span> <span class="s1">&#39;http://thredds.northwestknowledge.net:8080/thredds/dodsC&#39;</span>
+    <span class="n">elev_nc</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">/</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="n">opendap_url</span><span class="p">,</span> <span class="s1">&#39;/MET/elev/metdata_elevationdata.nc#fillmismatch&#39;</span><span class="p">)</span>
+    <span class="n">params</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s1">&#39;etr&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;nc&#39;</span><span class="p">:</span> <span class="s1">&#39;agg_met_etr_1979_CurrentYear_CONUS&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;var&#39;</span><span class="p">:</span> <span class="s1">&#39;daily_mean_reference_evapotranspiration_alfalfa&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;col&#39;</span><span class="p">:</span> <span class="s1">&#39;etr_mm&#39;</span><span class="p">},</span>
+        <span class="s1">&#39;pet&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;nc&#39;</span><span class="p">:</span> <span class="s1">&#39;agg_met_pet_1979_CurrentYear_CONUS&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;var&#39;</span><span class="p">:</span> <span class="s1">&#39;daily_mean_reference_evapotranspiration_grass&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;col&#39;</span><span class="p">:</span> <span class="s1">&#39;eto_mm&#39;</span><span class="p">},</span>
+        <span class="s1">&#39;pr&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;nc&#39;</span><span class="p">:</span> <span class="s1">&#39;agg_met_pr_1979_CurrentYear_CONUS&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;var&#39;</span><span class="p">:</span> <span class="s1">&#39;precipitation_amount&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;col&#39;</span><span class="p">:</span> <span class="s1">&#39;prcp_mm&#39;</span><span class="p">},</span>
+        <span class="s1">&#39;sph&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;nc&#39;</span><span class="p">:</span> <span class="s1">&#39;agg_met_sph_1979_CurrentYear_CONUS&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;var&#39;</span><span class="p">:</span> <span class="s1">&#39;daily_mean_specific_humidity&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;col&#39;</span><span class="p">:</span> <span class="s1">&#39;q_kgkg&#39;</span><span class="p">},</span>
+        <span class="s1">&#39;srad&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;nc&#39;</span><span class="p">:</span> <span class="s1">&#39;agg_met_srad_1979_CurrentYear_CONUS&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;var&#39;</span><span class="p">:</span> <span class="s1">&#39;daily_mean_shortwave_radiation_at_surface&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;col&#39;</span><span class="p">:</span> <span class="s1">&#39;srad_wm2&#39;</span><span class="p">},</span>
+        <span class="s1">&#39;vs&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;nc&#39;</span><span class="p">:</span> <span class="s1">&#39;agg_met_vs_1979_CurrentYear_CONUS&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;var&#39;</span><span class="p">:</span> <span class="s1">&#39;daily_mean_wind_speed&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;col&#39;</span><span class="p">:</span> <span class="s1">&#39;u10_ms&#39;</span><span class="p">},</span>
+        <span class="s1">&#39;tmmx&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;nc&#39;</span><span class="p">:</span> <span class="s1">&#39;agg_met_tmmx_1979_CurrentYear_CONUS&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;var&#39;</span><span class="p">:</span> <span class="s1">&#39;daily_maximum_temperature&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;col&#39;</span><span class="p">:</span> <span class="s1">&#39;tmax_k&#39;</span><span class="p">},</span>
+        <span class="s1">&#39;tmmn&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;nc&#39;</span><span class="p">:</span> <span class="s1">&#39;agg_met_tmmn_1979_CurrentYear_CONUS&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;var&#39;</span><span class="p">:</span> <span class="s1">&#39;daily_minimum_temperature&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;col&#39;</span><span class="p">:</span> <span class="s1">&#39;tmin_k&#39;</span><span class="p">},</span>
+    <span class="p">}</span>
+    
+    <span class="c1"># Year Filter</span>
+    <span class="k">if</span> <span class="n">year_filter</span><span class="p">:</span>
+            <span class="n">year_list</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="n">_parse_int_set</span><span class="p">(</span><span class="n">year_filter</span><span class="p">)))</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Downloading Years: </span><span class="si">{0}</span><span class="s1">-</span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">year_list</span><span class="p">),</span>
+                                                               <span class="nb">max</span><span class="p">(</span><span class="n">year_list</span><span class="p">)))</span>
+            <span class="n">date_list</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span>
+                <span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">-01-01&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">year_list</span><span class="p">)),</span>
+                                     <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">),</span>
+                <span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1">-12-31&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="nb">max</span><span class="p">(</span><span class="n">year_list</span><span class="p">)),</span>
+                                     <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Downloading full historical record (1979-present).&#39;</span><span class="p">)</span>
+        <span class="c1"># Create List of all dates</span>
+        <span class="c1"># determine end date of data collection</span>
+        <span class="n">current_date</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">today</span><span class="p">()</span>
+        <span class="n">end_date</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="n">current_date</span><span class="o">.</span><span class="n">year</span><span class="p">,</span> <span class="n">current_date</span><span class="o">.</span><span class="n">month</span><span class="p">,</span>
+                           <span class="n">current_date</span><span class="o">.</span><span class="n">day</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">date_list</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">strptime</span><span class="p">(</span><span class="s1">&#39;1979-01-01&#39;</span><span class="p">,</span>
+                                                       <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">),</span> <span class="n">end_date</span><span class="p">)</span>
+
+    <span class="c1"># Loop through dataframe row by row and grab desired met data from</span>
+    <span class="c1"># GRID collections based on Lat/Lon and Start/End dates</span>
+    <span class="k">for</span> <span class="n">index</span><span class="p">,</span> <span class="n">row</span> <span class="ow">in</span> <span class="n">input_df</span><span class="o">.</span><span class="n">iterrows</span><span class="p">():</span>
+        <span class="n">start_time</span> <span class="o">=</span> <span class="n">timeit</span><span class="o">.</span><span class="n">default_timer</span><span class="p">()</span>
+        <span class="c1"># Reset original_df</span>
+        <span class="n">original_df</span> <span class="o">=</span> <span class="kc">None</span>
+        <span class="n">export_df</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="n">GRIDMET_ID_str</span> <span class="o">=</span> <span class="nb">str</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">GRIDMET_ID</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Processing GRIDMET ID: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">GRIDMET_ID_str</span><span class="p">))</span>
+
+        <span class="n">output_name</span> <span class="o">=</span> <span class="s1">&#39;gridmet_historical_&#39;</span> <span class="o">+</span> <span class="n">GRIDMET_ID_str</span> <span class="o">+</span> <span class="s1">&#39;.csv&#39;</span>
+        <span class="n">output_file</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">out_folder</span><span class="p">,</span> <span class="n">output_name</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">output_file</span><span class="p">):</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> exists. Checking for missing data.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">output_name</span><span class="p">))</span>
+            <span class="n">original_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">output_file</span><span class="p">,</span> <span class="n">parse_dates</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+            <span class="n">missing_dates</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">date_list</span><span class="p">)</span> <span class="o">-</span> <span class="nb">set</span><span class="p">(</span><span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span>
+                <span class="n">original_df</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">])))</span>
+            <span class="n">original_df</span><span class="o">.</span><span class="n">date</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">original_df</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">),</span>
+                                              <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span>
+            <span class="n">original_df</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">original_df</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span>
+                <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">))</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{}</span><span class="s1"> does not exists. Creating file.&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">output_name</span><span class="p">))</span>
+            <span class="n">missing_dates</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">date_list</span><span class="p">))</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="n">missing_dates</span> <span class="ow">and</span> <span class="ow">not</span> <span class="n">update_data</span><span class="p">:</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;No missing data found. Skipping&#39;</span><span class="p">)</span>
+            <span class="c1"># Add gridMET file path to input table if not already there</span>
+            <span class="n">input_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">input_df</span><span class="o">.</span><span class="n">GRIDMET_ID</span> <span class="o">==</span> <span class="n">row</span><span class="o">.</span><span class="n">GRIDMET_ID</span><span class="p">,</span>\
+                <span class="s1">&#39;GRID_FILE_PATH&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">output_file</span><span class="p">)</span>
+            <span class="n">input_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">input_csv</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="k">continue</span>
+        <span class="c1"># for option to redownload all data in given year range</span>
+        <span class="k">elif</span> <span class="ow">not</span> <span class="n">missing_dates</span> <span class="ow">and</span> <span class="n">update_data</span><span class="p">:</span>
+            <span class="k">if</span> <span class="nb">min</span><span class="p">(</span><span class="n">date_list</span><span class="o">.</span><span class="n">year</span><span class="p">)</span> <span class="o">==</span> <span class="nb">max</span><span class="p">(</span><span class="n">date_list</span><span class="o">.</span><span class="n">year</span><span class="p">):</span>
+                <span class="n">yr_rng</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">date_list</span><span class="o">.</span><span class="n">year</span><span class="p">)</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">yr_rng</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">-</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                    <span class="nb">min</span><span class="p">(</span><span class="n">date_list</span><span class="o">.</span><span class="n">year</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">date_list</span><span class="o">.</span><span class="n">year</span><span class="p">))</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;Updating data for years: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">yr_rng</span><span class="p">))</span>
+            <span class="n">start_date</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">date_list</span><span class="p">)</span>
+            <span class="n">end_date</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">date_list</span><span class="p">)</span>
+            <span class="c1"># missing years are all years for updating</span>
+            <span class="n">missing_years</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">date_list</span><span class="o">.</span><span class="n">year</span><span class="p">)))</span>
+
+        <span class="c1"># only download years with missing data</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="c1"># Min and Max of Missing Dates (Start: Inclusive; End: Exclusive)</span>
+            <span class="n">start_date</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">missing_dates</span><span class="p">)</span>
+            <span class="n">end_date</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">missing_dates</span><span class="p">)</span>
+    
+            <span class="n">missing_years</span> <span class="o">=</span> <span class="p">[]</span>
+            <span class="k">for</span> <span class="n">date</span> <span class="ow">in</span> <span class="n">missing_dates</span><span class="p">:</span>
+                <span class="n">missing_years</span> <span class="o">=</span> <span class="n">missing_years</span> <span class="o">+</span> <span class="p">[</span><span class="n">date</span><span class="o">.</span><span class="n">year</span><span class="p">]</span>
+            <span class="n">missing_years</span> <span class="o">=</span> <span class="nb">sorted</span><span class="p">(</span><span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">missing_years</span><span class="p">)))</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;  Missing Years: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+            <span class="s1">&#39;, &#39;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">missing_years</span><span class="p">))))</span>
+
+        <span class="c1"># Loop through ee pull by year (max 5000 records for getInfo())</span>
+        <span class="c1"># Append each new year on end of dataframe</span>
+        <span class="c1"># Process dataframe units and output after</span>
+        <span class="n">start_date_yr</span> <span class="o">=</span> <span class="n">start_date</span><span class="o">.</span><span class="n">year</span>    
+            
+        <span class="c1"># Calculate out grid cell centroid</span>
+        <span class="c1"># gridMET elevation asset lower left corner coordinates</span>
+        <span class="n">gridmet_lon</span> <span class="o">=</span> <span class="o">-</span><span class="mf">124.78749996666667</span>
+        <span class="n">gridmet_lat</span> <span class="o">=</span> <span class="mf">25.04583333333334</span>
+        <span class="n">gridmet_cs</span> <span class="o">=</span> <span class="mf">0.041666666666666664</span>
+        <span class="n">gridcell_lat</span> <span class="o">=</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">LAT</span> <span class="o">-</span> <span class="n">gridmet_lat</span><span class="p">)</span> <span class="o">/</span> <span class="n">gridmet_cs</span><span class="p">)</span> <span class="o">*</span> <span class="n">gridmet_cs</span> <span class="o">+</span> 
+                        <span class="n">gridmet_lat</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">gridmet_cs</span><span class="p">)</span>
+        <span class="n">gridcell_lon</span> <span class="o">=</span> <span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="nb">abs</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">LON</span> <span class="o">-</span> <span class="n">gridmet_lon</span><span class="p">)</span> <span class="o">/</span> <span class="n">gridmet_cs</span><span class="p">)</span> <span class="o">*</span> <span class="n">gridmet_cs</span> <span class="o">+</span> 
+                        <span class="n">gridmet_lon</span> <span class="o">+</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="n">gridmet_cs</span><span class="p">)</span>
+        <span class="n">gridmet_crs</span> <span class="o">=</span> <span class="s1">&#39;EPSG:4326&#39;</span>
+        <span class="n">gridmet_geo</span> <span class="o">=</span> <span class="p">[</span><span class="n">gridmet_cs</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">gridmet_lon</span><span class="p">,</span> 
+                       <span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="n">gridmet_cs</span><span class="p">,</span> <span class="n">gridmet_lat</span> <span class="o">+</span> <span class="n">gridmet_cs</span> <span class="o">*</span> <span class="mi">585</span><span class="p">]</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;  Latitude:  </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">gridcell_lat</span><span class="p">))</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;  Longitude: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">gridcell_lon</span><span class="p">))</span>
+
+        <span class="c1"># OpenDAP call for elevation</span>
+        <span class="n">elev_ds</span> <span class="o">=</span> <span class="n">xarray</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="n">elev_nc</span><span class="p">)</span>\
+            <span class="o">.</span><span class="n">sel</span><span class="p">(</span><span class="n">lon</span><span class="o">=</span><span class="n">gridcell_lon</span><span class="p">,</span> <span class="n">lat</span><span class="o">=</span><span class="n">gridcell_lat</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;nearest&#39;</span><span class="p">)</span>
+        <span class="n">elev</span> <span class="o">=</span> <span class="n">elev_ds</span><span class="p">[</span><span class="s1">&#39;elevation&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">values</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;  Elevation: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">elev</span><span class="p">))</span>
+        
+        <span class="c1"># OpenDAP call for each variable</span>
+        <span class="n">met_df_list</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">met_name</span> <span class="ow">in</span> <span class="n">params</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+            <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;  Variable: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">met_name</span><span class="p">))</span>
+            <span class="c1"># Pulling the full time series then filtering later seems faster than selecting here</span>
+            <span class="c1"># # day=pd.date_range(start=start_date, end=end_date), </span>
+
+            <span class="c1"># had to add #fillmismatch to fill any data entries that are of</span>
+            <span class="c1"># a different type (presumably incorrectly filled null values</span>
+            <span class="c1"># by the OpenDap Thredds server) with null values. </span>
+            <span class="c1"># issue here: https://github.com/Unidata/netcdf-c/issues/1299</span>
+            <span class="n">met_nc</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">/</span><span class="si">{}</span><span class="s1">.nc#fillmismatch&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">opendap_url</span><span class="p">,</span> <span class="n">params</span><span class="p">[</span><span class="n">met_name</span><span class="p">][</span><span class="s1">&#39;nc&#39;</span><span class="p">]</span>
+            <span class="p">)</span>
+            <span class="n">met_ds</span> <span class="o">=</span> <span class="n">xarray</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="n">met_nc</span><span class="p">)</span>\
+                <span class="o">.</span><span class="n">sel</span><span class="p">(</span><span class="n">lon</span><span class="o">=</span><span class="n">gridcell_lon</span><span class="p">,</span> <span class="n">lat</span><span class="o">=</span><span class="n">gridcell_lat</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;nearest&#39;</span><span class="p">)</span>\
+                <span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s1">&#39;crs&#39;</span><span class="p">,</span> <span class="s1">&#39;lat&#39;</span><span class="p">,</span> <span class="s1">&#39;lon&#39;</span><span class="p">])</span>\
+                <span class="o">.</span><span class="n">rename</span><span class="p">({</span><span class="n">params</span><span class="p">[</span><span class="n">met_name</span><span class="p">][</span><span class="s1">&#39;var&#39;</span><span class="p">]:</span> <span class="n">params</span><span class="p">[</span><span class="n">met_name</span><span class="p">][</span><span class="s1">&#39;col&#39;</span><span class="p">],</span>
+                         <span class="s1">&#39;day&#39;</span><span class="p">:</span> <span class="s1">&#39;date&#39;</span><span class="p">}</span>
+            <span class="p">)</span>
+            <span class="n">met_df</span> <span class="o">=</span> <span class="n">met_ds</span><span class="o">.</span><span class="n">to_dataframe</span><span class="p">()</span>
+            <span class="c1"># logging.debug(met_df.head())</span>
+            <span class="n">met_df_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">met_df</span><span class="p">)</span>
+            <span class="c1"># print(met_df.head())</span>
+
+        <span class="c1"># This might need to be a merge call if the indices don&#39;t match</span>
+        <span class="n">export_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">met_df_list</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="n">export_df</span><span class="o">.</span><span class="n">head</span><span class="p">())</span>
+        <span class="c1"># End OpenDAP stuff</span>
+
+        <span class="c1"># If export_df is None (skip to next ID)</span>
+        <span class="k">if</span> <span class="n">export_df</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">continue</span>
+        <span class="c1"># Reset Index</span>
+        <span class="n">export_df</span> <span class="o">=</span> <span class="n">export_df</span><span class="o">.</span><span class="n">reset_index</span><span class="p">(</span><span class="n">drop</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="c1"># Convert dateNum to datetime and create Year, Month, Day, DOY variables</span>
+        <span class="n">export_df</span><span class="o">.</span><span class="n">date</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">export_df</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">),</span>
+                                        <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">export_df</span><span class="p">[</span><span class="s1">&#39;year&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">export_df</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">year</span>
+        <span class="n">export_df</span><span class="p">[</span><span class="s1">&#39;month&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">export_df</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">month</span>
+        <span class="n">export_df</span><span class="p">[</span><span class="s1">&#39;day&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">export_df</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">dt</span><span class="o">.</span><span class="n">day</span>
+        <span class="c1"># export_df[&#39;DOY&#39;] = export_df[&#39;Date&#39;].dt.dayofyear</span>
+        <span class="c1"># Format Date for export</span>
+        <span class="n">export_df</span><span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">export_df</span><span class="o">.</span><span class="n">date</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">x</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span>
+            <span class="s1">&#39;%Y-%m-</span><span class="si">%d</span><span class="s1">&#39;</span><span class="p">))</span>
+
+        <span class="c1"># CGM - This is needed here since filtering by date on the OpenDAP call was really slow</span>
+        <span class="c1"># Should the dataframe be filtered to missing years or based on start/end date?</span>
+        <span class="c1"># export_df = export_df.loc[(export_df[&#39;date&#39;] &gt;= start_date.strftime(&#39;%Y-%m-%d&#39;)) &amp; </span>
+        <span class="c1">#                           (export_df[&#39;date&#39;] &lt;= end_date.strftime(&#39;%Y-%m-%d&#39;))]</span>
+        <span class="n">export_df</span> <span class="o">=</span> <span class="n">export_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">export_df</span><span class="p">[</span><span class="s1">&#39;year&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">missing_years</span><span class="p">)]</span>
+        <span class="c1"># export_df = export_df.reset_index(drop=False)</span>
+        
+        <span class="c1"># Remove all negative Prcp values (GRIDMET Bug)</span>
+        <span class="n">export_df</span><span class="o">.</span><span class="n">prcp_mm</span> <span class="o">=</span> <span class="n">export_df</span><span class="o">.</span><span class="n">prcp_mm</span><span class="o">.</span><span class="n">clip</span><span class="p">(</span><span class="n">lower</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span>
+
+        <span class="c1"># Convert 10m windspeed to 2m (ASCE Eqn. 33)</span>
+        <span class="n">zw</span> <span class="o">=</span> <span class="mi">10</span>
+        <span class="n">export_df</span><span class="p">[</span><span class="s1">&#39;u2_ms&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">refet</span><span class="o">.</span><span class="n">calcs</span><span class="o">.</span><span class="n">_wind_height_adjust</span><span class="p">(</span>
+            <span class="n">export_df</span><span class="o">.</span><span class="n">u10_ms</span><span class="p">,</span> <span class="n">zw</span><span class="p">)</span>
+        <span class="c1"># elevation from gridMET elevation layer</span>
+        <span class="n">export_df</span><span class="p">[</span><span class="s1">&#39;elev_m&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">elev</span>
+        <span class="n">export_df</span><span class="p">[</span><span class="s1">&#39;centroid_lat&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gridcell_lat</span>
+        <span class="n">export_df</span><span class="p">[</span><span class="s1">&#39;centroid_lon&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">gridcell_lon</span>
+
+        <span class="c1"># air pressure from gridmet elevation using refet module</span>
+        <span class="n">export_df</span><span class="p">[</span><span class="s1">&#39;pair_kpa&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">refet</span><span class="o">.</span><span class="n">calcs</span><span class="o">.</span><span class="n">_air_pressure</span><span class="p">(</span>
+            <span class="n">export_df</span><span class="o">.</span><span class="n">elev_m</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;asce&#39;</span><span class="p">)</span>
+
+        <span class="c1"># actual vapor pressure (kg/kg) using refet module</span>
+        <span class="n">export_df</span><span class="p">[</span><span class="s1">&#39;ea_kpa&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">refet</span><span class="o">.</span><span class="n">calcs</span><span class="o">.</span><span class="n">_actual_vapor_pressure</span><span class="p">(</span>
+            <span class="n">export_df</span><span class="o">.</span><span class="n">q_kgkg</span><span class="p">,</span> <span class="n">export_df</span><span class="o">.</span><span class="n">pair_kpa</span><span class="p">)</span>
+
+        <span class="c1"># Unit Conversions</span>
+        <span class="n">export_df</span><span class="p">[</span><span class="s1">&#39;tmax_c&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">export_df</span><span class="o">.</span><span class="n">tmax_k</span> <span class="o">-</span> <span class="mf">273.15</span>  <span class="c1"># K to C</span>
+        <span class="n">export_df</span><span class="p">[</span><span class="s1">&#39;tmin_c&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">export_df</span><span class="o">.</span><span class="n">tmin_k</span> <span class="o">-</span> <span class="mf">273.15</span>  <span class="c1"># K to C</span>
+        <span class="c1"># export_df[&#39;Tavg_C&#39;] = (export_df.Tmax_C + export_df.Tmin_C)/2</span>
+
+        <span class="c1"># Relative Humidity from gridMET min and max</span>
+        <span class="c1"># export_df[&#39;RH_avg&#39;] = (export_df.RH_max + export_df.RH_min)/2</span>
+
+        <span class="c1"># Add new data to original dataframe, remove duplicates</span>
+        <span class="n">export_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">original_df</span><span class="p">,</span> <span class="n">export_df</span><span class="p">],</span> <span class="n">ignore_index</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                              <span class="n">sort</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">export_df</span> <span class="o">=</span> <span class="n">export_df</span><span class="p">[</span><span class="n">output_order</span><span class="p">]</span><span class="o">.</span><span class="n">drop_duplicates</span><span class="p">(</span><span class="s1">&#39;date&#39;</span><span class="p">)</span>
+        <span class="n">export_df</span> <span class="o">=</span> <span class="n">export_df</span><span class="o">.</span><span class="n">sort_values</span><span class="p">(</span><span class="n">by</span><span class="o">=</span><span class="p">[</span><span class="s1">&#39;year&#39;</span><span class="p">,</span> <span class="s1">&#39;month&#39;</span><span class="p">,</span> <span class="s1">&#39;day&#39;</span><span class="p">])</span>
+        <span class="n">export_df</span> <span class="o">=</span> <span class="n">export_df</span><span class="o">.</span><span class="n">dropna</span><span class="p">()</span>
+
+        <span class="c1"># Add gridMET file path to input table</span>
+        <span class="n">input_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">input_df</span><span class="o">.</span><span class="n">GRIDMET_ID</span> <span class="o">==</span> <span class="n">row</span><span class="o">.</span><span class="n">GRIDMET_ID</span><span class="p">,</span>\
+                <span class="s1">&#39;GRID_FILE_PATH&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="n">output_file</span><span class="p">)</span>
+        <span class="n">input_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">input_csv</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="c1"># Write csv files to working directory</span>
+        <span class="n">export_df</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="n">output_file</span><span class="p">,</span> <span class="n">columns</span><span class="o">=</span><span class="n">output_order</span><span class="p">,</span> <span class="n">index</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> 
+                         <span class="n">float_format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%.10f</span><span class="s1">&#39;</span><span class="p">)</span>
+        <span class="n">elapsed</span> <span class="o">=</span> <span class="n">timeit</span><span class="o">.</span><span class="n">default_timer</span><span class="p">()</span> <span class="o">-</span> <span class="n">start_time</span>
+        <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Download Time: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">elapsed</span><span class="p">))</span></div>
+
+
+<span class="k">def</span> <span class="nf">_parse_int_set</span><span class="p">(</span><span class="n">nputstr</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;Return list of numbers given a string of ranges</span>
+
+<span class="sd">    http://thoughtsbyclayg.blogspot.com/2008/10/</span>
+<span class="sd">    parsing-list-of-numbers-in-python.html</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">selection</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="n">invalid</span> <span class="o">=</span> <span class="nb">set</span><span class="p">()</span>
+    <span class="c1"># tokens are comma separated values</span>
+    <span class="n">tokens</span> <span class="o">=</span> <span class="p">[</span><span class="n">x</span><span class="o">.</span><span class="n">strip</span><span class="p">()</span> <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="n">nputstr</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">tokens</span><span class="p">:</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="c1"># typically tokens are plain old integers</span>
+            <span class="n">selection</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="c1"># if not, then it might be a range</span>
+            <span class="k">try</span><span class="p">:</span>
+                <span class="n">token</span> <span class="o">=</span> <span class="p">[</span><span class="nb">int</span><span class="p">(</span><span class="n">k</span><span class="o">.</span><span class="n">strip</span><span class="p">())</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="n">i</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;-&#39;</span><span class="p">)]</span>
+                <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">token</span><span class="p">)</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                    <span class="n">token</span><span class="o">.</span><span class="n">sort</span><span class="p">()</span>
+                    <span class="c1"># we have items seperated by a dash</span>
+                    <span class="c1"># try to build a valid range</span>
+                    <span class="n">first</span> <span class="o">=</span> <span class="n">token</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                    <span class="n">last</span> <span class="o">=</span> <span class="n">token</span><span class="p">[</span><span class="nb">len</span><span class="p">(</span><span class="n">token</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">]</span>
+                    <span class="k">for</span> <span class="n">x</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">first</span><span class="p">,</span> <span class="n">last</span> <span class="o">+</span> <span class="mi">1</span><span class="p">):</span>
+                        <span class="n">selection</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+            <span class="k">except</span><span class="p">:</span>
+                <span class="c1"># not an int and not a range...</span>
+                <span class="n">invalid</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">i</span><span class="p">)</span>
+    <span class="c1"># Report invalid tokens before returning valid selection</span>
+    <span class="c1"># print &quot;Invalid set: &quot; + str(invalid)</span>
+    <span class="k">return</span> <span class="n">selection</span>
+
+
+<span class="k">def</span> <span class="nf">arg_parse</span><span class="p">():</span>
+    <span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Command line usage of download_gridmet_opendap.py for downloading</span>
+<span class="sd">    gridMET time series of several climatic variables using OpenDAP .</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">parser</span> <span class="o">=</span> <span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentParser</span><span class="p">(</span>
+        <span class="n">description</span><span class="o">=</span><span class="n">arg_parse</span><span class="o">.</span><span class="vm">__doc__</span><span class="p">,</span>
+        <span class="n">formatter_class</span><span class="o">=</span><span class="n">argparse</span><span class="o">.</span><span class="n">ArgumentDefaultsHelpFormatter</span><span class="p">)</span>
+    <span class="n">optional</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">_action_groups</span><span class="o">.</span><span class="n">pop</span><span class="p">()</span> <span class="c1"># optionals listed second</span>
+    <span class="n">required</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">add_argument_group</span><span class="p">(</span><span class="s1">&#39;required arguments&#39;</span><span class="p">)</span>
+    <span class="n">required</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;-i&#39;</span><span class="p">,</span> <span class="s1">&#39;--input&#39;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Input file containing station and gridMET IDs created by &#39;</span><span class="o">+</span>\
+            <span class="s1">&#39;prep_input.py&#39;</span><span class="p">)</span>
+    <span class="n">required</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;-o&#39;</span><span class="p">,</span> <span class="s1">&#39;--out-dir&#39;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Output directory to save time series CSVs of gridMET data&#39;</span><span class="p">)</span>
+    <span class="n">optional</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;-y&#39;</span><span class="p">,</span> <span class="s1">&#39;--years&#39;</span><span class="p">,</span> <span class="n">metavar</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Year(s) to download, single year (YYYY) or range (YYYY-YYYY)&#39;</span><span class="p">)</span>
+    <span class="n">optional</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;-u&#39;</span><span class="p">,</span><span class="s1">&#39;--update-data&#39;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> 
+        <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Flag to re-download existing data&#39;</span><span class="p">)</span>
+    <span class="n">optional</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;--debug&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span> <span class="n">const</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span>
+        <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Debug level logging&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_const&quot;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;loglevel&quot;</span><span class="p">)</span>
+    <span class="n">parser</span><span class="o">.</span><span class="n">_action_groups</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">optional</span><span class="p">)</span><span class="c1"># to avoid optionals listed first</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">parser</span><span class="o">.</span><span class="n">parse_args</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">args</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s1">&#39;__main__&#39;</span><span class="p">:</span>
+    <span class="n">args</span> <span class="o">=</span> <span class="n">arg_parse</span><span class="p">()</span>
+
+    <span class="n">logging</span><span class="o">.</span><span class="n">basicConfig</span><span class="p">(</span><span class="n">level</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">loglevel</span><span class="p">,</span> <span class="nb">format</span><span class="o">=</span><span class="s1">&#39;</span><span class="si">%(message)s</span><span class="s1">&#39;</span><span class="p">)</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;#&#39;</span> <span class="o">*</span> <span class="mi">80</span><span class="p">))</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0:&lt;20s}</span><span class="s1"> </span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="s1">&#39;Run Time Stamp:&#39;</span><span class="p">,</span> <span class="n">dt</span><span class="o">.</span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span><span class="o">.</span><span class="n">isoformat</span><span class="p">(</span><span class="s1">&#39; &#39;</span><span class="p">)))</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0:&lt;20s}</span><span class="s1"> </span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="s1">&#39;Current Directory:&#39;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">getcwd</span><span class="p">()))</span>
+    <span class="n">logging</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;</span><span class="si">{0:&lt;20s}</span><span class="s1"> </span><span class="si">{1}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+        <span class="s1">&#39;Script:&#39;</span><span class="p">,</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">basename</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">0</span><span class="p">])))</span>
+
+    <span class="n">download_gridmet_opendap</span><span class="p">(</span><span class="n">input_csv</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">input</span><span class="p">,</span> <span class="n">out_folder</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">out_dir</span><span class="p">,</span>
+         <span class="n">year_filter</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">years</span><span class="p">,</span> <span class="n">update_data</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">update_data</span><span class="p">)</span>
+
+    <span class="c1"># Saturated vapor pressure</span>
+    <span class="c1"># export_df[&#39;esat_min_kPa&#39;] =</span>
+    <span class="c1"># refet.calcs._sat_vapor_pressure(export_df.Tmin_C)</span>
+    <span class="c1"># export_df[&#39;esat_max_kPa&#39;] =</span>
+    <span class="c1"># refet.calcs._sat_vapor_pressure(export_df.Tmax_C)</span>
+    <span class="c1"># export_df[&#39;esat_avg_kPa&#39;] =</span>
+    <span class="c1"># (export_df.esat_min_kPa + export_df.esat_max_kPa)/2</span>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2019, John Volk and Chris Pearson
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+    <!-- Theme Analytics -->
+    <script>
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+
+    ga('create', 'UA-XXXXXXX-1', 'auto');
+    ga('send', 'pageview');
+    </script>
+
+    
+   
+
+</body>
+</html>
