@@ -1,5 +1,5 @@
 ===============================================
-gridwxcomp - gridMET Weather Station Comparison
+gridwxcomp - Grid Weather Station Comparison
 ===============================================
 
 A package for comparing climate station time series data to `gridMET <http://www.climatologylab.org/gridmet.html>`_ (or other gridded) data. Major functionality includes tools to: 
