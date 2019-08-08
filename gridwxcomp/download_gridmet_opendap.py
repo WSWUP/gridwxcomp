@@ -84,7 +84,8 @@ def download_gridmet_opendap(input_csv, out_folder, year_filter='',
                     'srad_wm2', 'ea_kpa', 'prcp_mm', 'etr_mm', 'eto_mm']
 
     opendap_url = 'http://thredds.northwestknowledge.net:8080/thredds/dodsC'
-    elev_nc = '{}/{}'.format(opendap_url, '/MET/elev/metdata_elevationdata.nc')
+    elev_nc = '{}/{}'.format(
+        opendap_url, '/MET/elev/metdata_elevationdata.nc#fillmismatch')
     params = {
         'etr': {
             'nc': 'agg_met_etr_1979_CurrentYear_CONUS',
@@ -233,12 +234,20 @@ def download_gridmet_opendap(input_csv, out_folder, year_filter='',
             logging.debug('  Variable: {}'.format(met_name))
             # Pulling the full time series then filtering later seems faster than selecting here
             # # day=pd.date_range(start=start_date, end=end_date), 
-            met_nc = '{}/{}.nc'.format(opendap_url, params[met_name]['nc'])
+
+            # had to add #fillmismatch to fill any data entries that are of
+            # a different type (presumably incorrectly filled null values
+            # by the OpenDap Thredds server) with null values. 
+            # issue here: https://github.com/Unidata/netcdf-c/issues/1299
+            met_nc = '{}/{}.nc#fillmismatch'.format(
+                opendap_url, params[met_name]['nc']
+            )
             met_ds = xarray.open_dataset(met_nc)\
                 .sel(lon=gridcell_lon, lat=gridcell_lat, method='nearest')\
                 .drop(['crs', 'lat', 'lon'])\
                 .rename({params[met_name]['var']: params[met_name]['col'],
-                         'day': 'date'})
+                         'day': 'date'}
+            )
             met_df = met_ds.to_dataframe()
             # logging.debug(met_df.head())
             met_df_list.append(met_df)
