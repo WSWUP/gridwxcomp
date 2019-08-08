@@ -46,7 +46,9 @@ and follow the instructions. Note, the method below uses `OpeNDAP <https://www.o
 Quick start from command line
 -----------------------------
 
-This example workflow uses data provided with ``gridwxcomp`` including climate variable time series data for four climate stations. After installation you can find the location of the data needed for the example by typing the following at the command line,
+This example uses data provided with ``gridwxcomp`` including climate variable time series data for four climate stations, it uses the gridMET as the gridded dataset however any uniform gridded dataset can be used with ``gridwxcomp`` if extra information including a vector grid file is provided. 
+
+After installation you can find the location of the data needed for the example by typing the following at the command line,
 
 .. code-block:: bash
 
@@ -65,13 +67,13 @@ After installing with pip the ``gridwxcomp`` command line interface can be used 
 
     $ gridwxcomp prep-input <PATH_TO example_data/Station_Data.txt>  
 
-This will result in the file "merged_input.csv". Next download matching gridMET climate time series with Google Earth Engine by running
+This will result in the file "merged_input.csv". Next download matching gridMET climate time series with `OpeNDAP <https://www.opendap.org>`_ by running
 
 .. code-block:: bash
 
-    $ gridwxcomp download-gridmet-ee merged_input.csv -y 2016-2017
+    $ gridwxcomp download-gridmet-opendap merged_input.csv -y 2016-2017
 
-The time series of gridMET data that correpond with the stations in "merged_input.csv" will be saved to a new folder called "gridmet_data" by defualt. In this case only the years 2016-2017 are used. 
+The time series of gridMET data that correpond with the stations in "merged_input.csv" will be saved to a new folder called "gridmet_data" by default. In this case only the years 2016-2017 are used. 
 
 Next, to calculate mean monthly and annual bias ratios for each station/gridMET pair along with other statistics and metadata and save to CSV files, 
 

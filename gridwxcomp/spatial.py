@@ -11,7 +11,7 @@ Attributes:
 
 Note:
     All spatial files, i.e. vector and raster files, utilize the
-    *ESRI Shapefile* file or GeoTiff format. 
+    *ESRI Shapefile* or GeoTiff format. 
     
 Todo:
     * logging 

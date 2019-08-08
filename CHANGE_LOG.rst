@@ -1,6 +1,11 @@
 Change Log
 **********
 
+Version 0.0.9x
+==============
+
+Add functionality to use arbitrary uniform gridded datasets (default is still gridMET). New routines to create metadata for grid data. The only requirement is that a master vector grid file is provided and that it has a cell identifier property that is of integer data type which monotonically increases by steps of 1, i.e. 1,2,3... although the spatial order of cells does not matter. The gridded time series files should be named with the suffix of this cell ID so that they can be paired to their corresponding cell locations. 
+
 Version 0.0.7x
 ==============
 

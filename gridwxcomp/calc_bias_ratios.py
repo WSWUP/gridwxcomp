@@ -258,8 +258,8 @@ def calc_bias_ratios(input_path, out_dir, grid_id_name='GRIDMET_ID',
         day_limit=10, years='all', comp=True):
     """
     Read input CSV file and calculate mean monthly bias ratios between
-    station to corresponding grid cells for all station and gridMET 
-    pairs, optionally calculate ratios for a single gridMET cell.
+    station to corresponding grid cells for all station and grid 
+    pairs, optionally calculate ratios for a single gridcell.
     
     Arguments:
         input_path (str): path to input CSV file with matching
@@ -314,7 +314,7 @@ def calc_bias_ratios(input_path, out_dir, grid_id_name='GRIDMET_ID',
     Raises:
         FileNotFoundError: if input file is invalid or not found.
         KeyError: if the input file does not contain file paths to
-            the climate station and gridMET time series files. This
+            the climate station and grid time series files. This
             occurs if, for example, the :mod:`gridwxcomp.prep_input` and/or 
             the :mod:`gridwxcomp.download_gridmet_ee` scripts have not been 
             run first (if using gridMET data). Also raised if the given 
@@ -331,7 +331,8 @@ def calc_bias_ratios(input_path, out_dir, grid_id_name='GRIDMET_ID',
         up from the mapping dictionary in :mod:`calc_bias_ratios.py` 
         named :attr:`GRIDMET_STATION_VARS`. To use climate data 
         that was  **not** created by `pyWeatherQAQC <https://github.com/WSWUP/pyWeatherQAQC>`_ 
-        which is where the default names are derived, the gridMET and station 
+        for station data and/or gridded data other than gridMET, which is 
+        where the default names are derived, the grid and station 
         variable names need to be explicitly passed as function arguments. 
         
     """

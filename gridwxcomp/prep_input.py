@@ -296,12 +296,14 @@ def prep_input(station_path, out_path='merged_input.csv', grid_meta_path=None,
 
     If using gridded data other than gridMET this function may be used to 
     create a metadata CSV file of cell data for any arbitrary rectangular grid.
-    The grid must be passed to `grid_path` and it must contain a cell identifier
-    attribute (name must be passed in as `grid_id_name`) that is an integer 
-    which increases monotonically by steps of 1 without gaps, e.g. 1,2,3,4,...
-    although the cell order does not have to follow any rule. In other words
-    the first cell may be in any location and the next may be anywhere and so
-    forth.
+    The grid must be passed to ``grid_path`` and it must contain a cell 
+    identifier attribute (name must be passed in as ``grid_id_name``) that is 
+    an integer which increases monotonically by steps of 1 without gaps, 
+    e.g. 1,2,3,4,... although the cell order does not have to follow any rule. 
+    For example, the first cell may be in any location and the next may be 
+    anywhere and so forth. Also if using a different grid, the time series 
+    files associated with the cell IDs that match your station locations 
+    should be in the directory given as ``grid_data_dir``.
 
     Arguments:
         station_path (str): path to CSV file containing metadata of climate
@@ -354,10 +356,10 @@ def prep_input(station_path, out_path='merged_input.csv', grid_meta_path=None,
         named 'date' containing datetime strings e.g. '12/01/2018', that are 
         able to be parsed by Pandas. The CSV file produced by :func:`prep_input`
         contains latitude, longitude, and other fields for both the station 
-        and nearest gridMET cell centroid coordinates. Fields that may refer 
-        to both gridMET and station data have prefixes to distinguish, the 
+        and nearest gridcell centroid coordinates. Fields that may refer 
+        to both grid and station data have prefixes to distinguish, the 
         climate station data are prefixed with 'STATION' and those refering 
-        to gridMET have no prefix. 
+        to grid data have no prefix. 
 
     """
     # for building from user's grid (not gridMET)

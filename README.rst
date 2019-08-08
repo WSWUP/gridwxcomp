@@ -3,17 +3,17 @@ gridwxcomp
 
 Station-based bias correction of gridded weather for agricultural applications
 
-A package for comparing climate station time series data to `gridMET <http://www.climatologylab.org/gridmet.html>`_ data. Major functionality includes tools to: 
+A package for comparing climate station time series data to `gridMET <http://www.climatologylab.org/gridmet.html>`_ (or other gridded) data. Major functionality includes tools to: 
 
-* pair station locations with overlapping gridMET cells 
-* download gridMET data using Google Earth Engine 
-* calculate mean bias ratios between station and gridMET data and other statistics 
+* pair station locations with overlapping grid cells 
+* download gridMET data from OpenDap or Google Earth Engine servers 
+* calculate mean bias ratios between station and gridded data and other statistics 
 * spatial interpolation of bias ratios with multiple interpolation options 
 * build geo-referenced files of point data and interpolated rasters
-* extract zonal means for a subset of gridMET cells  
+* extract zonal means for a subset of gridcells  
 * graphics, e.g. time series comparisons and interpolated residuals at stations 
 
-Bias ratios calculated by ``gridwxcomp`` can be used to correct bias of gridMET to station data based on the properties of the stations. For example, monthly humidity ratios between station and gridMET for stations within agricultural settings can be used to estimate gridMET bias relative to agricultural locations. ``gridwxcomp`` includes an intuitive command line interface and a Python API.
+Bias ratios calculated by ``gridwxcomp`` can be used to correct bias of grid to station data based on the properties of the stations. For example, monthly humidity ratios between station and grid for stations within agricultural settings can be used to estimate grid bias relative to agricultural locations. ``gridwxcomp`` includes an intuitive command line interface and a Python API.
 
 Documentation
 -------------
@@ -64,7 +64,9 @@ and follow the instructions. Note, the method below uses `OpeNDAP <https://www.o
 Quick start from command line
 -----------------------------
 
-This example workflow uses data provided with ``gridwxcomp`` including climate variable time series data for four climate stations. After installation you can find the location of the data needed for the example by typing the following at the command line,
+This example uses data provided with ``gridwxcomp`` including climate variable time series data for four climate stations, it uses the gridMET as the gridded dataset however any uniform gridded data product can be used with ``gridwxcomp`` if extra information including a vector grid file is provided. 
+
+After installation you can find the location of the data needed for the example by typing the following at the command line,
 
 .. code-block:: bash
 
@@ -89,7 +91,7 @@ This will result in the file "merged_input.csv". Next download matching gridMET 
 
     $ gridwxcomp download-gridmet-opendap merged_input.csv -y 2016-2017
 
-The time series of gridMET data that correpond with the stations in "merged_input.csv" will be saved to a new folder called "gridmet_data" by defualt. In this case only the years 2016-2017 are used. 
+The time series of gridMET data that correpond with the stations in "merged_input.csv" will be saved to a new folder called "gridmet_data" by default. In this case only the years 2016-2017 are used. 
 
 Next, to calculate mean monthly and annual bias ratios for each station/gridMET pair along with other statistics and metadata and save to CSV files, 
 
