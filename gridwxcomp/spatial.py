@@ -50,15 +50,16 @@ GRIDMET_RES = 0.041666666666666664
 
 OPJ = os.path.join
    
-def main(input_file_path, layer='all', out=None, buffer=25, scale_factor=0.1, 
-         function='invdist', smooth=0, params=None, z_stats=True,
-         res_plot=True, overwrite=False, options=None, grid_meta_path=None):
+def main(input_file_path, layer='all', out=None, grid_id_name='GRIDMET_ID',
+        buffer=25, scale_factor=0.1, function='invdist', smooth=0, params=None,
+        grid_res=None, z_stats=True, res_plot=True, overwrite=False, 
+        options=None, grid_meta_path=None):
     """
     Create point shapefile of monthly mean bias ratios from comprehensive
     CSV file created by :mod:`gridwxcomp.calc_bias_ratios`. Build fishnet grid 
     around the climate stations that matches the gridMET dataset. Perform 
     spatial interpolation to estimate 2-dimensional surface of bias ratios and 
-    extract interpolated values to gridMET cells. 
+    extract interpolated values to gridMET (or other gridded data) cells. 
     
     Arguments:
         input_file_path (str): path to [var]_summary_comp CSV file containing 
@@ -70,10 +71,6 @@ def main(input_file_path, layer='all', out=None, buffer=25, scale_factor=0.1,
         layer (str or list): default 'all'. Name of variable(s) in ``in_path``
             to conduct 2-D interpolation. e.g. 'Annual_mean'.
         out (str): default None. Subdirectory to save GeoTIFF rasters.
-        grid_meta_path (str): default None. Path to metadata CSV file 
-            that contains all gridMET cell info. By default it is looked
-            for in the package installation directory or current directory
-            as "gridmet_cell_data.csv".
         buffer (int): number of gridMET cells to expand the rectangular extent
             of the subgrid fishnet (default=25). 
         scale_factor (float, int): scaling factor to apply to original
@@ -111,10 +108,12 @@ def main(input_file_path, layer='all', out=None, buffer=25, scale_factor=0.1,
         options (str or None): default None. Extra command line arguments
             for gdal interpolation.
         grid_meta_path (str): default None. Path to metadata CSV file 
-            that contains all gridMET cells for the contiguous United 
-            States. If None it is looked for at the install directory of 
-            gridwxcomp (i.e. with pip install) or within the current directory
-            as "gridmet_cell_data.csv".
+            that contains all grid cells. If None it is looked for at the 
+            install directory of gridwxcomp (i.e. with pip install) or within 
+            the current directory as "gridmet_cell_data.csv". If using other
+            grid (not gridMET) need to specify it here. Note this metadata file
+            may be created for any uniform gridded dataset using 
+            :mod:`prep_input`. 
 
     Returns:
         None
@@ -206,9 +205,11 @@ def main(input_file_path, layer='all', out=None, buffer=25, scale_factor=0.1,
     """
     # build fishnet for interpolation
     make_grid(input_file_path, 
+              grid_id_name=grid_id_name,
               grid_meta_path=grid_meta_path, 
               buffer=buffer, 
-              overwrite=overwrite)
+              overwrite=overwrite,
+              grid_res=grid_res)
     
     # run spatial interpolation depending on options
     interpolate(
@@ -222,6 +223,8 @@ def main(input_file_path, layer='all', out=None, buffer=25, scale_factor=0.1,
         buffer=buffer,
         z_stats=z_stats,
         res_plot=res_plot,
+        grid_id_name=grid_id_name,
+        grid_res=grid_res,
         options=options,
         grid_meta_path=grid_meta_path) 
 
@@ -520,7 +523,7 @@ def make_grid(in_path, bounds=None, buffer=25, overwrite=False,
     Keyword Arguments:
         bounds (tuple or None): default None. Tuple of bounding coordinates 
             in the following order (min long, max long, min lat, max lat) 
-            which need to be in decimal degrees. Need to align with gridMET
+            which need to be in decimal degrees. Need to align with grid
             resolution outer corners. If None, get extent from centoid
             locations of climate stations in ``in_path`` summary CSV. 
         buffer (int): default 25. Number of gridcells to expand 
@@ -528,11 +531,15 @@ def make_grid(in_path, bounds=None, buffer=25, overwrite=False,
             output raster.
         overwrite (bool): default False. If True overwrite the grid 
             shapefile at ``out_path`` if it already exists.
+        grid_id_name (str): default "GRIDMET_ID". Name of gridcell identifier
+            if using a non-gridMET gridded dataset.
         grid_meta_path (str): default None. Path to metadata CSV file 
-            that contains all gridMET cells for the contiguous United 
-            States. If None it is looked for at the install directory of 
-            gridwxcomp (i.e. with pip install) or within the current directory
-            as "gridmet_cell_data.csv".
+            that contains all grid cells. If None it is looked for at the 
+            install directory of gridwxcomp (i.e. with pip install) or within 
+            the current directory as "gridmet_cell_data.csv". Only needed when
+            using a gridded product other than the default gridMET.
+        grid_res (float): default None. Cell size of grid in decimal degrees
+            if using a grid that is not gridMET.
 
     Returns:
         None
@@ -615,7 +622,7 @@ def make_grid(in_path, bounds=None, buffer=25, overwrite=False,
         os.mkdir(out_dir)
     # user provided uniform grid, cell_size should be in dec. degrees
     if grid_res is not None:
-        CELL_SIZE = grid_res
+        CELL_SIZE = float(grid_res)
     else:
         CELL_SIZE = GRIDMET_RES
 
@@ -887,7 +894,7 @@ def interpolate(in_path, layer='all', out=None, scale_factor=0.1,
             which need to be in decimal degrees. Need to align with gridMET
             resolution outer corners. If None, get extent from centoid
             locations of climate stations in ``in_path`` summary CSV. 
-        buffer (int): default 25. Number of gridMET cells to expand 
+        buffer (int): default 25. Number of grid cells to expand 
             the rectangular extent of the subgrid fishnet and interpolated
             output raster.
         z_stats (bool): default True. Calculate zonal means of interpolated
@@ -896,13 +903,17 @@ def interpolate(in_path, layer='all', out=None, scale_factor=0.1,
             raster file(s).            
         res_plot (bool): default True. Make bar plot for residual (error)
             between interpolated and station value for ``layer``.
+        grid_id_name (str): default "GRIDMET_ID". Name of gridcell identifier
+            if using a grid that is not gridMET.
+        grid_res (float): default None. Grid resolution in decimal degrees if 
+            not using gridMET as the gridded dataset. 
         options (str or None): default None. Extra command line arguments
             for gdal interpolation.
         grid_meta_path (str or None): default None. Path to metadata CSV 
-            file that contains all gridMET cells for the contiguous United 
-            States. If None it is looked for at the install directory of 
-            gridwxcomp (e.g. after pip install gridwxcomp) or within the 
-            current directory as 'gridmet_cell_data.csv'.
+            file that contains all gridcells. If None it is looked for at the 
+            install directory of gridwxcomp (e.g. after pip install gridwxcomp) 
+            or within the current directory as 'gridmet_cell_data.csv'. Only 
+            used when using a gridded product other than the default gridMET.
 
     Returns:
         None
@@ -1563,6 +1574,14 @@ def arg_parse():
         '-o', '--out-dir', metavar='PATH', required=False,
         help='Subdirectory to save interpolated rasters')
     optional.add_argument(
+        '-gin', '--grid-id-name', metavar='', required=False, type=str,
+        default='GRIDMET_ID', help='Gridcell identifier if using a grid that '+\
+            'is not gridMET')
+    optional.add_argument(
+        '-gr', '--grid-res', metavar='', required=False, type=float,
+        default=None, help='Grid resolution if using a grid that '+\
+            'is not gridMET')
+    optional.add_argument(
         '-b', '--buffer', required=False, default=25, type=int, metavar='',
         help='Number of gridcells to expand outer bounds of fishnet '+\
              'which can be used for extrapolation')
@@ -1599,7 +1618,8 @@ def arg_parse():
         help='Additional command line options for gdal_grid interpolation')
     optional.add_argument(
         '-g', '--grid-meta', metavar='', required=False, default=None,
-        help='Grid metadata CSV file with cell data')
+        help='Grid metadata CSV file with cell data, needed if not using '+\
+                'gridMET as the gridded dataset')
 #    optional.add_argument(
 #        '--debug', default=logging.INFO, const=logging.DEBUG,
 #        help='Debug level logging', action="store_const", dest="loglevel")
@@ -1620,11 +1640,13 @@ if __name__ == '__main__':
         input_file_path=args.input,
         layer=layer,
         out=args.out_dir,
+        grid_id_name=args.grid_id_name,
         buffer=args.buffer,
         scale_factor=args.scale,
         function=args.function,
         smooth=args.smooth,
         params=args.params,
+        grid_res=args.grid_res,
         z_stats=args.no_zonal_stats,
         overwrite=args.overwrite_grid,
         res_plot=args.no_resid_plot,

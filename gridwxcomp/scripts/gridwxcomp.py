@@ -41,16 +41,23 @@ def gridwxcomp():
 @click.argument('station_meta_path', nargs=1)
 @click.option('--out-path', '-o', nargs=1, type=str, default='merged_input.csv',
               help='File path to save output CSV')
-@click.option('--grid-meta', '-g', nargs=1, type=str, default=None,
+@click.option('--grid-meta', '-gm', nargs=1, type=str, default=None,
               help='File path to grid metadata, e.g. gridmet_cell_data.csv ')
+@click.option('--grid-path', '-gp', nargs=1, type=str, default=None,
+              help='File path to master grid vector file if not using gridMET')
+@click.option('--grid-id-name', '-gin', nargs=1, type=str, default=None,
+              help='Name of gridcell identifier if not using gridMET')
+@click.option('--grid-data-dir', '-gdd', nargs=1, type=str, default=None,
+              help='Directory with grid time series if not using gridMET')
 @click.option('--quiet', default=False, is_flag=True, 
         help='Supress command line output')
-def prep_input(station_meta_path, out_path, grid_meta, quiet):
+def prep_input(station_meta_path, out_path, grid_meta, grid_path, grid_id_name,
+        grid_data_dir, quiet):
     """
-    Pairs climate metadata with gridMET
+    Pairs climate metadata with grid.
 
     Read climate station metadata file, e.g. from `PyWeatherQAQC <https://github.com/WSWUP/pyWeatherQAQC>`_
-    and match each station with gridMET cell locations, save CSV. The required 
+    and match each station with gridcell locations, save CSV. The required 
     argument ``STATION_META_PATH`` is a file containing metadata of climate 
     stations, if it was not built from `PyWeatherQAQC <https://github.com/WSWUP/pyWeatherQAQC>`_, 
     the file should be in CSV format and contain at least these four columns:
@@ -73,11 +80,20 @@ def prep_input(station_meta_path, out_path, grid_meta, quiet):
         ======== ========== ======================= ====================
     
     Also, if not created by ``PyWeatherQaQc``, the climate station time series
-    files should be in CSV format with a "date" column with datetime formats,
+    files should be in CSV format with a date column with datetime formats,
     e.g. '12/01/2018'. By default ``gridwxcomp prep-input`` creates the file 
     "merged_input.csv" in the current working directory which contains 
     metadata from climate stations as well as the lat, long, and gridMET ID 
     (cell index) of the nearest gridMET cell's centroid.
+
+    If using a gridded product that is not gridMET this routine has the ability
+    to create a grid metadata file if ``--grid-path`` and ``--grid-id-name`` 
+    arguments are given. The grid should be a uniform grid with a resolution in 
+    decimal degrees, it should also have a cell identifier that is of integer
+    data type- the name of this property in your grid is what is passed as 
+    ``--grid-id-name``. Also if using a different grid, the time series files 
+    associated with the cell IDs that match your station locations should be in
+    the directory given as ``--grid-data-dir``.
     
     """
     if quiet:
@@ -88,8 +104,11 @@ def prep_input(station_meta_path, out_path, grid_meta, quiet):
     prep(
             station_meta_path, 
             out_path=out_path, 
-            grid_meta_path=grid_meta
-        )
+            grid_meta_path=grid_meta,
+            grid_path=grid_path,
+            grid_id_name=grid_id_name,
+            grid_data_dir=grid_data_dir
+    )
 
 @gridwxcomp.command()
 @click.argument('input_csv', nargs=1)
@@ -153,12 +172,18 @@ def download_gridmet_ee(input_csv, out_dir, years, update_years, quiet):
 @click.argument('input_csv', nargs=1)
 @click.option('--out-dir', '-o', nargs=1, type=str, default='monthly_ratios',
         help='Folder to save correction ratio summary CSV files')
-@click.option('--gridmet-var', '-gv', nargs=1, type=str, default='etr_mm',
-        help='Name of gridMET climatic variable, e.g. etr_mm')
+@click.option('--grid-id-name', '-gin', nargs=1, type=str, default='GRIDMET_ID',
+        help='Name of gridcell identifier, need to specify if using own grid')
+@click.option('--grid-var', '-gv', nargs=1, type=str, default='etr_mm',
+        help='Name of grid climatic variable, e.g. etr_mm')
 @click.option('--station-var', '-sv', nargs=1, type=str, default=None,
         help='Name of station climatic variable')
-@click.option('--gridmet-id', '-id', nargs=1, type=str, default=None,
-        help='gridMET ID for calculating ratios only for stations in that cell')
+@click.option('--station-date-name', '-sdn', nargs=1, type=str, default='date',
+        help='Name of date column in station time series files')
+@click.option('--grid-date-name', '-gdn', nargs=1, type=str, default='date',
+        help='Name of date column in grid time series files')
+@click.option('--grid-id', '-id', nargs=1, type=int, default=None,
+        help='grid ID for calculating ratios only for stations in that cell')
 @click.option('--day-limit', '-d', nargs=1, type=str, default=10,
         help='Monthly day threshold, if missing more exclude month from calc')
 @click.option('--years', '-y', nargs=1, type=str, default='all',
@@ -167,8 +192,9 @@ def download_gridmet_ee(input_csv, out_dir, years, update_years, quiet):
         help='Flag to NOT save comprehensive output CSV')
 @click.option('--quiet', default=False, is_flag=True, 
         help='Supress command line output')
-def calc_bias_ratios(input_csv, out_dir, gridmet_var, station_var, 
-        gridmet_id, day_limit, years, comp, quiet):
+def calc_bias_ratios(input_csv, out_dir, grid_id_name, grid_var, station_var, 
+        station_date_name, grid_date_name, grid_id, day_limit, years, comp, 
+        quiet):
     """
     Bias ratio statistics of station-to-gridMET 
 
@@ -192,7 +218,7 @@ def calc_bias_ratios(input_csv, out_dir, gridmet_var, station_var,
         'eto_mm'    'Calc_ETo (mm)'
         ==========  ==================
 
-    If ``--gridmet-var`` is given from the default options, the corresponding
+    If ``--grid-var`` is given from the default options, the corresponding
     default station variable name will be looked up in the input station data 
     and used, otherwise you must assign both the gridMET name (from table above)
     and station variable based on the variable names in your station time series
@@ -210,9 +236,12 @@ def calc_bias_ratios(input_csv, out_dir, gridmet_var, station_var,
     calc_ratios(
         input_csv, 
         out_dir, 
-        grid_var=gridmet_var,
+        grid_id_name=grid_id_name,
+        grid_var=grid_var,
         station_var=station_var, 
-        grid_ID=gridmet_id, 
+        station_date_name=station_date_name,
+        grid_date_name=grid_date_name,
+        grid_ID=grid_id, 
         day_limit=day_limit,
         years=years,
         comp=comp
@@ -225,8 +254,10 @@ def calc_bias_ratios(input_csv, out_dir, gridmet_var, station_var,
         help='Subdirectory for saving interpolated rasters')
 @click.option('--layer', '-l', nargs=1, type=str, default='all',
         help='Layers to interpolate comma separated, e.g. Jan_mean,Aug_mean')
+@click.option('--grid-id-name', '-gin', nargs=1, type=str, default='GRIDMET_ID',
+        help='Name of gridcell integer ID, must specify if not using gridMET')
 @click.option('--buffer', '-b', nargs=1, type=int, default=25,
-        help='Buffer for expanding interpolation region (gridMET cells)')
+        help='Buffer for expanding interpolation region (number of gridcells)')
 @click.option('--scale', '-s', nargs=1, type=float, default=0.1,
         help='Scale factor for gridMET interpolation, applied to 4 km res')
 @click.option('--function', '-f', nargs=1, type=str, default='invdist',
@@ -235,6 +266,8 @@ def calc_bias_ratios(input_csv, out_dir, gridmet_var, station_var,
         help='Smoothing parameter for radial basis funciton interpolation')
 @click.option('--params', '-p', nargs=1, type=str, default=None, is_flag=False,
         help='Parameters for gdal_grid interpolation e.g. :power=2:smooth=0')
+@click.option('--grid-res', nargs=1, type=float, default=None, is_flag=False,
+        help='Grid resolution in decimal degrees if not using gridMET')
 @click.option('--no-zonal-stats', '-z', default=True, is_flag=True,
         help='Flag to NOT extract zonal means of interpolated results')
 @click.option('--overwrite-grid', default=False, is_flag=True,
@@ -244,13 +277,13 @@ def calc_bias_ratios(input_csv, out_dir, gridmet_var, station_var,
                 'interpolated data for layer')
 @click.option('--options', nargs=1, type=str, default=None, is_flag=False,
         help='Extra command line arguments for gdal_grid interpolation')
-@click.option('--gridmet-meta', '-g', nargs=1, type=str, default=None,
-              help='file path to gridmet_cell_data.csv metadata')
+@click.option('--grid-meta', '-gm', nargs=1, type=str, default=None,
+              help='file path to gridcell metadata if not using gridMET')
 @click.option('--quiet', default=False, is_flag=True, 
         help='Supress command line output')
-def spatial(summary_comp_csv, layer, out, buffer, scale, function, smooth, 
-        params, no_zonal_stats, overwrite_grid, no_resid_plot, options, 
-        gridmet_meta, quiet):
+def spatial(summary_comp_csv, layer, out, grid_id_name, buffer, scale, 
+        function, smooth, params, grid_res, no_zonal_stats, overwrite_grid, 
+        no_resid_plot, options, grid_meta, quiet):
     """
     Spatially interpolate ratio statistics 
 
@@ -297,16 +330,18 @@ def spatial(summary_comp_csv, layer, out, buffer, scale, function, smooth,
         summary_comp_csv, 
         layer=layer,
         out=out,
+        grid_id_name=grid_id_name,
         buffer=buffer,
         scale_factor=scale,
         function=function,
         smooth=smooth,
         params=params,
-        zonal_stats=no_zonal_stats,
+        grid_res=grid_res,
+        z_stats=no_zonal_stats,
         overwrite=overwrite_grid,
         res_plot=no_resid_plot,
         options=options,
-        gridmet_meta_path=gridmet_meta
+        grid_meta_path=grid_meta
     )
 
 @gridwxcomp.command()

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
 Read a CSV of climate station information and match each with nearest gridMET
-cell information. Produce a CSV file that will be used for input for main
-bias correction workflow.
+(or other gridded product) cell information. Has routines to build metadata file from arbitrary uniform gridded dataset and ultimately produce a CSV file that 
+will be used for input for main bias correction workflow.
 
 Todo:
     *  add logging 
@@ -25,7 +25,8 @@ try:
 except:
     from util import get_gridmet_meta_csv
 
-def main(station_file, out_path, grid_meta_file):
+def main(station_file, out_path, grid_meta_file, grid_path, grid_id_name,
+        grid_data_dir):
     """
     Take list of climate stations and merge each with overlapping gridMET cell
     information, write new CSV for next step in bias correction workflow.
@@ -40,6 +41,14 @@ def main(station_file, out_path, grid_meta_file):
         out_path (str or None): path to save output CSV, default is to save 
             as "merged_input.csv" to current working directory if not passed
             at command line to script.
+        grid_path (str): path to grid vector file if not using gridMET.
+        grid_id_name (str): name of gridcell identifier present in grid,
+            ID data values should be integers, only if using custom grid.
+        grid_data_dir (str): directory that contains grid time series files,
+            each file should have the integer grid ID value in its name and 
+            should be in CSV format. Only used when gridded time series data 
+            already exists on disk, i.e. when not using gridMET as the gridded
+            data.
 
     Example:
         From the command line interface within the ``gridwxcomp/gridwxcomp``
@@ -69,7 +78,10 @@ def main(station_file, out_path, grid_meta_file):
     prep_input(
         station_file, 
         out_path,
-        grid_meta_path=gridmet_meta_file 
+        grid_meta_path=gridmet_meta_file,
+        grid_path=grid_path,
+        grid_id_name=grid_id_name,
+        grid_data_dir=grid_data_dir
     )
 
 
@@ -304,7 +316,7 @@ def prep_input(station_path, out_path='merged_input.csv', grid_meta_path=None,
             is only used if working with a user provided gridded dataset, i.e. 
             if `grid_path` and `grid_id_name` (if creating a new grid meta file 
             are given. 
-        grid_path (str): path to grid vector file
+        grid_path (str): path to grid vector file if not using gridMET.
         grid_id_name (str): name of gridcell identifier present in grid,
             ID data values should be integers.
         grid_data_dir (str): directory that contains grid time series files,
@@ -506,6 +518,15 @@ def arg_parse():
         '-o', '--out', metavar='PATH', required=False, 
         default='merged_input.csv',
         help='Optional output path for CSV with merged climate/gridMET data')
+    optional.add_argument(
+        '--grid-path', metavar='PATH', required=False, default=None,
+        help='Path to grid shapefile if not using gridMET')
+    optional.add_argument(
+        '--grid-id-name', metavar='STR', required=False, default=None,
+        help='Name of gridcell integer ID used in grid if not using gridMET')
+    optional.add_argument(
+        '--grid-data-dir', metavar='PATH', required=False, default=None,
+        help='Path to gridded time series files if not using gridMET')
     parser._action_groups.append(optional)# to avoid optionals listed first
 #    parser.add_argument(
 #        '--debug', default=logging.INFO, const=logging.DEBUG,
@@ -516,7 +537,11 @@ def arg_parse():
 if __name__ == '__main__':
     args = arg_parse()
 
-    main(station_file=args.input, 
-         out_path=args.out,
-         grid_meta_file=args.grid_meta
-         )
+    main(
+        station_file=args.input, 
+        out_path=args.out,
+        grid_meta_file=args.grid_meta,
+        grid_path=args.grid_path,
+        grid_id_name=args.grid_id_name,
+        grid_data_dir=args.grid_data_dir
+    )

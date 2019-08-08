@@ -4,7 +4,8 @@ Calculate monthly bias ratios of variables from climate station
 to overlapping gridMET (or other gridded dataset) cells. 
 
 Input file for this module must first be created by running 
-:mod:`gridwxcomp.prep_input` followed by :mod:`gridwxcomp.download_gridmet_ee`. 
+:mod:`gridwxcomp.prep_input` followed by :mod:`gridwxcomp.download_gridmet_ee`
+or :mod:`gridwxcomp.download_gridmet_opendap`. 
 
 Attributes:
     GRIDMET_STATION_VARS (:obj:`dict`): mapping dictionary with gridMET
@@ -31,8 +32,8 @@ Note: The module attribute ``GRIDMET_STATION_VARS`` can be manually adjusted,
     or removed to efficiently use :mod:`gridwxcomp` on station data that was
     **not** created by `PyWeatherQAQC
     <https://github.com/WSWUP/pyWeatherQAQC>`_.  Otherwise, the same can be
-    achieved by the ``grid_var`` and ``station_var`` arguments to
-    :func:`calc_bias_ratios`.
+    achieved by the ``var_dict`` or ``grid_var`` and ``station_var`` arguments 
+    to :func:`calc_bias_ratios`.
     
 """
 
@@ -65,8 +66,10 @@ GRIDMET_STATION_VARS = {
 
 OPJ = os.path.join
 
-def main(input_file_path, out_dir, grid_var='etr_mm', station_var=None,
-         grid_id=None, day_limit=10, years='all', comp=True):
+def main(input_file_path, out_dir, grid_id_name='GRIDMET_ID', 
+        grid_var='etr_mm', station_var=None, station_date_name='date', 
+        grid_date_name='date', grid_ID=None, day_limit=10, 
+        years='all', comp=True):
     """
     Calculate monthly bias ratios between station climate and gridMET
     cells that correspond with each other geographically. Saves data
@@ -83,21 +86,21 @@ def main(input_file_path, out_dir, grid_var='etr_mm', station_var=None,
             monthly bias ratios of etr.
             
     Keyword Arguments:
-        grid_var (str): default 'etr_mm'. GridMET climate variable
+        grid_var (str): default 'etr_mm'. Grid climate variable
             to calculate bias ratios.
         station_var (str): default None. Climate station variable to use
             to calculate bias ratios. If None, look up using ``grid_var`` 
-            as a key to :attr:`GRIDMET_STATION_VARS` dictionary which is a 
+            as a key to :attr:`GRIDMET_STATION_VARS` dictionary found as a 
             module attribute to :mod:`gridwxcomp.calc_bias_ratios`.
-        grid_ID (str): optional gridMET ID number to only calculate bias 
-            ratios for a single gridMET cell.
+        grid_ID (int): default None. Grid ID (int cell identifier) to only 
+            calculate bias ratios for a single gridcell.
         day_limit (int): default 10. Threshold number of days in month
             of missing data, if less exclude month from calculations.
         years (int or str): default 'all'. Years to use for calculations
             e.g. 2000-2005 or 2011.
-        comp (bool): default True. Save a "comprehensive" summary
-            output CSV file that contains additional station metadata
-            and statistics in addition to the mean monthly ratios.
+        comp (bool): default True. Flag to save a "comprehensive" 
+            summary output CSV file that contains station metadata and 
+            statistics in addition to the mean monthly ratios.
 
     Returns:
         None
@@ -151,9 +154,12 @@ def main(input_file_path, out_dir, grid_var='etr_mm', station_var=None,
     calc_bias_ratios(
         input_file_path, 
         out_dir, 
+        grid_id_name=grid_id_name,
         grid_var=grid_var,
         station_var=station_var, 
-        grid_ID=grid_id, 
+        station_date_name=station_date_name,
+        grid_date_name=grid_date_name,
+        grid_ID=grid_ID, 
         day_limit=day_limit,
         comp=comp
     )
@@ -270,6 +276,9 @@ def calc_bias_ratios(input_path, out_dir, grid_id_name='GRIDMET_ID',
             to calculate bias ratios. If None, look up using ``grid_var`` 
             as a key to :attr:`GRIDMET_STATION_VARS` dictionary found as a 
             module attribute to :mod:`gridwxcomp.calc_bias_ratios`.
+        var_dict (dict): default None. Dictionary that maps grid variable names
+            to station variable names to overide gridMET and PyWeatherQaQc
+            defaules used by :attr:`GRIDMET_STATION_VARS`.
         grid_ID (int): default None. Grid ID (int cell identifier) to only 
             calculate bias ratios for a single gridcell.
         day_limit (int): default 10. Threshold number of days in month
@@ -610,10 +619,13 @@ def arg_parse():
     required.add_argument(
         '-i', '--input', metavar='PATH', required=True,
         help='Input CSV file of merged climate/grid data that '+\
-             'was created by running prep_input.py and download_gridmet_ee.py')
+            'was created by running prep_input.py and download_gridmet_ee.py')
     required.add_argument(
         '-o', '--out', metavar='PATH', required=True,
         help='Output directory to save CSV files containing bias ratios')
+    optional.add_argument('-gin', '--grid-id-name', metavar='', required=False, 
+        default='GRIDMET_ID', help='Name of gridcell identifier if not using '+\
+            'gridMET grid.')
     optional.add_argument(
         '-y', '--years', metavar='', required=False, default='all',
         help='Years to use, single or range e.g. 2018 or 1995-2010')
@@ -624,16 +636,23 @@ def arg_parse():
         '-sv', '--station-var', metavar='', required=False, default=None,
         help='Station variable name for bias ratio calculation')
     optional.add_argument(
+        '-sdn', '--station-date-name', metavar='',required=False,default='date',
+        help='Date column name in station time series files if not using '+\
+            'gridMET.')
+    optional.add_argument(
+        '-gdn', '--grid-date-name', metavar='', required=False, default='date',
+        help='Date column name in grid time series files if not using gridMET.')
+    optional.add_argument(
         '-id', '--grid-id', metavar='', required=False, default=None,
         help='Optional grid ID to calculate bias ratios for a single '+\
-             'gridcell')
+            'gridcell')
     optional.add_argument('-d', '--day-limit', metavar='', required=False, 
         default=10, help='Number of days of valid data per month to '+\
-              'include it in bias correction calculation.')
+            'include it in bias correction calculation.')
     optional.add_argument('-c', '--comprehensive', required=False, 
         default=True, action='store_false', dest='comprehensive', 
         help='Flag, if given, to NOT save comprehensive summary file with '+\
-             'extra metadata and statistics with the suffix "_comp"')
+            'extra metadata and statistics with the suffix "_comp"')
 #    parser.add_argument(
 #        '--debug', default=logging.INFO, const=logging.DEBUG,
 #        help='Debug level logging', action="store_const", dest="loglevel")
@@ -644,7 +663,16 @@ def arg_parse():
 if __name__ == '__main__':
     args = arg_parse()
 
-    main(input_file_path=args.input, out_dir=args.out,
-         grid_var=args.grid_var, station_var=args.station_var,
-         grid_id=args.grid_id, day_limit=args.day_limit,
-         years=args.years, comp=args.comprehensive)
+    main(
+        input_file_path=args.input, 
+        out_dir=args.out,
+        grid_id_name=args.grid_id_name,
+        grid_var=args.grid_var, 
+        station_var=args.station_var,
+        station_date_name=args.station_date_name,
+        grid_date_name=args.grid_date_name,
+        grid_ID=args.grid_id, 
+        day_limit=args.day_limit,
+        years=args.years, 
+        comp=args.comprehensive
+    )
