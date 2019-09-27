@@ -351,9 +351,9 @@ def prep_input(station_path, out_path='merged_input.csv', grid_meta_path=None,
     Note:
         If climate station time series files do **NOT** follow the format 
         created by `pyWeatherQAQC <https://github.com/WSWUP/pyWeatherQAQC>`_ 
-        i.e. microsoft excel files with data stored in a tab named 'corrected'.
+        i.e. microsoft excel files with data stored in a tab named 'Corrected Data'.
         Then station files should be in text (CSV) format with a column
-        named 'date' containing datetime strings e.g. '12/01/2018', that are 
+        containing datetime strings e.g. '12/01/2018', that are 
         able to be parsed by Pandas. The CSV file produced by :func:`prep_input`
         contains latitude, longitude, and other fields for both the station 
         and nearest gridcell centroid coordinates. Fields that may refer 

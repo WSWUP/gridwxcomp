@@ -1,8 +1,6 @@
 gridwxcomp
 ==========
 
-Station-based bias correction of gridded weather for agricultural applications
-
 A package for comparing climate station time series data to `gridMET <http://www.climatologylab.org/gridmet.html>`_ (or other gridded) data. Major functionality includes tools to: 
 
 * pair station locations with overlapping grid cells 
