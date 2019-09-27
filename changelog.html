@@ -1,8 +1,8 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="Python" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="Python" > <!--<![endif]-->
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
   
@@ -204,7 +204,7 @@
 <h1>Change Log<a class="headerlink" href="#change-log" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="version-0-0-9x">
 <h2>Version 0.0.9x<a class="headerlink" href="#version-0-0-9x" title="Permalink to this headline">¶</a></h2>
-<p>Add functionality to use arbitrary uniform gridded datasets (default is still gridMET). New routines to create metadata for grid data. The only requirement is that a master vector grid file is provided and that it has a cell identifier property that is of integer data type which monotonically increases by steps of 1, i.e. 1,2,3... although the spatial order of cells does not matter. The gridded time series files should be named with the suffix of this cell ID so that they can be paired to their corresponding cell locations.</p>
+<p>Add functionality to use arbitrary uniform gridded datasets (default is still gridMET). New routines to create metadata for grid data. The only requirement is that a master vector grid file is provided and that it has a cell identifier property that is of integer data type which monotonically increases by steps of 1, i.e. 1,2,3… although the spatial order of cells does not matter. The gridded time series files should be named with the suffix of this cell ID so that they can be paired to their corresponding cell locations.</p>
 </div>
 <div class="section" id="version-0-0-7x">
 <h2>Version 0.0.7x<a class="headerlink" href="#version-0-0-7x" title="Permalink to this headline">¶</a></h2>
@@ -227,9 +227,9 @@
 </div>
 <div class="section" id="version-0-0-5x">
 <h2>Version 0.0.5x<a class="headerlink" href="#version-0-0-5x" title="Permalink to this headline">¶</a></h2>
-<p>Functionality for climate station data that was <strong>NOT</strong> created by <a class="reference external" href="https://github.com/WSWUP/pyWeatherQAQC">PyWeatherQaQc</a> after <code class="docutils literal notranslate"><span class="pre">gridwxcomp</span> <span class="pre">&gt;=</span> <span class="pre">0.0.55</span></code>. Climate station time series files should be in CSV format and need a &quot;date&quot; column with date strings that can be parsed as datetime objects, e.g. '12/01/2018' or '12-01-2018'. <code class="docutils literal notranslate"><span class="pre">daily_comparison.py</span></code> and <code class="docutils literal notranslate"><span class="pre">monthly_comparison.py</span></code> plotting modules however still require climate station input data in the format of <code class="docutils literal notranslate"><span class="pre">PyWeatherQaQc</span></code>.</p>
-<p>Add monthly plotting to command line interface, change command line command &quot;daily-comparison&quot; to
-&quot;plot&quot; with &quot;daily&quot; and &quot;monthly&quot; options.</p>
+<p>Functionality for climate station data that was <strong>NOT</strong> created by <a class="reference external" href="https://github.com/WSWUP/pyWeatherQAQC">PyWeatherQaQc</a> after <code class="docutils literal notranslate"><span class="pre">gridwxcomp</span> <span class="pre">&gt;=</span> <span class="pre">0.0.55</span></code>. Climate station time series files should be in CSV format and need a “date” column with date strings that can be parsed as datetime objects, e.g. ‘12/01/2018’ or ‘12-01-2018’. <code class="docutils literal notranslate"><span class="pre">daily_comparison.py</span></code> and <code class="docutils literal notranslate"><span class="pre">monthly_comparison.py</span></code> plotting modules however still require climate station input data in the format of <code class="docutils literal notranslate"><span class="pre">PyWeatherQaQc</span></code>.</p>
+<p>Add monthly plotting to command line interface, change command line command “daily-comparison” to
+“plot” with “daily” and “monthly” options.</p>
 <p>Add documentation page at <a class="reference external" href="http://gridwxcomp.readthedocs.io/">ReadTheDocs</a></p>
 <p>Add option to re-download gridMET time series data using <code class="docutils literal notranslate"><span class="pre">download_gridmet_ee</span></code> for specified year range.</p>
 </div>
@@ -265,7 +265,7 @@
     └── grid.shx
 </pre></div>
 </div>
-<p>Note, now there is a copy of the summary_comp.csv file in the directory containing the interpolated rasters, and the point shapefile is also saved there as opposed to the &quot;spatial&quot; dir in previous versions. The CSV in the root directory is needed for running additional interpolations, the copy also contains newly added interpolation estimates at points and error residuals which are unique to a specific interpolation run.</p>
+<p>Note, now there is a copy of the summary_comp.csv file in the directory containing the interpolated rasters, and the point shapefile is also saved there as opposed to the “spatial” dir in previous versions. The CSV in the root directory is needed for running additional interpolations, the copy also contains newly added interpolation estimates at points and error residuals which are unique to a specific interpolation run.</p>
 <p>Change calculations of annual, growing season, and summer bias ratios to use period sum of data as opposed to mean of monthly ratios. Same for standard deviation calculations and coefficient of variation. Results in slightly more accurate values. Also add total day accounts for these time periods, add all of these fields to georeferenced point shapefile as opposed to only bias ratios in previous versions.</p>
 </div>
 <div class="section" id="version-0-0-3x">
@@ -277,7 +277,7 @@
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s1">&#39;etr_mm_gridmet_summary_linear_400m.csv&#39;</span>
 </pre></div>
 </div>
-<p>which was saved to the output directory of <code class="docutils literal notranslate"><span class="pre">calc_bias_ratios</span></code>, i.e. where the CSV file containing station point ratios and other statistics exists. This was problematic for tracking results created by multiple interpolation parameters such as changing the power parameter of the inverse distance weighting algorithm. So the new structure is saving a file named 'gridMET_stats.csv' to the output directory where interpolated rasters are saved for any interpolation routine, which can now be modified when conducting any interpolation. The columns in the CSV are updatedwhen layers are interpolated and zonal stats are extracted with the same out directory specified.</p>
+<p>which was saved to the output directory of <code class="docutils literal notranslate"><span class="pre">calc_bias_ratios</span></code>, i.e. where the CSV file containing station point ratios and other statistics exists. This was problematic for tracking results created by multiple interpolation parameters such as changing the power parameter of the inverse distance weighting algorithm. So the new structure is saving a file named ‘gridMET_stats.csv’ to the output directory where interpolated rasters are saved for any interpolation routine, which can now be modified when conducting any interpolation. The columns in the CSV are updatedwhen layers are interpolated and zonal stats are extracted with the same out directory specified.</p>
 </div>
 <div class="section" id="version-0-0-2x">
 <h2>Version 0.0.2x<a class="headerlink" href="#version-0-0-2x" title="Permalink to this headline">¶</a></h2>

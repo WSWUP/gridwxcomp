@@ -1,8 +1,8 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="Python" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="Python" > <!--<![endif]-->
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
 <head>
   <meta charset="utf-8">
   
@@ -235,7 +235,7 @@
 <h3><a class="toc-backref" href="#id16">gridwxcomp</a><a class="headerlink" href="#gridwxcomp" title="Permalink to this headline">¶</a></h3>
 <p>Access gridwxcomp functionality from the command line</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">gridwxcomp</span></code> tools are accesible via a command line interface using
-the console command &quot;gridwxcomp&quot;. To print a list of all available commands
+the console command “gridwxcomp”. To print a list of all available commands
 from the command line type,:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">gridwxcomp</span> <span class="o">--</span><span class="n">help</span>
 </pre></div>
@@ -252,25 +252,25 @@ from the command line type,:</p>
 <dl class="object">
 <dt>
 <code class="descname">calc-bias-ratios</code></dt>
-<dd><p>Bias ratio statistics of station-to-gridMET...</p>
+<dd><p>Bias ratio statistics of station-to-gridMET…</p>
 </dd></dl>
 
 <dl class="object">
 <dt>
 <code class="descname">download-gridmet-ee</code></dt>
-<dd><p>Download gridMET climate time series using...</p>
+<dd><p>Download gridMET climate time series using…</p>
 </dd></dl>
 
 <dl class="object">
 <dt>
 <code class="descname">download-gridmet-opendap</code></dt>
-<dd><p>Download gridMET climate time series using...</p>
+<dd><p>Download gridMET climate time series using…</p>
 </dd></dl>
 
 <dl class="object">
 <dt>
 <code class="descname">plot</code></dt>
-<dd><p>Create comparison or diagnostic graphics Plot...</p>
+<dd><p>Create comparison or diagnostic graphics Plot…</p>
 </dd></dl>
 
 <dl class="object">
@@ -282,7 +282,7 @@ from the command line type,:</p>
 <dl class="object">
 <dt>
 <code class="descname">spatial</code></dt>
-<dd><p>Spatially interpolate ratio statistics 2-D...</p>
+<dd><p>Spatially interpolate ratio statistics 2-D…</p>
 </dd></dl>
 
 </div>
@@ -300,7 +300,7 @@ the file should be in CSV format and contain at least these four columns:</p>
 <li>Station</li>
 <li>Filename</li>
 </ul>
-<p>For example the &quot;Station_Data.txt&quot; file is included as an example at
+<p>For example the “Station_Data.txt” file is included as an example at
 <a class="reference external" href="https://raw.githubusercontent.com/WSWUP/gridwxcomp/master/gridwxcomp/example_data/Station_Data.txt">gridwxcomp/gridwxcomp/example_data/</a>, contains</p>
 <blockquote>
 <div><table border="1" class="docutils">
@@ -343,10 +343,10 @@ the file should be in CSV format and contain at least these four columns:</p>
 </div></blockquote>
 <p>Also, if not created by <code class="docutils literal notranslate"><span class="pre">PyWeatherQaQc</span></code>, the climate station time series
 files should be in CSV format with a date column with datetime formats,
-e.g. '12/01/2018'. By default <code class="docutils literal notranslate"><span class="pre">gridwxcomp</span> <span class="pre">prep-input</span></code> creates the file
-&quot;merged_input.csv&quot; in the current working directory which contains
+e.g. ‘12/01/2018’. By default <code class="docutils literal notranslate"><span class="pre">gridwxcomp</span> <span class="pre">prep-input</span></code> creates the file
+“merged_input.csv” in the current working directory which contains
 metadata from climate stations as well as the lat, long, and gridMET ID
-(cell index) of the nearest gridMET cell's centroid.</p>
+(cell index) of the nearest gridMET cell’s centroid.</p>
 <p>If using a gridded product that is not gridMET this routine has the ability
 to create a grid metadata file if <code class="docutils literal notranslate"><span class="pre">--grid-path</span></code> and <code class="docutils literal notranslate"><span class="pre">--grid-id-name</span></code>
 arguments are given. The grid should be a uniform grid with a resolution in
@@ -424,29 +424,29 @@ default paired climate variable names include:</p>
 </tr>
 </thead>
 <tbody valign="top">
-<tr class="row-even"><td>'u2_ms'</td>
-<td>'ws_2m (m/s)'</td>
+<tr class="row-even"><td>‘u2_ms’</td>
+<td>‘ws_2m (m/s)’</td>
 </tr>
-<tr class="row-odd"><td>'tmin_c'</td>
-<td>'TMin (C)'</td>
+<tr class="row-odd"><td>‘tmin_c’</td>
+<td>‘TMin (C)’</td>
 </tr>
-<tr class="row-even"><td>'tmax_c'</td>
-<td>'TMax (C)'</td>
+<tr class="row-even"><td>‘tmax_c’</td>
+<td>‘TMax (C)’</td>
 </tr>
-<tr class="row-odd"><td>'srad_wm2'</td>
-<td>'Rs (w/m2)'</td>
+<tr class="row-odd"><td>‘srad_wm2’</td>
+<td>‘Rs (w/m2)’</td>
 </tr>
-<tr class="row-even"><td>'ea_kpa'</td>
-<td>'Vapor Pres (kPa)'</td>
+<tr class="row-even"><td>‘ea_kpa’</td>
+<td>‘Vapor Pres (kPa)’</td>
 </tr>
-<tr class="row-odd"><td>'prcp_mm'</td>
-<td>'Precip (mm)'</td>
+<tr class="row-odd"><td>‘prcp_mm’</td>
+<td>‘Precip (mm)’</td>
 </tr>
-<tr class="row-even"><td>'etr_mm'</td>
-<td>'Calc_ETr (mm)'</td>
+<tr class="row-even"><td>‘etr_mm’</td>
+<td>‘Calc_ETr (mm)’</td>
 </tr>
-<tr class="row-odd"><td>'eto_mm'</td>
-<td>'Calc_ETo (mm)'</td>
+<tr class="row-odd"><td>‘eto_mm’</td>
+<td>‘Calc_ETo (mm)’</td>
 </tr>
 </tbody>
 </table>
@@ -545,7 +545,7 @@ in a CSV file that is first created by <code class="docutils literal notranslate
 allow for downloading all years available (default) or select years, it is
 also possible to redownload data for specified year(s). If <code class="docutils literal notranslate"><span class="pre">--out-dir</span></code> is
 not specified, gridMET time series CSVs are saved to a new directory named
-&quot;gridmet_data&quot; within the current working directory.</p>
+“gridmet_data” within the current working directory.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>gridwxcomp download-gridmet-opendap <span class="o">[</span>OPTIONS<span class="o">]</span> INPUT_CSV
 </pre></div>
 </div>
@@ -590,7 +590,7 @@ in a CSV file that is first created by <code class="docutils literal notranslate
 allow for downloading all years available (default) or select years, it is
 also possible to redownload data for specified year(s). If <code class="docutils literal notranslate"><span class="pre">--out-dir</span></code> is
 not specified, gridMET time series CSVs are saved to a new directory named
-&quot;gridmet_data&quot; within the current working directory.</p>
+“gridmet_data” within the current working directory.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>gridwxcomp download-gridmet-ee <span class="o">[</span>OPTIONS<span class="o">]</span> INPUT_CSV
 </pre></div>
 </div>
@@ -633,9 +633,9 @@ not specified, gridMET time series CSVs are saved to a new directory named
 <p>2-D interpolation of mean bias ratios or other statistics that exist in the
 <code class="docutils literal notranslate"><span class="pre">SUMMARY_COMP_CSV</span></code> file created by <code class="docutils literal notranslate"><span class="pre">gridwxcomp</span> <span class="pre">calc-bias-ratios</span></code>.
 Interpolation algorithms include those provided by <a class="reference external" href="https://www.gdal.org/gdal_grid.html">gdal_grid</a>:
-'invdist' (default), 'invdistnn', 'linear', 'average', and 'nearest'
-and <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.Rbf.html#scipy.interpolate.Rbf" title="(in SciPy v1.3.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">scipy.interpolate.Rbf</span></code></a>: 'multiquadric', 'inverse', 'gaussian',
-'linear_rbf', 'cubic', 'quintic', and 'thin_plate'. Parameters for gdal
+‘invdist’ (default), ‘invdistnn’, ‘linear’, ‘average’, and ‘nearest’
+and <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.Rbf.html#scipy.interpolate.Rbf" title="(in SciPy v1.3.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">scipy.interpolate.Rbf</span></code></a>: ‘multiquadric’, ‘inverse’, ‘gaussian’,
+‘linear_rbf’, ‘cubic’, ‘quintic’, and ‘thin_plate’. Parameters for gdal
 algorithms are set using <code class="docutils literal notranslate"><span class="pre">--params</span></code> whereas the <code class="docutils literal notranslate"><span class="pre">--smooth</span></code> parameter
 (default 0) is used by scipy radial basis functions. Default parameters
 for gdal are stored in <a class="reference internal" href="#gridwxcomp.InterpGdal.default_params" title="gridwxcomp.InterpGdal.default_params"><code class="xref py py-attr docutils literal notranslate"><span class="pre">gridwxcomp.InterpGdal.default_params</span></code></a>.</p>
@@ -764,21 +764,21 @@ paired variables at daily or monthly average time periods. Also allows for
 plotting a single variable as a bar plot that compares multiple climate
 stations. Plots are interactive (can be panned, zoomed, etc.) HTML files.</p>
 <p>Currently there are two major plot types provided which are specified by
-<code class="docutils literal notranslate"><span class="pre">[-t,</span> <span class="pre">--plot-type]</span></code>: 1) &quot;station-grid-comp&quot; which creates time series
+<code class="docutils literal notranslate"><span class="pre">[-t,</span> <span class="pre">--plot-type]</span></code>: 1) “station-grid-comp” which creates time series
 comparison plots of all gridMET variables to station values; and 2)
-the second type &quot;station-bar&quot; which compares stations for a single variable.
+the second type “station-bar” which compares stations for a single variable.
 For time series comparisons a plot is created for each station if time
-frequency of plots, i.e. <code class="docutils literal notranslate"><span class="pre">--freq</span></code> is &quot;monthly&quot; and for each month for
-each station if <code class="docutils literal notranslate"><span class="pre">--freq</span></code> is &quot;daily&quot; (default). For producing a station
+frequency of plots, i.e. <code class="docutils literal notranslate"><span class="pre">--freq</span></code> is “monthly” and for each month for
+each station if <code class="docutils literal notranslate"><span class="pre">--freq</span></code> is “daily” (default). For producing a station
 bar plot you must assign the variable to plot using <code class="docutils literal notranslate"><span class="pre">[-v,</span> <span class="pre">--variable]</span></code>.</p>
 <p>By default, if <code class="docutils literal notranslate"><span class="pre">--out-dir</span></code> is not specified time series plots are saved
-in &quot;[freq]_comp_plots&quot; in the current directory where [freq] is set to
-<code class="docutils literal notranslate"><span class="pre">--freq</span></code>. Station bar plots are saved by default to &quot;station_bar_plots&quot;
+in “[freq]_comp_plots” in the current directory where [freq] is set to
+<code class="docutils literal notranslate"><span class="pre">--freq</span></code>. Station bar plots are saved by default to “station_bar_plots”
 directory created in the same directory containing the summary CSV assigned
 to <code class="docutils literal notranslate"><span class="pre">INPUT_CSV</span></code>.</p>
 <p><strong>Note:</strong>
 Both daily and monthly comparison plots between station and gridMET
-i.e. when <code class="docutils literal notranslate"><span class="pre">plot-type</span></code> = &quot;station-grid-comp&quot; require station data to
+i.e. when <code class="docutils literal notranslate"><span class="pre">plot-type</span></code> = “station-grid-comp” require station data to
 be within excel files that follow the format produced by
 <a class="reference external" href="https://github.com/WSWUP/pyWeatherQAQC">PyWeatherQAQC</a>.</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>gridwxcomp plot <span class="o">[</span>OPTIONS<span class="o">]</span> INPUT_CSV
@@ -788,19 +788,19 @@ be within excel files that follow the format produced by
 <dl class="option">
 <dt id="cmdoption-gridwxcomp-plot-t">
 <code class="descname">-t</code><code class="descclassname"></code><code class="descclassname">, </code><code class="descname">--plot-type</code><code class="descclassname"> &lt;plot_type&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-plot-t" title="Permalink to this definition">¶</a></dt>
-<dd><p>Plot type, station comparison bar plot &quot;station-bar&quot; for a single variable, or station to gridMET time series comparison for multiple variables &quot;station-grid-comp&quot;</p>
+<dd><p>Plot type, station comparison bar plot “station-bar” for a single variable, or station to gridMET time series comparison for multiple variables “station-grid-comp”</p>
 </dd></dl>
 
 <dl class="option">
 <dt id="cmdoption-gridwxcomp-plot-v">
 <code class="descname">-v</code><code class="descclassname"></code><code class="descclassname">, </code><code class="descname">--variable</code><code class="descclassname"> &lt;variable&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-plot-v" title="Permalink to this definition">¶</a></dt>
-<dd><p>Variable to plot for --type=&quot;station-bar&quot; plots, default &quot;annual_mean&quot;, can also pass a comma separated list: e.g. &quot;Jan_mean,Jan_res,Jan_est&quot;</p>
+<dd><p>Variable to plot for –type=”station-bar” plots, default “annual_mean”, can also pass a comma separated list: e.g. “Jan_mean,Jan_res,Jan_est”</p>
 </dd></dl>
 
 <dl class="option">
 <dt id="cmdoption-gridwxcomp-plot-f">
 <code class="descname">-f</code><code class="descclassname"></code><code class="descclassname">, </code><code class="descname">--freq</code><code class="descclassname"> &lt;freq&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-plot-f" title="Permalink to this definition">¶</a></dt>
-<dd><p>Time frequency for station-grid-comp plots &quot;daily&quot; or &quot;monthly&quot;</p>
+<dd><p>Time frequency for station-grid-comp plots “daily” or “monthly”</p>
 </dd></dl>
 
 <dl class="option">
@@ -870,14 +870,14 @@ be within excel files that follow the format produced by
 <dd><p>Read list of climate stations and match each with its closest gridcell,
 save CSV with information from both.</p>
 <p>Station time series files must be in the same directory as <cite>station_path</cite>
-metadata file and each file must begin with the name specifed as 'Station'
+metadata file and each file must begin with the name specifed as ‘Station’
 in the station metadata file.</p>
 <p>If using gridded data other than gridMET this function may be used to
 create a metadata CSV file of cell data for any arbitrary rectangular grid.
 The grid must be passed to <code class="docutils literal notranslate"><span class="pre">grid_path</span></code> and it must contain a cell
 identifier attribute (name must be passed in as <code class="docutils literal notranslate"><span class="pre">grid_id_name</span></code>) that is
 an integer which increases monotonically by steps of 1 without gaps,
-e.g. 1,2,3,4,... although the cell order does not have to follow any rule.
+e.g. 1,2,3,4,… although the cell order does not have to follow any rule.
 For example, the first cell may be in any location and the next may be
 anywhere and so forth. Also if using a different grid, the time series
 files associated with the cell IDs that match your station locations
@@ -886,24 +886,24 @@ should be in the directory given as <code class="docutils literal notranslate"><
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>station_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- path to CSV file containing metadata of climate
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>station_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – path to CSV file containing metadata of climate
 stations that will later be used to calculate bias ratios to
 GridMET.</p>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
 <tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first simple">
-<li><strong>out_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- path to save output CSV, default is to save as
-'merged_input.csv' to current working directory.</li>
-<li><strong>grid_meta_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><em>None</em></a>) -- default None. Path to save grid metadata
-CSV, if None save to &quot;grid_cell_data.csv&quot; in current directory. This
+<li><strong>out_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – path to save output CSV, default is to save as
+‘merged_input.csv’ to current working directory.</li>
+<li><strong>grid_meta_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><em>None</em></a>) – default None. Path to save grid metadata
+CSV, if None save to “grid_cell_data.csv” in current directory. This
 is only used if working with a user provided gridded dataset, i.e.
 if <cite>grid_path</cite> and <cite>grid_id_name</cite> (if creating a new grid meta file
 are given.</li>
-<li><strong>grid_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- path to grid vector file if not using gridMET.</li>
-<li><strong>grid_id_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- name of gridcell identifier present in grid,
+<li><strong>grid_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – path to grid vector file if not using gridMET.</li>
+<li><strong>grid_id_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – name of gridcell identifier present in grid,
 ID data values should be integers.</li>
-<li><strong>grid_data_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- directory that contains grid time series files,
+<li><strong>grid_data_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – directory that contains grid time series files,
 each file should have the integer grid ID value in its name and
 should be in CSV format. Only used when gridded time series data
 already exists on disk.</li>
@@ -928,14 +928,14 @@ gridMET cell data. This file is later used as input for
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
-<li><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#FileNotFoundError" title="(in Python v3.7)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">FileNotFoundError</span></code></a> -- if the <code class="docutils literal notranslate"><span class="pre">grid_meta_path</span></code> is not passed as a
+<li><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#FileNotFoundError" title="(in Python v3.7)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">FileNotFoundError</span></code></a> – if the <code class="docutils literal notranslate"><span class="pre">grid_meta_path</span></code> is not passed as a
 command line argument and it is not in the current working directory
-and named &quot;gridmet_cell_data.csv&quot; (i.e. if other grid data is not
-given) and if <code class="docutils literal notranslate"><span class="pre">gridwxcomp</span></code> was not installed to the user's PATH,
+and named “gridmet_cell_data.csv” (i.e. if other grid data is not
+given) and if <code class="docutils literal notranslate"><span class="pre">gridwxcomp</span></code> was not installed to the user’s PATH,
 i.e. pip or python setup.py install.</li>
-<li><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.7)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code></a> -- if one or more of the following mandatory columns are
+<li><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.7)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code></a> – if one or more of the following mandatory columns are
 missing from the input CSV file (<code class="docutils literal notranslate"><span class="pre">station_path</span></code> parameter):
-'Longitude', 'Latitude', 'Station', or 'Filename'.</li>
+‘Longitude’, ‘Latitude’, ‘Station’, or ‘Filename’.</li>
 </ul>
 </td>
 </tr>
@@ -945,14 +945,14 @@ missing from the input CSV file (<code class="docutils literal notranslate"><spa
 <p class="first admonition-title">Note</p>
 <p class="last">If climate station time series files do <strong>NOT</strong> follow the format
 created by <a class="reference external" href="https://github.com/WSWUP/pyWeatherQAQC">pyWeatherQAQC</a>
-i.e. microsoft excel files with data stored in a tab named 'corrected'.
+i.e. microsoft excel files with data stored in a tab named ‘Corrected Data’.
 Then station files should be in text (CSV) format with a column
-named 'date' containing datetime strings e.g. '12/01/2018', that are
+containing datetime strings e.g. ‘12/01/2018’, that are
 able to be parsed by Pandas. The CSV file produced by <a class="reference internal" href="#gridwxcomp.prep_input" title="gridwxcomp.prep_input"><code class="xref py py-func docutils literal notranslate"><span class="pre">prep_input</span></code></a>
 contains latitude, longitude, and other fields for both the station
 and nearest gridcell centroid coordinates. Fields that may refer
 to both grid and station data have prefixes to distinguish, the
-climate station data are prefixed with 'STATION' and those refering
+climate station data are prefixed with ‘STATION’ and those refering
 to grid data have no prefix.</p>
 </div>
 </dd></dl>
@@ -970,11 +970,11 @@ select gridMET cells as listed in <code class="docutils literal notranslate"><sp
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>input_csv</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- file path of input CSV produced by
+<li><strong>input_csv</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – file path of input CSV produced by
 <code class="xref py py-mod docutils literal notranslate"><span class="pre">prep_input.py</span></code></li>
-<li><strong>out_folder</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- directory path to save gridmet timeseries CSV files</li>
-<li><strong>year_filter</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) -- default ''. Single year or range to download</li>
-<li><strong>update_data</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) -- default False. Re-download existing data</li>
+<li><strong>out_folder</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – directory path to save gridmet timeseries CSV files</li>
+<li><strong>year_filter</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – default ‘’. Single year or range to download</li>
+<li><strong>update_data</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – default False. Re-download existing data</li>
 </ul>
 </td>
 </tr>
@@ -989,7 +989,7 @@ line,</p>
 <div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>$ download_gridmet_opendap.py -i merged_input.csv -o gridmet_data -y <span class="m">2016</span>-2018
 </pre></div>
 </div>
-<p>note, &quot;merged_input.csv&quot; should have been created by first running
+<p>note, “merged_input.csv” should have been created by first running
 <code class="xref py py-mod docutils literal notranslate"><span class="pre">prep_input.py</span></code>. If the <code class="docutils literal notranslate"><span class="pre">[-y,</span> <span class="pre">--years]</span></code> option is note given
 the default behaviour is to download gridMET data from 1979 up through
 yesterday.</p>
@@ -1026,16 +1026,16 @@ Engine API</a>.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>input_csv</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- file path of input CSV produced by <a class="reference internal" href="#gridwxcomp.prep_input" title="gridwxcomp.prep_input"><code class="xref py py-mod docutils literal notranslate"><span class="pre">gridwxcomp.prep_input</span></code></a></li>
-<li><strong>out_folder</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- directory path to save gridmet timeseries CSV files</li>
+<li><strong>input_csv</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – file path of input CSV produced by <a class="reference internal" href="#gridwxcomp.prep_input" title="gridwxcomp.prep_input"><code class="xref py py-mod docutils literal notranslate"><span class="pre">gridwxcomp.prep_input</span></code></a></li>
+<li><strong>out_folder</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – directory path to save gridmet timeseries CSV files</li>
 </ul>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
 <tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first simple">
-<li><strong>year_filter</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- default ''. Single year YYYY or range YYYY-YYYY
+<li><strong>year_filter</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – default ‘’. Single year YYYY or range YYYY-YYYY
 to download.</li>
-<li><strong>year_update</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- default ''. Re-download existing data for year or
+<li><strong>year_update</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – default ‘’. Re-download existing data for year or
 range, YYYY or YYYY-YYYY.</li>
 </ul>
 </td>
@@ -1051,7 +1051,7 @@ line,</p>
 <div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>$ download_gridmet_ee.py -i merged_input.csv -o gridmet_data -y <span class="m">2016</span>-2018
 </pre></div>
 </div>
-<p>note, &quot;merged_input.csv&quot; should have been created by first running
+<p>note, “merged_input.csv” should have been created by first running
 <a class="reference internal" href="#gridwxcomp.prep_input" title="gridwxcomp.prep_input"><code class="xref py py-mod docutils literal notranslate"><span class="pre">gridwxcomp.prep_input</span></code></a>. If the <code class="docutils literal notranslate"><span class="pre">[-y,</span> <span class="pre">--years]</span></code> option is not
 given the default behaviour is to download gridMET data from 1979 up
 through yesterday.</p>
@@ -1129,33 +1129,33 @@ pairs, optionally calculate ratios for a single gridcell.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>input_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- path to input CSV file with matching
+<li><strong>input_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – path to input CSV file with matching
 station climate and grid metadata. This file is
 created by running <a class="reference internal" href="#gridwxcomp.prep_input" title="gridwxcomp.prep_input"><code class="xref py py-func docutils literal notranslate"><span class="pre">gridwxcomp.prep_input</span></code></a> followed by
 <a class="reference internal" href="#gridwxcomp.download_gridmet_ee" title="gridwxcomp.download_gridmet_ee"><code class="xref py py-func docutils literal notranslate"><span class="pre">gridwxcomp.download_gridmet_ee</span></code></a>.</li>
-<li><strong>out_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- path to directory to save CSV files with
+<li><strong>out_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – path to directory to save CSV files with
 monthly bias ratios of etr.</li>
 </ul>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
 <tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first simple">
-<li><strong>grid_var</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- default 'etr_mm'. Grid climate variable
+<li><strong>grid_var</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – default ‘etr_mm’. Grid climate variable
 to calculate bias ratios.</li>
-<li><strong>station_var</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- default None. Climate station variable to use
+<li><strong>station_var</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – default None. Climate station variable to use
 to calculate bias ratios. If None, look up using <code class="docutils literal notranslate"><span class="pre">grid_var</span></code>
 as a key to <a class="reference internal" href="#gridwxcomp.calc_bias_ratios.GRIDMET_STATION_VARS" title="gridwxcomp.calc_bias_ratios.GRIDMET_STATION_VARS"><code class="xref py py-attr docutils literal notranslate"><span class="pre">GRIDMET_STATION_VARS</span></code></a> dictionary found as a
 module attribute to <a class="reference internal" href="#module-gridwxcomp.calc_bias_ratios" title="gridwxcomp.calc_bias_ratios"><code class="xref py py-mod docutils literal notranslate"><span class="pre">gridwxcomp.calc_bias_ratios</span></code></a>.</li>
-<li><strong>var_dict</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) -- default None. Dictionary that maps grid variable names
+<li><strong>var_dict</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a>) – default None. Dictionary that maps grid variable names
 to station variable names to overide gridMET and PyWeatherQaQc
 defaules used by <a class="reference internal" href="#gridwxcomp.calc_bias_ratios.GRIDMET_STATION_VARS" title="gridwxcomp.calc_bias_ratios.GRIDMET_STATION_VARS"><code class="xref py py-attr docutils literal notranslate"><span class="pre">GRIDMET_STATION_VARS</span></code></a>.</li>
-<li><strong>grid_ID</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- default None. Grid ID (int cell identifier) to only
+<li><strong>grid_ID</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – default None. Grid ID (int cell identifier) to only
 calculate bias ratios for a single gridcell.</li>
-<li><strong>day_limit</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- default 10. Threshold number of days in month
+<li><strong>day_limit</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – default 10. Threshold number of days in month
 of missing data, if less exclude month from calculations.</li>
-<li><strong>years</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- default 'all'. Years to use for calculations
+<li><strong>years</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – default ‘all’. Years to use for calculations
 e.g. 2000-2005 or 2011.</li>
-<li><strong>comp</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) -- default True. Flag to save a &quot;comprehensive&quot;
+<li><strong>comp</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – default True. Flag to save a “comprehensive”
 summary output CSV file that contains station metadata and
 statistics in addition to the mean monthly ratios.</li>
 </ul>
@@ -1177,20 +1177,20 @@ statistics in addition to the mean monthly ratios.</li>
 </div>
 <p>To use custom station data, give the keyword argument <code class="docutils literal notranslate"><span class="pre">station_var</span></code>,
 e.g. if we had climate daily time series data for precipitation
-with the column named &quot;p&quot; then,</p>
+with the column named “p” then,</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">calc_bias_ratios</span><span class="p">(</span><span class="n">input_path</span><span class="p">,</span> <span class="n">out_dir</span><span class="p">,</span> <span class="n">grid_var</span><span class="o">=</span><span class="s1">&#39;prcp_mm&#39;</span><span class="p">,</span>
 <span class="gp">&gt;&gt;&gt; </span>    <span class="n">station_var</span><span class="o">=</span><span class="s1">&#39;p&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>This results in two CSV files in <code class="docutils literal notranslate"><span class="pre">out_dir</span></code> named
-&quot;prcp_mm_summary_all_yrs.csv&quot; and &quot;prcp_mm_summary_comp_all_yrs.csv&quot;.</p>
+“prcp_mm_summary_all_yrs.csv” and “prcp_mm_summary_comp_all_yrs.csv”.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
-<li><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#FileNotFoundError" title="(in Python v3.7)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">FileNotFoundError</span></code></a> -- if input file is invalid or not found.</li>
-<li><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#KeyError" title="(in Python v3.7)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">KeyError</span></code></a> -- if the input file does not contain file paths to
+<li><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#FileNotFoundError" title="(in Python v3.7)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">FileNotFoundError</span></code></a> – if input file is invalid or not found.</li>
+<li><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#KeyError" title="(in Python v3.7)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">KeyError</span></code></a> – if the input file does not contain file paths to
 the climate station and grid time series files. This
 occurs if, for example, the <a class="reference internal" href="#gridwxcomp.prep_input" title="gridwxcomp.prep_input"><code class="xref py py-mod docutils literal notranslate"><span class="pre">gridwxcomp.prep_input</span></code></a> and/or
 the <a class="reference internal" href="#gridwxcomp.download_gridmet_ee" title="gridwxcomp.download_gridmet_ee"><code class="xref py py-mod docutils literal notranslate"><span class="pre">gridwxcomp.download_gridmet_ee</span></code></a> scripts have not been
@@ -1256,10 +1256,10 @@ CSV file created by <a class="reference internal" href="#module-gridwxcomp.calc_
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>in_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- path to [var]_summary_comp.CSV file containing
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>in_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – path to [var]_summary_comp.CSV file containing
 monthly bias ratios, lat, long, and other data. Shapefile
-&quot;[var]_summary_pts.shp&quot; is saved to parent directory of
-<code class="docutils literal notranslate"><span class="pre">in_path</span></code> under &quot;spatial&quot; subdirectory.</td>
+“[var]_summary_pts.shp” is saved to parent directory of
+<code class="docutils literal notranslate"><span class="pre">in_path</span></code> under “spatial” subdirectory.</td>
 </tr>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">None</td>
 </tr>
@@ -1274,9 +1274,9 @@ in input summary file created by <a class="reference internal" href="#module-gri
 <span class="gp">&gt;&gt;&gt; </span><span class="n">spatial</span><span class="o">.</span><span class="n">make_points_file</span><span class="p">(</span><span class="n">summary_file</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The result is the file &quot;etr_mm_summary_pts.shp&quot; being saved to
+<p>The result is the file “etr_mm_summary_pts.shp” being saved to
 a subdirectory created in the directory containing <code class="docutils literal notranslate"><span class="pre">in_path</span></code>
-named &quot;spatial&quot;, i.e.:</p>
+named “spatial”, i.e.:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s2">&quot;monthly_ratios/spatial/etr_mm_summary_pts.shp&quot;</span><span class="o">.</span>
 </pre></div>
 </div>
@@ -1284,7 +1284,7 @@ named &quot;spatial&quot;, i.e.:</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#FileNotFoundError" title="(in Python v3.7)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">FileNotFoundError</span></code></a> -- if input summary CSV file is not found.</td>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#FileNotFoundError" title="(in Python v3.7)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">FileNotFoundError</span></code></a> – if input summary CSV file is not found.</td>
 </tr>
 </tbody>
 </table>
@@ -1306,9 +1306,9 @@ and station locations.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>in_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- path to comprehensive summary file containing
+<li><strong>in_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – path to comprehensive summary file containing
 monthly bias ratios, created by <a class="reference internal" href="#module-gridwxcomp.calc_bias_ratios" title="gridwxcomp.calc_bias_ratios"><code class="xref py py-func docutils literal notranslate"><span class="pre">gridwxcomp.calc_bias_ratios</span></code></a>.</li>
-<li><strong>buffer</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- number of gridMET cells to expand the rectangular extent
+<li><strong>buffer</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – number of gridMET cells to expand the rectangular extent
 of the subgrid fishnet.</li>
 </ul>
 </td>
@@ -1325,7 +1325,7 @@ of the subgrid fishnet.</li>
 <tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first">bounds (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)">tuple</a>)</p>
 </td>
 </tr>
-<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#FileNotFoundError" title="(in Python v3.7)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">FileNotFoundError</span></code></a> -- if input summary CSV file is not found.</p>
+<tr class="field-even field"><th class="field-name">Raises:</th><td class="field-body"><p class="first last"><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#FileNotFoundError" title="(in Python v3.7)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">FileNotFoundError</span></code></a> – if input summary CSV file is not found.</p>
 </td>
 </tr>
 </tbody>
@@ -1352,31 +1352,31 @@ spatially interpolate point data. Modified from the
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>in_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- path to [var]_summary_comp_[years].csv file containing
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>in_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – path to [var]_summary_comp_[years].csv file containing
 monthly bias ratios, lat, long, and other data. Created by
 <a class="reference internal" href="#module-gridwxcomp.calc_bias_ratios" title="gridwxcomp.calc_bias_ratios"><code class="xref py py-func docutils literal notranslate"><span class="pre">gridwxcomp.calc_bias_ratios</span></code></a>.</p>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
 <tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first simple">
-<li><strong>bounds</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)"><em>tuple</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><em>None</em></a>) -- default None. Tuple of bounding coordinates
+<li><strong>bounds</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)"><em>tuple</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><em>None</em></a>) – default None. Tuple of bounding coordinates
 in the following order (min long, max long, min lat, max lat)
 which need to be in decimal degrees. Need to align with grid
 resolution outer corners. If None, get extent from centoid
 locations of climate stations in <code class="docutils literal notranslate"><span class="pre">in_path</span></code> summary CSV.</li>
-<li><strong>buffer</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- default 25. Number of gridcells to expand
+<li><strong>buffer</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – default 25. Number of gridcells to expand
 the rectangular extent of the subgrid fishnet and interpolated
 output raster.</li>
-<li><strong>overwrite</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) -- default False. If True overwrite the grid
+<li><strong>overwrite</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – default False. If True overwrite the grid
 shapefile at <code class="docutils literal notranslate"><span class="pre">out_path</span></code> if it already exists.</li>
-<li><strong>grid_id_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- default &quot;GRIDMET_ID&quot;. Name of gridcell identifier
+<li><strong>grid_id_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – default “GRIDMET_ID”. Name of gridcell identifier
 if using a non-gridMET gridded dataset.</li>
-<li><strong>grid_meta_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- default None. Path to metadata CSV file
+<li><strong>grid_meta_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – default None. Path to metadata CSV file
 that contains all grid cells. If None it is looked for at the
 install directory of gridwxcomp (i.e. with pip install) or within
-the current directory as &quot;gridmet_cell_data.csv&quot;. Only needed when
+the current directory as “gridmet_cell_data.csv”. Only needed when
 using a gridded product other than the default gridMET.</li>
-<li><strong>grid_res</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) -- default None. Cell size of grid in decimal degrees
+<li><strong>grid_res</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – default None. Cell size of grid in decimal degrees
 if using a grid that is not gridMET.</li>
 </ul>
 </td>
@@ -1397,8 +1397,8 @@ climate stations found in <code class="docutils literal notranslate"><span class
 <span class="gp">&gt;&gt;&gt; </span><span class="n">spatial</span><span class="o">.</span><span class="n">make_grid</span><span class="p">(</span><span class="n">summary_file</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>The file will be saved as &quot;grid.shp&quot; to a newly created subdirectory
-&quot;spatial&quot; in the same directory as the input summary CSV file. i.e.:</p>
+<p>The file will be saved as “grid.shp” to a newly created subdirectory
+“spatial” in the same directory as the input summary CSV file. i.e.:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>monthly_ratios/
 ├── etr_mm_summary_all_yrs.csv
 ├── etr_mm_summary_comp_all_yrs.csv
@@ -1426,7 +1426,7 @@ set the <code class="docutils literal notranslate"><span class="pre">overwrite</
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#FileNotFoundError" title="(in Python v3.7)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">FileNotFoundError</span></code></a> -- if input summary CSV file is not found.</td>
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#FileNotFoundError" title="(in Python v3.7)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">FileNotFoundError</span></code></a> – if input summary CSV file is not found.</td>
 </tr>
 </tbody>
 </table>
@@ -1453,54 +1453,54 @@ the fishnet grid built first by <a class="reference internal" href="#gridwxcomp.
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>in_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- path to [var]_summary_comp_[years].csv file containing
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>in_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – path to [var]_summary_comp_[years].csv file containing
 monthly bias ratios, lat, long, and other data. Created by
 <a class="reference internal" href="#module-gridwxcomp.calc_bias_ratios" title="gridwxcomp.calc_bias_ratios"><code class="xref py py-func docutils literal notranslate"><span class="pre">gridwxcomp.calc_bias_ratios</span></code></a>.</p>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
 <tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first simple">
-<li><strong>layer</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) -- default 'all'. Name of variable(s) in <code class="docutils literal notranslate"><span class="pre">in_path</span></code>
-to conduct 2-D interpolation. e.g. 'Annual_mean'.</li>
-<li><strong>out</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- default None. Subdirectory to save GeoTIFF raster(s).</li>
-<li><strong>scale_factor</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- default 0.1. Scaling factor to apply to
+<li><strong>layer</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – default ‘all’. Name of variable(s) in <code class="docutils literal notranslate"><span class="pre">in_path</span></code>
+to conduct 2-D interpolation. e.g. ‘Annual_mean’.</li>
+<li><strong>out</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – default None. Subdirectory to save GeoTIFF raster(s).</li>
+<li><strong>scale_factor</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – default 0.1. Scaling factor to apply to
 original grid resolution to create resampling resolution. If
 scale_factor = 0.1, the resolution will be one tenth gridMET
 resolution or 400 m.</li>
-<li><strong>function</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- <p>default 'invdist'. Interpolation method, gdal
-methods include: 'invdist', 'indistnn', 'linear', 'average',
-and 'nearest' see <a class="reference external" href="https://www.gdal.org/gdal_grid.html">gdal_grid</a>.
+<li><strong>function</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – <p>default ‘invdist’. Interpolation method, gdal
+methods include: ‘invdist’, ‘indistnn’, ‘linear’, ‘average’,
+and ‘nearest’ see <a class="reference external" href="https://www.gdal.org/gdal_grid.html">gdal_grid</a>.
 Radial basis functions, see <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.Rbf.html#scipy.interpolate.Rbf" title="(in SciPy v1.3.0)"><code class="xref py py-class docutils literal notranslate"><span class="pre">scipy.interpolate.Rbf</span></code></a>,
-include: 'multiquadric', 'inverse', 'gaussian', 'linear_rbf',
-'cubic', 'quintic', and 'thin_plate'.</p>
+include: ‘multiquadric’, ‘inverse’, ‘gaussian’, ‘linear_rbf’,
+‘cubic’, ‘quintic’, and ‘thin_plate’.</p>
 </li>
-<li><strong>smooth</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) -- default 0. Smooth parameter for Rbf functions.</li>
-<li><strong>params</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><em>None</em></a>) -- default None. Parameters for interpolation
+<li><strong>smooth</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – default 0. Smooth parameter for Rbf functions.</li>
+<li><strong>params</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><em>None</em></a>) – default None. Parameters for interpolation
 using gdal, see defaults in <a class="reference internal" href="#gridwxcomp.InterpGdal" title="gridwxcomp.InterpGdal"><code class="xref py py-class docutils literal notranslate"><span class="pre">gridwxcomp.InterpGdal</span></code></a>.</li>
-<li><strong>bounds</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)"><em>tuple</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><em>None</em></a>) -- default None. Tuple of bounding coordinates
+<li><strong>bounds</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)"><em>tuple</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><em>None</em></a>) – default None. Tuple of bounding coordinates
 in the following order (min long, max long, min lat, max lat)
 which need to be in decimal degrees. Need to align with gridMET
 resolution outer corners. If None, get extent from centoid
 locations of climate stations in <code class="docutils literal notranslate"><span class="pre">in_path</span></code> summary CSV.</li>
-<li><strong>buffer</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- default 25. Number of grid cells to expand
+<li><strong>buffer</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – default 25. Number of grid cells to expand
 the rectangular extent of the subgrid fishnet and interpolated
 output raster.</li>
-<li><strong>z_stats</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) -- default True. Calculate zonal means of interpolated
+<li><strong>z_stats</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – default True. Calculate zonal means of interpolated
 surface to gridMET cells in fishnet and save to a CSV file.
 The CSV file will be saved to the same directory as the interpolated
 raster file(s).</li>
-<li><strong>res_plot</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) -- default True. Make bar plot for residual (error)
+<li><strong>res_plot</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – default True. Make bar plot for residual (error)
 between interpolated and station value for <code class="docutils literal notranslate"><span class="pre">layer</span></code>.</li>
-<li><strong>grid_id_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- default &quot;GRIDMET_ID&quot;. Name of gridcell identifier
+<li><strong>grid_id_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – default “GRIDMET_ID”. Name of gridcell identifier
 if using a grid that is not gridMET.</li>
-<li><strong>grid_res</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) -- default None. Grid resolution in decimal degrees if
+<li><strong>grid_res</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a>) – default None. Grid resolution in decimal degrees if
 not using gridMET as the gridded dataset.</li>
-<li><strong>options</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><em>None</em></a>) -- default None. Extra command line arguments
+<li><strong>options</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><em>None</em></a>) – default None. Extra command line arguments
 for gdal interpolation.</li>
-<li><strong>grid_meta_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><em>None</em></a>) -- default None. Path to metadata CSV
+<li><strong>grid_meta_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><em>None</em></a>) – default None. Path to metadata CSV
 file that contains all gridcells. If None it is looked for at the
 install directory of gridwxcomp (e.g. after pip install gridwxcomp)
-or within the current directory as 'gridmet_cell_data.csv'. Only
+or within the current directory as ‘gridmet_cell_data.csv’. Only
 used when using a gridded product other than the default gridMET.</li>
 </ul>
 </td>
@@ -1511,10 +1511,10 @@ used when using a gridded product other than the default gridMET.</li>
 </tbody>
 </table>
 <p class="rubric">Examples</p>
-<p>Let's say we wanted to interpolate the &quot;Annual_mean&quot; bias
+<p>Let’s say we wanted to interpolate the “Annual_mean” bias
 ratio in an input CSV first created by <a class="reference internal" href="#module-gridwxcomp.calc_bias_ratios" title="gridwxcomp.calc_bias_ratios"><code class="xref py py-func docutils literal notranslate"><span class="pre">gridwxcomp.calc_bias_ratios</span></code></a> and a fishnet
 grid was first created by <a class="reference internal" href="#gridwxcomp.spatial.make_grid" title="gridwxcomp.spatial.make_grid"><code class="xref py py-func docutils literal notranslate"><span class="pre">make_grid</span></code></a>. This example uses the
-&quot;invdist&quot; method (default) to interpolate to a 400 m resolution
+“invdist” method (default) to interpolate to a 400 m resolution
 surface. The result is a GeoTIFF raster that has an extent that
 encompasses station locations in the input file plus an additional
 optional buffer of outer gridMET cells. Additionally, point residuals
@@ -1562,14 +1562,14 @@ zonal (gridMET cell) means are also extracted and stored in a CSV.</p>
 <p>where the file name and directory is based on the variable being
 interpolated, methods, and the raster resolution. The <code class="docutils literal notranslate"><span class="pre">out</span></code>
 keyword argument lets us add any number of subdirectories to the final
-output directory, in this case the 's20_p1' dir contains info on params.
+output directory, in this case the ‘s20_p1’ dir contains info on params.
 In this case the original gridMET resolution is 4 km therefore the
 scale facter of 0.1 results in a 400 m resolution.</p>
 <p>The final result will be the creation of the CSV:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s1">&#39;monthly_ratios/spatial/etr_mm_invdist_400m/s20_p1/zonal_stats.csv&#39;</span>
 </pre></div>
 </div>
-<p>In &quot;zonal_stats.csv&quot; the zonal mean for ratios of annual station to
+<p>In “zonal_stats.csv” the zonal mean for ratios of annual station to
 gridMET ETr will be stored along with gridMET IDs, e.g.</p>
 <blockquote>
 <div><table border="1" class="docutils">
@@ -1592,8 +1592,8 @@ gridMET ETr will be stored along with gridMET IDs, e.g.</p>
 <tr class="row-even"><td>513130</td>
 <td>0.90002197265625</td>
 </tr>
-<tr class="row-odd"><td>...</td>
-<td>...</td>
+<tr class="row-odd"><td>…</td>
+<td>…</td>
 </tr>
 </tbody>
 </table>
@@ -1602,7 +1602,7 @@ gridMET ETr will be stored along with gridMET IDs, e.g.</p>
 the default or command line workflow we can assign any numeric layer
 in the input summary CSV to be interpolations. For example if
 we wanted to interpolate the coefficient of variation of the growing
-season bias ratio &quot;April_to_oct_cv&quot;, then we could
+season bias ratio “April_to_oct_cv”, then we could
 estimate the surface of this variable straightforwardly,</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">layer</span> <span class="o">=</span> <span class="s1">&#39;April_to_oct_cv&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">func</span> <span class="o">=</span> <span class="s1">&#39;invdistnn&#39;</span>
@@ -1615,7 +1615,7 @@ estimate the surface of this variable straightforwardly,</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s1">&#39;monthly_ratios/spatial/etr_mm_invdistnn_400m/April_to_oct_cv.tiff&#39;</span>
 </pre></div>
 </div>
-<p>And the zonal means will be added as a column named &quot;April_to_oct_cv&quot;
+<p>And the zonal means will be added as a column named “April_to_oct_cv”
 to:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="s1">&#39;monthly_ratios/spatial/etr_mm_invdistnn_400m/zonal_stats.csv&#39;</span>
 </pre></div>
@@ -1633,10 +1633,10 @@ TMax or ETo.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#FileNotFoundError" title="(in Python v3.7)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">FileNotFoundError</span></code></a> -- if the input summary CSV file or the
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#FileNotFoundError" title="(in Python v3.7)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">FileNotFoundError</span></code></a> – if the input summary CSV file or the
 fishnet for extracting zonal statistics do not exist.
 The fishnet should be in the subdirectory of <code class="docutils literal notranslate"><span class="pre">in_path</span></code>
-i.e. &quot;&lt;in_path&gt;/spatial/grid.shp&quot;.</td>
+i.e. “&lt;in_path&gt;/spatial/grid.shp”.</td>
 </tr>
 </tbody>
 </table>
@@ -1661,11 +1661,11 @@ updated files and saves to directory with interpolated rasters.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>in_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- path to comprehensive summary CSV created by
+<li><strong>in_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – path to comprehensive summary CSV created by
 <a class="reference internal" href="#module-gridwxcomp.calc_bias_ratios" title="gridwxcomp.calc_bias_ratios"><code class="xref py py-mod docutils literal notranslate"><span class="pre">gridwxcomp.calc_bias_ratios</span></code></a></li>
-<li><strong>out_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- path to dir that contains interpolated raster</li>
-<li><strong>layer</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- layer to calculate error e.g. &quot;annual_mean&quot;</li>
-<li><strong>grid_var</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- name of grid variable e.g. &quot;etr_mm&quot;</li>
+<li><strong>out_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – path to dir that contains interpolated raster</li>
+<li><strong>layer</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – layer to calculate error e.g. “annual_mean”</li>
+<li><strong>grid_var</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – name of grid variable e.g. “etr_mm”</li>
 </ul>
 </td>
 </tr>
@@ -1693,10 +1693,10 @@ a CSV file joined to grid IDs.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first last simple">
-<li><strong>in_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- path to [var]_summary_comp_[years].csv file containing
+<li><strong>in_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – path to [var]_summary_comp_[years].csv file containing
 monthly bias ratios, lat, long, and other data. Created by
 <a class="reference internal" href="#module-gridwxcomp.calc_bias_ratios" title="gridwxcomp.calc_bias_ratios"><code class="xref py py-mod docutils literal notranslate"><span class="pre">gridwxcomp.calc_bias_ratios</span></code></a>.</li>
-<li><strong>raster</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- path to interpolated raster of bias ratios to
+<li><strong>raster</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – path to interpolated raster of bias ratios to
 be used for zonal stats. First created by <a class="reference internal" href="#gridwxcomp.spatial.interpolate" title="gridwxcomp.spatial.interpolate"><code class="xref py py-func docutils literal notranslate"><span class="pre">interpolate</span></code></a>.</li>
 </ul>
 </td>
@@ -1730,10 +1730,10 @@ for each gridMET cell in the fishnet which must exist at:</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#FileNotFoundError" title="(in Python v3.7)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">FileNotFoundError</span></code></a> -- if the input summary CSV file or the
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#FileNotFoundError" title="(in Python v3.7)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">FileNotFoundError</span></code></a> – if the input summary CSV file or the
 fishnet for extracting zonal statistics do not exist.
 The fishnet should be in the subdirectory of <code class="docutils literal notranslate"><span class="pre">in_path</span></code>
-at &quot;/spatial/grid.shp&quot;.</td>
+at “/spatial/grid.shp”.</td>
 </tr>
 </tbody>
 </table>
@@ -1766,16 +1766,16 @@ created for each month of a single year.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>input_csv</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- path to input CSV file containing paired station/
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><p class="first"><strong>input_csv</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – path to input CSV file containing paired station/
 gridMET metadata. This file is created by running
 <a class="reference internal" href="#gridwxcomp.prep_input" title="gridwxcomp.prep_input"><code class="xref py py-mod docutils literal notranslate"><span class="pre">gridwxcomp.prep_input</span></code></a> followed by <a class="reference internal" href="#gridwxcomp.download_gridmet_ee" title="gridwxcomp.download_gridmet_ee"><code class="xref py py-mod docutils literal notranslate"><span class="pre">gridwxcomp.download_gridmet_ee</span></code></a>.</p>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
 <tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first simple">
-<li><strong>out_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><em>None</em></a>) -- default None. Directory to save comparison
-plots, if None save to &quot;daily_comp_plots&quot; in currect directory.</li>
-<li><strong>year_filter</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><em>None</em></a>) -- default None. Single year YYYY or range
+<li><strong>out_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><em>None</em></a>) – default None. Directory to save comparison
+plots, if None save to “daily_comp_plots” in currect directory.</li>
+<li><strong>year_filter</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><em>None</em></a>) – default None. Single year YYYY or range
 YYYY-YYYY</li>
 </ul>
 </td>
@@ -1790,9 +1790,9 @@ YYYY-YYYY</li>
 bokeh plots for paired climate variables, e.g. etr_mm, eto_mm,
 u2_ms, tmin_c, tmax_c, srad_wm2, ea_kpa, and Ko (dew point depression).
 Monthly plots are created for a single year.</p>
-<p>From the command line, use the &quot;plot&quot; command with the
+<p>From the command line, use the “plot” command with the
 <code class="docutils literal notranslate"><span class="pre">[-t,</span> <span class="pre">--plot-type]</span></code> option set to station-grid-comp and
-the <code class="docutils literal notranslate"><span class="pre">[-f,</span> <span class="pre">--freq]</span></code> option left as default (&quot;daily&quot;),</p>
+the <code class="docutils literal notranslate"><span class="pre">[-f,</span> <span class="pre">--freq]</span></code> option left as default (“daily”),</p>
 <div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>$ gridwxcomp plot merged_input.csv -t station-grid-comp -o comp_plots_2016 -y <span class="m">2016</span>
 </pre></div>
 </div>
@@ -1802,12 +1802,12 @@ the <code class="docutils literal notranslate"><span class="pre">[-f,</span> <sp
 </pre></div>
 </div>
 <p>Both methods result in monthly HTML <a class="reference external" href="https://bokeh.pydata.org/en/latest/">bokeh</a>
-plots being saved to &quot;comp_plots_2016/STATION_ID/&quot; where &quot;STATION_ID&quot;
+plots being saved to “comp_plots_2016/STATION_ID/” where “STATION_ID”
 is the station ID as found in the input CSV file. A file is saved for
 each month with the station ID, month, and year in the file name.
 If <code class="docutils literal notranslate"><span class="pre">out_dir</span></code> keyword argument or <code class="docutils literal notranslate"><span class="pre">[-o,</span> <span class="pre">--out-dir]</span></code> command line
 option is not given the plots will be saved to a directory named
-&quot;daily_comp_plots&quot;.</p>
+“daily_comp_plots”.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">If there are less than five days of data in a month the plot for that
@@ -1828,13 +1828,13 @@ to create interactive plots, e.g. they can be zoomed in/out and panned.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>input_csv</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- path to input CSV file containing
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>input_csv</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – path to input CSV file containing
 paired station/gridMET metadata. This file is
 created by running <a class="reference internal" href="#gridwxcomp.prep_input" title="gridwxcomp.prep_input"><code class="xref py py-mod docutils literal notranslate"><span class="pre">gridwxcomp.prep_input</span></code></a> followed by
 <a class="reference internal" href="#gridwxcomp.download_gridmet_ee" title="gridwxcomp.download_gridmet_ee"><code class="xref py py-mod docutils literal notranslate"><span class="pre">gridwxcomp.download_gridmet_ee</span></code></a>.</td>
 </tr>
 <tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
-<tr class="field-even field"><td>&#160;</td><td class="field-body"><strong>out_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- default None. Directory to save comparison plots.</td>
+<tr class="field-even field"><td>&#160;</td><td class="field-body"><strong>out_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – default None. Directory to save comparison plots.</td>
 </tr>
 <tr class="field-odd field"><th class="field-name">Returns:</th><td class="field-body">None</td>
 </tr>
@@ -1845,9 +1845,9 @@ created by running <a class="reference internal" href="#gridwxcomp.prep_input" t
 bokeh plots for paired climate variable, e.g. etr_mm,
 eto_mm, u2_ms, tmin_c, tmax_c, srad_wm2, ea_kpa, and Ko (dew point
 depression).</p>
-<p>From the command line, use the &quot;plot&quot; command with the
+<p>From the command line, use the “plot” command with the
 <code class="docutils literal notranslate"><span class="pre">[-t,</span> <span class="pre">--plot-type]</span></code> option set to station-grid-comp and
-the <code class="docutils literal notranslate"><span class="pre">[-f,</span> <span class="pre">--freq]</span></code> option set to &quot;monthly&quot;,</p>
+the <code class="docutils literal notranslate"><span class="pre">[-f,</span> <span class="pre">--freq]</span></code> option set to “monthly”,</p>
 <div class="highlight-sh notranslate"><div class="highlight"><pre><span></span>$ gridwxcomp plot merged_input.csv -t station-grid-comp -freq monthly -o monthly_plots
 </pre></div>
 </div>
@@ -1857,10 +1857,10 @@ the <code class="docutils literal notranslate"><span class="pre">[-f,</span> <sp
 </pre></div>
 </div>
 <p>Both methods result in monthly HTML bokeh plots being saved
-to &quot;monthly_plots/&quot; which contains a plot file for each station
+to “monthly_plots/” which contains a plot file for each station
 as found in the input CSV file. If <code class="docutils literal notranslate"><span class="pre">out_dir</span></code> keyword argument or
 <code class="docutils literal notranslate"><span class="pre">[-o,</span> <span class="pre">--out-dir]</span></code> command line option is not given the plots will
-be saved to a directory named &quot;monthly_comp_plots&quot;.</p>
+be saved to a directory named “monthly_comp_plots”.</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">If there are less than 2 months of data the plot for that
@@ -1878,32 +1878,32 @@ other for a particular variable, e.g. bias ratios or interpolated residuals.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>summary_csv</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- path to summary CSV produced by either <a class="reference internal" href="#module-gridwxcomp.calc_bias_ratios" title="gridwxcomp.calc_bias_ratios"><code class="xref py py-func docutils literal notranslate"><span class="pre">gridwxcomp.calc_bias_ratios</span></code></a>
+<li><strong>summary_csv</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – path to summary CSV produced by either <a class="reference internal" href="#module-gridwxcomp.calc_bias_ratios" title="gridwxcomp.calc_bias_ratios"><code class="xref py py-func docutils literal notranslate"><span class="pre">gridwxcomp.calc_bias_ratios</span></code></a>
 or by <code class="xref py py-func docutils literal notranslate"><span class="pre">gridwxcomp.interpolate</span></code>. Should contain <code class="docutils literal notranslate"><span class="pre">layer</span></code>
 data for plot.</li>
-<li><strong>layer</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- name of variable to plot.</li>
+<li><strong>layer</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – name of variable to plot.</li>
 </ul>
 </td>
 </tr>
 <tr class="field-even field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
 <tr class="field-even field"><td>&#160;</td><td class="field-body"><ul class="first last simple">
-<li><strong>out_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><em>None</em></a>) -- default None. Output directory path, default is
-'station_bar_plots' in parent directory of <code class="docutils literal notranslate"><span class="pre">summary_csv</span></code>.</li>
-<li><strong>x_label</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><em>None</em></a>) -- default None. Label for x-axis.</li>
-<li><strong>y_label</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><em>None</em></a>) -- default None. Label for y-axis, defaults to
+<li><strong>out_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><em>None</em></a>) – default None. Output directory path, default is
+‘station_bar_plots’ in parent directory of <code class="docutils literal notranslate"><span class="pre">summary_csv</span></code>.</li>
+<li><strong>x_label</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><em>None</em></a>) – default None. Label for x-axis.</li>
+<li><strong>y_label</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><em>None</em></a>) – default None. Label for y-axis, defaults to
 <code class="docutils literal notranslate"><span class="pre">layer</span></code>.</li>
-<li><strong>title</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><em>None</em></a>) -- default None. Title of plot.</li>
-<li><strong>subtitle</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a><em>, or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><em>None</em></a>) -- default None. Additional subtitle(s)
+<li><strong>title</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><em>None</em></a>) – default None. Title of plot.</li>
+<li><strong>subtitle</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a><em>, or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><em>None</em></a>) – default None. Additional subtitle(s)
 for plot.</li>
-<li><strong>year_subtitle</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) -- default True. If true print subtitle on plot with
-the max year range used for station data, e.g. 'years: 1995-2005'</li>
+<li><strong>year_subtitle</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – default True. If true print subtitle on plot with
+the max year range used for station data, e.g. ‘years: 1995-2005’</li>
 </ul>
 </td>
 </tr>
 </tbody>
 </table>
 <p class="rubric">Example</p>
-<p>Let's say we want to compare the mean growing seasion bias ratios of
+<p>Let’s say we want to compare the mean growing seasion bias ratios of
 reference evapotranspiration (ETr) for the selection of stations we
 used to calculate bias ratios. The summary CSV file containing the
 ratios should be first created using <a class="reference internal" href="#module-gridwxcomp.calc_bias_ratios" title="gridwxcomp.calc_bias_ratios"><code class="xref py py-func docutils literal notranslate"><span class="pre">gridwxcomp.calc_bias_ratios</span></code></a>.</p>
@@ -1923,15 +1923,15 @@ of ETr for each station, sorted from smallest to largest values.</p>
 <p>This function may also be used for any numerical data in the summary CSV
 files that are created by <code class="xref py py-func docutils literal notranslate"><span class="pre">gridwxcomp.interpolate</span></code> in addition to
 those created by <a class="reference internal" href="#module-gridwxcomp.calc_bias_ratios" title="gridwxcomp.calc_bias_ratios"><code class="xref py py-func docutils literal notranslate"><span class="pre">gridwxcomp.calc_bias_ratios</span></code></a>. The main
-requirement is that <code class="docutils literal notranslate"><span class="pre">summary_csv</span></code> must contain the column 'STATION_ID'
+requirement is that <code class="docutils literal notranslate"><span class="pre">summary_csv</span></code> must contain the column ‘STATION_ID’
 and the <code class="docutils literal notranslate"><span class="pre">layer</span></code> keyword argument.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><ul class="first last simple">
-<li><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#FileNotFoundError" title="(in Python v3.7)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">FileNotFoundError</span></code></a> -- if <code class="docutils literal notranslate"><span class="pre">summary_csv</span></code> is not found.</li>
-<li><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#KeyError" title="(in Python v3.7)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">KeyError</span></code></a> -- if <code class="docutils literal notranslate"><span class="pre">layer</span></code> does not exist as a column name in <code class="docutils literal notranslate"><span class="pre">summary_csv</span></code>.</li>
+<li><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#FileNotFoundError" title="(in Python v3.7)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">FileNotFoundError</span></code></a> – if <code class="docutils literal notranslate"><span class="pre">summary_csv</span></code> is not found.</li>
+<li><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#KeyError" title="(in Python v3.7)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">KeyError</span></code></a> – if <code class="docutils literal notranslate"><span class="pre">layer</span></code> does not exist as a column name in <code class="docutils literal notranslate"><span class="pre">summary_csv</span></code>.</li>
 </ul>
 </td>
 </tr>
@@ -1953,7 +1953,7 @@ command line tool.</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>summary_csv_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- path to [var]_summary_comp CSV file created
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>summary_csv_path</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – path to [var]_summary_comp CSV file created
 by <a class="reference internal" href="#module-gridwxcomp.calc_bias_ratios" title="gridwxcomp.calc_bias_ratios"><code class="xref py py-mod docutils literal notranslate"><span class="pre">gridwxcomp.calc_bias_ratios</span></code></a> containing point bias ratios,
 lat, and long.</td>
 </tr>
@@ -1991,7 +1991,7 @@ lat, and long.</td>
 <dt id="gridwxcomp.InterpGdal.default_layers">
 <code class="descname">default_layers</code><a class="headerlink" href="#gridwxcomp.InterpGdal.default_layers" title="Permalink to this definition">¶</a></dt>
 <dd><p>layers to interpolate created by
-<a class="reference internal" href="#module-gridwxcomp.calc_bias_ratios" title="gridwxcomp.calc_bias_ratios"><code class="xref py py-mod docutils literal notranslate"><span class="pre">gridwxcomp.calc_bias_ratios</span></code></a>, e.g. &quot;Jan_mean&quot;, found in
+<a class="reference internal" href="#module-gridwxcomp.calc_bias_ratios" title="gridwxcomp.calc_bias_ratios"><code class="xref py py-mod docutils literal notranslate"><span class="pre">gridwxcomp.calc_bias_ratios</span></code></a>, e.g. “Jan_mean”, found in
 <code class="docutils literal notranslate"><span class="pre">summary_csv_path</span></code>.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -2085,7 +2085,7 @@ raster in order (min long, max long, min lat, max lat).</p>
 <dl class="attribute">
 <dt id="gridwxcomp.InterpGdal.interp_meth">
 <code class="descname">interp_meth</code><a class="headerlink" href="#gridwxcomp.InterpGdal.interp_meth" title="Permalink to this definition">¶</a></dt>
-<dd><p>default 'invdist'. gdal_grid interpolation method.</p>
+<dd><p>default ‘invdist’. gdal_grid interpolation method.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
@@ -2155,7 +2155,7 @@ inverse distance to a power interpolation method,</p>
 <span class="gp">&gt;&gt;&gt; </span>        <span class="n">test</span><span class="o">.</span><span class="n">gdal_grid</span><span class="p">(</span><span class="n">out_dir</span><span class="o">=</span><span class="n">out_dir</span><span class="p">,</span> <span class="n">layer</span><span class="o">=</span><span class="n">layer</span><span class="p">,</span> <span class="n">params</span><span class="o">=</span><span class="n">params</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>Note, we did not assign the interpolation method 'invdist' because it
+<p>Note, we did not assign the interpolation method ‘invdist’ because it
 is the default. To use another interpolation method we would
 assign the <code class="docutils literal notranslate"><span class="pre">interp_meth</span></code> kwarg to <a class="reference internal" href="#gridwxcomp.InterpGdal.gdal_grid" title="gridwxcomp.InterpGdal.gdal_grid"><code class="xref py py-meth docutils literal notranslate"><span class="pre">InterpGdal.gdal_grid</span></code></a>.
 Similarly, we could experiment with other parameters which all can be
@@ -2200,35 +2200,35 @@ their function, parameters, and options see
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name" colspan="2">Keyword Arguments:</th></tr>
 <tr class="field-odd field"><td>&#160;</td><td class="field-body"><ul class="first simple">
-<li><strong>layer</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) -- default 'all'. Name of summary file column
-to interpolate, e.g. 'Jan_mean', or list of names. If 'all'
-use all variables in mutable instance attribute &quot;layers&quot;.</li>
-<li><strong>out_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- default ''. Output directory to save rasters and
+<li><strong>layer</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.7)"><em>list</em></a>) – default ‘all’. Name of summary file column
+to interpolate, e.g. ‘Jan_mean’, or list of names. If ‘all’
+use all variables in mutable instance attribute “layers”.</li>
+<li><strong>out_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – default ‘’. Output directory to save rasters and
 zonal stats CSV, always appended to the root dir of the
 input summary CSV parent path that contains point ratios.</li>
-<li><strong>interp_meth</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- default 'invdist'. gdal interpolation algorithm</li>
-<li><strong>params</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><em>None</em></a>) -- default None. Parameters for
+<li><strong>interp_meth</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – default ‘invdist’. gdal interpolation algorithm</li>
+<li><strong>params</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#dict" title="(in Python v3.7)"><em>dict</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em>, or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><em>None</em></a>) – default None. Parameters for
 interpolation algorithm. See examples for format rules.</li>
-<li><strong>bounds</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)"><em>tuple</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><em>None</em></a>) -- default None. Tuple of bounding coordinates
+<li><strong>bounds</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.7)"><em>tuple</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><em>None</em></a>) – default None. Tuple of bounding coordinates
 in the following order (min long, max long, min lat, max lat)
 which need to be in decimal degrees. If None, get extent from
 locations of climate stations in input summary CSV with 25 cell
 buffer.</li>
-<li><strong>nx_cells</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- default None. Number of pixels in x dim. of raster,
+<li><strong>nx_cells</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – default None. Number of pixels in x dim. of raster,
 if None calculated from <code class="docutils literal notranslate"><span class="pre">bounds</span></code>.</li>
-<li><strong>ny_cells</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- default None. Number of pixels in y dim. of raster,
+<li><strong>ny_cells</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – default None. Number of pixels in y dim. of raster,
 if None calculated from <code class="docutils literal notranslate"><span class="pre">bounds</span></code>.</li>
-<li><strong>scale_factor</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- default 0.1. Scaling factor to apply to
+<li><strong>scale_factor</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.7)"><em>float</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – default 0.1. Scaling factor to apply to
 original gridMET fishnet to create resampling resolution. If
 scale_factor = 0.1, the resolution will be one tenth gridMET
 resolution or 400 m.</li>
-<li><strong>z_stats</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) -- default True. Calculate zonal means of
+<li><strong>z_stats</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – default True. Calculate zonal means of
 interpolated surface to gridMET cells in fishnet and save to a
 CSV file. The CSV file will be saved to the same directory as
 the interpolated raster file(s).</li>
-<li><strong>res_plot</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) -- default True. Make bar plot for residual (error)
+<li><strong>res_plot</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.7)"><em>bool</em></a>) – default True. Make bar plot for residual (error)
 between interpolated and station value for <code class="docutils literal notranslate"><span class="pre">layer</span></code>.</li>
-<li><strong>options</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><em>None</em></a>) -- default None. Extra command line options for
+<li><strong>options</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/constants.html#None" title="(in Python v3.7)"><em>None</em></a>) – default None. Extra command line options for
 gdal_grid spatial interpolation.</li>
 </ul>
 </td>
@@ -2239,7 +2239,7 @@ gdal_grid spatial interpolation.</li>
 </tbody>
 </table>
 <p class="rubric">Examples</p>
-<p>The default interpolation algorithm 'invdist' or inverse distance
+<p>The default interpolation algorithm ‘invdist’ or inverse distance
 weighting to a power to interpolate bias ratios in a summary CSV
 file that was first created by <a class="reference internal" href="#module-gridwxcomp.calc_bias_ratios" title="gridwxcomp.calc_bias_ratios"><code class="xref py py-mod docutils literal notranslate"><span class="pre">gridwxcomp.calc_bias_ratios</span></code></a>.
 The default option will interpolate all layers in <a class="reference internal" href="#gridwxcomp.InterpGdal.default_layers" title="gridwxcomp.InterpGdal.default_layers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">InterpGdal.default_layers</span></code></a>
@@ -2262,7 +2262,7 @@ annual mean bias ratios,</p>
 plots are computed by default. A gridMET fishnet must have been
 previously created using <a class="reference internal" href="#gridwxcomp.spatial.make_grid" title="gridwxcomp.spatial.make_grid"><code class="xref py py-func docutils literal notranslate"><span class="pre">gridwxcomp.spatial.make_grid</span></code></a>.</p>
 <p>After running the code above the following files will be created
-in the 'default_params' directory which will be build in the same
+in the ‘default_params’ directory which will be build in the same
 location as the input summary CSV:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span>default_params/
 ├── annual_mean.tiff
@@ -2283,7 +2283,7 @@ location as the input summary CSV:</p>
 </div>
 <p>GeoTiff interpolated raster files are now created for select layers
 as well as VRT (virtual raster) meta files that store info
-on each raster's data source. The file &quot;gridMET_stats.csv&quot; contains
+on each raster’s data source. The file “gridMET_stats.csv” contains
 gridMET ID as an index and each layer zonal mean as columns. For
 example,</p>
 <blockquote>
@@ -2330,7 +2330,7 @@ for the last call to <a class="reference internal" href="#gridwxcomp.InterpGdal.
 </pre></div>
 </div>
 <p>Or to find the paths to the interpolated raster files that
-have been created by the instance (all), the &quot;interped_rasters&quot;
+have been created by the instance (all), the “interped_rasters”
 instance attribute is a list of all <a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.7)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a> objects
 of absolute paths of raster files. To get them as strings,</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">test</span><span class="o">.</span><span class="n">interped_rasters</span><span class="p">))</span>
@@ -2351,7 +2351,7 @@ retrieved by</p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
 <p class="last">The <code class="docutils literal notranslate"><span class="pre">nx_cells</span></code> and <code class="docutils literal notranslate"><span class="pre">ny_cells</span></code> arguments are an option for
-defining the output raster's resolution. If these arguments are
+defining the output raster’s resolution. If these arguments are
 passed then the <code class="docutils literal notranslate"><span class="pre">scale_factor</span></code> argument has no effect. The latter
 assumes raster resolution is relative to gridMET (4 km).</p>
 </div>
@@ -2359,7 +2359,7 @@ assumes raster resolution is relative to gridMET (4 km).</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#KeyError" title="(in Python v3.7)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">KeyError</span></code></a> -- if interp_meth is not a valid gdal_grid interpolation
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#KeyError" title="(in Python v3.7)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">KeyError</span></code></a> – if interp_meth is not a valid gdal_grid interpolation
 algorithm name.</td>
 </tr>
 </tbody>
@@ -2375,7 +2375,7 @@ algorithm name.</td>
 <dl class="function">
 <dt id="gridwxcomp.util.get_gridmet_meta_csv">
 <code class="descclassname">gridwxcomp.util.</code><code class="descname">get_gridmet_meta_csv</code><span class="sig-paren">(</span><em>gridmet_meta_path=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gridwxcomp/util.html#get_gridmet_meta_csv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gridwxcomp.util.get_gridmet_meta_csv" title="Permalink to this definition">¶</a></dt>
-<dd><p>Find path to 'gridmet_cell_data.csv' packaged with gridwxcomp</p>
+<dd><p>Find path to ‘gridmet_cell_data.csv’ packaged with gridwxcomp</p>
 </dd></dl>
 
 <dl class="function">
@@ -2388,9 +2388,9 @@ DataFrame.</p>
 <col class="field-body" />
 <tbody valign="top">
 <tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
-<li><strong>dt_df</strong> (<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v0.25.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a>) -- datetime-indexed DataFrame</li>
-<li><strong>years</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) -- years to select, e.g. 2015 or 2000-2010</li>
-<li><strong>label</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) -- identifier to print warning message if <code class="docutils literal notranslate"><span class="pre">years</span></code>
+<li><strong>dt_df</strong> (<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v0.25.1)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a>) – datetime-indexed DataFrame</li>
+<li><strong>years</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.7)"><em>int</em></a>) – years to select, e.g. 2015 or 2000-2010</li>
+<li><strong>label</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.7)"><em>str</em></a>) – identifier to print warning message if <code class="docutils literal notranslate"><span class="pre">years</span></code>
 filter partially overlaps with actual date index</li>
 </ul>
 </td>
@@ -2398,13 +2398,13 @@ filter partially overlaps with actual date index</li>
 <tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first"><dl class="docutils">
 <dt>first element is</dt>
 <dd><p class="first last">input DataFrame <code class="docutils literal notranslate"><span class="pre">dt_df</span></code> indexed to <code class="docutils literal notranslate"><span class="pre">years</span></code> filter,
-second element is string of year range, e.g. '2001_2011'</p>
+second element is string of year range, e.g. ‘2001_2011’</p>
 </dd>
 </dl>
 </p>
 </td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">ret (tuple of (<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v0.25.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a>, str))</p>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last">ret (tuple of (<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v0.25.1)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a>, str))</p>
 </td>
 </tr>
 </tbody>
@@ -2426,7 +2426,7 @@ second element is string of year range, e.g. '2001_2011'</p>
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.7)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code></a> -- if <code class="docutils literal notranslate"><span class="pre">years</span></code> is invalid or not found
+<tr class="field-odd field"><th class="field-name">Raises:</th><td class="field-body"><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.7)"><code class="xref py py-exc docutils literal notranslate"><span class="pre">ValueError</span></code></a> – if <code class="docutils literal notranslate"><span class="pre">years</span></code> is invalid or not found
 in time series index of DataFrame.</td>
 </tr>
 </tbody>
