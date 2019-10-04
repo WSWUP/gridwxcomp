@@ -38,7 +38,7 @@ classifiers = [
 
 setup(
     name='gridwxcomp',
-    description='Tools for comparing climate station data to gridMET data.',
+    description='Compare meterological station data to gridded data',
     long_description=readme,
     author='John Volk and Chris Pearson',
     author_email='jmvolk@unr.edu',
