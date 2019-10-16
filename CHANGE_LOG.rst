@@ -1,6 +1,11 @@
 Change Log
 **********
 
+Version 0.1.0
+=============
+
+Removed methods for downloading gridMET using the Google Earth Engine API entirely. In other words the ``gridwxcomp.download_gridmet_ee`` sub-module was removed and all calls to it within the ``gridwxcomp`` module. This was done to streamline the package and because the method was substantially slower than directly accessing the gridMET netCDF files from the thredds OpeNDAP server. Also the removal substantially reduces the package's dependencies which are already quite large.
+
 Version 0.0.9x
 ==============
 

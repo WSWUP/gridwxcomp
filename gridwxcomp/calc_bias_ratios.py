@@ -4,8 +4,7 @@ Calculate monthly bias ratios of variables from climate station
 to overlapping gridMET (or other gridded dataset) cells. 
 
 Input file for this module must first be created by running 
-:mod:`gridwxcomp.prep_input` followed by :mod:`gridwxcomp.download_gridmet_ee`
-or :mod:`gridwxcomp.download_gridmet_opendap`. 
+:mod:`gridwxcomp.prep_input` followed by :mod:`gridwxcomp.download_gridmet_opendap`. 
 
 Attributes:
     GRIDMET_STATION_VARS (:obj:`dict`): mapping dictionary with gridMET
@@ -81,7 +80,7 @@ def main(input_file_path, out_dir, grid_id_name='GRIDMET_ID',
         input_file_path (str): path to input CSV file containing
             paired station/gridMET metadata. This file is 
             created by running :mod:`gridwxcomp.prep_input` followed by 
-            :mod:`gridwxcomp.download_gridmet_ee`.
+            :mod:`gridwxcomp.download_gridmet_opendap`.
         out_dir (str): path to directory to save CSV files with
             monthly bias ratios of etr.
             
@@ -265,7 +264,7 @@ def calc_bias_ratios(input_path, out_dir, grid_id_name='GRIDMET_ID',
         input_path (str): path to input CSV file with matching
             station climate and grid metadata. This file is 
             created by running :func:`gridwxcomp.prep_input` followed by 
-            :func:`gridwxcomp.download_gridmet_ee`.
+            :func:`gridwxcomp.download_gridmet_opendap`.
         out_dir (str): path to directory to save CSV files with
             monthly bias ratios of etr.
             
@@ -316,7 +315,7 @@ def calc_bias_ratios(input_path, out_dir, grid_id_name='GRIDMET_ID',
         KeyError: if the input file does not contain file paths to
             the climate station and grid time series files. This
             occurs if, for example, the :mod:`gridwxcomp.prep_input` and/or 
-            the :mod:`gridwxcomp.download_gridmet_ee` scripts have not been 
+            :mod:`gridwxcomp.download_gridmet_opendap` scripts have not been 
             run first (if using gridMET data). Also raised if the given 
             ``grid_var``, ``station_var``, or values of ``var_dict`` kwargs 
             are invalid.
@@ -383,7 +382,7 @@ def calc_bias_ratios(input_path, out_dir, grid_id_name='GRIDMET_ID',
         if not 'STATION_FILE_PATH' in row or not 'GRID_FILE_PATH' in row:
             raise KeyError('Missing station and/or grid file paths in '+\
                            'input file. Run prep_input.py followed '+\
-                           'by download_gridmet_ee.py first.')
+                           'by download_gridmet_opendap.py first.')
         # if only doing a single grid cell check for matching ID
         if grid_ID and int(grid_ID) != row[grid_id_name]:
             continue
@@ -620,13 +619,14 @@ def arg_parse():
     required.add_argument(
         '-i', '--input', metavar='PATH', required=True,
         help='Input CSV file of merged climate/grid data that '+\
-            'was created by running prep_input.py and download_gridmet_ee.py')
+            'was created by running prep_input.py and '+\
+            'download_gridmet_opendap.py')
     required.add_argument(
         '-o', '--out', metavar='PATH', required=True,
         help='Output directory to save CSV files containing bias ratios')
     optional.add_argument('-gin', '--grid-id-name', metavar='', required=False, 
         default='GRIDMET_ID', help='Name of gridcell identifier if not using '+\
-            'gridMET grid.')
+            'gridMET grid')
     optional.add_argument(
         '-y', '--years', metavar='', required=False, default='all',
         help='Years to use, single or range e.g. 2018 or 1995-2010')

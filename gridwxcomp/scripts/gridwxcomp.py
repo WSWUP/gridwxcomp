@@ -7,7 +7,6 @@ import os
 import logging
 
 from gridwxcomp.prep_input import prep_input as prep
-from gridwxcomp.download_gridmet_ee import download_gridmet_ee as download
 from gridwxcomp.download_gridmet_opendap import download_gridmet_opendap as download_od
 from gridwxcomp.calc_bias_ratios import calc_bias_ratios as calc_ratios
 from gridwxcomp.spatial import main as interp 
@@ -138,34 +137,6 @@ def download_gridmet_opendap(input_csv, out_dir, years, update_data, quiet):
     # call gridwxcomp.download_gridmet_opendap
     download_od(
         input_csv, out_dir, year_filter=years, update_data=update_data)
-
-@gridwxcomp.command()
-@click.argument('input_csv', nargs=1)
-@click.option('--out-dir', '-o', nargs=1, type=str, default='gridmet_data',
-        help='Folder to save downloaded gridMET time series')
-@click.option('--years', '-y', nargs=1, type=str, default=None,
-        help='Year(s) to download, single year (YYYY) or range (YYYY-YYYY)')
-@click.option('--update-years', '-u', nargs=1, type=str, default=None,
-        help='Year(s) to redownload or update, YYYY or YYYY-YYYY')
-@click.option('--quiet', default=False, is_flag=True, 
-        help='Supress command line output')
-def download_gridmet_ee(input_csv, out_dir, years, update_years, quiet):
-    """
-    Download gridMET climate time series using the `Google Earth Engine API <https://developers.google.com/earth-engine/>`_
-
-    Download gridMET time series for cells that are paired to climate stations
-    in a CSV file that is first created by ``gridwxcomp prep-input``. Options 
-    allow for downloading all years available (default) or select years, it is 
-    also possible to redownload data for specified year(s). If ``--out-dir`` is 
-    not specified, gridMET time series CSVs are saved to a new directory named 
-    "gridmet_data" within the current working directory.
-    """
-    if quiet:
-        logging.getLogger().setLevel(logging.ERROR)
-    else:
-        logging.getLogger().setLevel(logging.INFO)
-    # call gridwxcomp.download_gridmet_ee
-    download(input_csv, out_dir, year_filter=years, year_update=update_years)
 
 
 @gridwxcomp.command()

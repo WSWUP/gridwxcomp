@@ -69,7 +69,7 @@ def main(station_file, out_path, grid_meta_file, grid_path, grid_id_name,
         The result is "merged_input.csv" being created in the working 
         directory which contains metadata from climate staions as well as the 
         lat, long, and gridMET ID of the nearest gridMET cell centroid.
-        This file is used as input to :mod:`gridwxcomp.download_gridmet_ee`
+        This file is used as input to :mod:`gridwxcomp.download_gridmet_opendap`
         followed by :mod:`gridwxcomp.calc_bias_ratios`.
 
     """
@@ -335,8 +335,25 @@ def prep_input(station_path, out_path='merged_input.csv', grid_meta_path=None,
         >>> prep_input('gridwxcomp/example_data/Station_Data.txt','outfile.csv')
         
         outfile.csv will be created containing station and corresponding
-        gridMET cell data. This file is later used as input for 
-        :mod:`gridwxcomp.download_gridmet_ee` and :mod:`gridwxcomp.calc_bias_ratios`.
+        gridMET cell data. This file is later used as input for
+        :mod:`gridwxcomp.download_gridmet_opendap` and
+        :mod:`gridwxcomp.calc_bias_ratios`.
+
+    Important:
+        Make sure the following column headers exist in your input station 
+        metadata file (``station_path``) and are spelled exactly:
+
+          * Latitude
+          * Longitude
+          * Station
+          * Filename
+
+        Also, the "Filename" column should have names that begin with the names
+        of climate time series files that should be in the same directory as
+        the station metadata file. For example, if one of the time series files
+        is named "Bluebell_daily_data.csv" then all of the following are
+        permissiable entries as the "Filename": "Bluebell", "Bluebell_daily",
+        or "Bluebell_daily_data.csv".
         
     Raises:
         FileNotFoundError: if the ``grid_meta_path`` is not passed as a 
@@ -499,7 +516,7 @@ def arg_parse():
     """
     Command line usage for prep_input.py for merging climate station 
     and corresponding gridMET data into a single table (CSV file).
-    The CSV file produced is used as input to download_gridmet_ee.py 
+    The CSV file produced is used as input to download_gridmet_opendap.py 
     and calc_bias_ratios.py.
     """
     parser = argparse.ArgumentParser(

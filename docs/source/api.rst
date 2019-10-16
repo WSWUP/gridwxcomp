@@ -22,9 +22,6 @@ Command Line Interface
 .. click:: gridwxcomp.scripts.gridwxcomp:download_gridmet_opendap
   :prog: gridwxcomp download-gridmet-opendap
 
-.. click:: gridwxcomp.scripts.gridwxcomp:download_gridmet_ee
-  :prog: gridwxcomp download-gridmet-ee
-
 .. click:: gridwxcomp.scripts.gridwxcomp:spatial
   :prog: gridwxcomp spatial
 
@@ -44,12 +41,6 @@ download\_gridmet\_opendap
 --------------------------
 
 .. autofunction:: gridwxcomp.download_gridmet_opendap
-
-
-download\_gridmet\_ee
----------------------
-
-.. autofunction:: gridwxcomp.download_gridmet_ee
 
 
 calc\_bias\_ratios

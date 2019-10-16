@@ -40,7 +40,7 @@ def daily_comparison(input_csv, out_dir=None, year_filter=None):
     Arguments:
         input_csv (str): path to input CSV file containing paired station/
             gridMET metadata. This file is created by running 
-            :mod:`gridwxcomp.prep_input` followed by :mod:`gridwxcomp.download_gridmet_ee`.
+            :mod:`gridwxcomp.prep_input` followed by :mod:`gridwxcomp.download_gridmet_opendap`.
 
     Keyword Arguments:
         out_dir (str or None): default None. Directory to save comparison 
@@ -340,7 +340,7 @@ def monthly_comparison(input_csv, out_dir=None):
         input_csv (str): path to input CSV file containing
             paired station/gridMET metadata. This file is
             created by running :mod:`gridwxcomp.prep_input` followed by
-            :mod:`gridwxcomp.download_gridmet_ee`.
+            :mod:`gridwxcomp.download_gridmet_opendap`.
 
     Keyword Arguments:
         out_dir (str): default None. Directory to save comparison plots.
@@ -771,7 +771,7 @@ def arg_parse():
     required.add_argument(
         '-i', '--input', metavar=None, required=True,
         help='Input CSV, if type="station-grid-comp" use file created by '+\
-        'download_gridmet_ee.py, if type="station-bar" use file created '+\
+        'download_gridmet_opendap.py, if type="station-bar" use file created '+\
         'by calc_bias_ratios.py or spatial.py')
     optional.add_argument(
         '-t', '--plot-type', required=False, type=str, 

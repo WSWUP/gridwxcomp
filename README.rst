@@ -4,7 +4,7 @@ gridwxcomp
 A package for comparing climate station time series data to `gridMET <http://www.climatologylab.org/gridmet.html>`_ (or other gridded) data. Major functionality includes tools to: 
 
 * pair station locations with overlapping grid cells 
-* download gridMET data from OpenDap or Google Earth Engine servers 
+* download gridMET data from OpenDap server 
 * calculate mean bias ratios between station and gridded data and other statistics 
 * spatial interpolation of bias ratios with multiple interpolation options 
 * build geo-referenced files of point data and interpolated rasters
@@ -20,7 +20,7 @@ Documentation
 Installation
 ------------
 
-Currently we recommend using the provided conda environment file to install dependencies in a virtual environment. Download the `environment.yml <https://raw.githubusercontent.com/WSWUP/gridwxcomp/master/gridwxcomp/env/environment.yml>`_ file and then install and activate it. If you don't have conda `get it here <https://conda.io/projects/conda/en/latest/user-guide/install/index.html>`_. To install dependencies in a virtual environment run 
+Currently we recommend using the provided conda environment file to install ``gridwxcomp`` and its dependencies in a virtual environment. Download the `environment.yml <https://raw.githubusercontent.com/WSWUP/gridwxcomp/master/gridwxcomp/env/environment.yml>`_ file and then install and activate it. If you don't have conda `get it here <https://conda.io/projects/conda/en/latest/user-guide/install/index.html>`_. To install dependencies in a virtual environment run 
 
 .. code-block:: bash
 
@@ -32,7 +32,7 @@ To activate the environment before using ``gridwxcomp`` run
 
     $ conda activate gridwxcomp
 
-Next install using `pip <https://pip.pypa.io/en/stable/installing/>`_,
+Optionally, install using `pip <https://pip.pypa.io/en/stable/installing/>`_,
 
 .. code-block:: bash
 
@@ -49,14 +49,6 @@ Alternatively, or if there are installation issues, you can manually install. Fi
     $ pip install -e .
 
 If you downloaded the source distribution then run ``pip install -e .`` in the root directory where the setup.py file is located. This installation method is ideal if you want to be able to modify the source code.
-
-Optionally, ``gridwxcomp`` can use the `Google Earth Engine API <https://developers.google.com/earth-engine/>`_ to download gridMET data, although it also allows for download without it. If you want to use Google Earth Engine you will need a Google account and before the first use on a machine you will need to verify your account. From the command line type:
-
-.. code-block:: bash
-
-    $ python -c "import ee; ee.Initialize()"
-
-and follow the instructions. Note, the method below uses `OpeNDAP <https://www.opendap.org>`_ to download gridMET time series data and is typically faster than the provided Earth Engine download routine.
 
 
 Quick start from command line

@@ -18,7 +18,7 @@ import sys
 sys.path.insert(0, os.path.abspath('../../'))
 
 # for ReadTheDocs to prevent C-based module import issues
-autodoc_mock_imports = ['bokeh', 'click', 'ee', 'numpy', 'pandas', 'refet', 
+autodoc_mock_imports = ['bokeh', 'click', 'numpy', 'pandas', 'refet', 
                        'fiona', 'gdal', 'rasterio', 'rasterstats', 'shapely', 
                        'osgeo', 'scipy', 'xarray', 'netCDF4']
 
@@ -199,7 +199,7 @@ man_pages = [
 #  dir menu entry, description, category)
 texinfo_documents = [
     (master_doc, 'gridwxcomp', 'gridwxcomp Documentation',
-     author, 'gridwxcomp', 'One line description of project.',
+     author, 'gridwxcomp', 'Compare climate station to gridded data',
      'Miscellaneous'),
 ]
 
