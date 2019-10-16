@@ -1,0 +1,4 @@
+include README.rst
+include gridwxcomp/example_data/*.txt
+include gridwxcomp/example_data/*.xlsx
+include gridwxcomp/env/*.yml
