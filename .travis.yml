@@ -1,0 +1,15 @@
+language: python
+
+python:
+  - "3.7"
+
+install:
+  - conda env create -f gridwxcomp/env/environment.yml
+  - conda activate gridwxcomp
+  - conda install pytest
+
+script:
+  - pytest -v
+
+after_success:
+  - codecov

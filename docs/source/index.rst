@@ -1,6 +1,19 @@
-===============================================
 gridwxcomp - Grid Weather Station Comparison
 ===============================================
+
+|Downloads per month| |PyPI version| 
+
+
+.. |Downloads per month| image:: https://img.shields.io/pypi/dm/gridwxcomp.svg
+   :target: https://pypi.python.org/pypi/gridwxcomp/
+
+.. |PyPI version| image:: https://img.shields.io/pypi/v/gridwxcomp.svg
+   :target: https://pypi.python.org/pypi/gridwxcomp/
+
+.. once released this may show all downloads after.. |Github all releases| image:: https://img.shields.io/github/downloads/WSWUP/gridwxcomp/StrapDown.js/total.svg
+   :target: https://GitHub.com/WSWUP/gridwxcomp/StrapDown.js/releases/)
+
+-----------
 
 A package for comparing climate station time series data to `gridMET <http://www.climatologylab.org/gridmet.html>`_ (or other gridded) data. Major functionality includes tools to: 
 

@@ -35,13 +35,14 @@ classifiers = [
 
 setup(
     name='gridwxcomp',
+    version=version,
     description='Compare meterological station data to gridded data',
     long_description=readme,
     author='John Volk and Chris Pearson',
     author_email='jmvolk@unr.edu',
     license='Apache',
-    version=version,
-    url='https://github.com/DRI-WSWUP/gridwxcomp',
+    url='https://github.com/WSWUP/gridwxcomp',
+    download_url='https://github.com/WSWUP/gridwxcomp/archive/v0.1.0.tar.gz',
     platforms=['Windows','Linux','Mac OS X'],
     classifiers=classifiers,
     packages=['gridwxcomp', 'gridwxcomp.scripts'],
