@@ -1,26 +1,10 @@
-gridwxcomp
-==========
-
-A package for comparing climate station time series data to `gridMET <http://www.climatologylab.org/gridmet.html>`_ (or other gridded) data. Major functionality includes tools to: 
-
-* pair station locations with overlapping grid cells 
-* download gridMET data from OpenDap server 
-* calculate mean bias ratios between station and gridded data and other statistics 
-* spatial interpolation of bias ratios with multiple interpolation options 
-* build geo-referenced files of point data and interpolated rasters
-* extract zonal means for a subset of gridcells  
-* graphics, e.g. time series comparisons and interpolated residuals at stations 
-
-Bias ratios calculated by ``gridwxcomp`` can be used to correct bias of grid to station data based on the properties of the stations. For example, monthly humidity ratios between station and grid for stations within agricultural settings can be used to estimate grid bias relative to agricultural locations. ``gridwxcomp`` includes an intuitive command line interface and a Python API.
-
-Documentation
--------------
-`Online documentation <https://wswup.github.io/gridwxcomp/>`_
+Getting Started
+===============
 
 Installation
 ------------
 
-Currently we recommend using the provided conda environment file to install dependencies in a virtual environment. Download the `environment.yml <https://raw.githubusercontent.com/WSWUP/gridwxcomp/master/gridwxcomp/env/environment.yml>`_ file and then install and activate it. If you don't have conda `get it here <https://conda.io/projects/conda/en/latest/user-guide/install/index.html>`_. To install dependencies in a virtual environment run 
+Currently we recommend using the provided conda environment file to install ``gridwxcomp`` and its dependencies in a virtual environment. Download the `environment.yml <https://raw.githubusercontent.com/WSWUP/gridwxcomp/master/gridwxcomp/env/environment.yml>`_ file and then install and activate it. If you don't have conda `get it here <https://conda.io/projects/conda/en/latest/user-guide/install/index.html>`_. To install dependencies in a virtual environment run 
 
 .. code-block:: bash
 
@@ -32,7 +16,7 @@ To activate the environment before using ``gridwxcomp`` run
 
     $ conda activate gridwxcomp
 
-Next install using `pip <https://pip.pypa.io/en/stable/installing/>`_,
+Optionally, install using `pip <https://pip.pypa.io/en/stable/installing/>`_,
 
 .. code-block:: bash
 
@@ -50,11 +34,10 @@ Alternatively, or if there are installation issues, you can manually install. Fi
 
 If you downloaded the source distribution then run ``pip install -e .`` in the root directory where the setup.py file is located. This installation method is ideal if you want to be able to modify the source code.
 
-
 Quick start from command line
 -----------------------------
 
-This example uses data provided with ``gridwxcomp`` including climate variable time series data for four climate stations, it uses the gridMET as the gridded dataset however any uniform gridded data product can be used with ``gridwxcomp`` if extra information including a vector grid file is provided. 
+This example uses data provided with ``gridwxcomp`` including climate variable time series data for four climate stations, it uses the gridMET as the gridded dataset however any uniform gridded dataset can be used with ``gridwxcomp`` if extra information including a vector grid file is provided. 
 
 After installation you can find the location of the data needed for the example by typing the following at the command line,
 
@@ -64,7 +47,7 @@ After installation you can find the location of the data needed for the example 
 
 Once complete, this example will calculate bias ratios between station and gridMET ETr (reference evapotranspiration), spatially interpolate GeoTIFF rasters of bias ratios at 400 meter resolution, and calculate zonal statistics of mean bias ratios for each gridMET cell in the region of the stations, similar to what is shown in the figure below.
 
-.. image:: https://raw.githubusercontent.com/WSWUP/gridwxcomp/master/docs/source/_static/test_case.png
+.. image:: _static/test_case.png
    :align: center
 
 The same procedure can be done for climate variables other than ETr, e.g. observed evapotranspiration, temperature, precipitation, wind speed, short wave radiation, etc.
