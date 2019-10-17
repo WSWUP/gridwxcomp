@@ -1,6 +1,9 @@
-===============================================
 gridwxcomp - Grid Weather Station Comparison
 ===============================================
+
+|Build| |Coverage| |Downloads per month| |PyPI version| 
+
+-----------
 
 A package for comparing climate station time series data to `gridMET <http://www.climatologylab.org/gridmet.html>`_ (or other gridded) data. Major functionality includes tools to: 
 
@@ -23,4 +26,16 @@ Bias ratios calculated by ``gridwxcomp`` can be used to correct bias of grid to 
    api
    changelog
 
+
+.. |Coverage| image:: https://coveralls.io/repos/github/WSWUP/gridwxcomp/badge.svg?branch=master
+   :target: https://coveralls.io/github/WSWUP/gridwxcomp?branch=master
+
+.. |Build| image:: https://travis-ci.org/WSWUP/gridwxcomp.svg?branch=master
+   :target: https://travis-ci.org/WSWUP/gridwxcomp
+
+.. |Downloads per month| image:: https://img.shields.io/pypi/dm/gridwxcomp.svg
+   :target: https://pypi.python.org/pypi/gridwxcomp/
+
+.. |PyPI version| image:: https://img.shields.io/pypi/v/gridwxcomp.svg
+   :target: https://pypi.python.org/pypi/gridwxcomp/
 
