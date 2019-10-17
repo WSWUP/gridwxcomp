@@ -12,7 +12,7 @@ before_install:
 
 install:
   - conda env create -f gridwxcomp/env/environment.yml
-  - conda activate gridwxcomp
+  - source activate gridwxcomp
   - conda install pytest
 
 script:

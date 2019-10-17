@@ -12,7 +12,6 @@ import pandas as pd
 
 from gridwxcomp.util import get_gridmet_meta_csv, parse_yr_filter
 from gridwxcomp.prep_input import main, prep_input, _read_station_list
-from gridwxcomp.download_gridmet_ee import download_gridmet_ee
 from gridwxcomp.download_gridmet_opendap import download_gridmet_opendap
 from gridwxcomp.calc_bias_ratios import calc_bias_ratios
 
