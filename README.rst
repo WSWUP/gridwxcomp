@@ -1,23 +1,7 @@
 gridwxcomp
 ==========
 
-|Build| |Documentation Status| |Downloads per month| |PyPI version|
-
-
-.. |Build| image:: https://travis-ci.org/WSWUP/gridwxcomp.svg?branch=master
-   :target: https://travis-ci.org/WSWUP/gridwxcomp
-
-.. |Downloads per month| image:: https://img.shields.io/pypi/dm/gridwxcomp.svg
-   :target: https://pypi.python.org/pypi/gridwxcomp/
-
-.. |Documentation Status| image:: https://img.shields.io/website-up-down-green-red/http/shields.io.svg
-   :target: https://wswup.github.io/gridwxcomp/
-
-.. |PyPI version| image:: https://img.shields.io/pypi/v/gridwxcomp.svg
-   :target: https://pypi.python.org/pypi/gridwxcomp/
-
-.. once released this may show all downloads after.. |Github all releases| image:: https://img.shields.io/github/downloads/WSWUP/gridwxcomp/StrapDown.js/total.svg
-   :target: https://GitHub.com/WSWUP/gridwxcomp/StrapDown.js/releases/)
+|Build| |Coverage| |Documentation Status| |Downloads per month| |PyPI version|
 
 -----------
 
@@ -141,3 +125,20 @@ To get abbreviated descriptions for any of the above ``gridwxcomp`` commands use
 .. code-block:: bash
 
     $ gridwxcomp spatial --help
+
+
+
+.. |Coverage| image:: https://coveralls.io/repos/github/WSWUP/gridwxcomp/badge.svg?branch=master
+   :target: https://coveralls.io/github/WSWUP/gridwxcomp?branch=master
+
+.. |Build| image:: https://travis-ci.org/WSWUP/gridwxcomp.svg?branch=master
+   :target: https://travis-ci.org/WSWUP/gridwxcomp
+
+.. |Downloads per month| image:: https://img.shields.io/pypi/dm/gridwxcomp.svg
+   :target: https://pypi.python.org/pypi/gridwxcomp/
+
+.. |Documentation Status| image:: https://img.shields.io/website-up-down-green-red/http/shields.io.svg
+   :target: https://wswup.github.io/gridwxcomp/
+
+.. |PyPI version| image:: https://img.shields.io/pypi/v/gridwxcomp.svg
+   :target: https://pypi.python.org/pypi/gridwxcomp/
