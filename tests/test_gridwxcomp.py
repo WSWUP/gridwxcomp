@@ -218,6 +218,7 @@ class TestDownloadGridmetOpenDap(object):
             df.loc[0,'GRID_FILE_PATH'].split(os.sep)).isdisjoint(
                 ['tests','od_gridmet_data','gridmet_historical_509011.csv'])
 
+    @pytest.mark.slow
     def test_download_gridmet_od_multiple_years(self, data):
         download_dir = data['prep_input_outpath'].parent/'od_gridmet_data'
         download_gridmet_opendap(
@@ -247,6 +248,7 @@ class TestDownloadGridmetOpenDap(object):
             df.loc[0,'GRID_FILE_PATH'].split(os.sep)).isdisjoint(
                 ['tests','od_gridmet_data','gridmet_historical_509011.csv'])
 
+    @pytest.mark.slow
     def test_download_gridmet_od_update_years(self, data):
         """
         Open one gridmet time series file after downloading and change

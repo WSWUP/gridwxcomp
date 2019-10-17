@@ -18,7 +18,7 @@ install:
   - conda install coveralls --yes
 
 script:
-  - pytest -v --cov=gridwxcomp/
+  - python -m pytest -v --cov=gridwxcomp
 
 after_success:
   - coveralls
