@@ -1,7 +1,11 @@
 gridwxcomp
 ==========
 
-|Documentation Status| |Downloads per month| |PyPI version|
+|Build| |Documentation Status| |Downloads per month| |PyPI version|
+
+
+.. |Build| image:: https://travis-ci.org/WSWUP/gridwxcomp.svg?branch=master
+   :target: https://travis-ci.org/WSWUP/gridwxcomp
 
 .. |Downloads per month| image:: https://img.shields.io/pypi/dm/gridwxcomp.svg
    :target: https://pypi.python.org/pypi/gridwxcomp/

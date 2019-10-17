@@ -14,9 +14,11 @@ install:
   - conda env create -f gridwxcomp/env/environment.yml
   - source activate gridwxcomp
   - conda install pytest --yes
+  - conda install pytest-cov --yes
+  - conda install coveralls --yes
 
 script:
-  - pytest -v
+  - pytest -v --cov=gridwxcomp/
 
 after_success:
-  - codecov
+  - coveralls
