@@ -391,13 +391,18 @@ def calc_bias_ratios(input_path, out_dir, grid_id_name='GRIDMET_ID',
         try:
             # if time series not from PyWeatherQaQc, CSV with 'date' column
             if not row.STATION_FILE_PATH.endswith('.xlsx'):
-                station_df = pd.read_csv(row.STATION_FILE_PATH,parse_dates=True,
-                                index_col=station_date_name)
+                station_df = pd.read_csv(
+                    row.STATION_FILE_PATH, parse_dates=True,
+                    index_col=station_date_name
+                )
                 station_df.index = station_df.index.date # for joining
             # if excel file, assume PyWeatherQaQc format
             else:
-                station_df = pd.read_excel(row.STATION_FILE_PATH,
-                                sheet_name='Corrected Data')
+                station_df = pd.read_excel(
+                    row.STATION_FILE_PATH,
+                    sheet_name='Corrected Data', parse_dates=True,
+                    index_col=0
+                )
         except:
             print('Time series file for station: ', row.STATION_ID, 
                   'was not found, skipping.')
@@ -408,15 +413,20 @@ def calc_bias_ratios(input_path, out_dir, grid_id_name='GRIDMET_ID',
                 format(v=station_var, p=row.STATION_FILE_PATH)
             raise KeyError(err_msg)
         print(
-             '\nCalculating {v} bias ratios for station:'.format(v=grid_var),
-             row.STATION_ID
-             )
+            '\nCalculating {v} bias ratios for station:'.format(v=grid_var),
+            row.STATION_ID
+        )
         grid_df = pd.read_csv(row.GRID_FILE_PATH, parse_dates=True, 
                                  index_col=grid_date_name)
         # merge both datasets drop missing days
-        result = pd.concat([station_df[station_var], 
-                            grid_df[grid_var]], axis=1, 
-                           join_axes=[station_df.index])
+        result = pd.concat(
+            [
+                station_df[station_var], 
+                grid_df[grid_var]
+            ], 
+            axis=1 
+        )
+        result = result.reindex(grid_df.index)
         result.dropna(inplace=True)
         # make datetime index
         result.index = pd.to_datetime(result.index)
@@ -445,7 +455,6 @@ def calc_bias_ratios(input_path, out_dir, grid_id_name='GRIDMET_ID',
                     (station_var)]['sum'].sum() / result.loc[
                 result.index.get_level_values('month').isin(ann_months),\
                         (grid_var)]['sum'].sum()
-        
         ratio = pd.DataFrame(columns = ['ratio', 'count'])
         # ratio of monthly sums for each year
         ratio['ratio'] = (result[station_var,'sum'])/(result[grid_var,'sum'])

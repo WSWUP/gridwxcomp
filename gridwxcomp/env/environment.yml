@@ -1,7 +1,6 @@
 name: gridwxcomp
 channels:
   - conda-forge
-  - defaults
 dependencies:
   - bokeh>=1
   - click>=7
