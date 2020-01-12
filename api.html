@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>API Reference &mdash; gridwxcomp 0.1.0 documentation</title>
+  <title>API Reference &mdash; gridwxcomp 0.1.1 documentation</title>
   
 
   
@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                0.1.0
+                0.1.1
               </div>
             
           
@@ -582,7 +582,7 @@ not specified, gridMET time series CSVs are saved to a new directory named
 <code class="docutils literal notranslate"><span class="pre">SUMMARY_COMP_CSV</span></code> file created by <code class="docutils literal notranslate"><span class="pre">gridwxcomp</span> <span class="pre">calc-bias-ratios</span></code>.
 Interpolation algorithms include those provided by <a class="reference external" href="https://www.gdal.org/gdal_grid.html">gdal_grid</a>:
 ‘invdist’ (default), ‘invdistnn’, ‘linear’, ‘average’, and ‘nearest’
-and <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.Rbf.html#scipy.interpolate.Rbf" title="(in SciPy v1.3.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">scipy.interpolate.Rbf</span></code></a>: ‘multiquadric’, ‘inverse’, ‘gaussian’,
+and <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.Rbf.html#scipy.interpolate.Rbf" title="(in SciPy v1.4.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">scipy.interpolate.Rbf</span></code></a>: ‘multiquadric’, ‘inverse’, ‘gaussian’,
 ‘linear_rbf’, ‘cubic’, ‘quintic’, and ‘thin_plate’. Parameters for gdal
 algorithms are set using <code class="docutils literal notranslate"><span class="pre">--params</span></code> whereas the <code class="docutils literal notranslate"><span class="pre">--smooth</span></code> parameter
 (default 0) is used by scipy radial basis functions. Default parameters
@@ -859,7 +859,7 @@ already exists on disk.</p></li>
 </dd>
 </dl>
 <p class="rubric">Example</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gridwxcomp</span> <span class="k">import</span> <span class="n">prep_input</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gridwxcomp</span> <span class="kn">import</span> <span class="n">prep_input</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">prep_input</span><span class="p">(</span><span class="s1">&#39;gridwxcomp/example_data/Station_Data.txt&#39;</span><span class="p">,</span><span class="s1">&#39;outfile.csv&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -955,7 +955,7 @@ purposes you can re-download data for all or select years with the
 </pre></div>
 </div>
 <p>To download the same gridMET data within Python</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gridwxcomp</span> <span class="k">import</span> <span class="n">download_gridmet_opendap</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gridwxcomp</span> <span class="kn">import</span> <span class="n">download_gridmet_opendap</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">download_gridmet_opendap</span><span class="p">(</span><span class="s1">&#39;merged_input.csv&#39;</span><span class="p">,</span>
 <span class="go">        &#39;gridmet_data&#39;,</span>
 <span class="go">        &#39;2016-2018&#39;</span>
@@ -1055,7 +1055,7 @@ statistics in addition to the mean monthly ratios.</p></li>
 </dl>
 <p class="rubric">Examples</p>
 <p>To use within Python for observed ET,</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gridwxcomp</span> <span class="k">import</span> <span class="n">calc_bias_ratios</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gridwxcomp</span> <span class="kn">import</span> <span class="n">calc_bias_ratios</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">input_path</span> <span class="o">=</span> <span class="s1">&#39;merged_input.csv&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">out_dir</span> <span class="o">=</span> <span class="s1">&#39;monthly_ratios&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">grid_variable</span> <span class="o">=</span> <span class="s1">&#39;eto_mm&#39;</span>
@@ -1065,7 +1065,7 @@ statistics in addition to the mean monthly ratios.</p></li>
 <p>To use custom station data, give the keyword argument <code class="docutils literal notranslate"><span class="pre">station_var</span></code>,
 e.g. if we had climate daily time series data for precipitation
 with the column named “p” then,</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">calc_bias_ratios</span><span class="p">(</span><span class="n">input_path</span><span class="p">,</span> <span class="n">out_dir</span><span class="p">,</span> <span class="n">grid_var</span><span class="o">=</span><span class="s1">&#39;prcp_mm&#39;</span><span class="p">,</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">calc_bias_ratios</span><span class="p">(</span><span class="n">input_path</span><span class="p">,</span> <span class="n">out_dir</span><span class="p">,</span> <span class="n">grid_var</span><span class="o">=</span><span class="s1">&#39;prcp_mm&#39;</span><span class="p">,</span>
 <span class="gp">&gt;&gt;&gt; </span>    <span class="n">station_var</span><span class="o">=</span><span class="s1">&#39;p&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -1146,7 +1146,7 @@ monthly bias ratios, lat, long, and other data. Shapefile
 <p class="rubric">Example</p>
 <p>Create shapefile containing point data for all climate stations
 in input summary file created by <a class="reference internal" href="#module-gridwxcomp.calc_bias_ratios" title="gridwxcomp.calc_bias_ratios"><code class="xref py py-mod docutils literal notranslate"><span class="pre">gridwxcomp.calc_bias_ratios</span></code></a></p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gridwxcomp</span> <span class="k">import</span> <span class="n">spatial</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gridwxcomp</span> <span class="kn">import</span> <span class="n">spatial</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># path to comprehensive summary CSV</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">summary_file</span> <span class="o">=</span> <span class="s1">&#39;monthly_ratios/etr_mm_summary_comp_all_yrs.csv&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">spatial</span><span class="o">.</span><span class="n">make_points_file</span><span class="p">(</span><span class="n">summary_file</span><span class="p">)</span>
@@ -1255,7 +1255,7 @@ if using a grid that is not gridMET.</p></li>
 <p>Build a fishnet uniform grid that matches gridMET cells around
 climate stations found in <code class="docutils literal notranslate"><span class="pre">in_path</span></code> summary CSV file with a
 25 cell buffer.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gridwxcomp</span> <span class="k">import</span> <span class="n">spatial</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gridwxcomp</span> <span class="kn">import</span> <span class="n">spatial</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># assign input paths</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">summary_file</span> <span class="o">=</span> <span class="s1">&#39;monthly_ratios/etr_mm_summary_comp_all_yrs.csv&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># make fishnet of gridMET cells for interpolation</span>
@@ -1277,14 +1277,14 @@ climate stations found in <code class="docutils literal notranslate"><span class
 </div>
 <p>To use a smaller buffer to the extent of the grid assign the
 <code class="docutils literal notranslate"><span class="pre">buffer</span></code> keyword argument</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">spatial</span><span class="o">.</span><span class="n">make_grid</span><span class="p">(</span><span class="n">summary_file</span><span class="p">,</span> <span class="n">buffer</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">spatial</span><span class="o">.</span><span class="n">make_grid</span><span class="p">(</span><span class="n">summary_file</span><span class="p">,</span> <span class="n">buffer</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>If the grid file already exists the default action is to not
 overwrite. To overwrite an existing grid if, for example, you
 are working with a new set of climate stations as input, then
 set the <code class="docutils literal notranslate"><span class="pre">overwrite</span></code> keyword argument to True.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">spatial</span><span class="o">.</span><span class="n">make_grid</span><span class="p">(</span><span class="n">summary_file</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">buffer</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">spatial</span><span class="o">.</span><span class="n">make_grid</span><span class="p">(</span><span class="n">summary_file</span><span class="p">,</span> <span class="n">overwrite</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">buffer</span><span class="o">=</span><span class="mi">5</span><span class="p">)</span>
 </pre></div>
 </div>
 <dl class="field-list simple">
@@ -1329,7 +1329,7 @@ resolution or 400 m.</p></li>
 <li><p><strong>function</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – <p>default ‘invdist’. Interpolation method, gdal
 methods include: ‘invdist’, ‘indistnn’, ‘linear’, ‘average’,
 and ‘nearest’ see <a class="reference external" href="https://www.gdal.org/gdal_grid.html">gdal_grid</a>.
-Radial basis functions, see <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.Rbf.html#scipy.interpolate.Rbf" title="(in SciPy v1.3.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">scipy.interpolate.Rbf</span></code></a>,
+Radial basis functions, see <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.Rbf.html#scipy.interpolate.Rbf" title="(in SciPy v1.4.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">scipy.interpolate.Rbf</span></code></a>,
 include: ‘multiquadric’, ‘inverse’, ‘gaussian’, ‘linear_rbf’,
 ‘cubic’, ‘quintic’, and ‘thin_plate’.</p>
 </p></li>
@@ -1377,7 +1377,7 @@ encompasses station locations in the input file plus an additional
 optional buffer of outer gridMET cells. Additionally, point residuals
 of bias ratios are added to CSV and newly created point shapefiles,
 zonal (gridMET cell) means are also extracted and stored in a CSV.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gridwxcomp</span> <span class="k">import</span> <span class="n">spatial</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gridwxcomp</span> <span class="kn">import</span> <span class="n">spatial</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">summary_file</span> <span class="o">=</span> <span class="s1">&#39;monthly_ratios/etr_mm_summary_comp_all_yrs.csv&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">buffer</span> <span class="o">=</span> <span class="mi">10</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">layer</span> <span class="o">=</span> <span class="s1">&#39;annual_mean&#39;</span>
@@ -1461,7 +1461,7 @@ in the input summary CSV to be interpolations. For example if
 we wanted to interpolate the coefficient of variation of the growing
 season bias ratio “April_to_oct_cv”, then we could
 estimate the surface of this variable straightforwardly,</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">layer</span> <span class="o">=</span> <span class="s1">&#39;April_to_oct_cv&#39;</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">layer</span> <span class="o">=</span> <span class="s1">&#39;April_to_oct_cv&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">func</span> <span class="o">=</span> <span class="s1">&#39;invdistnn&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># we can also &#39;upscale&#39; the interpolation resolution</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">interpolate</span><span class="p">(</span><span class="n">summary_file</span><span class="p">,</span> <span class="n">layer</span><span class="o">=</span><span class="n">layer</span><span class="p">,</span> <span class="n">scale_factor</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
@@ -1555,7 +1555,7 @@ be used for zonal stats. First created by <a class="reference internal" href="#g
 command line usage. However if the grid shapefile and spatial
 interpolated raster(s) have already been created without zonal
 stats then,</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gridwxcomp</span> <span class="k">import</span> <span class="n">spatial</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gridwxcomp</span> <span class="kn">import</span> <span class="n">spatial</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># assign input paths</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">summary_file</span> <span class="o">=</span> <span class="s1">&#39;monthly_ratios/etr_mm_summary_comp_[years].csv&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">raster_file</span> <span class="o">=</span> <span class="s1">&#39;monthly_ratios/spatial/etr_mm_invdist_400m/Jan_mean.tiff&#39;</span>
@@ -1635,7 +1635,7 @@ the <code class="docutils literal notranslate"><span class="pre">[-f,</span> <sp
 </pre></div>
 </div>
 <p>or within Python,</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gridwxcomp.plot</span> <span class="k">import</span> <span class="n">daily_comparison</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gridwxcomp.plot</span> <span class="kn">import</span> <span class="n">daily_comparison</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">daily_comparison</span><span class="p">(</span><span class="s1">&#39;merged_input.csv&#39;</span><span class="p">,</span> <span class="s1">&#39;comp_plots_2016&#39;</span><span class="p">,</span> <span class="s1">&#39;2016&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -1688,7 +1688,7 @@ the <code class="docutils literal notranslate"><span class="pre">[-f,</span> <sp
 </pre></div>
 </div>
 <p>or within Python,</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gridwxcomp.plot</span> <span class="k">import</span> <span class="n">monthly_comparison</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gridwxcomp.plot</span> <span class="kn">import</span> <span class="n">monthly_comparison</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">monthly_comparison</span><span class="p">(</span><span class="s1">&#39;merged_input.csv&#39;</span><span class="p">,</span> <span class="s1">&#39;monthly_plots&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
@@ -1738,7 +1738,7 @@ the max year range used for station data, e.g. ‘years: 1995-2005’</p></li>
 reference evapotranspiration (ETr) for the selection of stations we
 used to calculate bias ratios. The summary CSV file containing the
 ratios should be first created using <a class="reference internal" href="#module-gridwxcomp.calc_bias_ratios" title="gridwxcomp.calc_bias_ratios"><code class="xref py py-func docutils literal notranslate"><span class="pre">gridwxcomp.calc_bias_ratios</span></code></a>.</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gridwxcomp.plot</span> <span class="k">import</span> <span class="n">station_bar_plot</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gridwxcomp.plot</span> <span class="kn">import</span> <span class="n">station_bar_plot</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># path to summary CSV with station data</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">in_file</span> <span class="o">=</span> <span class="s1">&#39;monthly_ratios/etr_mm_summary_all_yrs.csv&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">layer</span> <span class="o">=</span> <span class="s1">&#39;growseason_mean&#39;</span>
@@ -1929,7 +1929,7 @@ growing season bias ratios between station and gridMET reference
 evapotranspiration (etr_mm). Below is a routine to conduct a
 basic sensitivity analysis of the power and smooth parameters of the
 inverse distance to a power interpolation method,</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gridwxcomp</span> <span class="k">import</span> <span class="n">InterpGdal</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gridwxcomp</span> <span class="kn">import</span> <span class="n">InterpGdal</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="kn">import</span> <span class="nn">os</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="c1"># create instance variable from summary csv</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">summary_file</span> <span class="o">=</span> <span class="s1">&#39;PATH/TO/etr_mm_summary_comp.csv&#39;</span>
@@ -2034,7 +2034,7 @@ the boundaries of the rasters are defined by the centroid locations
 of the <em>outer</em> station locations in the input summary CSV plus a 25
 gridMET cell buffer, the pixel size will be 400m (scale_factor=0.1).            We also limit the interpolation to two layers, growing season and
 annual mean bias ratios,</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gridwxcomp</span> <span class="k">import</span> <span class="n">InterpGdal</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">gridwxcomp</span> <span class="kn">import</span> <span class="n">InterpGdal</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">summary_file</span> <span class="o">=</span> <span class="s1">&#39;PATH/TO/[var]_summary_comp.csv&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">out_dir</span> <span class="o">=</span> <span class="s1">&#39;default_params&#39;</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">layers</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;growseason_mean&#39;</span><span class="p">,</span> <span class="s1">&#39;annual_mean&#39;</span><span class="p">]</span>
@@ -2104,7 +2104,7 @@ example,</p>
 <p>There are several <a class="reference internal" href="#gridwxcomp.InterpGdal" title="gridwxcomp.InterpGdal"><code class="xref py py-class docutils literal notranslate"><span class="pre">InterpGdal</span></code></a> instance attributes that
 may be useful, for example to see the parameters that were used
 for the last call to <a class="reference internal" href="#gridwxcomp.InterpGdal.gdal_grid" title="gridwxcomp.InterpGdal.gdal_grid"><code class="xref py py-meth docutils literal notranslate"><span class="pre">InterpGdal.gdal_grid</span></code></a></p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">test</span><span class="o">.</span><span class="n">params</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">test</span><span class="o">.</span><span class="n">params</span>
 <span class="go">{&#39;power&#39;: 4,</span>
 <span class="go"> &#39;smoothing&#39;: 0.2,</span>
 <span class="go"> &#39;radius1&#39;: 0,</span>
@@ -2119,7 +2119,7 @@ for the last call to <a class="reference internal" href="#gridwxcomp.InterpGdal.
 have been created by the instance (all), the “interped_rasters”
 instance attribute is a list of all <a class="reference external" href="https://docs.python.org/3/library/pathlib.html#pathlib.Path" title="(in Python v3.8)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pathlib.Path</span></code></a> objects
 of absolute paths of raster files. To get them as strings,</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">test</span><span class="o">.</span><span class="n">interped_rasters</span><span class="p">))</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">list</span><span class="p">(</span><span class="nb">map</span><span class="p">(</span><span class="nb">str</span><span class="p">,</span> <span class="n">test</span><span class="o">.</span><span class="n">interped_rasters</span><span class="p">))</span>
 <span class="go">[&#39;PATH/TO/growseason_mean.tiff&#39;,</span>
 <span class="go"> &#39;PATH/TO/annual_mean.tiff&#39;]</span>
 </pre></div>
@@ -2127,7 +2127,7 @@ of absolute paths of raster files. To get them as strings,</p>
 <p>Similary, the raster extent that was used and will be used again for
 any subsequent calls of <a class="reference internal" href="#gridwxcomp.InterpGdal.gdal_grid" title="gridwxcomp.InterpGdal.gdal_grid"><code class="xref py py-meth docutils literal notranslate"><span class="pre">InterpGdal.gdal_grid</span></code></a> can be
 retrieved by</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">test</span><span class="o">.</span><span class="n">grid_bounds</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">test</span><span class="o">.</span><span class="n">grid_bounds</span>
 <span class="go">(-111.74583329966664,</span>
 <span class="go"> -108.74583330033335,</span>
 <span class="go"> 38.21250000003333,</span>
@@ -2169,7 +2169,7 @@ DataFrame.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>dt_df</strong> (<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v0.25.1)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a>) – datetime-indexed DataFrame</p></li>
+<li><p><strong>dt_df</strong> (<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v0.25.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a>) – datetime-indexed DataFrame</p></li>
 <li><p><strong>years</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – years to select, e.g. 2015 or 2000-2010</p></li>
 <li><p><strong>label</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – identifier to print warning message if <code class="docutils literal notranslate"><span class="pre">years</span></code>
 filter partially overlaps with actual date index</p></li>
@@ -2184,11 +2184,11 @@ second element is string of year range, e.g. ‘2001_2011’</p>
 </p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>ret (tuple of (<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v0.25.1)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a>, str))</p>
+<dd class="field-odd"><p>ret (tuple of (<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v0.25.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a>, str))</p>
 </dd>
 </dl>
 <p class="rubric">Example</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="s1">&#39;2000&#39;</span><span class="p">,</span> <span class="s1">&#39;2015&#39;</span><span class="p">))</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">index</span><span class="o">=</span><span class="n">pd</span><span class="o">.</span><span class="n">date_range</span><span class="p">(</span><span class="s1">&#39;2000&#39;</span><span class="p">,</span> <span class="s1">&#39;2015&#39;</span><span class="p">))</span>
 <span class="gp">&gt;&gt;&gt; </span><span class="n">df</span><span class="p">,</span> <span class="n">yr_str</span> <span class="o">=</span> <span class="n">parse_yr_filter</span><span class="p">(</span><span class="n">df</span><span class="p">,</span> <span class="s1">&#39;1998-2002&#39;</span><span class="p">,</span> <span class="s1">&#39;station1&#39;</span><span class="p">)</span>
 <span class="go">WARNING: data for station1 starts in 2000 but you gave 1998</span>
 <span class="go">Years used will only include 2000 to 2002</span>
@@ -2196,7 +2196,7 @@ second element is string of year range, e.g. ‘2001_2011’</p>
 </div>
 <p>Now df will only contain indices with dates between 2000 and
 2002 and</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">yr_str</span>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">yr_str</span>
 <span class="go">&#39;1998_2002&#39;</span>
 </pre></div>
 </div>

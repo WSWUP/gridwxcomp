@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>gridwxcomp.interpgdal &mdash; gridwxcomp 0.1.0 documentation</title>
+  <title>gridwxcomp.interpgdal &mdash; gridwxcomp 0.1.1 documentation</title>
   
 
   
@@ -64,7 +64,7 @@
             
             
               <div class="version">
-                0.1.0
+                0.1.1
               </div>
             
           
@@ -205,20 +205,20 @@
 <span class="kn">import</span> <span class="nn">os</span>
 <span class="kn">import</span> <span class="nn">subprocess</span>
 <span class="kn">import</span> <span class="nn">xml.etree.cElementTree</span> <span class="k">as</span> <span class="nn">ET</span>
-<span class="kn">from</span> <span class="nn">copy</span> <span class="k">import</span> <span class="n">copy</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="k">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">xml.dom</span> <span class="k">import</span> <span class="n">minidom</span>
+<span class="kn">from</span> <span class="nn">copy</span> <span class="kn">import</span> <span class="n">copy</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">xml.dom</span> <span class="kn">import</span> <span class="n">minidom</span>
 
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 
 <span class="c1"># allows for CL script usage if gridwxcomp not installed</span>
 <span class="k">try</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">.spatial</span> <span class="k">import</span> <span class="n">get_subgrid_bounds</span><span class="p">,</span> <span class="n">zonal_stats</span><span class="p">,</span> <span class="n">calc_pt_error</span>
-    <span class="kn">from</span> <span class="nn">.plot</span> <span class="k">import</span> <span class="n">station_bar_plot</span>
+    <span class="kn">from</span> <span class="nn">.spatial</span> <span class="kn">import</span> <span class="n">get_subgrid_bounds</span><span class="p">,</span> <span class="n">zonal_stats</span><span class="p">,</span> <span class="n">calc_pt_error</span>
+    <span class="kn">from</span> <span class="nn">.plot</span> <span class="kn">import</span> <span class="n">station_bar_plot</span>
 <span class="k">except</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">spatial</span> <span class="k">import</span> <span class="n">get_subgrid_bounds</span><span class="p">,</span> <span class="n">zonal_stats</span><span class="p">,</span> <span class="n">calc_pt_error</span>
-    <span class="kn">from</span> <span class="nn">plot</span> <span class="k">import</span> <span class="n">station_bar_plot</span>
+    <span class="kn">from</span> <span class="nn">spatial</span> <span class="kn">import</span> <span class="n">get_subgrid_bounds</span><span class="p">,</span> <span class="n">zonal_stats</span><span class="p">,</span> <span class="n">calc_pt_error</span>
+    <span class="kn">from</span> <span class="nn">plot</span> <span class="kn">import</span> <span class="n">station_bar_plot</span>
 
 <div class="viewcode-block" id="InterpGdal"><a class="viewcode-back" href="../../api.html#gridwxcomp.InterpGdal">[docs]</a><span class="k">class</span> <span class="nc">InterpGdal</span><span class="p">(</span><span class="nb">object</span><span class="p">):</span>
     <span class="sd">&quot;&quot;&quot;</span>
@@ -368,7 +368,7 @@
         <span class="s1">&#39;summer_mean&#39;</span><span class="p">:</span> <span class="s1">&#39;summer_res&#39;</span>
     <span class="p">}</span>
 
-    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">summary_csv_path</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">summary_csv_path</span><span class="p">):</span>
         
         <span class="k">if</span> <span class="ow">not</span> <span class="n">Path</span><span class="p">(</span><span class="n">summary_csv_path</span><span class="p">)</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
             <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span>

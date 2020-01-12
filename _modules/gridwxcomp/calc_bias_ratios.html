@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>gridwxcomp.calc_bias_ratios &mdash; gridwxcomp 0.1.0 documentation</title>
+  <title>gridwxcomp.calc_bias_ratios &mdash; gridwxcomp 0.1.1 documentation</title>
   
 
   
@@ -64,7 +64,7 @@
             
             
               <div class="version">
-                0.1.0
+                0.1.1
               </div>
             
           
@@ -245,9 +245,9 @@
 
 <span class="c1"># allows for CL script usage if gridwxcomp not installed</span>
 <span class="k">try</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">.util</span> <span class="k">import</span> <span class="n">parse_yr_filter</span>
+    <span class="kn">from</span> <span class="nn">.util</span> <span class="kn">import</span> <span class="n">parse_yr_filter</span>
 <span class="k">except</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">util</span> <span class="k">import</span> <span class="n">parse_yr_filter</span>
+    <span class="kn">from</span> <span class="nn">util</span> <span class="kn">import</span> <span class="n">parse_yr_filter</span>
 
 <span class="c1"># keys = gridMET variable name</span>
 <span class="c1"># values = climate station variable name</span>
@@ -590,13 +590,18 @@
         <span class="k">try</span><span class="p">:</span>
             <span class="c1"># if time series not from PyWeatherQaQc, CSV with &#39;date&#39; column</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">row</span><span class="o">.</span><span class="n">STATION_FILE_PATH</span><span class="o">.</span><span class="n">endswith</span><span class="p">(</span><span class="s1">&#39;.xlsx&#39;</span><span class="p">):</span>
-                <span class="n">station_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">STATION_FILE_PATH</span><span class="p">,</span><span class="n">parse_dates</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                                <span class="n">index_col</span><span class="o">=</span><span class="n">station_date_name</span><span class="p">)</span>
+                <span class="n">station_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span>
+                    <span class="n">row</span><span class="o">.</span><span class="n">STATION_FILE_PATH</span><span class="p">,</span> <span class="n">parse_dates</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">index_col</span><span class="o">=</span><span class="n">station_date_name</span>
+                <span class="p">)</span>
                 <span class="n">station_df</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">station_df</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">date</span> <span class="c1"># for joining</span>
             <span class="c1"># if excel file, assume PyWeatherQaQc format</span>
             <span class="k">else</span><span class="p">:</span>
-                <span class="n">station_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_excel</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">STATION_FILE_PATH</span><span class="p">,</span>
-                                <span class="n">sheet_name</span><span class="o">=</span><span class="s1">&#39;Corrected Data&#39;</span><span class="p">)</span>
+                <span class="n">station_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_excel</span><span class="p">(</span>
+                    <span class="n">row</span><span class="o">.</span><span class="n">STATION_FILE_PATH</span><span class="p">,</span>
+                    <span class="n">sheet_name</span><span class="o">=</span><span class="s1">&#39;Corrected Data&#39;</span><span class="p">,</span> <span class="n">parse_dates</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                    <span class="n">index_col</span><span class="o">=</span><span class="mi">0</span>
+                <span class="p">)</span>
         <span class="k">except</span><span class="p">:</span>
             <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Time series file for station: &#39;</span><span class="p">,</span> <span class="n">row</span><span class="o">.</span><span class="n">STATION_ID</span><span class="p">,</span> 
                   <span class="s1">&#39;was not found, skipping.&#39;</span><span class="p">)</span>
@@ -607,15 +612,20 @@
                 <span class="nb">format</span><span class="p">(</span><span class="n">v</span><span class="o">=</span><span class="n">station_var</span><span class="p">,</span> <span class="n">p</span><span class="o">=</span><span class="n">row</span><span class="o">.</span><span class="n">STATION_FILE_PATH</span><span class="p">)</span>
             <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="n">err_msg</span><span class="p">)</span>
         <span class="nb">print</span><span class="p">(</span>
-             <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Calculating </span><span class="si">{v}</span><span class="s1"> bias ratios for station:&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">v</span><span class="o">=</span><span class="n">grid_var</span><span class="p">),</span>
-             <span class="n">row</span><span class="o">.</span><span class="n">STATION_ID</span>
-             <span class="p">)</span>
+            <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Calculating </span><span class="si">{v}</span><span class="s1"> bias ratios for station:&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">v</span><span class="o">=</span><span class="n">grid_var</span><span class="p">),</span>
+            <span class="n">row</span><span class="o">.</span><span class="n">STATION_ID</span>
+        <span class="p">)</span>
         <span class="n">grid_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">row</span><span class="o">.</span><span class="n">GRID_FILE_PATH</span><span class="p">,</span> <span class="n">parse_dates</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> 
                                  <span class="n">index_col</span><span class="o">=</span><span class="n">grid_date_name</span><span class="p">)</span>
         <span class="c1"># merge both datasets drop missing days</span>
-        <span class="n">result</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">station_df</span><span class="p">[</span><span class="n">station_var</span><span class="p">],</span> 
-                            <span class="n">grid_df</span><span class="p">[</span><span class="n">grid_var</span><span class="p">]],</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> 
-                           <span class="n">join_axes</span><span class="o">=</span><span class="p">[</span><span class="n">station_df</span><span class="o">.</span><span class="n">index</span><span class="p">])</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span>
+            <span class="p">[</span>
+                <span class="n">station_df</span><span class="p">[</span><span class="n">station_var</span><span class="p">],</span> 
+                <span class="n">grid_df</span><span class="p">[</span><span class="n">grid_var</span><span class="p">]</span>
+            <span class="p">],</span> 
+            <span class="n">axis</span><span class="o">=</span><span class="mi">1</span> 
+        <span class="p">)</span>
+        <span class="n">result</span> <span class="o">=</span> <span class="n">result</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="n">grid_df</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
         <span class="n">result</span><span class="o">.</span><span class="n">dropna</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="c1"># make datetime index</span>
         <span class="n">result</span><span class="o">.</span><span class="n">index</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">to_datetime</span><span class="p">(</span><span class="n">result</span><span class="o">.</span><span class="n">index</span><span class="p">)</span>
@@ -644,7 +654,6 @@
                     <span class="p">(</span><span class="n">station_var</span><span class="p">)][</span><span class="s1">&#39;sum&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">/</span> <span class="n">result</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span>
                 <span class="n">result</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">get_level_values</span><span class="p">(</span><span class="s1">&#39;month&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">isin</span><span class="p">(</span><span class="n">ann_months</span><span class="p">),</span>\
                         <span class="p">(</span><span class="n">grid_var</span><span class="p">)][</span><span class="s1">&#39;sum&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
-        
         <span class="n">ratio</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span><span class="n">columns</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;ratio&#39;</span><span class="p">,</span> <span class="s1">&#39;count&#39;</span><span class="p">])</span>
         <span class="c1"># ratio of monthly sums for each year</span>
         <span class="n">ratio</span><span class="p">[</span><span class="s1">&#39;ratio&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="n">station_var</span><span class="p">,</span><span class="s1">&#39;sum&#39;</span><span class="p">])</span><span class="o">/</span><span class="p">(</span><span class="n">result</span><span class="p">[</span><span class="n">grid_var</span><span class="p">,</span><span class="s1">&#39;sum&#39;</span><span class="p">])</span>

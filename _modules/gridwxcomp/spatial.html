@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>gridwxcomp.spatial &mdash; gridwxcomp 0.1.0 documentation</title>
+  <title>gridwxcomp.spatial &mdash; gridwxcomp 0.1.1 documentation</title>
   
 
   
@@ -64,7 +64,7 @@
             
             
               <div class="version">
-                0.1.0
+                0.1.1
               </div>
             
           
@@ -221,28 +221,28 @@
 <span class="kn">import</span> <span class="nn">re</span>
 <span class="kn">import</span> <span class="nn">argparse</span>
 <span class="kn">import</span> <span class="nn">copy</span>
-<span class="kn">from</span> <span class="nn">math</span> <span class="k">import</span> <span class="n">ceil</span><span class="p">,</span> <span class="nb">pow</span><span class="p">,</span> <span class="n">sqrt</span>
-<span class="kn">from</span> <span class="nn">pathlib</span> <span class="k">import</span> <span class="n">Path</span>
-<span class="kn">from</span> <span class="nn">shutil</span> <span class="k">import</span> <span class="n">move</span>
+<span class="kn">from</span> <span class="nn">math</span> <span class="kn">import</span> <span class="n">ceil</span><span class="p">,</span> <span class="nb">pow</span><span class="p">,</span> <span class="n">sqrt</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">shutil</span> <span class="kn">import</span> <span class="n">move</span>
 
 <span class="kn">import</span> <span class="nn">fiona</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 <span class="kn">import</span> <span class="nn">rasterio</span>
-<span class="kn">from</span> <span class="nn">scipy.interpolate</span> <span class="k">import</span> <span class="n">Rbf</span>
-<span class="kn">from</span> <span class="nn">shapely.geometry</span> <span class="k">import</span> <span class="n">Point</span><span class="p">,</span> <span class="n">Polygon</span><span class="p">,</span> <span class="n">mapping</span>
-<span class="kn">from</span> <span class="nn">fiona</span> <span class="k">import</span> <span class="n">collection</span>
-<span class="kn">from</span> <span class="nn">fiona.crs</span> <span class="k">import</span> <span class="n">from_epsg</span>
-<span class="kn">from</span> <span class="nn">osgeo</span> <span class="k">import</span> <span class="n">gdal</span><span class="p">,</span> <span class="n">osr</span><span class="p">,</span> <span class="n">ogr</span>
-<span class="kn">from</span> <span class="nn">rasterstats</span> <span class="k">import</span> <span class="n">zonal_stats</span> <span class="k">as</span> <span class="n">zstats</span>
+<span class="kn">from</span> <span class="nn">scipy.interpolate</span> <span class="kn">import</span> <span class="n">Rbf</span>
+<span class="kn">from</span> <span class="nn">shapely.geometry</span> <span class="kn">import</span> <span class="n">Point</span><span class="p">,</span> <span class="n">Polygon</span><span class="p">,</span> <span class="n">mapping</span>
+<span class="kn">from</span> <span class="nn">fiona</span> <span class="kn">import</span> <span class="n">collection</span>
+<span class="kn">from</span> <span class="nn">fiona.crs</span> <span class="kn">import</span> <span class="n">from_epsg</span>
+<span class="kn">from</span> <span class="nn">osgeo</span> <span class="kn">import</span> <span class="n">gdal</span><span class="p">,</span> <span class="n">osr</span><span class="p">,</span> <span class="n">ogr</span>
+<span class="kn">from</span> <span class="nn">rasterstats</span> <span class="kn">import</span> <span class="n">zonal_stats</span> <span class="k">as</span> <span class="n">zstats</span>
 
 <span class="c1"># allows for CL script usage if gridwxcomp not installed</span>
 <span class="k">try</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">.plot</span> <span class="k">import</span> <span class="n">station_bar_plot</span>
-    <span class="kn">from</span> <span class="nn">.util</span> <span class="k">import</span> <span class="n">get_gridmet_meta_csv</span>
+    <span class="kn">from</span> <span class="nn">.plot</span> <span class="kn">import</span> <span class="n">station_bar_plot</span>
+    <span class="kn">from</span> <span class="nn">.util</span> <span class="kn">import</span> <span class="n">get_gridmet_meta_csv</span>
 <span class="k">except</span><span class="p">:</span>
-    <span class="kn">from</span> <span class="nn">plot</span> <span class="k">import</span> <span class="n">station_bar_plot</span>
-    <span class="kn">from</span> <span class="nn">util</span> <span class="k">import</span> <span class="n">get_gridmet_meta_csv</span>
+    <span class="kn">from</span> <span class="nn">plot</span> <span class="kn">import</span> <span class="n">station_bar_plot</span>
+    <span class="kn">from</span> <span class="nn">util</span> <span class="kn">import</span> <span class="n">get_gridmet_meta_csv</span>
 
 <span class="c1"># constant gridmet resolution in decimal degrees</span>
 <span class="n">GRIDMET_RES</span> <span class="o">=</span> <span class="mf">0.041666666666666664</span>
@@ -1236,9 +1236,9 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="c1"># avoid circular import for InterpGdal for gdal interpolation methods</span>
     <span class="k">try</span><span class="p">:</span>
-        <span class="kn">from</span> <span class="nn">gridwxcomp.interpgdal</span> <span class="k">import</span> <span class="n">InterpGdal</span>
+        <span class="kn">from</span> <span class="nn">gridwxcomp.interpgdal</span> <span class="kn">import</span> <span class="n">InterpGdal</span>
     <span class="k">except</span><span class="p">:</span> <span class="c1"># for use as script, i.e. $ python spatial ...</span>
-        <span class="kn">from</span> <span class="nn">interpgdal</span> <span class="k">import</span> <span class="n">InterpGdal</span>
+        <span class="kn">from</span> <span class="nn">interpgdal</span> <span class="kn">import</span> <span class="n">InterpGdal</span>
 
     <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">in_path</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="s1">&#39;Input summary CSV file given&#39;</span><span class="o">+</span>\
