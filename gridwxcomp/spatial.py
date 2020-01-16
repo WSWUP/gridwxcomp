@@ -1603,7 +1603,7 @@ def arg_parse():
         help='Parameter string e.g. ":power=2:smoothing=.1:nodata=-999" for'+\
             ' gdal_grid spatial interpolation methods')
     optional.add_argument(
-        '-z', '--zonal-stats', required=False, default=True, 
+        '-z', '--no-zonal-stats', required=False, default=True, 
         action='store_false', help='Flag to NOT extract zonal means of'+\
             ' interpolated rasters to gridcells')
     optional.add_argument(
