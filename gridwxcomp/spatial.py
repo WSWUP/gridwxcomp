@@ -1044,7 +1044,9 @@ def interpolate(in_path, layer='all', out=None, scale_factor=0.1,
     if not os.path.isfile(in_path):
         raise FileNotFoundError('Input summary CSV file given'+\
                                 ' was invalid or not found')
-    
+
+
+
     # for building from user's grid (not gridMET)
     if grid_meta_path is not None:
         if not Path(grid_meta_path).is_file():
@@ -1072,6 +1074,19 @@ def interpolate(in_path, layer='all', out=None, scale_factor=0.1,
         out_dir = OPJ(
             'spatial', '{}_{}_{:.5f}_deg'.format(grid_var, function, res)
         )
+
+    elif out == str(Path(in_path).parent):
+        out_dir = OPJ(
+            'spatial', '{}_{}_{:.5f}_deg'.format(grid_var, function, res)
+        )
+        print(
+            'WARNING: output subdirectory for rasters cannot be named '
+            'the same as the parent directory holding the input '
+            'summary CSV file. Output will be saved to:\n{}'.format(
+                out_dir
+            )
+        )
+
     else:
         out_dir = OPJ(
             'spatial', '{}_{}_{:.5f}_deg'.format(grid_var, function, res), out

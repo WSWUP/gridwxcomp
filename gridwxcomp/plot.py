@@ -134,14 +134,14 @@ def daily_comparison(input_csv, out_dir=None, year_filter=None):
             continue
         else:
             station_data = pd.read_excel(station_path,
-                                         sheet_name='Corrected Data')
+                sheet_name='Corrected Data', parse_dates=True, index_col='date')
             # Filter years
             if year:
                 station_data, year_str = parse_yr_filter(
                     station_data, year, label=row.STATION_ID)
             else:
-                start_yr = station_data.year.min().astype(int) 
-                end_yr = station_data.year.max().astype(int) 
+                start_yr = int(station_data.year.min()) 
+                end_yr = int(station_data.year.max()) 
                 year_str = '{}_{}'.format(start_yr, end_yr)
 
         # Import GRIDMET Data
@@ -731,8 +731,8 @@ def station_bar_plot(summary_csv, layer, out_dir=None, x_label=None,
     
     if year_subtitle:
         # add data range (years start to end) as subtitle 
-        min_yr = df.start_year.min().astype(int)
-        max_yr = df.end_year.max().astype(int)
+        min_yr = int(df.start_year.min())
+        max_yr = int(df.end_year.max())
         if min_yr == max_yr:
             year_str = 'year: {}'.format(min_yr)
         else:
