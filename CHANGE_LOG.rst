@@ -1,6 +1,16 @@
 Change Log
 **********
 
+Version 0.1.2
+=============
+
+Added the ``gridwxcomp.plot.daily_comparison`` and ``gridwxcomp.plot.monthly_comparsion`` functions back into the package namespace, fixed bugs with file i/o for plotting and remove gaps in per-month daily time series comparison plots.
+
+Version 0.1.1
+=============
+
+Added automatic testing with travix.ci, other bug fixes.
+
 Version 0.1.0
 =============
 

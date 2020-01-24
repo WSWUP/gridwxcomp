@@ -134,7 +134,7 @@ def daily_comparison(input_csv, out_dir=None, year_filter=None):
             continue
         else:
             station_data = pd.read_excel(station_path,
-                sheet_name='Corrected Data', parse_dates=True, index_col='date')
+                sheet_name='Corrected Data', parse_dates=True, index_col=0)
             # Filter years
             if year:
                 station_data, year_str = parse_yr_filter(
@@ -261,6 +261,9 @@ def daily_comparison(input_csv, out_dir=None, year_filter=None):
                     monthly_data2 = monthly_data[[x_var, y_var]]
                     monthly_data2 = monthly_data2.dropna()
 
+                    monthly_data2['date'] = monthly_data2.index
+                    monthly_data2.reset_index(inplace=True)
+
                     if monthly_data2.empty:
                         logging.info("Skipping {}. No Data.".format(x_var))
                         continue
@@ -268,26 +271,42 @@ def daily_comparison(input_csv, out_dir=None, year_filter=None):
                     if i == 0:
                         # Initial timeseries plot to establish xrange for link axes
                         p1 = figure(plot_width=800, plot_height=400,
-                                    x_axis_type="datetime",title = title,
+                                    title = title, x_axis_type="datetime",
                                     y_axis_label = ts_ylabel)
-                        p1.line(monthly_data2.index.to_pydatetime(),
+                        p1.line(monthly_data2.index,
                                 monthly_data2[x_var],  color="navy",
                                 alpha=0.5, legend=legendx,line_width=2)
-                        p1.line(monthly_data2.index.to_pydatetime(),
+                        p1.line(monthly_data2.index,
                                 monthly_data2[y_var],  color="red",
                                 alpha=0.5, legend=legendy,line_width=2)
+                        p1.xaxis.major_label_overrides = {
+                            i: date.strftime(
+                                '%Y %b %d'
+                            ) for i, date in enumerate(pd.to_datetime(
+                                monthly_data2.date
+                            )
+                        )}
+
+
                     else:
                         # Timeseries plots after first pass
                         p1 = figure(plot_width=800, plot_height=400,
-                                    x_axis_type="datetime",title = title,
-                                    y_axis_label = ts_ylabel,
+                                    title = title, x_axis_type="datetime",
+                                    y_axis_label=ts_ylabel,
                                     x_range=p1.x_range)
-                        p1.line(monthly_data2.index.to_pydatetime(),
+                        p1.line(monthly_data2.index,
                                 monthly_data2[x_var],  color="navy", alpha=0.5,
                                 legend=legendx,line_width=2)
-                        p1.line(monthly_data2.index.to_pydatetime(),
+                        p1.line(monthly_data2.index,
                                 monthly_data2[y_var],  color="red", alpha=0.5,
                                 legend=legendy,line_width=2)
+
+                    p1.xaxis.major_label_overrides = {
+                        i: date.strftime('%Y %b %d') for i, date in enumerate(
+                            pd.to_datetime(monthly_data2.date)
+                        )
+                    }
+
 
                     # 1 to 1 Plot
                     # Regression through Zero
@@ -319,6 +338,8 @@ def daily_comparison(input_csv, out_dir=None, year_filter=None):
 
                     # Append [p1, p2] to figure_list (create list of lists)
                     figure_list.append([p1, p2])
+
+                #return figure_list, monthly_data2
 
                 # Plot all figures in list
                 fig = gridplot(figure_list, toolbar_location="left")
@@ -426,8 +447,8 @@ def monthly_comparison(input_csv, out_dir=None):
                 station_path))
             continue
         else:
-            station_data = pd.read_excel(station_path,
-                                         sheet_name='Corrected Data')
+            station_data = pd.read_excel(station_path, index_col=0,
+                    parse_dates=True, sheet_name='Corrected Data')
 
         # Import GRIDMET Data
         grid_path = row.GRID_FILE_PATH
@@ -469,7 +490,6 @@ def monthly_comparison(input_csv, out_dir=None):
 
             # Remove results with na
             # merged = merged.dropna()
-
 
             # Monthly averages including count
             monthly = merged.groupby([lambda x: x.year, lambda x: x.month]).agg(
