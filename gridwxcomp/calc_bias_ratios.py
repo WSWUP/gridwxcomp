@@ -463,9 +463,8 @@ def calc_bias_ratios(input_path, out_dir, method='long_term_mean',
         result.index = pd.to_datetime(result.index)
         # apply year filter
         result, years_str = parse_yr_filter(result, years, row.STATION_ID)
-
+        # for calculating ratios with long-term means later
         orig = result.copy()
-    
         # monthly sums and day counts for each year
         result = result.groupby([result.index.year, result.index.month])\
                 .agg(['sum','count'])
@@ -493,6 +492,9 @@ def calc_bias_ratios(input_path, out_dir, method='long_term_mean',
         ratio['ratio'] = (result[station_var,'sum'])/(result[grid_var,'sum'])
         # monthly counts and stddev
         ratio['count'] = result.loc[:,(grid_var,'count')]
+        if result.empty:
+            print(f'WARNING: no data for site: {row.STATION_ID}, skipping')
+            continue
 
         # rebuild Index DateTime
         ratio['year'] = ratio.index.get_level_values('year').values.astype(int)
