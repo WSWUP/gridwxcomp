@@ -743,7 +743,7 @@ if __name__ == '__main__':
     main(
         input_file_path=args.input, 
         out_dir=args.out,
-        method=,args.method,
+        method=args.method,
         grid_id_name=args.grid_id_name,
         grid_var=args.grid_var, 
         station_var=args.station_var,
