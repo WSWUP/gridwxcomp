@@ -495,8 +495,8 @@ def calc_bias_ratios(input_path, out_dir, method='long_term_mean',
         ratio['count'] = result.loc[:,(grid_var,'count')]
 
         # rebuild Index DateTime
-        ratio['year'] = ratio.index.get_level_values(0).values.astype(int)
-        ratio['month'] = ratio.index.get_level_values(1).values.astype(int)
+        ratio['year'] = ratio.index.get_level_values('year').values.astype(int)
+        ratio['month']=ratio.index.get_level_values('month').values.astype(int)
         ratio.index = pd.to_datetime(
             ratio.year*10000+ratio.month*100+15,format='%Y%m%d'
         )
