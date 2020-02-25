@@ -616,7 +616,7 @@ def calc_bias_ratios(input_path, out_dir, method='long_term_mean',
             long_term['annual_mean'] =\
                 orig[station_var].mean() / orig[grid_var].mean()
             # overwrite only mean ratios (keep stats from mean of annual ratios)
-            overwrite = long_term.columns
+            overwrite = long_term.columns.intersection(final_ratio.columns)
             final_ratio[overwrite] = long_term[overwrite].values
 
 

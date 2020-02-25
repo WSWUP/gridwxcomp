@@ -1,6 +1,11 @@
 Change Log
 **********
 
+Version 0.1.3
+=============
+
+Add the ``method`` option/argument to the :func:`gridwxcomp.calc_bias_ratios` function and CLI script which now has two options 'long_term_mean' (new default) or 'mean_of_annual'. The 'long_term_mean' method calculates bias ratios between station and grid variables in the following manner: long-term mean of station to long-term mean of grid for each month and other time interval. For example, for June ratios this method would take all paired data (spanning the full time period) that lie in June, then take the means of both station and grid data and then take their ratio. The other option 'mean_of_annual' (previous versions' behavior) does the following: group the station and grid data first by year and then by month and longer time intervals (growing season, summer) and calculate the ratioas station sum to grid sum for each year, finally take the mean across the years to get the final ratio. The number of days of paired data in each temporal interval that ratios are calculated for are also recorded as well as the standard deviation and coefficient of variation across years (if multiple exist in the paired input). If for any month the number of paired days is below ``day_limit`` that month is excluded for both ratio calculation methods. Also the latter method will still be used to calculate the statistics count, standard deviation and coefficient of variation if ``method='long_term_mean'``, the only thing that will be altered is the calculation of the mean ratios, e.g. "Jan_mean" or generally all the columns that end with "_mean" in the resulting output files from :func:`gridwxcomp.calc_bias_ratios`.
+
 Version 0.1.2
 =============
 
