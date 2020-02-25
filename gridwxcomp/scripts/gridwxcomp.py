@@ -143,6 +143,8 @@ def download_gridmet_opendap(input_csv, out_dir, years, update_data, quiet):
 @click.argument('input_csv', nargs=1)
 @click.option('--out-dir', '-o', nargs=1, type=str, default='monthly_ratios',
         help='Folder to save correction ratio summary CSV files')
+@click.option('--method', '-meth', nargs=1, type=str, default='long_term_mean',
+        help='Mean ratio calculation, "long_term_mean" or "mean_of_annual"')
 @click.option('--grid-id-name', '-gin', nargs=1, type=str, default='GRIDMET_ID',
         help='Name of gridcell identifier, need to specify if using own grid')
 @click.option('--grid-var', '-gv', nargs=1, type=str, default='etr_mm',
@@ -163,9 +165,9 @@ def download_gridmet_opendap(input_csv, out_dir, years, update_data, quiet):
         help='Flag to NOT save comprehensive output CSV')
 @click.option('--quiet', default=False, is_flag=True, 
         help='Supress command line output')
-def calc_bias_ratios(input_csv, out_dir, grid_id_name, grid_var, station_var, 
-        station_date_name, grid_date_name, grid_id, day_limit, years, comp, 
-        quiet):
+def calc_bias_ratios(input_csv, out_dir, method, grid_id_name, grid_var, 
+        station_var, station_date_name, grid_date_name, grid_id, day_limit, 
+        years, comp, quiet):
     """
     Bias ratio statistics of station-to-gridMET 
 
@@ -207,6 +209,7 @@ def calc_bias_ratios(input_csv, out_dir, grid_id_name, grid_var, station_var,
     calc_ratios(
         input_csv, 
         out_dir, 
+        method=method,
         grid_id_name=grid_id_name,
         grid_var=grid_var,
         station_var=station_var, 
