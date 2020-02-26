@@ -50,9 +50,14 @@ Alternatively, or if there are installation issues, you can manually install. Fi
 
     $ git clone https://github.com/WSWUP/gridwxcomp.git
     $ cd gridwxcomp
+
+If you are experiencing errors on installing the ``gridwxcomp`` conda environment above with dependencies. For example, if the Shapely package is not installing from the enironment.yml file, remove it or modify it from the "setup.py" file in the install requirements section before you install gridwxcomp from source with:
+
+.. code-block:: bash
+
     $ pip install -e .
 
-If you downloaded the source distribution then run ``pip install -e .`` in the root directory where the setup.py file is located. This installation method is ideal if you want to be able to modify the source code.
+More help with installation issues related to dependency conflicts can be found in the ``gridwxcomp`` `issues <https://github.com/WSWUP/gridwxcomp/issues>`_ on GitHub, be sure to check the closed issues as well.
 
 
 Quick start from command line

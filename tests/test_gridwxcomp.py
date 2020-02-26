@@ -14,6 +14,7 @@ from gridwxcomp.util import get_gridmet_meta_csv, parse_yr_filter
 from gridwxcomp.prep_input import main, prep_input, _read_station_list
 from gridwxcomp.download_gridmet_opendap import download_gridmet_opendap
 from gridwxcomp.calc_bias_ratios import calc_bias_ratios
+from gridwxcomp import spatial
 
 @pytest.fixture(scope="session")
 def data(request):
@@ -55,7 +56,6 @@ def data(request):
     d['prep_input_outpath_copy'] =\
         d.get('station_meta_path').parent.parent/'merged_input_cp.csv'
     d['od_download_dir'] = d.get('prep_input_outpath').parent/'od_gridmet_data'
-    d['ee_download_dir'] = d.get('prep_input_outpath').parent/'ee_gridmet_data'
     d['ratio_dir'] = d.get('prep_input_outpath').parent/'test_ratios'
 
     def teardown():
@@ -68,8 +68,6 @@ def data(request):
             d['prep_input_outpath_copy'].unlink()
         if d['od_download_dir'].is_dir():
             rmtree(d['od_download_dir'])
-        if d['ee_download_dir'].is_dir():
-            rmtree(d['ee_download_dir'])
         if d['ratio_dir'].is_dir():
             rmtree(d['ratio_dir'])
         if (Path('tests')/'__pycache__').is_dir():
@@ -345,3 +343,19 @@ class TestCalcBiasRatios(object):
     # make a long version to check year range mark it
     # along with multiple year download, mark everything else as short 
     # add tests for spatial and plot modules
+
+
+class TestSpatial(object):
+
+    def setup_method(self):
+        pass
+
+    def test_spatial_basic_options(self, data):
+        comp_out_file = data.get('ratio_dir')/'etr_mm_summary_comp_all_yrs.csv'
+
+        spatial.main(
+            input_file_path=comp_out_file, 
+            buffer=1,
+            scale_factor=1
+        )
+

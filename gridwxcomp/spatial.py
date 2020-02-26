@@ -1424,9 +1424,9 @@ def calc_pt_error(in_path, out_dir, layer, grid_var, grid_id_name='GRIDMET_ID'):
                 for feat in inf:
                     STATION_ID = feat['properties']['STATION_ID']
                     feat['properties'][pt_est] =\
-                            in_df.loc[STATION_ID, pt_est].astype(float)
+                            float(in_df.loc[STATION_ID, pt_est])
                     feat['properties'][pt_res] =\
-                            in_df.loc[STATION_ID, pt_res].astype(float)
+                            float(in_df.loc[STATION_ID, pt_res])
                     outf.write(feat)
     # if already exists update point shapefile
     else:
@@ -1442,9 +1442,9 @@ def calc_pt_error(in_path, out_dir, layer, grid_var, grid_id_name='GRIDMET_ID'):
                 for feat in inf:
                     STATION_ID = feat['properties']['STATION_ID']
                     feat['properties'][pt_est] =\
-                            in_df.loc[STATION_ID, pt_est].astype(float)
+                            float(in_df.loc[STATION_ID, pt_est])
                     feat['properties'][pt_res] =\
-                            in_df.loc[STATION_ID, pt_res].astype(float)
+                            float(in_df.loc[STATION_ID, pt_res])
                     outf.write(feat)
         # keep tmp point file with new data and remove old version
         for f in os.listdir(out_dir):

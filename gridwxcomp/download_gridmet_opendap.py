@@ -232,8 +232,7 @@ def download_gridmet_opendap(input_csv, out_folder, year_filter='',
         met_df_list = []
         for met_name in params.keys():
             logging.debug('  Variable: {}'.format(met_name))
-            # Pulling the full time series then filtering later seems faster than selecting here
-            # # day=pd.date_range(start=start_date, end=end_date), 
+            # connect with the full time series then filtering later is faster              # # day=pd.date_range(start=start_date, end=end_date), 
 
             # had to add #fillmismatch to fill any data entries that are of
             # a different type (presumably incorrectly filled null values
@@ -242,12 +241,11 @@ def download_gridmet_opendap(input_csv, out_folder, year_filter='',
             met_nc = '{}/{}.nc#fillmismatch'.format(
                 opendap_url, params[met_name]['nc']
             )
-            met_ds = xarray.open_dataset(met_nc)\
-                .sel(lon=gridcell_lon, lat=gridcell_lat, method='nearest')\
-                .drop(['crs', 'lat', 'lon'])\
-                .rename({params[met_name]['var']: params[met_name]['col'],
-                         'day': 'date'}
-            )
+            met_ds = xarray.open_dataset(met_nc).sel(
+                    lon=gridcell_lon, lat=gridcell_lat, method='nearest'
+                ).drop_vars(['crs', 'lat', 'lon']).rename({
+                    params[met_name]['var']:params[met_name]['col'],'day':'date'
+            })
             met_df = met_ds.to_dataframe()
             # logging.debug(met_df.head())
             met_df_list.append(met_df)
