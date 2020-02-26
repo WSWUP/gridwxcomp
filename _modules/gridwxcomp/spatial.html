@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>gridwxcomp.spatial &mdash; gridwxcomp 0.1.1 documentation</title>
+  <title>gridwxcomp.spatial &mdash; gridwxcomp 0.1.3.post2 documentation</title>
   
 
   
@@ -64,7 +64,7 @@
             
             
               <div class="version">
-                0.1.1
+                0.1.3.post2
               </div>
             
           
@@ -120,6 +120,9 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Change Log</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-1-3">Version 0.1.3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-1-2">Version 0.1.2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-1-1">Version 0.1.1</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-1-0">Version 0.1.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-0-9x">Version 0.0.9x</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-0-7x">Version 0.0.7x</a></li>
@@ -207,6 +210,8 @@
 <span class="sd">Attributes:</span>
 <span class="sd">    GRIDMET_RES (float): constant gridMET cell size in decimal degrees,</span>
 <span class="sd">        value = 0.041666666666666664.</span>
+<span class="sd">    PT_ATTRS (tuple): all attributes expected to be in point shapefile</span>
+<span class="sd">        created for stations except station and drid IDs.</span>
 
 <span class="sd">Note:</span>
 <span class="sd">    All spatial files, i.e. vector and raster files, utilize the</span>
@@ -246,6 +251,21 @@
 
 <span class="c1"># constant gridmet resolution in decimal degrees</span>
 <span class="n">GRIDMET_RES</span> <span class="o">=</span> <span class="mf">0.041666666666666664</span>
+<span class="c1"># point shapefile attributes with exception of station and grid IDs</span>
+<span class="n">PT_ATTRS</span> <span class="o">=</span> <span class="p">(</span>
+   <span class="s1">&#39;Jan_mean&#39;</span><span class="p">,</span> <span class="s1">&#39;Feb_mean&#39;</span><span class="p">,</span> <span class="s1">&#39;Mar_mean&#39;</span><span class="p">,</span> <span class="s1">&#39;Apr_mean&#39;</span><span class="p">,</span> <span class="s1">&#39;May_mean&#39;</span><span class="p">,</span> 
+   <span class="s1">&#39;Jun_mean&#39;</span><span class="p">,</span> <span class="s1">&#39;Jul_mean&#39;</span><span class="p">,</span> <span class="s1">&#39;Aug_mean&#39;</span><span class="p">,</span> <span class="s1">&#39;Sep_mean&#39;</span><span class="p">,</span> <span class="s1">&#39;Oct_mean&#39;</span><span class="p">,</span> 
+   <span class="s1">&#39;Nov_mean&#39;</span><span class="p">,</span> <span class="s1">&#39;Dec_mean&#39;</span><span class="p">,</span> <span class="s1">&#39;Jan_count&#39;</span><span class="p">,</span> <span class="s1">&#39;Feb_count&#39;</span><span class="p">,</span> <span class="s1">&#39;Mar_count&#39;</span><span class="p">,</span> 
+   <span class="s1">&#39;Apr_count&#39;</span><span class="p">,</span> <span class="s1">&#39;May_count&#39;</span><span class="p">,</span> <span class="s1">&#39;Jun_count&#39;</span><span class="p">,</span> <span class="s1">&#39;Jul_count&#39;</span><span class="p">,</span> <span class="s1">&#39;Aug_count&#39;</span><span class="p">,</span> 
+   <span class="s1">&#39;Sep_count&#39;</span><span class="p">,</span> <span class="s1">&#39;Oct_count&#39;</span><span class="p">,</span> <span class="s1">&#39;Nov_count&#39;</span><span class="p">,</span> <span class="s1">&#39;Dec_count&#39;</span><span class="p">,</span> <span class="s1">&#39;Jan_stdev&#39;</span><span class="p">,</span> 
+   <span class="s1">&#39;Feb_stdev&#39;</span><span class="p">,</span> <span class="s1">&#39;Mar_stdev&#39;</span><span class="p">,</span> <span class="s1">&#39;Apr_stdev&#39;</span><span class="p">,</span> <span class="s1">&#39;May_stdev&#39;</span><span class="p">,</span> <span class="s1">&#39;Jun_stdev&#39;</span><span class="p">,</span> 
+   <span class="s1">&#39;Jul_stdev&#39;</span><span class="p">,</span> <span class="s1">&#39;Aug_stdev&#39;</span><span class="p">,</span> <span class="s1">&#39;Sep_stdev&#39;</span><span class="p">,</span> <span class="s1">&#39;Oct_stdev&#39;</span><span class="p">,</span> <span class="s1">&#39;Nov_stdev&#39;</span><span class="p">,</span> 
+   <span class="s1">&#39;Dec_stdev&#39;</span><span class="p">,</span> <span class="s1">&#39;Jan_cv&#39;</span><span class="p">,</span> <span class="s1">&#39;Feb_cv&#39;</span><span class="p">,</span> <span class="s1">&#39;Mar_cv&#39;</span><span class="p">,</span> <span class="s1">&#39;Apr_cv&#39;</span><span class="p">,</span> <span class="s1">&#39;May_cv&#39;</span><span class="p">,</span> 
+   <span class="s1">&#39;Jun_cv&#39;</span><span class="p">,</span> <span class="s1">&#39;Jul_cv&#39;</span><span class="p">,</span> <span class="s1">&#39;Aug_cv&#39;</span><span class="p">,</span> <span class="s1">&#39;Sep_cv&#39;</span><span class="p">,</span> <span class="s1">&#39;Oct_cv&#39;</span><span class="p">,</span> <span class="s1">&#39;Nov_cv&#39;</span><span class="p">,</span> <span class="s1">&#39;Dec_cv&#39;</span><span class="p">,</span>
+   <span class="s1">&#39;growseason_mean&#39;</span><span class="p">,</span> <span class="s1">&#39;summer_mean&#39;</span><span class="p">,</span> <span class="s1">&#39;annual_mean&#39;</span><span class="p">,</span> <span class="s1">&#39;growseason_count&#39;</span><span class="p">,</span> 
+   <span class="s1">&#39;summer_count&#39;</span><span class="p">,</span> <span class="s1">&#39;annual_count&#39;</span><span class="p">,</span> <span class="s1">&#39;growseason_stdev&#39;</span><span class="p">,</span> <span class="s1">&#39;summer_stdev&#39;</span><span class="p">,</span> 
+   <span class="s1">&#39;annual_stdev&#39;</span><span class="p">,</span> <span class="s1">&#39;growseason_cv&#39;</span><span class="p">,</span> <span class="s1">&#39;summer_cv&#39;</span><span class="p">,</span> <span class="s1">&#39;annual_cv&#39;</span>
+<span class="p">)</span>
 
 <span class="n">OPJ</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span>
    
@@ -473,6 +493,10 @@
         <span class="n">in_path</span><span class="p">,</span> <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">&#39;</span>
     <span class="p">)</span>
     <span class="n">in_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="n">in_path</span><span class="p">,</span> <span class="n">index_col</span><span class="o">=</span><span class="s1">&#39;STATION_ID&#39;</span><span class="p">,</span> <span class="n">na_values</span><span class="o">=</span><span class="p">[</span><span class="o">-</span><span class="mi">999</span><span class="p">])</span>
+    <span class="c1"># add in potentially missing columns to avoid errors when no ratios exist</span>
+    <span class="c1"># in input that are expected by schema/attribute table</span>
+    <span class="n">missing_vars</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">PT_ATTRS</span><span class="p">)</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">in_df</span><span class="o">.</span><span class="n">columns</span><span class="p">))</span>
+    <span class="n">in_df</span> <span class="o">=</span> <span class="n">in_df</span><span class="o">.</span><span class="n">reindex</span><span class="p">(</span><span class="n">columns</span><span class="o">=</span><span class="nb">list</span><span class="p">(</span><span class="n">in_df</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span> <span class="o">+</span> <span class="n">missing_vars</span><span class="p">)</span>
     <span class="c1"># save shapefile to &quot;spatial&quot; subdirectory of in_path</span>
     <span class="n">path_root</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">in_path</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
     <span class="n">file_name</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">in_path</span><span class="p">)[</span><span class="mi">1</span><span class="p">]</span>
@@ -1243,7 +1267,9 @@
     <span class="k">if</span> <span class="ow">not</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">isfile</span><span class="p">(</span><span class="n">in_path</span><span class="p">):</span>
         <span class="k">raise</span> <span class="ne">FileNotFoundError</span><span class="p">(</span><span class="s1">&#39;Input summary CSV file given&#39;</span><span class="o">+</span>\
                                 <span class="s1">&#39; was invalid or not found&#39;</span><span class="p">)</span>
-    
+
+
+
     <span class="c1"># for building from user&#39;s grid (not gridMET)</span>
     <span class="k">if</span> <span class="n">grid_meta_path</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
         <span class="k">if</span> <span class="ow">not</span> <span class="n">Path</span><span class="p">(</span><span class="n">grid_meta_path</span><span class="p">)</span><span class="o">.</span><span class="n">is_file</span><span class="p">():</span>
@@ -1271,6 +1297,19 @@
         <span class="n">out_dir</span> <span class="o">=</span> <span class="n">OPJ</span><span class="p">(</span>
             <span class="s1">&#39;spatial&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">_</span><span class="si">{}</span><span class="s1">_</span><span class="si">{:.5f}</span><span class="s1">_deg&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">grid_var</span><span class="p">,</span> <span class="n">function</span><span class="p">,</span> <span class="n">res</span><span class="p">)</span>
         <span class="p">)</span>
+
+    <span class="k">elif</span> <span class="n">out</span> <span class="o">==</span> <span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="p">(</span><span class="n">in_path</span><span class="p">)</span><span class="o">.</span><span class="n">parent</span><span class="p">):</span>
+        <span class="n">out_dir</span> <span class="o">=</span> <span class="n">OPJ</span><span class="p">(</span>
+            <span class="s1">&#39;spatial&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">_</span><span class="si">{}</span><span class="s1">_</span><span class="si">{:.5f}</span><span class="s1">_deg&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">grid_var</span><span class="p">,</span> <span class="n">function</span><span class="p">,</span> <span class="n">res</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="s1">&#39;WARNING: output subdirectory for rasters cannot be named &#39;</span>
+            <span class="s1">&#39;the same as the parent directory holding the input &#39;</span>
+            <span class="s1">&#39;summary CSV file. Output will be saved to:</span><span class="se">\n</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
+                <span class="n">out_dir</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+
     <span class="k">else</span><span class="p">:</span>
         <span class="n">out_dir</span> <span class="o">=</span> <span class="n">OPJ</span><span class="p">(</span>
             <span class="s1">&#39;spatial&#39;</span><span class="p">,</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">_</span><span class="si">{}</span><span class="s1">_</span><span class="si">{:.5f}</span><span class="s1">_deg&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">grid_var</span><span class="p">,</span> <span class="n">function</span><span class="p">,</span> <span class="n">res</span><span class="p">),</span> <span class="n">out</span>
@@ -1343,8 +1382,8 @@
             <span class="n">mask</span> <span class="o">=</span> <span class="n">in_df</span><span class="p">[</span><span class="n">layer</span><span class="p">]</span><span class="o">.</span><span class="n">notnull</span><span class="p">()</span>
             <span class="n">n_missing</span> <span class="o">=</span> <span class="n">in_df</span><span class="p">[</span><span class="n">layer</span><span class="p">]</span><span class="o">.</span><span class="n">isna</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
             <span class="c1"># if one point or less data points exists exit</span>
-            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span> <span class="o">==</span> <span class="n">n_missing</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
-                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Missing sufficient bias ratios for variable: </span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span>\
+            <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">mask</span><span class="p">)</span> <span class="o">==</span> <span class="n">n_missing</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">values</span><span class="p">)</span> <span class="o">-</span> <span class="n">n_missing</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Missing sufficient point data for variable: </span><span class="si">{}</span><span class="s1"> </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span>\
                         <span class="nb">format</span><span class="p">(</span><span class="n">grid_var</span><span class="p">,</span> <span class="n">layer</span><span class="p">),</span>
                         <span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Need at least two stations with data, skipping.&#39;</span><span class="p">)</span>
                 <span class="k">return</span>
@@ -1587,9 +1626,9 @@
                 <span class="k">for</span> <span class="n">feat</span> <span class="ow">in</span> <span class="n">inf</span><span class="p">:</span>
                     <span class="n">STATION_ID</span> <span class="o">=</span> <span class="n">feat</span><span class="p">[</span><span class="s1">&#39;properties&#39;</span><span class="p">][</span><span class="s1">&#39;STATION_ID&#39;</span><span class="p">]</span>
                     <span class="n">feat</span><span class="p">[</span><span class="s1">&#39;properties&#39;</span><span class="p">][</span><span class="n">pt_est</span><span class="p">]</span> <span class="o">=</span>\
-                            <span class="n">in_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">STATION_ID</span><span class="p">,</span> <span class="n">pt_est</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+                            <span class="nb">float</span><span class="p">(</span><span class="n">in_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">STATION_ID</span><span class="p">,</span> <span class="n">pt_est</span><span class="p">])</span>
                     <span class="n">feat</span><span class="p">[</span><span class="s1">&#39;properties&#39;</span><span class="p">][</span><span class="n">pt_res</span><span class="p">]</span> <span class="o">=</span>\
-                            <span class="n">in_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">STATION_ID</span><span class="p">,</span> <span class="n">pt_res</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+                            <span class="nb">float</span><span class="p">(</span><span class="n">in_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">STATION_ID</span><span class="p">,</span> <span class="n">pt_res</span><span class="p">])</span>
                     <span class="n">outf</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">feat</span><span class="p">)</span>
     <span class="c1"># if already exists update point shapefile</span>
     <span class="k">else</span><span class="p">:</span>
@@ -1605,9 +1644,9 @@
                 <span class="k">for</span> <span class="n">feat</span> <span class="ow">in</span> <span class="n">inf</span><span class="p">:</span>
                     <span class="n">STATION_ID</span> <span class="o">=</span> <span class="n">feat</span><span class="p">[</span><span class="s1">&#39;properties&#39;</span><span class="p">][</span><span class="s1">&#39;STATION_ID&#39;</span><span class="p">]</span>
                     <span class="n">feat</span><span class="p">[</span><span class="s1">&#39;properties&#39;</span><span class="p">][</span><span class="n">pt_est</span><span class="p">]</span> <span class="o">=</span>\
-                            <span class="n">in_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">STATION_ID</span><span class="p">,</span> <span class="n">pt_est</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+                            <span class="nb">float</span><span class="p">(</span><span class="n">in_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">STATION_ID</span><span class="p">,</span> <span class="n">pt_est</span><span class="p">])</span>
                     <span class="n">feat</span><span class="p">[</span><span class="s1">&#39;properties&#39;</span><span class="p">][</span><span class="n">pt_res</span><span class="p">]</span> <span class="o">=</span>\
-                            <span class="n">in_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">STATION_ID</span><span class="p">,</span> <span class="n">pt_res</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+                            <span class="nb">float</span><span class="p">(</span><span class="n">in_df</span><span class="o">.</span><span class="n">loc</span><span class="p">[</span><span class="n">STATION_ID</span><span class="p">,</span> <span class="n">pt_res</span><span class="p">])</span>
                     <span class="n">outf</span><span class="o">.</span><span class="n">write</span><span class="p">(</span><span class="n">feat</span><span class="p">)</span>
         <span class="c1"># keep tmp point file with new data and remove old version</span>
         <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">out_dir</span><span class="p">):</span>
@@ -1802,7 +1841,7 @@
         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Parameter string e.g. &quot;:power=2:smoothing=.1:nodata=-999&quot; for&#39;</span><span class="o">+</span>\
             <span class="s1">&#39; gdal_grid spatial interpolation methods&#39;</span><span class="p">)</span>
     <span class="n">optional</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
-        <span class="s1">&#39;-z&#39;</span><span class="p">,</span> <span class="s1">&#39;--zonal-stats&#39;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> 
+        <span class="s1">&#39;-z&#39;</span><span class="p">,</span> <span class="s1">&#39;--no-zonal-stats&#39;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> 
         <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_false&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Flag to NOT extract zonal means of&#39;</span><span class="o">+</span>\
             <span class="s1">&#39; interpolated rasters to gridcells&#39;</span><span class="p">)</span>
     <span class="n">optional</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>

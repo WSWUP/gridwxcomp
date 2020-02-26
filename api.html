@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>API Reference &mdash; gridwxcomp 0.1.1 documentation</title>
+  <title>API Reference &mdash; gridwxcomp 0.1.3.post2 documentation</title>
   
 
   
@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                0.1.1
+                0.1.3.post2
               </div>
             
           
@@ -122,6 +122,9 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="changelog.html">Change Log</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#version-0-1-3">Version 0.1.3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#version-0-1-2">Version 0.1.2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#version-0-1-1">Version 0.1.1</a></li>
 <li class="toctree-l2"><a class="reference internal" href="changelog.html#version-0-1-0">Version 0.1.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="changelog.html#version-0-0-9x">Version 0.0.9x</a></li>
 <li class="toctree-l2"><a class="reference internal" href="changelog.html#version-0-0-7x">Version 0.0.7x</a></li>
@@ -460,6 +463,12 @@ produced by <code class="docutils literal notranslate"><span class="pre">prep-in
 <dt id="cmdoption-gridwxcomp-calc-bias-ratios-o">
 <code class="sig-name descname">-o</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--out-dir</code><code class="sig-prename descclassname"> &lt;out_dir&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-calc-bias-ratios-o" title="Permalink to this definition">¶</a></dt>
 <dd><p>Folder to save correction ratio summary CSV files</p>
+</dd></dl>
+
+<dl class="option">
+<dt id="cmdoption-gridwxcomp-calc-bias-ratios-meth">
+<code class="sig-name descname">-meth</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--method</code><code class="sig-prename descclassname"> &lt;method&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-calc-bias-ratios-meth" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mean ratio calculation, “long_term_mean” or “mean_of_annual”</p>
 </dd></dl>
 
 <dl class="option">
@@ -1012,7 +1021,7 @@ to <a class="reference internal" href="#gridwxcomp.calc_bias_ratios.calc_bias_ra
 </dl>
 <dl class="function">
 <dt id="gridwxcomp.calc_bias_ratios.calc_bias_ratios">
-<code class="sig-prename descclassname">gridwxcomp.calc_bias_ratios.</code><code class="sig-name descname">calc_bias_ratios</code><span class="sig-paren">(</span><em class="sig-param">input_path</em>, <em class="sig-param">out_dir</em>, <em class="sig-param">grid_id_name='GRIDMET_ID'</em>, <em class="sig-param">grid_var='etr_mm'</em>, <em class="sig-param">station_var=None</em>, <em class="sig-param">var_dict=None</em>, <em class="sig-param">station_date_name='date'</em>, <em class="sig-param">grid_date_name='date'</em>, <em class="sig-param">grid_ID=None</em>, <em class="sig-param">day_limit=10</em>, <em class="sig-param">years='all'</em>, <em class="sig-param">comp=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gridwxcomp/calc_bias_ratios.html#calc_bias_ratios"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gridwxcomp.calc_bias_ratios.calc_bias_ratios" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">gridwxcomp.calc_bias_ratios.</code><code class="sig-name descname">calc_bias_ratios</code><span class="sig-paren">(</span><em class="sig-param">input_path</em>, <em class="sig-param">out_dir</em>, <em class="sig-param">method='long_term_mean'</em>, <em class="sig-param">grid_id_name='GRIDMET_ID'</em>, <em class="sig-param">grid_var='etr_mm'</em>, <em class="sig-param">station_var=None</em>, <em class="sig-param">var_dict=None</em>, <em class="sig-param">station_date_name='date'</em>, <em class="sig-param">grid_date_name='date'</em>, <em class="sig-param">grid_ID=None</em>, <em class="sig-param">day_limit=10</em>, <em class="sig-param">years='all'</em>, <em class="sig-param">comp=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gridwxcomp/calc_bias_ratios.html#calc_bias_ratios"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gridwxcomp.calc_bias_ratios.calc_bias_ratios" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read input CSV file and calculate mean monthly bias ratios between
 station to corresponding grid cells for all station and grid
 pairs, optionally calculate ratios for a single gridcell.</p>
@@ -1029,6 +1038,18 @@ monthly bias ratios of etr.</p></li>
 </dd>
 <dt class="field-even">Keyword Arguments</dt>
 <dd class="field-even"><ul class="simple">
+<li><p><strong>method</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – default ‘long_term_mean’. How to calculate mean station to
+grid ratios, currently two options ‘long_term_mean’ takes the
+mean of all dates for the station variable that fall in a time
+periods, e.g. the month of January, to the mean of all paired
+January dates in the gridded product. The other option is
+‘mean_of_annual’ which calculates ratios, for each time period if
+enough paired days exist, the ratio of sums for each year in the
+record and then takes the mean of the annual ratios. This method
+is always used to calculate standard deviation and coefficient of
+variation of ratios which describe interannual variation of ratios.</p></li>
+<li><p><strong>grid_id_name</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – default ‘GRIDMET_ID’. Name of index/cell identifier
+for gridded dataset, only change if supplying user grid data.</p></li>
 <li><p><strong>grid_var</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – default ‘etr_mm’. Grid climate variable
 to calculate bias ratios.</p></li>
 <li><p><strong>station_var</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – default None. Climate station variable to use
@@ -1041,7 +1062,8 @@ defaules used by <a class="reference internal" href="#gridwxcomp.calc_bias_ratio
 <li><p><strong>grid_ID</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – default None. Grid ID (int cell identifier) to only
 calculate bias ratios for a single gridcell.</p></li>
 <li><p><strong>day_limit</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – default 10. Threshold number of days in month
-of missing data, if less exclude month from calculations.</p></li>
+of missing data, if less exclude month from calculations. Ignored
+when <code class="docutils literal notranslate"><span class="pre">method='long_term_mean'</span></code>.</p></li>
 <li><p><strong>years</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – default ‘all’. Years to use for calculations
 e.g. 2000-2005 or 2011.</p></li>
 <li><p><strong>comp</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#bool" title="(in Python v3.8)"><em>bool</em></a>) – default True. Flag to save a “comprehensive”
@@ -1082,6 +1104,7 @@ with the column named “p” then,</p>
     run first (if using gridMET data). Also raised if the given
     <code class="docutils literal notranslate"><span class="pre">grid_var</span></code>, <code class="docutils literal notranslate"><span class="pre">station_var</span></code>, or values of <code class="docutils literal notranslate"><span class="pre">var_dict</span></code> kwargs
     are invalid.</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/3/library/exceptions.html#ValueError" title="(in Python v3.8)"><strong>ValueError</strong></a> – if the <code class="docutils literal notranslate"><span class="pre">method</span></code> kwarg is invalid.</p></li>
 </ul>
 </dd>
 </dl>
@@ -1117,6 +1140,18 @@ value = 0.041666666666666664.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)">float</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="attribute">
+<dt id="gridwxcomp.spatial.PT_ATTRS">
+<code class="sig-prename descclassname">gridwxcomp.spatial.</code><code class="sig-name descname">PT_ATTRS</code><a class="headerlink" href="#gridwxcomp.spatial.PT_ATTRS" title="Permalink to this definition">¶</a></dt>
+<dd><p>all attributes expected to be in point shapefile
+created for stations except station and drid IDs.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Type</dt>
+<dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#tuple" title="(in Python v3.8)">tuple</a></p>
 </dd>
 </dl>
 </dd></dl>
@@ -2169,7 +2204,7 @@ DataFrame.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>dt_df</strong> (<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v0.25.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a>) – datetime-indexed DataFrame</p></li>
+<li><p><strong>dt_df</strong> (<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.0.1)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a>) – datetime-indexed DataFrame</p></li>
 <li><p><strong>years</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – years to select, e.g. 2015 or 2000-2010</p></li>
 <li><p><strong>label</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – identifier to print warning message if <code class="docutils literal notranslate"><span class="pre">years</span></code>
 filter partially overlaps with actual date index</p></li>
@@ -2184,7 +2219,7 @@ second element is string of year range, e.g. ‘2001_2011’</p>
 </p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>ret (tuple of (<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v0.25.3)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a>, str))</p>
+<dd class="field-odd"><p>ret (tuple of (<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.0.1)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a>, str))</p>
 </dd>
 </dl>
 <p class="rubric">Example</p>

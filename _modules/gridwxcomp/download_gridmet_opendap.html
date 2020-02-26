@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>gridwxcomp.download_gridmet_opendap &mdash; gridwxcomp 0.1.1 documentation</title>
+  <title>gridwxcomp.download_gridmet_opendap &mdash; gridwxcomp 0.1.3.post2 documentation</title>
   
 
   
@@ -64,7 +64,7 @@
             
             
               <div class="version">
-                0.1.1
+                0.1.3.post2
               </div>
             
           
@@ -120,6 +120,9 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../../changelog.html">Change Log</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-1-3">Version 0.1.3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-1-2">Version 0.1.2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-1-1">Version 0.1.1</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-1-0">Version 0.1.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-0-9x">Version 0.0.9x</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../../changelog.html#version-0-0-7x">Version 0.0.7x</a></li>
@@ -431,8 +434,7 @@
         <span class="n">met_df_list</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">met_name</span> <span class="ow">in</span> <span class="n">params</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
             <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;  Variable: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">met_name</span><span class="p">))</span>
-            <span class="c1"># Pulling the full time series then filtering later seems faster than selecting here</span>
-            <span class="c1"># # day=pd.date_range(start=start_date, end=end_date), </span>
+            <span class="c1"># connect with the full time series then filtering later is faster              # # day=pd.date_range(start=start_date, end=end_date), </span>
 
             <span class="c1"># had to add #fillmismatch to fill any data entries that are of</span>
             <span class="c1"># a different type (presumably incorrectly filled null values</span>
@@ -441,12 +443,11 @@
             <span class="n">met_nc</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">/</span><span class="si">{}</span><span class="s1">.nc#fillmismatch&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
                 <span class="n">opendap_url</span><span class="p">,</span> <span class="n">params</span><span class="p">[</span><span class="n">met_name</span><span class="p">][</span><span class="s1">&#39;nc&#39;</span><span class="p">]</span>
             <span class="p">)</span>
-            <span class="n">met_ds</span> <span class="o">=</span> <span class="n">xarray</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="n">met_nc</span><span class="p">)</span>\
-                <span class="o">.</span><span class="n">sel</span><span class="p">(</span><span class="n">lon</span><span class="o">=</span><span class="n">gridcell_lon</span><span class="p">,</span> <span class="n">lat</span><span class="o">=</span><span class="n">gridcell_lat</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;nearest&#39;</span><span class="p">)</span>\
-                <span class="o">.</span><span class="n">drop</span><span class="p">([</span><span class="s1">&#39;crs&#39;</span><span class="p">,</span> <span class="s1">&#39;lat&#39;</span><span class="p">,</span> <span class="s1">&#39;lon&#39;</span><span class="p">])</span>\
-                <span class="o">.</span><span class="n">rename</span><span class="p">({</span><span class="n">params</span><span class="p">[</span><span class="n">met_name</span><span class="p">][</span><span class="s1">&#39;var&#39;</span><span class="p">]:</span> <span class="n">params</span><span class="p">[</span><span class="n">met_name</span><span class="p">][</span><span class="s1">&#39;col&#39;</span><span class="p">],</span>
-                         <span class="s1">&#39;day&#39;</span><span class="p">:</span> <span class="s1">&#39;date&#39;</span><span class="p">}</span>
-            <span class="p">)</span>
+            <span class="n">met_ds</span> <span class="o">=</span> <span class="n">xarray</span><span class="o">.</span><span class="n">open_dataset</span><span class="p">(</span><span class="n">met_nc</span><span class="p">)</span><span class="o">.</span><span class="n">sel</span><span class="p">(</span>
+                    <span class="n">lon</span><span class="o">=</span><span class="n">gridcell_lon</span><span class="p">,</span> <span class="n">lat</span><span class="o">=</span><span class="n">gridcell_lat</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;nearest&#39;</span>
+                <span class="p">)</span><span class="o">.</span><span class="n">drop_vars</span><span class="p">([</span><span class="s1">&#39;crs&#39;</span><span class="p">,</span> <span class="s1">&#39;lat&#39;</span><span class="p">,</span> <span class="s1">&#39;lon&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">rename</span><span class="p">({</span>
+                    <span class="n">params</span><span class="p">[</span><span class="n">met_name</span><span class="p">][</span><span class="s1">&#39;var&#39;</span><span class="p">]:</span><span class="n">params</span><span class="p">[</span><span class="n">met_name</span><span class="p">][</span><span class="s1">&#39;col&#39;</span><span class="p">],</span><span class="s1">&#39;day&#39;</span><span class="p">:</span><span class="s1">&#39;date&#39;</span>
+            <span class="p">})</span>
             <span class="n">met_df</span> <span class="o">=</span> <span class="n">met_ds</span><span class="o">.</span><span class="n">to_dataframe</span><span class="p">()</span>
             <span class="c1"># logging.debug(met_df.head())</span>
             <span class="n">met_df_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">met_df</span><span class="p">)</span>

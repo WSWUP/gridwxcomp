@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Change Log &mdash; gridwxcomp 0.1.1 documentation</title>
+  <title>Change Log &mdash; gridwxcomp 0.1.3.post2 documentation</title>
   
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0.1.1
+                0.1.3.post2
               </div>
             
           
@@ -121,6 +121,9 @@
 </ul>
 </li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Change Log</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-1-3">Version 0.1.3</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-1-2">Version 0.1.2</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#version-0-1-1">Version 0.1.1</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#version-0-1-0">Version 0.1.0</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#version-0-0-9x">Version 0.0.9x</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#version-0-0-7x">Version 0.0.7x</a></li>
@@ -201,6 +204,21 @@
             
   <div class="section" id="change-log">
 <h1>Change Log<a class="headerlink" href="#change-log" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="version-0-1-3">
+<h2>Version 0.1.3<a class="headerlink" href="#version-0-1-3" title="Permalink to this headline">¶</a></h2>
+<p>Add the <code class="docutils literal notranslate"><span class="pre">method</span></code> option/argument to the <a class="reference internal" href="api.html#module-gridwxcomp.calc_bias_ratios" title="gridwxcomp.calc_bias_ratios"><code class="xref py py-func docutils literal notranslate"><span class="pre">gridwxcomp.calc_bias_ratios</span></code></a> function and CLI script which now has two options ‘long_term_mean’ (new default) or ‘mean_of_annual’. The ‘long_term_mean’ method calculates bias ratios between station and grid variables in the following manner: long-term mean of station to long-term mean of grid for each month and other time interval. For example, for June ratios this method would take all paired data (spanning the full time period) that lie in June, then take the means of both station and grid data and then take their ratio. The other option ‘mean_of_annual’ (previous versions’ behavior) does the following: group the station and grid data first by year and then by month and longer time intervals (growing season, summer) and calculate the ratioas station sum to grid sum for each year, finally take the mean across the years to get the final ratio. The number of days of paired data in each temporal interval that ratios are calculated for are also recorded as well as the standard deviation and coefficient of variation across years (if multiple exist in the paired input). If for any month the number of paired days is below <code class="docutils literal notranslate"><span class="pre">day_limit</span></code> that month is excluded for both ratio calculation methods. Also the latter method will still be used to calculate the statistics count, standard deviation and coefficient of variation if <code class="docutils literal notranslate"><span class="pre">method='long_term_mean'</span></code>, the only thing that will be altered is the calculation of the mean ratios, e.g. “Jan_mean” or generally all the columns that end with “_mean” in the resulting output files from <a class="reference internal" href="api.html#module-gridwxcomp.calc_bias_ratios" title="gridwxcomp.calc_bias_ratios"><code class="xref py py-func docutils literal notranslate"><span class="pre">gridwxcomp.calc_bias_ratios</span></code></a>.</p>
+<p>Bug fixes related to deprecated functionality of various <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/index.html#module-pandas" title="(in pandas v1.0.1)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pandas</span></code></a> tools in newer Pandas version 1+.</p>
+<p>Add more Travis CI test coverage for spatial grid creation, point vector file creation, spatial interpolation, zonal stats, interpolation residual calculations, etc.</p>
+<p>Add error handling and checks for cases where input data is missing all data causing unhandled crashes later in the workflow.</p>
+</div>
+<div class="section" id="version-0-1-2">
+<h2>Version 0.1.2<a class="headerlink" href="#version-0-1-2" title="Permalink to this headline">¶</a></h2>
+<p>Added the <code class="docutils literal notranslate"><span class="pre">gridwxcomp.plot.daily_comparison</span></code> and <code class="docutils literal notranslate"><span class="pre">gridwxcomp.plot.monthly_comparsion</span></code> functions back into the package namespace, fixed bugs with file i/o for plotting and remove gaps in per-month daily time series comparison plots.</p>
+</div>
+<div class="section" id="version-0-1-1">
+<h2>Version 0.1.1<a class="headerlink" href="#version-0-1-1" title="Permalink to this headline">¶</a></h2>
+<p>Added automatic testing with travix.ci, other bug fixes.</p>
+</div>
 <div class="section" id="version-0-1-0">
 <h2>Version 0.1.0<a class="headerlink" href="#version-0-1-0" title="Permalink to this headline">¶</a></h2>
 <p>Removed methods for downloading gridMET using the Google Earth Engine API entirely. In other words the <code class="docutils literal notranslate"><span class="pre">gridwxcomp.download_gridmet_ee</span></code> sub-module was removed and all calls to it within the <code class="docutils literal notranslate"><span class="pre">gridwxcomp</span></code> module. This was done to streamline the package and because the method was substantially slower than directly accessing the gridMET netCDF files from the thredds OpeNDAP server. Also the removal substantially reduces the package’s dependencies which are already quite large.</p>
