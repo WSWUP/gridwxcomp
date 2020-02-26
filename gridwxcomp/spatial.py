@@ -8,6 +8,8 @@ meteorological variables. The input file is first created by
 Attributes:
     GRIDMET_RES (float): constant gridMET cell size in decimal degrees,
         value = 0.041666666666666664.
+    PT_ATTRS (tuple): all attributes expected to be in point shapefile
+        created for stations except station and drid IDs.
 
 Note:
     All spatial files, i.e. vector and raster files, utilize the
@@ -47,6 +49,21 @@ except:
 
 # constant gridmet resolution in decimal degrees
 GRIDMET_RES = 0.041666666666666664
+# point shapefile attributes with exception of station and grid IDs
+PT_ATTRS = (
+   'Jan_mean', 'Feb_mean', 'Mar_mean', 'Apr_mean', 'May_mean', 
+   'Jun_mean', 'Jul_mean', 'Aug_mean', 'Sep_mean', 'Oct_mean', 
+   'Nov_mean', 'Dec_mean', 'Jan_count', 'Feb_count', 'Mar_count', 
+   'Apr_count', 'May_count', 'Jun_count', 'Jul_count', 'Aug_count', 
+   'Sep_count', 'Oct_count', 'Nov_count', 'Dec_count', 'Jan_stdev', 
+   'Feb_stdev', 'Mar_stdev', 'Apr_stdev', 'May_stdev', 'Jun_stdev', 
+   'Jul_stdev', 'Aug_stdev', 'Sep_stdev', 'Oct_stdev', 'Nov_stdev', 
+   'Dec_stdev', 'Jan_cv', 'Feb_cv', 'Mar_cv', 'Apr_cv', 'May_cv', 
+   'Jun_cv', 'Jul_cv', 'Aug_cv', 'Sep_cv', 'Oct_cv', 'Nov_cv', 'Dec_cv',
+   'growseason_mean', 'summer_mean', 'annual_mean', 'growseason_count', 
+   'summer_count', 'annual_count', 'growseason_stdev', 'summer_stdev', 
+   'annual_stdev', 'growseason_cv', 'summer_cv', 'annual_cv'
+)
 
 OPJ = os.path.join
    
@@ -274,6 +291,10 @@ def make_points_file(in_path, grid_id_name='GRIDMET_ID'):
         in_path, '\n'
     )
     in_df = pd.read_csv(in_path, index_col='STATION_ID', na_values=[-999])
+    # add in potentially missing columns to avoid errors when no ratios exist
+    # in input that are expected by schema/attribute table
+    missing_vars = list(set(PT_ATTRS).difference(in_df.columns))
+    in_df = in_df.reindex(columns=list(in_df.columns) + missing_vars)
     # save shapefile to "spatial" subdirectory of in_path
     path_root = os.path.split(in_path)[0]
     file_name = os.path.split(in_path)[1]
@@ -1159,8 +1180,8 @@ def interpolate(in_path, layer='all', out=None, scale_factor=0.1,
             mask = in_df[layer].notnull()
             n_missing = in_df[layer].isna().sum()
             # if one point or less data points exists exit
-            if len(mask) == n_missing or len(mask) == 1:
-                print('Missing sufficient bias ratios for variable: {} {}'.\
+            if len(mask) == n_missing or len(values) - n_missing == 1:
+                print('Missing sufficient point data for variable: {} {}'.\
                         format(grid_var, layer),
                         '\nNeed at least two stations with data, skipping.')
                 return
