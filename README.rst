@@ -133,8 +133,8 @@ To get abbreviated descriptions for any of the above ``gridwxcomp`` commands use
 
 
 
-.. |Coverage| image:: https://coveralls.io/repos/github/WSWUP/gridwxcomp/badge.svg?branch=master
-   :target: https://coveralls.io/github/WSWUP/gridwxcomp?branch=master
+.. |Coverage| image:: https://coveralls.io/repos/github/WSWUP/gridwxcomp/badge.svg?branch=master&kill_cache=1
+   :target: https://coveralls.io/github/WSWUP/gridwxcomp?branch=master&kill_cache=1
 
 .. |Build| image:: https://travis-ci.org/WSWUP/gridwxcomp.svg?branch=master
    :target: https://travis-ci.org/WSWUP/gridwxcomp
