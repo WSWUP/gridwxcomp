@@ -586,10 +586,14 @@ def calc_bias_ratios(input_path, out_dir, method='long_term_mean',
         out = final_ratio.copy()
         out.drop(count_cols+stddev_cols+coef_var_cols, axis=1, inplace=True)
 
-        # save grid ID for merging with input table
+        # save grid ID for merging with input table, merge other metadata
         final_ratio[grid_id_name] = row[grid_id_name]    
         final_ratio = final_ratio.merge(input_df, on=grid_id_name)
-
+        # if more than one site in same gridcell- will have multiple rows 
+        # after merge, select the one for the current station 
+        if final_ratio.shape[0] > 1:
+            final_ratio=final_ratio.loc[final_ratio.STATION_ID==row.STATION_ID]
+ 
         # long term mean station to mean grid ratio calc as opposed to mean of
         # annual ratios- default less bias potential
         if method == 'long_term_mean':
@@ -613,6 +617,7 @@ def calc_bias_ratios(input_path, out_dir, method='long_term_mean',
                 orig[station_var].mean() / orig[grid_var].mean()
             # overwrite only mean ratios (keep stats from mean of annual ratios)
             overwrite = long_term.columns.intersection(final_ratio.columns)
+            #return long_term, overwrite, final_ratio
             final_ratio[overwrite] = long_term[overwrite].values
 
         final_ratio['ratio_method'] = method
