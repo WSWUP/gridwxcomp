@@ -593,6 +593,7 @@ def calc_bias_ratios(input_path, out_dir, method='long_term_mean',
         # after merge, select the one for the current station 
         if final_ratio.shape[0] > 1:
             final_ratio=final_ratio.loc[final_ratio.STATION_ID==row.STATION_ID]
+            final_ratio.reset_index(inplace=True) # for slicing with .at[0] 
  
         # long term mean station to mean grid ratio calc as opposed to mean of
         # annual ratios- default less bias potential
@@ -637,7 +638,7 @@ def calc_bias_ratios(input_path, out_dir, method='long_term_mean',
         grow_thresh = 65
         sum_thresh = 35
         ann_thresh = 125
-        
+
         if final_ratio.at[0,'summer_count'] < sum_thresh:
             print('WARNING: less than:', sum_thresh, 'days in summer period',
                  '\nfor station:',row.STATION_ID,'assigning -999 for all stats')
