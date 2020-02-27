@@ -396,17 +396,13 @@ def calc_bias_ratios(input_path, out_dir, method='long_term_mean',
         station_var = var_dict.get(grid_var)
     # If only calculating ratios for a single cell, change console message
     if grid_ID:
-        single_grid_cell_msg = \
-            'For grid cell ID: {g}\n'.format(g=grid_ID)
+        single_grid_cell_msg = f'For grid cell ID: {grid_ID}.'
     else:
         single_grid_cell_msg = ''
     print(
-        'Calculating bias ratios between climate station variable: ',
-        station_var,
-        '\n',
-        'and grid climate variable: ',
-        grid_var,
-        '\n{g}'.format(g=single_grid_cell_msg)
+        f'Calculating ratios between climate station variable: {station_var}'
+        f'\nand grid variable: {grid_var} using the "{method.replace("_"," ")}"'
+        f' method. {single_grid_cell_msg}'
     )
     # loop through each station and calculate monthly ratio
     for index, row in input_df.iterrows():
@@ -619,6 +615,7 @@ def calc_bias_ratios(input_path, out_dir, method='long_term_mean',
             overwrite = long_term.columns.intersection(final_ratio.columns)
             final_ratio[overwrite] = long_term[overwrite].values
 
+        final_ratio['ratio_method'] = method
 
         # round numeric columns
         final_ratio = final_ratio.round({
