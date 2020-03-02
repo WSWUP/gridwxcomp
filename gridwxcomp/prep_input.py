@@ -72,6 +72,9 @@ def main(station_file, out_path, grid_meta_file, grid_path, grid_id_name,
         This file is used as input to :mod:`gridwxcomp.download_gridmet_opendap`
         followed by :mod:`gridwxcomp.calc_bias_ratios`.
 
+    See Also:
+        :func:`prep_input`
+
     """
 
     # station info with overlapping gridMET and save CSV
@@ -131,9 +134,9 @@ def _read_station_list(station_path):
                 'Filename':'STATION_FILE_PATH'},
             inplace=True
             )
-    # get station name only for matching to file name
+    # get station name only for matching to file name without extension
     station_list.STATION_FILE_PATH =\
-            station_list.STATION_FILE_PATH.str.split('_').str.get(0)
+            station_list.STATION_FILE_PATH.str.split('.').str.get(0)
     # look at path for station CSV, look for time series files in same directory
     station_path_tuple = os.path.split(station_path)
     path_root = station_path_tuple[0]
@@ -291,8 +294,7 @@ def prep_input(station_path, out_path='merged_input.csv', grid_meta_path=None,
     save CSV with information from both.
 
     Station time series files must be in the same directory as `station_path`
-    metadata file and each file must begin with the name specifed as 'Station'
-    in the station metadata file.
+    metadata file.
 
     If using gridded data other than gridMET this function may be used to 
     create a metadata CSV file of cell data for any arbitrary rectangular grid.
@@ -348,12 +350,11 @@ def prep_input(station_path, out_path='merged_input.csv', grid_meta_path=None,
           * Station
           * Filename
 
-        Also, the "Filename" column should have names that begin with the names
-        of climate time series files that should be in the same directory as
-        the station metadata file. For example, if one of the time series files
-        is named "Bluebell_daily_data.csv" then all of the following are
-        permissiable entries as the "Filename": "Bluebell", "Bluebell_daily",
-        or "Bluebell_daily_data.csv".
+        Also, the "Filename" column should match the names of the climate time
+        series files that should be in the same directory as the station
+        metadata file. For example, if one of the time series files is named
+        "Bluebell_daily_data.csv" then the following are permissiable entries
+        as the "Filename": "Bluebell_daily_data" or "Bluebell_daily_data.csv".
         
     Raises:
         FileNotFoundError: if the ``grid_meta_path`` is not passed as a 

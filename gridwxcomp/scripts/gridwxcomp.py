@@ -69,21 +69,21 @@ def prep_input(station_meta_path, out_path, grid_meta, grid_path, grid_id_name,
     For example the "Station_Data.txt" file is included as an example at
     `gridwxcomp/gridwxcomp/example_data/ <https://raw.githubusercontent.com/WSWUP/gridwxcomp/master/gridwxcomp/example_data/Station_Data.txt>`_, contains
 
-        ======== ========== ======================= ==================== 
+        ======== ========== ======================= =========================== 
         Latitude Longitude  Station                 Filename             
-        ======== ========== ======================= ==================== 
-        40.37232 -110.20918 Bluebell (Neola Area)   BluebellUT_Daily     
-        38.38346 -111.63583 Loa                     LoaUT_Daily          
-        38.32829 -108.85549 Bedrock                 BedrockCO_Daily      
-        38.64294 -109.39880 Castle Valley near Moab CastleValleyUT_Daily 
-        ======== ========== ======================= ====================
+        ======== ========== ======================= =========================== 
+        40.37232 -110.20918 Bluebell (Neola Area)   BluebellUT_Daily_output
+        38.38346 -111.63583 Loa                     LoaUT_Daily_output          
+        38.32829 -108.85549 Bedrock                 BedrockCO_Daily_output   
+        38.64294 -109.39880 Castle Valley near Moab CastleValleyUT_Daily_output 
+        ======== ========== ======================= ===========================
     
     Also, if not created by ``PyWeatherQaQc``, the climate station time series
     files should be in CSV format with a date column with datetime formats,
     e.g. '12/01/2018'. By default ``gridwxcomp prep-input`` creates the file 
     "merged_input.csv" in the current working directory which contains 
     metadata from climate stations as well as the lat, long, and gridMET ID 
-    (cell index) of the nearest gridMET cell's centroid.
+    (cell index) of the nearest gridMET cell centroid.
 
     If using a gridded product that is not gridMET this routine has the ability
     to create a grid metadata file if ``--grid-path`` and ``--grid-id-name`` 

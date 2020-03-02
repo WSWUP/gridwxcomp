@@ -15,6 +15,7 @@ from gridwxcomp.prep_input import main, prep_input, _read_station_list
 from gridwxcomp.download_gridmet_opendap import download_gridmet_opendap
 from gridwxcomp.calc_bias_ratios import calc_bias_ratios
 from gridwxcomp import spatial
+from gridwxcomp import plot
 
 @pytest.fixture(scope="session")
 def data(request):
@@ -72,6 +73,11 @@ def data(request):
             rmtree(d['ratio_dir'])
         if (Path('tests')/'__pycache__').is_dir():
             rmtree(Path('tests')/'__pycache__')
+        if (Path('tests')/'daily_comp_plots').is_dir():
+            rmtree(Path('tests')/'daily_comp_plots')
+        if (Path('tests')/'monthly_comp_plots').is_dir():
+            rmtree(Path('tests')/'monthly_comp_plots')
+
     request.addfinalizer(teardown)
 
     return d
@@ -359,3 +365,17 @@ class TestSpatial(object):
             scale_factor=1
         )
 
+class TestPlot(object):
+
+    # note station bar plot gets tested in spatial default settings
+    def setup_method(self):
+        self.daily_plot_dir =  Path('tests')/'daily_comp_plots'
+        self.monthly_plot_dir =  Path('tests')/'monthly_comp_plots'
+
+    def test_daily_comparison(self, data):
+        input_path=data.get('prep_input_outpath') 
+        plot.daily_comparison(input_path, out_dir=self.daily_plot_dir)
+
+    def test_monthly_comparison(self, data):
+        input_path=data.get('prep_input_outpath') 
+        plot.monthly_comparison(input_path, out_dir=self.monthly_plot_dir)

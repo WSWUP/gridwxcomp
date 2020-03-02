@@ -179,11 +179,10 @@ def daily_comparison(input_csv, out_dir=None, year_filter=None):
             grid_data['rh_avg'] = (grid_data.ea_kpa / grid_data.e_sat_kpa) * 100
 
             # Combine station and gridMET dataframes (only plotting variables)
-            merged = pd.concat([station_data[station_vars],
-                                grid_data[gridmet_vars]], axis=1,
-                               join_axes=[station_data.index])
-            # Remove results with na
-            # merged = merged.dropna()
+            #return station_data, station_vars, grid_data, gridmet_vars
+            merged = pd.concat([
+                station_data[station_vars], grid_data[gridmet_vars]], axis=1
+            )
 
             for month in range(1,13):
                 logging.info('Month: {}'.format(month))
@@ -275,10 +274,10 @@ def daily_comparison(input_csv, out_dir=None, year_filter=None):
                                     y_axis_label = ts_ylabel)
                         p1.line(monthly_data2.index,
                                 monthly_data2[x_var],  color="navy",
-                                alpha=0.5, legend=legendx,line_width=2)
+                                alpha=0.5, legend_label=legendx,line_width=2)
                         p1.line(monthly_data2.index,
                                 monthly_data2[y_var],  color="red",
-                                alpha=0.5, legend=legendy,line_width=2)
+                                alpha=0.5, legend_label=legendy,line_width=2)
                         p1.xaxis.major_label_overrides = {
                             i: date.strftime(
                                 '%Y %b %d'
@@ -296,10 +295,10 @@ def daily_comparison(input_csv, out_dir=None, year_filter=None):
                                     x_range=p1.x_range)
                         p1.line(monthly_data2.index,
                                 monthly_data2[x_var],  color="navy", alpha=0.5,
-                                legend=legendx,line_width=2)
+                                legend_label=legendx,line_width=2)
                         p1.line(monthly_data2.index,
                                 monthly_data2[y_var],  color="red", alpha=0.5,
-                                legend=legendy,line_width=2)
+                                legend_label=legendy,line_width=2)
 
                     p1.xaxis.major_label_overrides = {
                         i: date.strftime('%Y %b %d') for i, date in enumerate(
@@ -332,8 +331,8 @@ def daily_comparison(input_csv, out_dir=None, year_filter=None):
                              [int(np.min([monthly_data2[y_var],
                                           monthly_data2[x_var]])-2),int(np.max(
                                  [monthly_data2[y_var],monthly_data2[x_var]])+2)],
-                              color = "black", legend = '1 to 1 line')
-                    p2.line(r_x, r_y, color="red", legend = 'Reg thru zero')
+                              color = "black", legend_label = '1 to 1 line')
+                    p2.line(r_x, r_y, color="red", legend_label = 'Reg thru zero')
                     p2.legend.location = "top_left"
 
                     # Append [p1, p2] to figure_list (create list of lists)
@@ -485,11 +484,8 @@ def monthly_comparison(input_csv, out_dir=None):
 
             # Combine station and gridMET dataframes (only plotting variables)
             merged = pd.concat([station_data[station_vars],
-                                grid_data[gridmet_vars]], axis=1,
-                               join_axes=[station_data.index])
-
-            # Remove results with na
-            # merged = merged.dropna()
+                                grid_data[gridmet_vars]], axis=1
+            )
 
             # Monthly averages including count
             monthly = merged.groupby([lambda x: x.year, lambda x: x.month]).agg(
@@ -598,10 +594,10 @@ def monthly_comparison(input_csv, out_dir=None):
                                 y_axis_label = ts_ylabel)
                     p1.line(monthly2.index.to_pydatetime(),
                             monthly2[x_var, stat],  color="navy",
-                            alpha=0.5, legend=legendx,line_width=2)
+                            alpha=0.5, legend_label=legendx,line_width=2)
                     p1.line(monthly2.index.to_pydatetime(),
                             monthly2[y_var, stat],  color="red",
-                            alpha=0.5, legend=legendy,line_width=2)
+                            alpha=0.5, legend_label=legendy,line_width=2)
                 else:
                     # Timeseries plots after first pass
                     p1 = figure(plot_width=800, plot_height=400,
@@ -610,10 +606,10 @@ def monthly_comparison(input_csv, out_dir=None):
                                 x_range=p1.x_range)
                     p1.line(monthly2.index.to_pydatetime(),
                             monthly2[x_var, stat],  color="navy", alpha=0.5,
-                            legend=legendx,line_width=2)
+                            legend_label=legendx,line_width=2)
                     p1.line(monthly2.index.to_pydatetime(),
                             monthly2[y_var, stat],  color="red", alpha=0.5,
-                            legend=legendy,line_width=2)
+                            legend_label=legendy,line_width=2)
 
                 # 1 to 1 Plot
                 # Regression through Zero
@@ -639,8 +635,8 @@ def monthly_comparison(input_csv, out_dir=None):
                          [int(np.min([monthly2[y_var, stat],
                                       monthly2[x_var, stat]])-2),int(np.max(
                              [monthly2[y_var, stat],monthly2[x_var, stat]])+2)],
-                          color = "black", legend = '1 to 1 line')
-                p2.line(r_x, r_y, color="red", legend = 'Reg thru zero')
+                          color = "black", legend_label = '1 to 1 line')
+                p2.line(r_x, r_y, color="red", legend_label = 'Reg thru zero')
                 p2.legend.location = "top_left"
 
                 # Append [p1, p2] to figure_list (create list of lists)
@@ -718,6 +714,7 @@ def station_bar_plot(summary_csv, layer, out_dir=None, x_label=None,
         raise KeyError(err_msg)
     
     df.sort_values(layer, inplace=True)
+    df.index.name = 'dummy_name' # fix internal to bokeh- reset_index 
     source = ColumnDataSource(df)
     # hover tooltip with station and value
     tooltips = [
