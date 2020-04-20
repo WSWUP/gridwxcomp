@@ -4,7 +4,7 @@ A package for comparing climate station time series data to gridded datasets, wi
 
 __name__ = 'gridwxcomp'
 __author__ = 'John Volk and Chris Pearson'
-__version__ = '0.1.3.post3'
+__version__ = '0.1.3.post4'
 
 
 from gridwxcomp.prep_input import prep_input

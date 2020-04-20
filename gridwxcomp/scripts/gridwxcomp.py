@@ -332,7 +332,7 @@ def spatial(summary_comp_csv, layer, out, grid_id_name, buffer, scale,
         help='Time frequency for station-grid-comp plots "daily" or "monthly"')
 @click.option('--out-dir', '-o', nargs=1, type=str, default=None,
         help='Folder to save plots')
-@click.option('--year', '-y', nargs=1, type=int, default=None,
+@click.option('--year', '-y', nargs=1, type=str, default=None,
         help='Years for time series, single year YYYY or range YYYY-YYYY')
 @click.option('--x-label', nargs=1, type=str, default=None,
         help='X-axis label for station-bar plot')

@@ -620,6 +620,7 @@ def calc_bias_ratios(input_path, out_dir, method='long_term_mean',
             overwrite = long_term.columns.intersection(final_ratio.columns)
             #return long_term, overwrite, final_ratio
             final_ratio[overwrite] = long_term[overwrite].values
+            out[overwrite] = long_term[overwrite].values
 
         final_ratio['ratio_method'] = method
 
