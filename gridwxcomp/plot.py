@@ -346,7 +346,7 @@ def daily_comparison(input_csv, out_dir=None, year_filter=None):
                 # Save the figure
                 save(fig)
 
-def monthly_comparison(input_csv, out_dir=None):
+def monthly_comparison(input_csv, out_dir=None, day_limit=10):
     """
     Compare monthly average weather station data from
     `PyWeatherQAQC <https://github.com/WSWUP/pyWeatherQAQC>`_ with gridMET.
@@ -364,6 +364,8 @@ def monthly_comparison(input_csv, out_dir=None):
 
     Keyword Arguments:
         out_dir (str): default None. Directory to save comparison plots.
+        day_limit (int): default 10. Number of paired days per month that must 
+            exist for variable to be plotted. 
 
     Returns:
         None
@@ -487,13 +489,26 @@ def monthly_comparison(input_csv, out_dir=None):
                                 grid_data[gridmet_vars]], axis=1
             )
 
+            station_vars = ['TMin (C)', 'TMax (C)', 'wx_Ko_c', 'Rs (w/m2)',
+                'ws_2m (m/s)', 'Vapor Pres (kPa)', 'RHAvg (%)', 'Precip (mm)',
+                'ETo (mm)', 'ETr (mm)']
+
+            gridmet_vars = ['tmin_c', 'tmax_c', 'grid_Ko_c', 'srad_wm2',
+                'u2_ms', 'ea_kpa', 'rh_avg', 'prcp_mm', 'eto_mm', 'etr_mm']
+
+            # remove all pairs where one var missing
+            for (x_var, y_var) in zip(station_vars,gridmet_vars):
+                merged[[x_var, y_var]] = merged[[x_var, y_var]].dropna()
+
             # Monthly averages including count
             monthly = merged.groupby([lambda x: x.year, lambda x: x.month]).agg(
                 ['mean', 'sum' ,'count'])
 
             # Remove months with Less Than XX Days in average
-            day_limit = 10
-            monthly = monthly[monthly['ETr (mm)', 'count'] >= day_limit]
+            var_names = list(monthly.columns.levels)[0]
+            for v in var_names:
+                mask = monthly.loc[:,(v,'count')] < day_limit
+                monthly.loc[mask,('sum', 'mean')] = np.nan
 
             # Rebuild Index DateTime
             monthly['year'] = monthly.index.get_level_values(0).values
@@ -502,7 +517,7 @@ def monthly_comparison(input_csv, out_dir=None):
                 monthly.year * 10000 + monthly.month * 100 + 15,
                 format='%Y%m%d')
 
-            if len(monthly.index) <= 2:
+            if len(monthly.index) < 2:
                 logging.info('Skipping. Less than 2 months of observations.')
                 continue
 
@@ -519,15 +534,6 @@ def monthly_comparison(input_csv, out_dir=None):
             out_file_path = os.path.join(out_folder, '{}.html')\
                 .format(row.STATION_ID.replace(" ", ""))
             output_file(out_file_path)
-
-            station_vars = ['TMin (C)', 'TMax (C)', 'wx_Ko_c', 'Rs (w/m2)',
-                            'ws_2m (m/s)', 'Vapor Pres (kPa)', 'RHAvg (%)',
-                                                               'Precip (mm)',
-                            'ETo (mm)', 'ETr (mm)']
-
-            gridmet_vars = ['tmin_c', 'tmax_c', 'grid_Ko_c', 'srad_wm2',
-                            'u2_ms',
-                            'ea_kpa', 'rh_avg', 'prcp_mm', 'eto_mm', 'etr_mm']
 
             # list of x variables
             x_var_list= station_vars
@@ -592,11 +598,11 @@ def monthly_comparison(input_csv, out_dir=None):
                     p1 = figure(plot_width=800, plot_height=400,
                                 x_axis_type="datetime",title = title,
                                 y_axis_label = ts_ylabel)
-                    p1.line(monthly2.index.to_pydatetime(),
-                            monthly2[x_var, stat],  color="navy",
+                    p1.line(monthly.index.to_pydatetime(),
+                            monthly[x_var, stat],  color="navy",
                             alpha=0.5, legend_label=legendx,line_width=2)
-                    p1.line(monthly2.index.to_pydatetime(),
-                            monthly2[y_var, stat],  color="red",
+                    p1.line(monthly.index.to_pydatetime(),
+                            monthly[y_var, stat],  color="red",
                             alpha=0.5, legend_label=legendy,line_width=2)
                 else:
                     # Timeseries plots after first pass
@@ -604,11 +610,11 @@ def monthly_comparison(input_csv, out_dir=None):
                                 x_axis_type="datetime",title = title,
                                 y_axis_label = ts_ylabel,
                                 x_range=p1.x_range)
-                    p1.line(monthly2.index.to_pydatetime(),
-                            monthly2[x_var, stat],  color="navy", alpha=0.5,
+                    p1.line(monthly.index.to_pydatetime(),
+                            monthly[x_var, stat],  color="navy", alpha=0.5,
                             legend_label=legendx,line_width=2)
-                    p1.line(monthly2.index.to_pydatetime(),
-                            monthly2[y_var, stat],  color="red", alpha=0.5,
+                    p1.line(monthly.index.to_pydatetime(),
+                            monthly[y_var, stat],  color="red", alpha=0.5,
                             legend_label=legendy,line_width=2)
 
                 # 1 to 1 Plot

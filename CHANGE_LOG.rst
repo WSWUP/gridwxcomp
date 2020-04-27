@@ -1,6 +1,11 @@
 Change Log
 **********
 
+Version 0.1.4
+=============
+
+Improve monthly comparison plots by pairing up data at daily frequency, dropping months where less than ``day_limi`` (default 10) paired days per month exist for each variable, and show gaps in line plots. 
+
 Version 0.1.3
 =============
 
