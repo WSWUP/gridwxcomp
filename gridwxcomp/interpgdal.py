@@ -125,8 +125,8 @@ class InterpGdal(object):
     # interp params, method key, param dic as values
     default_params = {
         'invdist':{
-            'power': 4,
-            'smoothing': 0.2,
+            'power': 2,
+            'smoothing': 0,
             'radius1': 0,
             'radius2': 0,
             'angle': 0,
@@ -135,16 +135,16 @@ class InterpGdal(object):
             'nodata': -999
         },
         'invdistnn':{
-            'power': 4,
-            'smoothing': 0.2,
+            'power': 2,
+            'smoothing': 0,
             'radius': 10,
             'max_points': 12,
             'min_points': 0,
             'nodata': -999
         },
         'average':{
-            'radius1': 2,
-            'radius2': 2,
+            'radius1': 0,
+            'radius2': 0,
             'angle': 0,
             'min_points': 0,
             'nodata': -999
@@ -269,7 +269,7 @@ class InterpGdal(object):
 
     def gdal_grid(self, layer='all', out_dir='', interp_meth='invdist', 
                   params=None, bounds=None, nx_cells=None, ny_cells=None, 
-                  scale_factor=0.1, z_stats=True, res_plot=True, grid_res=None,
+                  scale_factor=1, z_stats=True, res_plot=True, grid_res=None,
                   grid_id_name='GRIDMET_ID', options=None):
         """
         Run gdal_grid command line tool to interpolate point ratios.
@@ -297,7 +297,7 @@ class InterpGdal(object):
                 if None calculated from ``bounds``.
             ny_cells (int): default None. Number of pixels in y dim. of raster,
                 if None calculated from ``bounds``.
-            scale_factor (float, int): default 0.1. Scaling factor to apply to 
+            scale_factor (float, int): default 1. Scaling factor to apply to 
                 original gridMET fishnet to create resampling resolution. If 
                 scale_factor = 0.1, the resolution will be one tenth gridMET 
                 resolution or 400 m.
@@ -376,8 +376,8 @@ class InterpGdal(object):
             for the last call to :meth:`InterpGdal.gdal_grid`
             
             >>> test.params
-            {'power': 4,
-             'smoothing': 0.2,
+            {'power': 2,
+             'smoothing': 0,
              'radius1': 0,
              'radius2': 0,
              'angle': 0,
