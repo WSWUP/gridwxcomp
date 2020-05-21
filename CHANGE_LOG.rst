@@ -4,7 +4,13 @@ Change Log
 Version 0.1.4
 =============
 
-Improve monthly comparison plots by pairing up data at daily frequency, dropping months where less than ``day_limi`` (default 10) paired days per month exist for each variable, and show gaps in line plots. 
+Change calculation for maximum and minimum air temperature from station/gridMET ratios to station - gridMET (difference). The procedure for time aggregation has not changed.  
+
+Improve monthly comparison plots by pairing up data at daily frequency, dropping months where less than the newly added ``day_limit`` parameter (default 10) paired days per month exist for each variable, and show gaps in line plots. 
+
+Change default interpolation parameters (power and smooth) for inverse distance weighting algorithms to the default used by GDAL_GRID, i.e. power=2, smoothing=0.
+
+Set default scale factor for interpolation of bias ratios to 1 which results in 4 km (snapped to gridMET) resolution GeoTIFFs as opposed to previous 400 m resolution.  
 
 Version 0.1.3
 =============

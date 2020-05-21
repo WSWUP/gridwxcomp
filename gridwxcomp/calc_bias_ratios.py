@@ -463,29 +463,52 @@ def calc_bias_ratios(input_path, out_dir, method='long_term_mean',
         orig = result.copy()
         # monthly sums and day counts for each year
         result = result.groupby([result.index.year, result.index.month])\
-                .agg(['sum','count'])
+                .agg(['sum','mean','count'])
         result.index.set_names(['year', 'month'], inplace=True)
         # remove totals with less than XX days
         result = result[result[grid_var,'count']>=day_limit]
         # calc mean growing season and June to August ratios with month sums
-        grow_season = result.loc[
-            result.index.get_level_values('month').isin([4,5,6,7,8,9]),\
-                    (station_var)]['sum'].sum() / result.loc[
+        if grid_var in ('tmin_c','tmax_c'):
+            grow_season = result.loc[
                 result.index.get_level_values('month').isin([4,5,6,7,8,9]),\
-                        (grid_var)]['sum'].sum()
-        june_to_aug = result.loc[
-            result.index.get_level_values('month').isin([6,7,8]), (station_var)
-            ]['sum'].sum() / result.loc[result.index.get_level_values('month')\
-                    .isin([6,7,8]), (grid_var)]['sum'].sum()
-        ann_months = list(range(1,13))
-        annual = result.loc[
-            result.index.get_level_values('month').isin(ann_months),\
-                    (station_var)]['sum'].sum() / result.loc[
+                        (station_var)]['mean'].mean() - result.loc[
+                    result.index.get_level_values('month').isin([4,5,6,7,8,9]),\
+                            (grid_var)]['mean'].mean()
+            june_to_aug = result.loc[
+                result.index.get_level_values('month').isin(
+                    [6,7,8]), (station_var)]['mean'].mean()\
+                            -result.loc[result.index.get_level_values('month')\
+                        .isin([6,7,8]), (grid_var)]['mean'].mean()
+            ann_months = list(range(1,13))
+            annual = result.loc[
                 result.index.get_level_values('month').isin(ann_months),\
-                        (grid_var)]['sum'].sum()
+                        (station_var)]['mean'].mean() - result.loc[
+                    result.index.get_level_values('month').isin(ann_months),\
+                            (grid_var)]['mean'].mean()
+        else:
+            grow_season = result.loc[
+                result.index.get_level_values('month').isin([4,5,6,7,8,9]),\
+                        (station_var)]['sum'].sum() / result.loc[
+                    result.index.get_level_values('month').isin([4,5,6,7,8,9]),\
+                            (grid_var)]['sum'].sum()
+            june_to_aug = result.loc[
+                result.index.get_level_values('month').isin(
+                    [6,7,8]), (station_var)]['sum'].sum()\
+                            /result.loc[result.index.get_level_values('month')\
+                        .isin([6,7,8]), (grid_var)]['sum'].sum()
+            ann_months = list(range(1,13))
+            annual = result.loc[
+                result.index.get_level_values('month').isin(ann_months),\
+                        (station_var)]['sum'].sum() / result.loc[
+                    result.index.get_level_values('month').isin(ann_months),\
+                            (grid_var)]['sum'].sum()
         ratio = pd.DataFrame(columns = ['ratio', 'count'])
         # ratio of monthly sums for each year
-        ratio['ratio'] = (result[station_var,'sum'])/(result[grid_var,'sum'])
+        if grid_var in ('tmin_c','tmax_c'):
+            ratio['ratio']=\
+                (result[station_var,'mean'])-(result[grid_var,'mean'])
+        else:
+            ratio['ratio']=(result[station_var,'sum'])/(result[grid_var,'sum'])
         # monthly counts and stddev
         ratio['count'] = result.loc[:,(grid_var,'count')]
         if result.empty:
@@ -603,19 +626,33 @@ def calc_bias_ratios(input_path, out_dir, method='long_term_mean',
             for m in month_means.index:
                 month_means.loc[m,'month'] = f'{calendar.month_abbr[m]}_mean'
             month_means.set_index('month', inplace=True)
-            month_means['ratios'] =\
-                month_means[station_var] / month_means[grid_var]
+            if grid_var in ('tmin_c','tmax_c'):
+                month_means['ratios'] =\
+                    month_means[station_var] - month_means[grid_var]
+            else:
+                month_means['ratios'] =\
+                    month_means[station_var] / month_means[grid_var]
 
             long_term = month_means.drop([station_var, grid_var],1).T
             # non-monthly periods long-term mean to mean ratios
             grow_season = orig.loc[orig.index.month.isin([4,5,6,7,8,9])]
-            long_term['growseason_mean'] =\
-                grow_season[station_var].mean() / grow_season[grid_var].mean()
             summer_season = orig.loc[orig.index.month.isin([6,7,8])]
-            long_term['summer_mean'] =\
-                summer_season[station_var].mean()/summer_season[grid_var].mean()
-            long_term['annual_mean'] =\
-                orig[station_var].mean() / orig[grid_var].mean()
+            if grid_var in ('tmin_c','tmax_c'):
+                long_term['growseason_mean'] =\
+                    grow_season[station_var].mean()-grow_season[grid_var].mean()
+                long_term['summer_mean'] =\
+                    summer_season[station_var].mean()-summer_season[grid_var].mean()
+                long_term['annual_mean'] =\
+                    orig[station_var].mean() - orig[grid_var].mean()
+
+            else:
+                long_term['growseason_mean'] =\
+                    grow_season[station_var].mean() / grow_season[grid_var].mean()
+                long_term['summer_mean'] =\
+                    summer_season[station_var].mean()/summer_season[grid_var].mean()
+                long_term['annual_mean'] =\
+                    orig[station_var].mean() / orig[grid_var].mean()
+
             # overwrite only mean ratios (keep stats from mean of annual ratios)
             overwrite = long_term.columns.intersection(final_ratio.columns)
             #return long_term, overwrite, final_ratio
