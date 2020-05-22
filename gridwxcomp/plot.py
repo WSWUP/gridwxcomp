@@ -433,6 +433,8 @@ def monthly_comparison(input_csv, out_dir=None, day_limit=10):
         grid_data = []
         station_data = []
 
+        start_date = []
+        end_date = []
 
         logging.info('\nStation: {}'.format(row.STATION_ID))
         station_path = row.STATION_FILE_PATH
@@ -450,6 +452,8 @@ def monthly_comparison(input_csv, out_dir=None, day_limit=10):
         else:
             station_data = pd.read_excel(station_path, index_col=0,
                     parse_dates=True, sheet_name='Corrected Data')
+            start_date.append(station_data.index.date.min())
+            end_date.append(station_data.index.date.max())
 
         # Import GRIDMET Data
         grid_path = row.GRID_FILE_PATH
@@ -460,6 +464,15 @@ def monthly_comparison(input_csv, out_dir=None, day_limit=10):
         else:
             grid_data = pd.read_csv(grid_path, sep=',',parse_dates=True,
                                     index_col='date')
+
+            start_date.append(grid_data.index.date.min())
+            end_date.append(grid_data.index.date.max())
+
+            # prevent plotting gaps when time periods differ
+            start_date = max(start_date)
+            end_date = min(end_date)
+
+
             # Filter to specific year
             # grid_data = grid_data[grid_data['year'] == year]
 
@@ -488,6 +501,7 @@ def monthly_comparison(input_csv, out_dir=None, day_limit=10):
             merged = pd.concat([station_data[station_vars],
                                 grid_data[gridmet_vars]], axis=1
             )
+            merged = merged.loc[start_date:end_date]
 
             station_vars = ['TMin (C)', 'TMax (C)', 'wx_Ko_c', 'Rs (w/m2)',
                 'ws_2m (m/s)', 'Vapor Pres (kPa)', 'RHAvg (%)', 'Precip (mm)',
