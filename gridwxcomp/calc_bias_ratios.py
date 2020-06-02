@@ -344,6 +344,10 @@ def calc_bias_ratios(input_path, out_dir, method='long_term_mean',
             ``grid_var``, ``station_var``, or values of ``var_dict`` kwargs 
             are invalid.
         ValueError: if the ``method`` kwarg is invalid.
+
+    Note:
+        Growing season and summer periods over which ratios are calculated are
+        defined as April through October and June through August respectively. 
     
     Note:
         If an existing summary file contains a climate station that is being 
@@ -470,10 +474,10 @@ def calc_bias_ratios(input_path, out_dir, method='long_term_mean',
         # calc mean growing season and June to August ratios with month sums
         if grid_var in ('tmin_c','tmax_c'):
             grow_season = result.loc[
-                result.index.get_level_values('month').isin([4,5,6,7,8,9]),\
+                result.index.get_level_values('month').isin([4,5,6,7,8,9,10]),\
                         (station_var)]['mean'].mean() - result.loc[
-                    result.index.get_level_values('month').isin([4,5,6,7,8,9]),\
-                            (grid_var)]['mean'].mean()
+                            result.index.get_level_values('month').isin(
+                                [4,5,6,7,8,9,10]),(grid_var)]['mean'].mean()
             june_to_aug = result.loc[
                 result.index.get_level_values('month').isin(
                     [6,7,8]), (station_var)]['mean'].mean()\
@@ -487,10 +491,10 @@ def calc_bias_ratios(input_path, out_dir, method='long_term_mean',
                             (grid_var)]['mean'].mean()
         else:
             grow_season = result.loc[
-                result.index.get_level_values('month').isin([4,5,6,7,8,9]),\
-                        (station_var)]['sum'].sum() / result.loc[
-                    result.index.get_level_values('month').isin([4,5,6,7,8,9]),\
-                            (grid_var)]['sum'].sum()
+                result.index.get_level_values('month').isin([4,5,6,7,8,9,10]),\
+                    (station_var)]['sum'].sum() / result.loc[
+                        result.index.get_level_values('month').isin(
+                            [4,5,6,7,8,9,10]),(grid_var)]['sum'].sum()
             june_to_aug = result.loc[
                 result.index.get_level_values('month').isin(
                     [6,7,8]), (station_var)]['sum'].sum()\
@@ -541,7 +545,7 @@ def calc_bias_ratios(input_path, out_dir, method='long_term_mean',
         final_ratio['cv'] = stdev / final_ratio['ratio']
         # calc mean growing season, June through August, ann stdev
         grow_season_std = np.std(
-            ratio.loc[ratio.month.isin([4,5,6,7,8,9]), 'ratio'].values
+            ratio.loc[ratio.month.isin([4,5,6,7,8,9,10]), 'ratio'].values
         )
         june_to_aug_std = np.std(
             ratio.loc[ratio.month.isin([6,7,8]), 'ratio'].values
@@ -579,7 +583,7 @@ def calc_bias_ratios(input_path, out_dir, method='long_term_mean',
         final_ratio['annual_mean'] = annual
         # day counts for all years in non monthly periods
         final_ratio['growseason_count'] =\
-            counts.loc[counts.index.isin([4,5,6,7,8,9])].sum()
+            counts.loc[counts.index.isin([4,5,6,7,8,9,10])].sum()
         final_ratio['summer_count'] =\
             counts.loc[counts.index.isin([6,7,8])].sum()
         final_ratio['annual_count'] =\
@@ -635,7 +639,7 @@ def calc_bias_ratios(input_path, out_dir, method='long_term_mean',
 
             long_term = month_means.drop([station_var, grid_var],1).T
             # non-monthly periods long-term mean to mean ratios
-            grow_season = orig.loc[orig.index.month.isin([4,5,6,7,8,9])]
+            grow_season = orig.loc[orig.index.month.isin([4,5,6,7,8,9,10])]
             summer_season = orig.loc[orig.index.month.isin([6,7,8])]
             if grid_var in ('tmin_c','tmax_c'):
                 long_term['growseason_mean'] =\
