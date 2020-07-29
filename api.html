@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>API Reference &mdash; gridwxcomp 0.1.3.post2 documentation</title>
+  <title>API Reference &mdash; gridwxcomp 0.1.4 documentation</title>
   
 
   
@@ -23,13 +23,13 @@
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
-        <script type="text/javascript" src="_static/jquery.js"></script>
-        <script type="text/javascript" src="_static/underscore.js"></script>
-        <script type="text/javascript" src="_static/doctools.js"></script>
-        <script type="text/javascript" src="_static/language_data.js"></script>
-        <script type="text/javascript" src="_static/copybutton.js"></script>
-        <script type="text/javascript" src="_static/custom.js"></script>
-        <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/clipboard@1/dist/clipboard.min.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+        <script src="_static/copybutton.js"></script>
+        <script src="_static/custom.js"></script>
+        <script src="https://cdn.jsdelivr.net/npm/clipboard@1/dist/clipboard.min.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -66,7 +66,7 @@
             
             
               <div class="version">
-                0.1.3.post2
+                0.1.4
               </div>
             
           
@@ -122,6 +122,7 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="changelog.html">Change Log</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="changelog.html#version-0-1-4">Version 0.1.4</a></li>
 <li class="toctree-l2"><a class="reference internal" href="changelog.html#version-0-1-3">Version 0.1.3</a></li>
 <li class="toctree-l2"><a class="reference internal" href="changelog.html#version-0-1-2">Version 0.1.2</a></li>
 <li class="toctree-l2"><a class="reference internal" href="changelog.html#version-0-1-1">Version 0.1.1</a></li>
@@ -208,33 +209,33 @@
 <p>This page documents all routines provided by <code class="docutils literal notranslate"><span class="pre">gridwxcomp</span></code>. Tools for different routines are listed roughly in the order that they would normally be used.</p>
 <div class="contents local topic" id="contents">
 <ul class="simple">
-<li><p><a class="reference internal" href="#command-line-interface" id="id15">Command Line Interface</a></p>
+<li><p><a class="reference internal" href="#command-line-interface" id="id18">Command Line Interface</a></p>
 <ul>
-<li><p><a class="reference internal" href="#gridwxcomp" id="id16">gridwxcomp</a></p></li>
-<li><p><a class="reference internal" href="#gridwxcomp-prep-input" id="id17">gridwxcomp prep-input</a></p></li>
-<li><p><a class="reference internal" href="#gridwxcomp-calc-bias-ratios" id="id18">gridwxcomp calc-bias-ratios</a></p></li>
-<li><p><a class="reference internal" href="#gridwxcomp-download-gridmet-opendap" id="id19">gridwxcomp download-gridmet-opendap</a></p></li>
-<li><p><a class="reference internal" href="#gridwxcomp-spatial" id="id20">gridwxcomp spatial</a></p></li>
-<li><p><a class="reference internal" href="#gridwxcomp-plot" id="id21">gridwxcomp plot</a></p></li>
+<li><p><a class="reference internal" href="#gridwxcomp" id="id19">gridwxcomp</a></p></li>
+<li><p><a class="reference internal" href="#gridwxcomp-prep-input" id="id20">gridwxcomp prep-input</a></p></li>
+<li><p><a class="reference internal" href="#gridwxcomp-calc-bias-ratios" id="id21">gridwxcomp calc-bias-ratios</a></p></li>
+<li><p><a class="reference internal" href="#gridwxcomp-download-gridmet-opendap" id="id22">gridwxcomp download-gridmet-opendap</a></p></li>
+<li><p><a class="reference internal" href="#gridwxcomp-spatial" id="id23">gridwxcomp spatial</a></p></li>
+<li><p><a class="reference internal" href="#gridwxcomp-plot" id="id24">gridwxcomp plot</a></p></li>
 </ul>
 </li>
-<li><p><a class="reference internal" href="#python-functions-classes-and-modules" id="id22">Python functions, classes, and modules</a></p>
+<li><p><a class="reference internal" href="#python-functions-classes-and-modules" id="id25">Python functions, classes, and modules</a></p>
 <ul>
-<li><p><a class="reference internal" href="#prep-input" id="id23">prep_input</a></p></li>
-<li><p><a class="reference internal" href="#download-gridmet-opendap" id="id24">download_gridmet_opendap</a></p></li>
-<li><p><a class="reference internal" href="#module-gridwxcomp.calc_bias_ratios" id="id25">calc_bias_ratios</a></p></li>
-<li><p><a class="reference internal" href="#module-gridwxcomp.spatial" id="id26">spatial</a></p></li>
-<li><p><a class="reference internal" href="#module-gridwxcomp.plot" id="id27">plot</a></p></li>
-<li><p><a class="reference internal" href="#interpgdal" id="id28">InterpGdal</a></p></li>
-<li><p><a class="reference internal" href="#module-gridwxcomp.util" id="id29">util</a></p></li>
+<li><p><a class="reference internal" href="#prep-input" id="id26">prep_input</a></p></li>
+<li><p><a class="reference internal" href="#download-gridmet-opendap" id="id27">download_gridmet_opendap</a></p></li>
+<li><p><a class="reference internal" href="#module-gridwxcomp.calc_bias_ratios" id="id28">calc_bias_ratios</a></p></li>
+<li><p><a class="reference internal" href="#module-gridwxcomp.spatial" id="id29">spatial</a></p></li>
+<li><p><a class="reference internal" href="#module-gridwxcomp.plot" id="id30">plot</a></p></li>
+<li><p><a class="reference internal" href="#interpgdal" id="id31">InterpGdal</a></p></li>
+<li><p><a class="reference internal" href="#module-gridwxcomp.util" id="id32">util</a></p></li>
 </ul>
 </li>
 </ul>
 </div>
 <div class="section" id="command-line-interface">
-<h2><a class="toc-backref" href="#id15">Command Line Interface</a><a class="headerlink" href="#command-line-interface" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id18">Command Line Interface</a><a class="headerlink" href="#command-line-interface" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="gridwxcomp">
-<h3><a class="toc-backref" href="#id16">gridwxcomp</a><a class="headerlink" href="#gridwxcomp" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id19">gridwxcomp</a><a class="headerlink" href="#gridwxcomp" title="Permalink to this headline">¶</a></h3>
 <p>Access gridwxcomp functionality from the command line</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">gridwxcomp</span></code> tools are accesible via a command line interface using
 the console command “gridwxcomp”. To print a list of all available commands
@@ -283,7 +284,7 @@ from the command line type,:</p>
 
 </div>
 <div class="section" id="gridwxcomp-prep-input">
-<h3><a class="toc-backref" href="#id17">gridwxcomp prep-input</a><a class="headerlink" href="#gridwxcomp-prep-input" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id20">gridwxcomp prep-input</a><a class="headerlink" href="#gridwxcomp-prep-input" title="Permalink to this headline">¶</a></h3>
 <p>Pairs climate metadata with grid.</p>
 <p>Read climate station metadata file, e.g. from <a class="reference external" href="https://github.com/WSWUP/pyWeatherQAQC">PyWeatherQAQC</a>
 and match each station with gridcell locations, save CSV. The required
@@ -301,10 +302,10 @@ the file should be in CSV format and contain at least these four columns:</p>
 <blockquote>
 <div><table class="docutils align-default">
 <colgroup>
-<col style="width: 13%" />
-<col style="width: 16%" />
-<col style="width: 38%" />
-<col style="width: 33%" />
+<col style="width: 12%" />
+<col style="width: 15%" />
+<col style="width: 34%" />
+<col style="width: 40%" />
 </colgroup>
 <thead>
 <tr class="row-odd"><th class="head"><p>Latitude</p></th>
@@ -317,22 +318,22 @@ the file should be in CSV format and contain at least these four columns:</p>
 <tr class="row-even"><td><p>40.37232</p></td>
 <td><p>-110.20918</p></td>
 <td><p>Bluebell (Neola Area)</p></td>
-<td><p>BluebellUT_Daily</p></td>
+<td><p>BluebellUT_Daily_output</p></td>
 </tr>
 <tr class="row-odd"><td><p>38.38346</p></td>
 <td><p>-111.63583</p></td>
 <td><p>Loa</p></td>
-<td><p>LoaUT_Daily</p></td>
+<td><p>LoaUT_Daily_output</p></td>
 </tr>
 <tr class="row-even"><td><p>38.32829</p></td>
 <td><p>-108.85549</p></td>
 <td><p>Bedrock</p></td>
-<td><p>BedrockCO_Daily</p></td>
+<td><p>BedrockCO_Daily_output</p></td>
 </tr>
 <tr class="row-odd"><td><p>38.64294</p></td>
 <td><p>-109.39880</p></td>
 <td><p>Castle Valley near Moab</p></td>
-<td><p>CastleValleyUT_Daily</p></td>
+<td><p>CastleValleyUT_Daily_output</p></td>
 </tr>
 </tbody>
 </table>
@@ -342,7 +343,7 @@ files should be in CSV format with a date column with datetime formats,
 e.g. ‘12/01/2018’. By default <code class="docutils literal notranslate"><span class="pre">gridwxcomp</span> <span class="pre">prep-input</span></code> creates the file
 “merged_input.csv” in the current working directory which contains
 metadata from climate stations as well as the lat, long, and gridMET ID
-(cell index) of the nearest gridMET cell’s centroid.</p>
+(cell index) of the nearest gridMET cell centroid.</p>
 <p>If using a gridded product that is not gridMET this routine has the ability
 to create a grid metadata file if <code class="docutils literal notranslate"><span class="pre">--grid-path</span></code> and <code class="docutils literal notranslate"><span class="pre">--grid-id-name</span></code>
 arguments are given. The grid should be a uniform grid with a resolution in
@@ -355,52 +356,52 @@ the directory given as <code class="docutils literal notranslate"><span class="p
 </pre></div>
 </div>
 <p class="rubric">Options</p>
-<dl class="option">
+<dl class="std option">
 <dt id="cmdoption-gridwxcomp-prep-input-o">
-<code class="sig-name descname">-o</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--out-path</code><code class="sig-prename descclassname"> &lt;out_path&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-prep-input-o" title="Permalink to this definition">¶</a></dt>
+<span id="cmdoption-gridwxcomp-prep-input-out-path"></span><code class="sig-name descname">-o</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--out-path</code><code class="sig-prename descclassname"> &lt;out_path&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-prep-input-o" title="Permalink to this definition">¶</a></dt>
 <dd><p>File path to save output CSV</p>
 </dd></dl>
 
-<dl class="option">
+<dl class="std option">
 <dt id="cmdoption-gridwxcomp-prep-input-gm">
-<code class="sig-name descname">-gm</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--grid-meta</code><code class="sig-prename descclassname"> &lt;grid_meta&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-prep-input-gm" title="Permalink to this definition">¶</a></dt>
+<span id="cmdoption-gridwxcomp-prep-input-grid-meta"></span><code class="sig-name descname">-gm</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--grid-meta</code><code class="sig-prename descclassname"> &lt;grid_meta&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-prep-input-gm" title="Permalink to this definition">¶</a></dt>
 <dd><p>File path to grid metadata, e.g. gridmet_cell_data.csv</p>
 </dd></dl>
 
-<dl class="option">
+<dl class="std option">
 <dt id="cmdoption-gridwxcomp-prep-input-gp">
-<code class="sig-name descname">-gp</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--grid-path</code><code class="sig-prename descclassname"> &lt;grid_path&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-prep-input-gp" title="Permalink to this definition">¶</a></dt>
+<span id="cmdoption-gridwxcomp-prep-input-grid-path"></span><code class="sig-name descname">-gp</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--grid-path</code><code class="sig-prename descclassname"> &lt;grid_path&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-prep-input-gp" title="Permalink to this definition">¶</a></dt>
 <dd><p>File path to master grid vector file if not using gridMET</p>
 </dd></dl>
 
-<dl class="option">
+<dl class="std option">
 <dt id="cmdoption-gridwxcomp-prep-input-gin">
-<code class="sig-name descname">-gin</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--grid-id-name</code><code class="sig-prename descclassname"> &lt;grid_id_name&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-prep-input-gin" title="Permalink to this definition">¶</a></dt>
+<span id="cmdoption-gridwxcomp-prep-input-grid-id-name"></span><code class="sig-name descname">-gin</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--grid-id-name</code><code class="sig-prename descclassname"> &lt;grid_id_name&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-prep-input-gin" title="Permalink to this definition">¶</a></dt>
 <dd><p>Name of gridcell identifier if not using gridMET</p>
 </dd></dl>
 
-<dl class="option">
+<dl class="std option">
 <dt id="cmdoption-gridwxcomp-prep-input-gdd">
-<code class="sig-name descname">-gdd</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--grid-data-dir</code><code class="sig-prename descclassname"> &lt;grid_data_dir&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-prep-input-gdd" title="Permalink to this definition">¶</a></dt>
+<span id="cmdoption-gridwxcomp-prep-input-grid-data-dir"></span><code class="sig-name descname">-gdd</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--grid-data-dir</code><code class="sig-prename descclassname"> &lt;grid_data_dir&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-prep-input-gdd" title="Permalink to this definition">¶</a></dt>
 <dd><p>Directory with grid time series if not using gridMET</p>
 </dd></dl>
 
-<dl class="option">
+<dl class="std option">
 <dt id="cmdoption-gridwxcomp-prep-input-quiet">
 <code class="sig-name descname">--quiet</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-gridwxcomp-prep-input-quiet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Supress command line output</p>
 </dd></dl>
 
 <p class="rubric">Arguments</p>
-<dl class="option">
-<dt id="cmdoption-gridwxcomp-prep-input-arg-station-meta-path">
-<code class="sig-name descname">STATION_META_PATH</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-gridwxcomp-prep-input-arg-station-meta-path" title="Permalink to this definition">¶</a></dt>
+<dl class="std option">
+<dt id="cmdoption-gridwxcomp-prep-input-arg-STATION_META_PATH">
+<code class="sig-name descname">STATION_META_PATH</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-gridwxcomp-prep-input-arg-STATION_META_PATH" title="Permalink to this definition">¶</a></dt>
 <dd><p>Required argument</p>
 </dd></dl>
 
 </div>
 <div class="section" id="gridwxcomp-calc-bias-ratios">
-<h3><a class="toc-backref" href="#id18">gridwxcomp calc-bias-ratios</a><a class="headerlink" href="#gridwxcomp-calc-bias-ratios" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id21">gridwxcomp calc-bias-ratios</a><a class="headerlink" href="#gridwxcomp-calc-bias-ratios" title="Permalink to this headline">¶</a></h3>
 <p>Bias ratio statistics of station-to-gridMET</p>
 <p>Calculates mean bias ratios between climate station to gridMET variables
 at multiple time periods: monthly, annual, growing season. Other statistics
@@ -459,88 +460,88 @@ produced by <code class="docutils literal notranslate"><span class="pre">prep-in
 </pre></div>
 </div>
 <p class="rubric">Options</p>
-<dl class="option">
+<dl class="std option">
 <dt id="cmdoption-gridwxcomp-calc-bias-ratios-o">
-<code class="sig-name descname">-o</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--out-dir</code><code class="sig-prename descclassname"> &lt;out_dir&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-calc-bias-ratios-o" title="Permalink to this definition">¶</a></dt>
+<span id="cmdoption-gridwxcomp-calc-bias-ratios-out-dir"></span><code class="sig-name descname">-o</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--out-dir</code><code class="sig-prename descclassname"> &lt;out_dir&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-calc-bias-ratios-o" title="Permalink to this definition">¶</a></dt>
 <dd><p>Folder to save correction ratio summary CSV files</p>
 </dd></dl>
 
-<dl class="option">
+<dl class="std option">
 <dt id="cmdoption-gridwxcomp-calc-bias-ratios-meth">
-<code class="sig-name descname">-meth</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--method</code><code class="sig-prename descclassname"> &lt;method&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-calc-bias-ratios-meth" title="Permalink to this definition">¶</a></dt>
+<span id="cmdoption-gridwxcomp-calc-bias-ratios-method"></span><code class="sig-name descname">-meth</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--method</code><code class="sig-prename descclassname"> &lt;method&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-calc-bias-ratios-meth" title="Permalink to this definition">¶</a></dt>
 <dd><p>Mean ratio calculation, “long_term_mean” or “mean_of_annual”</p>
 </dd></dl>
 
-<dl class="option">
+<dl class="std option">
 <dt id="cmdoption-gridwxcomp-calc-bias-ratios-gin">
-<code class="sig-name descname">-gin</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--grid-id-name</code><code class="sig-prename descclassname"> &lt;grid_id_name&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-calc-bias-ratios-gin" title="Permalink to this definition">¶</a></dt>
+<span id="cmdoption-gridwxcomp-calc-bias-ratios-grid-id-name"></span><code class="sig-name descname">-gin</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--grid-id-name</code><code class="sig-prename descclassname"> &lt;grid_id_name&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-calc-bias-ratios-gin" title="Permalink to this definition">¶</a></dt>
 <dd><p>Name of gridcell identifier, need to specify if using own grid</p>
 </dd></dl>
 
-<dl class="option">
+<dl class="std option">
 <dt id="cmdoption-gridwxcomp-calc-bias-ratios-gv">
-<code class="sig-name descname">-gv</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--grid-var</code><code class="sig-prename descclassname"> &lt;grid_var&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-calc-bias-ratios-gv" title="Permalink to this definition">¶</a></dt>
+<span id="cmdoption-gridwxcomp-calc-bias-ratios-grid-var"></span><code class="sig-name descname">-gv</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--grid-var</code><code class="sig-prename descclassname"> &lt;grid_var&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-calc-bias-ratios-gv" title="Permalink to this definition">¶</a></dt>
 <dd><p>Name of grid climatic variable, e.g. etr_mm</p>
 </dd></dl>
 
-<dl class="option">
+<dl class="std option">
 <dt id="cmdoption-gridwxcomp-calc-bias-ratios-sv">
-<code class="sig-name descname">-sv</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--station-var</code><code class="sig-prename descclassname"> &lt;station_var&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-calc-bias-ratios-sv" title="Permalink to this definition">¶</a></dt>
+<span id="cmdoption-gridwxcomp-calc-bias-ratios-station-var"></span><code class="sig-name descname">-sv</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--station-var</code><code class="sig-prename descclassname"> &lt;station_var&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-calc-bias-ratios-sv" title="Permalink to this definition">¶</a></dt>
 <dd><p>Name of station climatic variable</p>
 </dd></dl>
 
-<dl class="option">
+<dl class="std option">
 <dt id="cmdoption-gridwxcomp-calc-bias-ratios-sdn">
-<code class="sig-name descname">-sdn</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--station-date-name</code><code class="sig-prename descclassname"> &lt;station_date_name&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-calc-bias-ratios-sdn" title="Permalink to this definition">¶</a></dt>
+<span id="cmdoption-gridwxcomp-calc-bias-ratios-station-date-name"></span><code class="sig-name descname">-sdn</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--station-date-name</code><code class="sig-prename descclassname"> &lt;station_date_name&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-calc-bias-ratios-sdn" title="Permalink to this definition">¶</a></dt>
 <dd><p>Name of date column in station time series files</p>
 </dd></dl>
 
-<dl class="option">
+<dl class="std option">
 <dt id="cmdoption-gridwxcomp-calc-bias-ratios-gdn">
-<code class="sig-name descname">-gdn</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--grid-date-name</code><code class="sig-prename descclassname"> &lt;grid_date_name&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-calc-bias-ratios-gdn" title="Permalink to this definition">¶</a></dt>
+<span id="cmdoption-gridwxcomp-calc-bias-ratios-grid-date-name"></span><code class="sig-name descname">-gdn</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--grid-date-name</code><code class="sig-prename descclassname"> &lt;grid_date_name&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-calc-bias-ratios-gdn" title="Permalink to this definition">¶</a></dt>
 <dd><p>Name of date column in grid time series files</p>
 </dd></dl>
 
-<dl class="option">
+<dl class="std option">
 <dt id="cmdoption-gridwxcomp-calc-bias-ratios-id">
-<code class="sig-name descname">-id</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--grid-id</code><code class="sig-prename descclassname"> &lt;grid_id&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-calc-bias-ratios-id" title="Permalink to this definition">¶</a></dt>
+<span id="cmdoption-gridwxcomp-calc-bias-ratios-grid-id"></span><code class="sig-name descname">-id</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--grid-id</code><code class="sig-prename descclassname"> &lt;grid_id&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-calc-bias-ratios-id" title="Permalink to this definition">¶</a></dt>
 <dd><p>grid ID for calculating ratios only for stations in that cell</p>
 </dd></dl>
 
-<dl class="option">
+<dl class="std option">
 <dt id="cmdoption-gridwxcomp-calc-bias-ratios-d">
-<code class="sig-name descname">-d</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--day-limit</code><code class="sig-prename descclassname"> &lt;day_limit&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-calc-bias-ratios-d" title="Permalink to this definition">¶</a></dt>
+<span id="cmdoption-gridwxcomp-calc-bias-ratios-day-limit"></span><code class="sig-name descname">-d</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--day-limit</code><code class="sig-prename descclassname"> &lt;day_limit&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-calc-bias-ratios-d" title="Permalink to this definition">¶</a></dt>
 <dd><p>Monthly day threshold, if missing more exclude month from calc</p>
 </dd></dl>
 
-<dl class="option">
+<dl class="std option">
 <dt id="cmdoption-gridwxcomp-calc-bias-ratios-y">
-<code class="sig-name descname">-y</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--years</code><code class="sig-prename descclassname"> &lt;years&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-calc-bias-ratios-y" title="Permalink to this definition">¶</a></dt>
+<span id="cmdoption-gridwxcomp-calc-bias-ratios-years"></span><code class="sig-name descname">-y</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--years</code><code class="sig-prename descclassname"> &lt;years&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-calc-bias-ratios-y" title="Permalink to this definition">¶</a></dt>
 <dd><p>Year(s) to use, e.g. 2010 or 2000-2010</p>
 </dd></dl>
 
-<dl class="option">
+<dl class="std option">
 <dt id="cmdoption-gridwxcomp-calc-bias-ratios-c">
-<code class="sig-name descname">-c</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--comp</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-gridwxcomp-calc-bias-ratios-c" title="Permalink to this definition">¶</a></dt>
+<span id="cmdoption-gridwxcomp-calc-bias-ratios-comp"></span><code class="sig-name descname">-c</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--comp</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-gridwxcomp-calc-bias-ratios-c" title="Permalink to this definition">¶</a></dt>
 <dd><p>Flag to NOT save comprehensive output CSV</p>
 </dd></dl>
 
-<dl class="option">
+<dl class="std option">
 <dt id="cmdoption-gridwxcomp-calc-bias-ratios-quiet">
 <code class="sig-name descname">--quiet</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-gridwxcomp-calc-bias-ratios-quiet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Supress command line output</p>
 </dd></dl>
 
 <p class="rubric">Arguments</p>
-<dl class="option">
-<dt id="cmdoption-gridwxcomp-calc-bias-ratios-arg-input-csv">
-<code class="sig-name descname">INPUT_CSV</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-gridwxcomp-calc-bias-ratios-arg-input-csv" title="Permalink to this definition">¶</a></dt>
+<dl class="std option">
+<dt id="cmdoption-gridwxcomp-calc-bias-ratios-arg-INPUT_CSV">
+<code class="sig-name descname">INPUT_CSV</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-gridwxcomp-calc-bias-ratios-arg-INPUT_CSV" title="Permalink to this definition">¶</a></dt>
 <dd><p>Required argument</p>
 </dd></dl>
 
 </div>
 <div class="section" id="gridwxcomp-download-gridmet-opendap">
-<h3><a class="toc-backref" href="#id19">gridwxcomp download-gridmet-opendap</a><a class="headerlink" href="#gridwxcomp-download-gridmet-opendap" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id22">gridwxcomp download-gridmet-opendap</a><a class="headerlink" href="#gridwxcomp-download-gridmet-opendap" title="Permalink to this headline">¶</a></h3>
 <p>Download gridMET climate time series using <a class="reference external" href="https://www.opendap.org">OpeNDAP</a></p>
 <p>Download gridMET time series for cells that are paired to climate stations
 in a CSV file that is first created by <code class="docutils literal notranslate"><span class="pre">gridwxcomp</span> <span class="pre">prep-input</span></code>. Options
@@ -552,57 +553,57 @@ not specified, gridMET time series CSVs are saved to a new directory named
 </pre></div>
 </div>
 <p class="rubric">Options</p>
-<dl class="option">
+<dl class="std option">
 <dt id="cmdoption-gridwxcomp-download-gridmet-opendap-o">
-<code class="sig-name descname">-o</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--out-dir</code><code class="sig-prename descclassname"> &lt;out_dir&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-download-gridmet-opendap-o" title="Permalink to this definition">¶</a></dt>
+<span id="cmdoption-gridwxcomp-download-gridmet-opendap-out-dir"></span><code class="sig-name descname">-o</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--out-dir</code><code class="sig-prename descclassname"> &lt;out_dir&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-download-gridmet-opendap-o" title="Permalink to this definition">¶</a></dt>
 <dd><p>Folder to save downloaded gridMET time series</p>
 </dd></dl>
 
-<dl class="option">
+<dl class="std option">
 <dt id="cmdoption-gridwxcomp-download-gridmet-opendap-y">
-<code class="sig-name descname">-y</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--years</code><code class="sig-prename descclassname"> &lt;years&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-download-gridmet-opendap-y" title="Permalink to this definition">¶</a></dt>
+<span id="cmdoption-gridwxcomp-download-gridmet-opendap-years"></span><code class="sig-name descname">-y</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--years</code><code class="sig-prename descclassname"> &lt;years&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-download-gridmet-opendap-y" title="Permalink to this definition">¶</a></dt>
 <dd><p>Year(s) to download, single year (YYYY) or range (YYYY-YYYY)</p>
 </dd></dl>
 
-<dl class="option">
+<dl class="std option">
 <dt id="cmdoption-gridwxcomp-download-gridmet-opendap-u">
-<code class="sig-name descname">-u</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--update-data</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-gridwxcomp-download-gridmet-opendap-u" title="Permalink to this definition">¶</a></dt>
+<span id="cmdoption-gridwxcomp-download-gridmet-opendap-update-data"></span><code class="sig-name descname">-u</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--update-data</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-gridwxcomp-download-gridmet-opendap-u" title="Permalink to this definition">¶</a></dt>
 <dd><p>Redownload existing data for given year(s)</p>
 </dd></dl>
 
-<dl class="option">
+<dl class="std option">
 <dt id="cmdoption-gridwxcomp-download-gridmet-opendap-quiet">
 <code class="sig-name descname">--quiet</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-gridwxcomp-download-gridmet-opendap-quiet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Supress command line output</p>
 </dd></dl>
 
 <p class="rubric">Arguments</p>
-<dl class="option">
-<dt id="cmdoption-gridwxcomp-download-gridmet-opendap-arg-input-csv">
-<code class="sig-name descname">INPUT_CSV</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-gridwxcomp-download-gridmet-opendap-arg-input-csv" title="Permalink to this definition">¶</a></dt>
+<dl class="std option">
+<dt id="cmdoption-gridwxcomp-download-gridmet-opendap-arg-INPUT_CSV">
+<code class="sig-name descname">INPUT_CSV</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-gridwxcomp-download-gridmet-opendap-arg-INPUT_CSV" title="Permalink to this definition">¶</a></dt>
 <dd><p>Required argument</p>
 </dd></dl>
 
 </div>
 <div class="section" id="gridwxcomp-spatial">
-<h3><a class="toc-backref" href="#id20">gridwxcomp spatial</a><a class="headerlink" href="#gridwxcomp-spatial" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id23">gridwxcomp spatial</a><a class="headerlink" href="#gridwxcomp-spatial" title="Permalink to this headline">¶</a></h3>
 <p>Spatially interpolate ratio statistics</p>
 <p>2-D interpolation of mean bias ratios or other statistics that exist in the
 <code class="docutils literal notranslate"><span class="pre">SUMMARY_COMP_CSV</span></code> file created by <code class="docutils literal notranslate"><span class="pre">gridwxcomp</span> <span class="pre">calc-bias-ratios</span></code>.
 Interpolation algorithms include those provided by <a class="reference external" href="https://www.gdal.org/gdal_grid.html">gdal_grid</a>:
 ‘invdist’ (default), ‘invdistnn’, ‘linear’, ‘average’, and ‘nearest’
-and <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.Rbf.html#scipy.interpolate.Rbf" title="(in SciPy v1.4.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">scipy.interpolate.Rbf</span></code></a>: ‘multiquadric’, ‘inverse’, ‘gaussian’,
+and <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.Rbf.html#scipy.interpolate.Rbf" title="(in SciPy v1.5.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">scipy.interpolate.Rbf</span></code></a>: ‘multiquadric’, ‘inverse’, ‘gaussian’,
 ‘linear_rbf’, ‘cubic’, ‘quintic’, and ‘thin_plate’. Parameters for gdal
 algorithms are set using <code class="docutils literal notranslate"><span class="pre">--params</span></code> whereas the <code class="docutils literal notranslate"><span class="pre">--smooth</span></code> parameter
 (default 0) is used by scipy radial basis functions. Default parameters
-for gdal are stored in <a class="reference internal" href="#gridwxcomp.InterpGdal.default_params" title="gridwxcomp.InterpGdal.default_params"><code class="xref py py-attr docutils literal notranslate"><span class="pre">gridwxcomp.InterpGdal.default_params</span></code></a>.</p>
+for gdal are stored in <a class="reference internal" href="#id15" title="gridwxcomp.InterpGdal.default_params"><code class="xref py py-attr docutils literal notranslate"><span class="pre">gridwxcomp.InterpGdal.default_params</span></code></a>.</p>
 <p>Interpolation resampling resolution can be down- or up-scaled using
 <code class="docutils literal notranslate"><span class="pre">--scale-factor</span></code> (default 0.1) which is applied to gridMET resolution of
 4 km.</p>
 <p>On the first run this command will produce a fishnet of gridMET cells
 that bound the climate stations in <code class="docutils literal notranslate"><span class="pre">SUMMARY_COMP_CSV</span></code> with optional
 buffer of gridMET cells which can later be overwritten.</p>
-<p>All mean bias ratios found within <a class="reference internal" href="#gridwxcomp.InterpGdal.default_layers" title="gridwxcomp.InterpGdal.default_layers"><code class="xref py py-attr docutils literal notranslate"><span class="pre">gridwxcomp.InterpGdal.default_layers</span></code></a>
+<p>All mean bias ratios found within <a class="reference internal" href="#id14" title="gridwxcomp.InterpGdal.default_layers"><code class="xref py py-attr docutils literal notranslate"><span class="pre">gridwxcomp.InterpGdal.default_layers</span></code></a>
 are interpolated by default unless <code class="docutils literal notranslate"><span class="pre">--layers</span></code> are specified. Interpolated
 residuals to station point ratios are also estimated. Zonal means for
 gridMET cells in the fishnet grid are extracted by default and assigned to
@@ -615,106 +616,106 @@ in <a class="reference internal" href="#gridwxcomp.spatial.make_grid" title="gri
 </pre></div>
 </div>
 <p class="rubric">Options</p>
-<dl class="option">
+<dl class="std option">
 <dt id="cmdoption-gridwxcomp-spatial-o">
-<code class="sig-name descname">-o</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--out</code><code class="sig-prename descclassname"> &lt;out&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-spatial-o" title="Permalink to this definition">¶</a></dt>
+<span id="cmdoption-gridwxcomp-spatial-out"></span><code class="sig-name descname">-o</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--out</code><code class="sig-prename descclassname"> &lt;out&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-spatial-o" title="Permalink to this definition">¶</a></dt>
 <dd><p>Subdirectory for saving interpolated rasters</p>
 </dd></dl>
 
-<dl class="option">
+<dl class="std option">
 <dt id="cmdoption-gridwxcomp-spatial-l">
-<code class="sig-name descname">-l</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--layer</code><code class="sig-prename descclassname"> &lt;layer&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-spatial-l" title="Permalink to this definition">¶</a></dt>
+<span id="cmdoption-gridwxcomp-spatial-layer"></span><code class="sig-name descname">-l</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--layer</code><code class="sig-prename descclassname"> &lt;layer&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-spatial-l" title="Permalink to this definition">¶</a></dt>
 <dd><p>Layers to interpolate comma separated, e.g. Jan_mean,Aug_mean</p>
 </dd></dl>
 
-<dl class="option">
+<dl class="std option">
 <dt id="cmdoption-gridwxcomp-spatial-gin">
-<code class="sig-name descname">-gin</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--grid-id-name</code><code class="sig-prename descclassname"> &lt;grid_id_name&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-spatial-gin" title="Permalink to this definition">¶</a></dt>
+<span id="cmdoption-gridwxcomp-spatial-grid-id-name"></span><code class="sig-name descname">-gin</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--grid-id-name</code><code class="sig-prename descclassname"> &lt;grid_id_name&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-spatial-gin" title="Permalink to this definition">¶</a></dt>
 <dd><p>Name of gridcell integer ID, must specify if not using gridMET</p>
 </dd></dl>
 
-<dl class="option">
+<dl class="std option">
 <dt id="cmdoption-gridwxcomp-spatial-b">
-<code class="sig-name descname">-b</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--buffer</code><code class="sig-prename descclassname"> &lt;buffer&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-spatial-b" title="Permalink to this definition">¶</a></dt>
+<span id="cmdoption-gridwxcomp-spatial-buffer"></span><code class="sig-name descname">-b</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--buffer</code><code class="sig-prename descclassname"> &lt;buffer&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-spatial-b" title="Permalink to this definition">¶</a></dt>
 <dd><p>Buffer for expanding interpolation region (number of gridcells)</p>
 </dd></dl>
 
-<dl class="option">
+<dl class="std option">
 <dt id="cmdoption-gridwxcomp-spatial-s">
-<code class="sig-name descname">-s</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--scale</code><code class="sig-prename descclassname"> &lt;scale&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-spatial-s" title="Permalink to this definition">¶</a></dt>
+<span id="cmdoption-gridwxcomp-spatial-scale"></span><code class="sig-name descname">-s</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--scale</code><code class="sig-prename descclassname"> &lt;scale&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-spatial-s" title="Permalink to this definition">¶</a></dt>
 <dd><p>Scale factor for gridMET interpolation, applied to 4 km res</p>
 </dd></dl>
 
-<dl class="option">
+<dl class="std option">
 <dt id="cmdoption-gridwxcomp-spatial-f">
-<code class="sig-name descname">-f</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--function</code><code class="sig-prename descclassname"> &lt;function&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-spatial-f" title="Permalink to this definition">¶</a></dt>
+<span id="cmdoption-gridwxcomp-spatial-function"></span><code class="sig-name descname">-f</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--function</code><code class="sig-prename descclassname"> &lt;function&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-spatial-f" title="Permalink to this definition">¶</a></dt>
 <dd><p>Algorithm name for spatial interpolation</p>
 </dd></dl>
 
-<dl class="option">
+<dl class="std option">
 <dt id="cmdoption-gridwxcomp-spatial-smooth">
 <code class="sig-name descname">--smooth</code><code class="sig-prename descclassname"> &lt;smooth&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-spatial-smooth" title="Permalink to this definition">¶</a></dt>
 <dd><p>Smoothing parameter for radial basis funciton interpolation</p>
 </dd></dl>
 
-<dl class="option">
+<dl class="std option">
 <dt id="cmdoption-gridwxcomp-spatial-p">
-<code class="sig-name descname">-p</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--params</code><code class="sig-prename descclassname"> &lt;params&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-spatial-p" title="Permalink to this definition">¶</a></dt>
+<span id="cmdoption-gridwxcomp-spatial-params"></span><code class="sig-name descname">-p</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--params</code><code class="sig-prename descclassname"> &lt;params&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-spatial-p" title="Permalink to this definition">¶</a></dt>
 <dd><p>Parameters for gdal_grid interpolation e.g. :power=2:smooth=0</p>
 </dd></dl>
 
-<dl class="option">
+<dl class="std option">
 <dt id="cmdoption-gridwxcomp-spatial-grid-res">
 <code class="sig-name descname">--grid-res</code><code class="sig-prename descclassname"> &lt;grid_res&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-spatial-grid-res" title="Permalink to this definition">¶</a></dt>
 <dd><p>Grid resolution in decimal degrees if not using gridMET</p>
 </dd></dl>
 
-<dl class="option">
+<dl class="std option">
 <dt id="cmdoption-gridwxcomp-spatial-z">
-<code class="sig-name descname">-z</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--no-zonal-stats</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-gridwxcomp-spatial-z" title="Permalink to this definition">¶</a></dt>
+<span id="cmdoption-gridwxcomp-spatial-no-zonal-stats"></span><code class="sig-name descname">-z</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--no-zonal-stats</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-gridwxcomp-spatial-z" title="Permalink to this definition">¶</a></dt>
 <dd><p>Flag to NOT extract zonal means of interpolated results</p>
 </dd></dl>
 
-<dl class="option">
+<dl class="std option">
 <dt id="cmdoption-gridwxcomp-spatial-overwrite-grid">
 <code class="sig-name descname">--overwrite-grid</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-gridwxcomp-spatial-overwrite-grid" title="Permalink to this definition">¶</a></dt>
 <dd><p>Flag to overwrite grid for zonal stats if already exists</p>
 </dd></dl>
 
-<dl class="option">
+<dl class="std option">
 <dt id="cmdoption-gridwxcomp-spatial-r">
-<code class="sig-name descname">-r</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--no-resid-plot</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-gridwxcomp-spatial-r" title="Permalink to this definition">¶</a></dt>
+<span id="cmdoption-gridwxcomp-spatial-no-resid-plot"></span><code class="sig-name descname">-r</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--no-resid-plot</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-gridwxcomp-spatial-r" title="Permalink to this definition">¶</a></dt>
 <dd><p>Flag to NOT plot station residuals between observed and interpolated data for layer</p>
 </dd></dl>
 
-<dl class="option">
+<dl class="std option">
 <dt id="cmdoption-gridwxcomp-spatial-options">
 <code class="sig-name descname">--options</code><code class="sig-prename descclassname"> &lt;options&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-spatial-options" title="Permalink to this definition">¶</a></dt>
 <dd><p>Extra command line arguments for gdal_grid interpolation</p>
 </dd></dl>
 
-<dl class="option">
+<dl class="std option">
 <dt id="cmdoption-gridwxcomp-spatial-gm">
-<code class="sig-name descname">-gm</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--grid-meta</code><code class="sig-prename descclassname"> &lt;grid_meta&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-spatial-gm" title="Permalink to this definition">¶</a></dt>
+<span id="cmdoption-gridwxcomp-spatial-grid-meta"></span><code class="sig-name descname">-gm</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--grid-meta</code><code class="sig-prename descclassname"> &lt;grid_meta&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-spatial-gm" title="Permalink to this definition">¶</a></dt>
 <dd><p>file path to gridcell metadata if not using gridMET</p>
 </dd></dl>
 
-<dl class="option">
+<dl class="std option">
 <dt id="cmdoption-gridwxcomp-spatial-quiet">
 <code class="sig-name descname">--quiet</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-gridwxcomp-spatial-quiet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Supress command line output</p>
 </dd></dl>
 
 <p class="rubric">Arguments</p>
-<dl class="option">
-<dt id="cmdoption-gridwxcomp-spatial-arg-summary-comp-csv">
-<code class="sig-name descname">SUMMARY_COMP_CSV</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-gridwxcomp-spatial-arg-summary-comp-csv" title="Permalink to this definition">¶</a></dt>
+<dl class="std option">
+<dt id="cmdoption-gridwxcomp-spatial-arg-SUMMARY_COMP_CSV">
+<code class="sig-name descname">SUMMARY_COMP_CSV</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-gridwxcomp-spatial-arg-SUMMARY_COMP_CSV" title="Permalink to this definition">¶</a></dt>
 <dd><p>Required argument</p>
 </dd></dl>
 
 </div>
 <div class="section" id="gridwxcomp-plot">
-<h3><a class="toc-backref" href="#id21">gridwxcomp plot</a><a class="headerlink" href="#gridwxcomp-plot" title="Permalink to this headline">¶</a></h3>
+<h3><a class="toc-backref" href="#id24">gridwxcomp plot</a><a class="headerlink" href="#gridwxcomp-plot" title="Permalink to this headline">¶</a></h3>
 <p>Create comparison or diagnostic graphics</p>
 <p>Plot time series and scatter comparison plots between station and gridMET
 paired variables at daily or monthly average time periods. Also allows for
@@ -742,93 +743,92 @@ be within excel files that follow the format produced by
 </pre></div>
 </div>
 <p class="rubric">Options</p>
-<dl class="option">
+<dl class="std option">
 <dt id="cmdoption-gridwxcomp-plot-t">
-<code class="sig-name descname">-t</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--plot-type</code><code class="sig-prename descclassname"> &lt;plot_type&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-plot-t" title="Permalink to this definition">¶</a></dt>
+<span id="cmdoption-gridwxcomp-plot-plot-type"></span><code class="sig-name descname">-t</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--plot-type</code><code class="sig-prename descclassname"> &lt;plot_type&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-plot-t" title="Permalink to this definition">¶</a></dt>
 <dd><p>Plot type, station comparison bar plot “station-bar” for a single variable, or station to gridMET time series comparison for multiple variables “station-grid-comp”</p>
 </dd></dl>
 
-<dl class="option">
+<dl class="std option">
 <dt id="cmdoption-gridwxcomp-plot-v">
-<code class="sig-name descname">-v</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--variable</code><code class="sig-prename descclassname"> &lt;variable&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-plot-v" title="Permalink to this definition">¶</a></dt>
+<span id="cmdoption-gridwxcomp-plot-variable"></span><code class="sig-name descname">-v</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--variable</code><code class="sig-prename descclassname"> &lt;variable&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-plot-v" title="Permalink to this definition">¶</a></dt>
 <dd><p>Variable to plot for –type=”station-bar” plots, default “annual_mean”, can also pass a comma separated list: e.g. “Jan_mean,Jan_res,Jan_est”</p>
 </dd></dl>
 
-<dl class="option">
+<dl class="std option">
 <dt id="cmdoption-gridwxcomp-plot-f">
-<code class="sig-name descname">-f</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--freq</code><code class="sig-prename descclassname"> &lt;freq&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-plot-f" title="Permalink to this definition">¶</a></dt>
+<span id="cmdoption-gridwxcomp-plot-freq"></span><code class="sig-name descname">-f</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--freq</code><code class="sig-prename descclassname"> &lt;freq&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-plot-f" title="Permalink to this definition">¶</a></dt>
 <dd><p>Time frequency for station-grid-comp plots “daily” or “monthly”</p>
 </dd></dl>
 
-<dl class="option">
+<dl class="std option">
 <dt id="cmdoption-gridwxcomp-plot-o">
-<code class="sig-name descname">-o</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--out-dir</code><code class="sig-prename descclassname"> &lt;out_dir&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-plot-o" title="Permalink to this definition">¶</a></dt>
+<span id="cmdoption-gridwxcomp-plot-out-dir"></span><code class="sig-name descname">-o</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--out-dir</code><code class="sig-prename descclassname"> &lt;out_dir&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-plot-o" title="Permalink to this definition">¶</a></dt>
 <dd><p>Folder to save plots</p>
 </dd></dl>
 
-<dl class="option">
+<dl class="std option">
 <dt id="cmdoption-gridwxcomp-plot-y">
-<code class="sig-name descname">-y</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--year</code><code class="sig-prename descclassname"> &lt;year&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-plot-y" title="Permalink to this definition">¶</a></dt>
+<span id="cmdoption-gridwxcomp-plot-year"></span><code class="sig-name descname">-y</code><code class="sig-prename descclassname"></code><code class="sig-prename descclassname">, </code><code class="sig-name descname">--year</code><code class="sig-prename descclassname"> &lt;year&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-plot-y" title="Permalink to this definition">¶</a></dt>
 <dd><p>Years for time series, single year YYYY or range YYYY-YYYY</p>
 </dd></dl>
 
-<dl class="option">
+<dl class="std option">
 <dt id="cmdoption-gridwxcomp-plot-x-label">
 <code class="sig-name descname">--x-label</code><code class="sig-prename descclassname"> &lt;x_label&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-plot-x-label" title="Permalink to this definition">¶</a></dt>
 <dd><p>X-axis label for station-bar plot</p>
 </dd></dl>
 
-<dl class="option">
+<dl class="std option">
 <dt id="cmdoption-gridwxcomp-plot-y-label">
 <code class="sig-name descname">--y-label</code><code class="sig-prename descclassname"> &lt;y_label&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-plot-y-label" title="Permalink to this definition">¶</a></dt>
 <dd><p>Y-axis label for station-bar plot</p>
 </dd></dl>
 
-<dl class="option">
+<dl class="std option">
 <dt id="cmdoption-gridwxcomp-plot-title">
 <code class="sig-name descname">--title</code><code class="sig-prename descclassname"> &lt;title&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-plot-title" title="Permalink to this definition">¶</a></dt>
 <dd><p>Title for station-bar plot</p>
 </dd></dl>
 
-<dl class="option">
+<dl class="std option">
 <dt id="cmdoption-gridwxcomp-plot-subtitle">
 <code class="sig-name descname">--subtitle</code><code class="sig-prename descclassname"> &lt;subtitle&gt;</code><a class="headerlink" href="#cmdoption-gridwxcomp-plot-subtitle" title="Permalink to this definition">¶</a></dt>
 <dd><p>Subtitle for station-bar plot, comma separated list for multiple</p>
 </dd></dl>
 
-<dl class="option">
+<dl class="std option">
 <dt id="cmdoption-gridwxcomp-plot-year-subtitle">
 <code class="sig-name descname">--year-subtitle</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-gridwxcomp-plot-year-subtitle" title="Permalink to this definition">¶</a></dt>
 <dd><p>Print subtitle with years used for station-bar plots</p>
 </dd></dl>
 
-<dl class="option">
+<dl class="std option">
 <dt id="cmdoption-gridwxcomp-plot-quiet">
 <code class="sig-name descname">--quiet</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-gridwxcomp-plot-quiet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Supress command line output</p>
 </dd></dl>
 
 <p class="rubric">Arguments</p>
-<dl class="option">
-<dt id="cmdoption-gridwxcomp-plot-arg-input-csv">
-<code class="sig-name descname">INPUT_CSV</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-gridwxcomp-plot-arg-input-csv" title="Permalink to this definition">¶</a></dt>
+<dl class="std option">
+<dt id="cmdoption-gridwxcomp-plot-arg-INPUT_CSV">
+<code class="sig-name descname">INPUT_CSV</code><code class="sig-prename descclassname"></code><a class="headerlink" href="#cmdoption-gridwxcomp-plot-arg-INPUT_CSV" title="Permalink to this definition">¶</a></dt>
 <dd><p>Required argument</p>
 </dd></dl>
 
 </div>
 </div>
 <div class="section" id="python-functions-classes-and-modules">
-<h2><a class="toc-backref" href="#id22">Python functions, classes, and modules</a><a class="headerlink" href="#python-functions-classes-and-modules" title="Permalink to this headline">¶</a></h2>
+<h2><a class="toc-backref" href="#id25">Python functions, classes, and modules</a><a class="headerlink" href="#python-functions-classes-and-modules" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="prep-input">
-<h3><a class="toc-backref" href="#id23">prep_input</a><a class="headerlink" href="#prep-input" title="Permalink to this headline">¶</a></h3>
-<dl class="function">
+<h3><a class="toc-backref" href="#id26">prep_input</a><a class="headerlink" href="#prep-input" title="Permalink to this headline">¶</a></h3>
+<dl class="py function">
 <dt id="gridwxcomp.prep_input">
-<code class="sig-prename descclassname">gridwxcomp.</code><code class="sig-name descname">prep_input</code><span class="sig-paren">(</span><em class="sig-param">station_path</em>, <em class="sig-param">out_path='merged_input.csv'</em>, <em class="sig-param">grid_meta_path=None</em>, <em class="sig-param">grid_path=None</em>, <em class="sig-param">grid_id_name=None</em>, <em class="sig-param">grid_data_dir=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gridwxcomp/prep_input.html#prep_input"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gridwxcomp.prep_input" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">gridwxcomp.</code><code class="sig-name descname">prep_input</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">station_path</span></em>, <em class="sig-param"><span class="n">out_path</span><span class="o">=</span><span class="default_value">'merged_input.csv'</span></em>, <em class="sig-param"><span class="n">grid_meta_path</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">grid_path</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">grid_id_name</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">grid_data_dir</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gridwxcomp/prep_input.html#prep_input"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gridwxcomp.prep_input" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read list of climate stations and match each with its closest gridcell,
 save CSV with information from both.</p>
 <p>Station time series files must be in the same directory as <cite>station_path</cite>
-metadata file and each file must begin with the name specifed as ‘Station’
-in the station metadata file.</p>
+metadata file.</p>
 <p>If using gridded data other than gridMET this function may be used to
 create a metadata CSV file of cell data for any arbitrary rectangular grid.
 The grid must be passed to <code class="docutils literal notranslate"><span class="pre">grid_path</span></code> and it must contain a cell
@@ -888,12 +888,11 @@ metadata file (<code class="docutils literal notranslate"><span class="pre">stat
 <li><p>Filename</p></li>
 </ul>
 </div></blockquote>
-<p>Also, the “Filename” column should have names that begin with the names
-of climate time series files that should be in the same directory as
-the station metadata file. For example, if one of the time series files
-is named “Bluebell_daily_data.csv” then all of the following are
-permissiable entries as the “Filename”: “Bluebell”, “Bluebell_daily”,
-or “Bluebell_daily_data.csv”.</p>
+<p>Also, the “Filename” column should match the names of the climate time
+series files that should be in the same directory as the station
+metadata file. For example, if one of the time series files is named
+“Bluebell_daily_data.csv” then the following are permissiable entries
+as the “Filename”: “Bluebell_daily_data” or “Bluebell_daily_data.csv”.</p>
 </div>
 <dl class="field-list simple">
 <dt class="field-odd">Raises</dt>
@@ -927,10 +926,10 @@ to grid data have no prefix.</p>
 
 </div>
 <div class="section" id="download-gridmet-opendap">
-<h3><a class="toc-backref" href="#id24">download_gridmet_opendap</a><a class="headerlink" href="#download-gridmet-opendap" title="Permalink to this headline">¶</a></h3>
-<dl class="function">
+<h3><a class="toc-backref" href="#id27">download_gridmet_opendap</a><a class="headerlink" href="#download-gridmet-opendap" title="Permalink to this headline">¶</a></h3>
+<dl class="py function">
 <dt id="gridwxcomp.download_gridmet_opendap">
-<code class="sig-prename descclassname">gridwxcomp.</code><code class="sig-name descname">download_gridmet_opendap</code><span class="sig-paren">(</span><em class="sig-param">input_csv</em>, <em class="sig-param">out_folder</em>, <em class="sig-param">year_filter=''</em>, <em class="sig-param">update_data=False</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gridwxcomp/download_gridmet_opendap.html#download_gridmet_opendap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gridwxcomp.download_gridmet_opendap" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">gridwxcomp.</code><code class="sig-name descname">download_gridmet_opendap</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_csv</span></em>, <em class="sig-param"><span class="n">out_folder</span></em>, <em class="sig-param"><span class="n">year_filter</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">update_data</span><span class="o">=</span><span class="default_value">False</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gridwxcomp/download_gridmet_opendap.html#download_gridmet_opendap"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gridwxcomp.download_gridmet_opendap" title="Permalink to this definition">¶</a></dt>
 <dd><p>Download gridMET time series data for multiple climate variables for
 select gridMET cells as listed in <code class="docutils literal notranslate"><span class="pre">input_csv</span></code>. Uses <a class="reference external" href="https://www.opendap.org">OpeNDAP</a>.</p>
 <dl class="field-list simple">
@@ -978,12 +977,12 @@ time series files that are paired with climate stations.</p>
 
 </div>
 <div class="section" id="module-gridwxcomp.calc_bias_ratios">
-<span id="calc-bias-ratios"></span><h3><a class="toc-backref" href="#id25">calc_bias_ratios</a><a class="headerlink" href="#module-gridwxcomp.calc_bias_ratios" title="Permalink to this headline">¶</a></h3>
+<span id="calc-bias-ratios"></span><h3><a class="toc-backref" href="#id28">calc_bias_ratios</a><a class="headerlink" href="#module-gridwxcomp.calc_bias_ratios" title="Permalink to this headline">¶</a></h3>
 <p>Calculate monthly bias ratios of variables from climate station
 to overlapping gridMET (or other gridded dataset) cells.</p>
 <p>Input file for this module must first be created by running
 <a class="reference internal" href="#gridwxcomp.prep_input" title="gridwxcomp.prep_input"><code class="xref py py-mod docutils literal notranslate"><span class="pre">gridwxcomp.prep_input</span></code></a> followed by <a class="reference internal" href="#gridwxcomp.download_gridmet_opendap" title="gridwxcomp.download_gridmet_opendap"><code class="xref py py-mod docutils literal notranslate"><span class="pre">gridwxcomp.download_gridmet_opendap</span></code></a>.</p>
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="gridwxcomp.calc_bias_ratios.GRIDMET_STATION_VARS">
 <code class="sig-prename descclassname">gridwxcomp.calc_bias_ratios.</code><code class="sig-name descname">GRIDMET_STATION_VARS</code><a class="headerlink" href="#gridwxcomp.calc_bias_ratios.GRIDMET_STATION_VARS" title="Permalink to this definition">¶</a></dt>
 <dd><p>mapping dictionary with gridMET
@@ -1019,9 +1018,9 @@ achieved by the <code class="docutils literal notranslate"><span class="pre">var
 to <a class="reference internal" href="#gridwxcomp.calc_bias_ratios.calc_bias_ratios" title="gridwxcomp.calc_bias_ratios.calc_bias_ratios"><code class="xref py py-func docutils literal notranslate"><span class="pre">calc_bias_ratios</span></code></a>.</p>
 </dd>
 </dl>
-<dl class="function">
+<dl class="py function">
 <dt id="gridwxcomp.calc_bias_ratios.calc_bias_ratios">
-<code class="sig-prename descclassname">gridwxcomp.calc_bias_ratios.</code><code class="sig-name descname">calc_bias_ratios</code><span class="sig-paren">(</span><em class="sig-param">input_path</em>, <em class="sig-param">out_dir</em>, <em class="sig-param">method='long_term_mean'</em>, <em class="sig-param">grid_id_name='GRIDMET_ID'</em>, <em class="sig-param">grid_var='etr_mm'</em>, <em class="sig-param">station_var=None</em>, <em class="sig-param">var_dict=None</em>, <em class="sig-param">station_date_name='date'</em>, <em class="sig-param">grid_date_name='date'</em>, <em class="sig-param">grid_ID=None</em>, <em class="sig-param">day_limit=10</em>, <em class="sig-param">years='all'</em>, <em class="sig-param">comp=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gridwxcomp/calc_bias_ratios.html#calc_bias_ratios"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gridwxcomp.calc_bias_ratios.calc_bias_ratios" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">gridwxcomp.calc_bias_ratios.</code><code class="sig-name descname">calc_bias_ratios</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_path</span></em>, <em class="sig-param"><span class="n">out_dir</span></em>, <em class="sig-param"><span class="n">method</span><span class="o">=</span><span class="default_value">'long_term_mean'</span></em>, <em class="sig-param"><span class="n">grid_id_name</span><span class="o">=</span><span class="default_value">'GRIDMET_ID'</span></em>, <em class="sig-param"><span class="n">grid_var</span><span class="o">=</span><span class="default_value">'etr_mm'</span></em>, <em class="sig-param"><span class="n">station_var</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">var_dict</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">station_date_name</span><span class="o">=</span><span class="default_value">'date'</span></em>, <em class="sig-param"><span class="n">grid_date_name</span><span class="o">=</span><span class="default_value">'date'</span></em>, <em class="sig-param"><span class="n">grid_ID</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">day_limit</span><span class="o">=</span><span class="default_value">10</span></em>, <em class="sig-param"><span class="n">years</span><span class="o">=</span><span class="default_value">'all'</span></em>, <em class="sig-param"><span class="n">comp</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gridwxcomp/calc_bias_ratios.html#calc_bias_ratios"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gridwxcomp.calc_bias_ratios.calc_bias_ratios" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read input CSV file and calculate mean monthly bias ratios between
 station to corresponding grid cells for all station and grid
 pairs, optionally calculate ratios for a single gridcell.</p>
@@ -1110,6 +1109,11 @@ with the column named “p” then,</p>
 </dl>
 <div class="admonition note">
 <p class="admonition-title">Note</p>
+<p>Growing season and summer periods over which ratios are calculated are
+defined as April through October and June through August respectively.</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
 <p>If an existing summary file contains a climate station that is being
 reprocessed its monthly bias ratios and other data will be overwritten.
 Also, to proceed with spatial analysis scripts, the comprehensive
@@ -1127,12 +1131,12 @@ variable names need to be explicitly passed as function arguments.</p>
 
 </div>
 <div class="section" id="module-gridwxcomp.spatial">
-<span id="spatial"></span><h3><a class="toc-backref" href="#id26">spatial</a><a class="headerlink" href="#module-gridwxcomp.spatial" title="Permalink to this headline">¶</a></h3>
+<span id="spatial"></span><h3><a class="toc-backref" href="#id29">spatial</a><a class="headerlink" href="#module-gridwxcomp.spatial" title="Permalink to this headline">¶</a></h3>
 <p>Perform multiple workflows needed to estimate the spatial surface (and
 other related outputs) of monthly and annual station-to-grid bias ratios for
 meteorological variables. The input file is first created by
 <a class="reference internal" href="#module-gridwxcomp.calc_bias_ratios" title="gridwxcomp.calc_bias_ratios"><code class="xref py py-mod docutils literal notranslate"><span class="pre">gridwxcomp.calc_bias_ratios</span></code></a>.</p>
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="gridwxcomp.spatial.GRIDMET_RES">
 <code class="sig-prename descclassname">gridwxcomp.spatial.</code><code class="sig-name descname">GRIDMET_RES</code><a class="headerlink" href="#gridwxcomp.spatial.GRIDMET_RES" title="Permalink to this definition">¶</a></dt>
 <dd><p>constant gridMET cell size in decimal degrees,
@@ -1144,7 +1148,7 @@ value = 0.041666666666666664.</p>
 </dl>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="gridwxcomp.spatial.PT_ATTRS">
 <code class="sig-prename descclassname">gridwxcomp.spatial.</code><code class="sig-name descname">PT_ATTRS</code><a class="headerlink" href="#gridwxcomp.spatial.PT_ATTRS" title="Permalink to this definition">¶</a></dt>
 <dd><p>all attributes expected to be in point shapefile
@@ -1161,9 +1165,9 @@ created for stations except station and drid IDs.</p>
 <p>All spatial files, i.e. vector and raster files, utilize the
 <em>ESRI Shapefile</em> or GeoTiff format.</p>
 </div>
-<dl class="function">
+<dl class="py function">
 <dt id="gridwxcomp.spatial.make_points_file">
-<code class="sig-prename descclassname">gridwxcomp.spatial.</code><code class="sig-name descname">make_points_file</code><span class="sig-paren">(</span><em class="sig-param">in_path</em>, <em class="sig-param">grid_id_name='GRIDMET_ID'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gridwxcomp/spatial.html#make_points_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gridwxcomp.spatial.make_points_file" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">gridwxcomp.spatial.</code><code class="sig-name descname">make_points_file</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">in_path</span></em>, <em class="sig-param"><span class="n">grid_id_name</span><span class="o">=</span><span class="default_value">'GRIDMET_ID'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gridwxcomp/spatial.html#make_points_file"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gridwxcomp.spatial.make_points_file" title="Permalink to this definition">¶</a></dt>
 <dd><p>Create vector shapefile of points with monthly mean bias ratios
 for climate stations using all stations found in a comprehensive
 CSV file created by <a class="reference internal" href="#module-gridwxcomp.calc_bias_ratios" title="gridwxcomp.calc_bias_ratios"><code class="xref py py-mod docutils literal notranslate"><span class="pre">gridwxcomp.calc_bias_ratios</span></code></a>.</p>
@@ -1205,9 +1209,9 @@ shapefile of the same climate variable.</p>
 </div>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="gridwxcomp.spatial.get_subgrid_bounds">
-<code class="sig-prename descclassname">gridwxcomp.spatial.</code><code class="sig-name descname">get_subgrid_bounds</code><span class="sig-paren">(</span><em class="sig-param">in_path</em>, <em class="sig-param">buffer</em>, <em class="sig-param">grid_res=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gridwxcomp/spatial.html#get_subgrid_bounds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gridwxcomp.spatial.get_subgrid_bounds" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">gridwxcomp.spatial.</code><code class="sig-name descname">get_subgrid_bounds</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">in_path</span></em>, <em class="sig-param"><span class="n">buffer</span></em>, <em class="sig-param"><span class="n">grid_res</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gridwxcomp/spatial.html#get_subgrid_bounds"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gridwxcomp.spatial.get_subgrid_bounds" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate bounding box for spatial interpolation grid from
 comprehensive summary CSV file containing monthly bias ratios
 and station locations.</p>
@@ -1243,9 +1247,9 @@ passed the bounds of the outer station locations.</p>
 </div>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="gridwxcomp.spatial.make_grid">
-<code class="sig-prename descclassname">gridwxcomp.spatial.</code><code class="sig-name descname">make_grid</code><span class="sig-paren">(</span><em class="sig-param">in_path</em>, <em class="sig-param">bounds=None</em>, <em class="sig-param">buffer=25</em>, <em class="sig-param">overwrite=False</em>, <em class="sig-param">grid_id_name='GRIDMET_ID'</em>, <em class="sig-param">grid_meta_path=None</em>, <em class="sig-param">grid_res=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gridwxcomp/spatial.html#make_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gridwxcomp.spatial.make_grid" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">gridwxcomp.spatial.</code><code class="sig-name descname">make_grid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">in_path</span></em>, <em class="sig-param"><span class="n">bounds</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">buffer</span><span class="o">=</span><span class="default_value">25</span></em>, <em class="sig-param"><span class="n">overwrite</span><span class="o">=</span><span class="default_value">False</span></em>, <em class="sig-param"><span class="n">grid_id_name</span><span class="o">=</span><span class="default_value">'GRIDMET_ID'</span></em>, <em class="sig-param"><span class="n">grid_meta_path</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">grid_res</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gridwxcomp/spatial.html#make_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gridwxcomp.spatial.make_grid" title="Permalink to this definition">¶</a></dt>
 <dd><p>Make fishnet grid (vector file of polygon geometry) for
 select gridcells based on bounding coordinates.</p>
 <p>Add grid ID values to each cell based on their centroid. If using gridMET,
@@ -1335,9 +1339,9 @@ be assigned to -999.</p>
 </div>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="gridwxcomp.spatial.interpolate">
-<code class="sig-prename descclassname">gridwxcomp.spatial.</code><code class="sig-name descname">interpolate</code><span class="sig-paren">(</span><em class="sig-param">in_path</em>, <em class="sig-param">layer='all'</em>, <em class="sig-param">out=None</em>, <em class="sig-param">scale_factor=0.1</em>, <em class="sig-param">function='invdist'</em>, <em class="sig-param">smooth=0</em>, <em class="sig-param">params=None</em>, <em class="sig-param">bounds=None</em>, <em class="sig-param">buffer=25</em>, <em class="sig-param">z_stats=True</em>, <em class="sig-param">res_plot=True</em>, <em class="sig-param">grid_id_name='GRIDMET_ID'</em>, <em class="sig-param">grid_res=None</em>, <em class="sig-param">options=None</em>, <em class="sig-param">grid_meta_path=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gridwxcomp/spatial.html#interpolate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gridwxcomp.spatial.interpolate" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">gridwxcomp.spatial.</code><code class="sig-name descname">interpolate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">in_path</span></em>, <em class="sig-param"><span class="n">layer</span><span class="o">=</span><span class="default_value">'all'</span></em>, <em class="sig-param"><span class="n">out</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">scale_factor</span><span class="o">=</span><span class="default_value">0.1</span></em>, <em class="sig-param"><span class="n">function</span><span class="o">=</span><span class="default_value">'invdist'</span></em>, <em class="sig-param"><span class="n">smooth</span><span class="o">=</span><span class="default_value">0</span></em>, <em class="sig-param"><span class="n">params</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">bounds</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">buffer</span><span class="o">=</span><span class="default_value">25</span></em>, <em class="sig-param"><span class="n">z_stats</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">res_plot</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">grid_id_name</span><span class="o">=</span><span class="default_value">'GRIDMET_ID'</span></em>, <em class="sig-param"><span class="n">grid_res</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">options</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">grid_meta_path</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gridwxcomp/spatial.html#interpolate"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gridwxcomp.spatial.interpolate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Use various methods to interpolate a 2-dimensional surface of
 calculated bias ratios or other statistics for station/gridMET
 pairs found in input comprehensive summary CSV.</p>
@@ -1364,7 +1368,7 @@ resolution or 400 m.</p></li>
 <li><p><strong>function</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – <p>default ‘invdist’. Interpolation method, gdal
 methods include: ‘invdist’, ‘indistnn’, ‘linear’, ‘average’,
 and ‘nearest’ see <a class="reference external" href="https://www.gdal.org/gdal_grid.html">gdal_grid</a>.
-Radial basis functions, see <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.Rbf.html#scipy.interpolate.Rbf" title="(in SciPy v1.4.1)"><code class="xref py py-class docutils literal notranslate"><span class="pre">scipy.interpolate.Rbf</span></code></a>,
+Radial basis functions, see <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.Rbf.html#scipy.interpolate.Rbf" title="(in SciPy v1.5.2)"><code class="xref py py-class docutils literal notranslate"><span class="pre">scipy.interpolate.Rbf</span></code></a>,
 include: ‘multiquadric’, ‘inverse’, ‘gaussian’, ‘linear_rbf’,
 ‘cubic’, ‘quintic’, and ‘thin_plate’.</p>
 </p></li>
@@ -1539,9 +1543,9 @@ gaps in the zonal statistics.</p>
 </div>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="gridwxcomp.spatial.calc_pt_error">
-<code class="sig-prename descclassname">gridwxcomp.spatial.</code><code class="sig-name descname">calc_pt_error</code><span class="sig-paren">(</span><em class="sig-param">in_path</em>, <em class="sig-param">out_dir</em>, <em class="sig-param">layer</em>, <em class="sig-param">grid_var</em>, <em class="sig-param">grid_id_name='GRIDMET_ID'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gridwxcomp/spatial.html#calc_pt_error"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gridwxcomp.spatial.calc_pt_error" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">gridwxcomp.spatial.</code><code class="sig-name descname">calc_pt_error</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">in_path</span></em>, <em class="sig-param"><span class="n">out_dir</span></em>, <em class="sig-param"><span class="n">layer</span></em>, <em class="sig-param"><span class="n">grid_var</span></em>, <em class="sig-param"><span class="n">grid_id_name</span><span class="o">=</span><span class="default_value">'GRIDMET_ID'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gridwxcomp/spatial.html#calc_pt_error"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gridwxcomp.spatial.calc_pt_error" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate point ratio estimates from interpolated raster, residuals,
 and add to output summary CSV and point shapefile. Make copies of
 updated files and saves to directory with interpolated rasters.</p>
@@ -1566,9 +1570,9 @@ because it copies data from the shapefile it created.</p>
 </div>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="gridwxcomp.spatial.zonal_stats">
-<code class="sig-prename descclassname">gridwxcomp.spatial.</code><code class="sig-name descname">zonal_stats</code><span class="sig-paren">(</span><em class="sig-param">in_path</em>, <em class="sig-param">raster</em>, <em class="sig-param">grid_id_name='GRIDMET_ID'</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gridwxcomp/spatial.html#zonal_stats"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gridwxcomp.spatial.zonal_stats" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">gridwxcomp.spatial.</code><code class="sig-name descname">zonal_stats</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">in_path</span></em>, <em class="sig-param"><span class="n">raster</span></em>, <em class="sig-param"><span class="n">grid_id_name</span><span class="o">=</span><span class="default_value">'GRIDMET_ID'</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gridwxcomp/spatial.html#zonal_stats"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gridwxcomp.spatial.zonal_stats" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calculate zonal means from interpolated surface of etr bias ratios
 created by <a class="reference internal" href="#gridwxcomp.spatial.interpolate" title="gridwxcomp.spatial.interpolate"><code class="xref py py-func docutils literal notranslate"><span class="pre">interpolate</span></code></a> using the fishnet grid created by
 <a class="reference internal" href="#gridwxcomp.spatial.make_grid" title="gridwxcomp.spatial.make_grid"><code class="xref py py-func docutils literal notranslate"><span class="pre">make_grid</span></code></a>. Save mean values for each gridcell to
@@ -1625,13 +1629,13 @@ zonal_stats.csv file will be overwritten.</p>
 
 </div>
 <div class="section" id="module-gridwxcomp.plot">
-<span id="plot"></span><h3><a class="toc-backref" href="#id27">plot</a><a class="headerlink" href="#module-gridwxcomp.plot" title="Permalink to this headline">¶</a></h3>
+<span id="plot"></span><h3><a class="toc-backref" href="#id30">plot</a><a class="headerlink" href="#module-gridwxcomp.plot" title="Permalink to this headline">¶</a></h3>
 <p>Create interactive HTML comparison plots between paired station and
 gridMET climatic variables or bar comparison plots between interpolated and
 station point data.</p>
-<dl class="function">
+<dl class="py function">
 <dt id="gridwxcomp.plot.daily_comparison">
-<code class="sig-prename descclassname">gridwxcomp.plot.</code><code class="sig-name descname">daily_comparison</code><span class="sig-paren">(</span><em class="sig-param">input_csv</em>, <em class="sig-param">out_dir=None</em>, <em class="sig-param">year_filter=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gridwxcomp/plot.html#daily_comparison"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gridwxcomp.plot.daily_comparison" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">gridwxcomp.plot.</code><code class="sig-name descname">daily_comparison</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_csv</span></em>, <em class="sig-param"><span class="n">out_dir</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">year_filter</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gridwxcomp/plot.html#daily_comparison"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gridwxcomp.plot.daily_comparison" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compare daily weather station data from
 <a class="reference external" href="https://github.com/WSWUP/pyWeatherQAQC">PyWeatherQAQC</a> with gridMET
 for each month in year specified.</p>
@@ -1688,9 +1692,9 @@ month will not be created.</p>
 </div>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="gridwxcomp.plot.monthly_comparison">
-<code class="sig-prename descclassname">gridwxcomp.plot.</code><code class="sig-name descname">monthly_comparison</code><span class="sig-paren">(</span><em class="sig-param">input_csv</em>, <em class="sig-param">out_dir=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gridwxcomp/plot.html#monthly_comparison"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gridwxcomp.plot.monthly_comparison" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">gridwxcomp.plot.</code><code class="sig-name descname">monthly_comparison</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_csv</span></em>, <em class="sig-param"><span class="n">out_dir</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">day_limit</span><span class="o">=</span><span class="default_value">10</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gridwxcomp/plot.html#monthly_comparison"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gridwxcomp.plot.monthly_comparison" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compare monthly average weather station data from
 <a class="reference external" href="https://github.com/WSWUP/pyWeatherQAQC">PyWeatherQAQC</a> with gridMET.</p>
 <p>The <a class="reference internal" href="#gridwxcomp.plot.monthly_comparison" title="gridwxcomp.plot.monthly_comparison"><code class="xref py py-func docutils literal notranslate"><span class="pre">monthly_comparison</span></code></a> function produces HTML files with time series
@@ -1705,7 +1709,11 @@ created by running <a class="reference internal" href="#gridwxcomp.prep_input" t
 <a class="reference internal" href="#gridwxcomp.download_gridmet_opendap" title="gridwxcomp.download_gridmet_opendap"><code class="xref py py-mod docutils literal notranslate"><span class="pre">gridwxcomp.download_gridmet_opendap</span></code></a>.</p>
 </dd>
 <dt class="field-even">Keyword Arguments</dt>
-<dd class="field-even"><p><strong>out_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – default None. Directory to save comparison plots.</p>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>out_dir</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – default None. Directory to save comparison plots.</p></li>
+<li><p><strong>day_limit</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – default 10. Number of paired days per month that must
+exist for variable to be plotted.</p></li>
+</ul>
 </dd>
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>None</p>
@@ -1739,9 +1747,9 @@ station will not be created.</p>
 </div>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="gridwxcomp.plot.station_bar_plot">
-<code class="sig-prename descclassname">gridwxcomp.plot.</code><code class="sig-name descname">station_bar_plot</code><span class="sig-paren">(</span><em class="sig-param">summary_csv</em>, <em class="sig-param">layer</em>, <em class="sig-param">out_dir=None</em>, <em class="sig-param">x_label=None</em>, <em class="sig-param">y_label=None</em>, <em class="sig-param">title=None</em>, <em class="sig-param">subtitle=None</em>, <em class="sig-param">year_subtitle=True</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gridwxcomp/plot.html#station_bar_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gridwxcomp.plot.station_bar_plot" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">gridwxcomp.plot.</code><code class="sig-name descname">station_bar_plot</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">summary_csv</span></em>, <em class="sig-param"><span class="n">layer</span></em>, <em class="sig-param"><span class="n">out_dir</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">x_label</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">y_label</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">title</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">subtitle</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">year_subtitle</span><span class="o">=</span><span class="default_value">True</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gridwxcomp/plot.html#station_bar_plot"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gridwxcomp.plot.station_bar_plot" title="Permalink to this definition">¶</a></dt>
 <dd><p>Produce an interactive bar chart comparing multiple climate stations to each
 other for a particular variable, e.g. bias ratios or interpolated residuals.</p>
 <dl class="field-list simple">
@@ -1803,10 +1811,10 @@ and the <code class="docutils literal notranslate"><span class="pre">layer</span
 
 </div>
 <div class="section" id="interpgdal">
-<h3><a class="toc-backref" href="#id28">InterpGdal</a><a class="headerlink" href="#interpgdal" title="Permalink to this headline">¶</a></h3>
-<dl class="class">
+<h3><a class="toc-backref" href="#id31">InterpGdal</a><a class="headerlink" href="#interpgdal" title="Permalink to this headline">¶</a></h3>
+<dl class="py class">
 <dt id="gridwxcomp.InterpGdal">
-<em class="property">class </em><code class="sig-prename descclassname">gridwxcomp.</code><code class="sig-name descname">InterpGdal</code><span class="sig-paren">(</span><em class="sig-param">summary_csv_path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gridwxcomp/interpgdal.html#InterpGdal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gridwxcomp.InterpGdal" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">gridwxcomp.</code><code class="sig-name descname">InterpGdal</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">summary_csv_path</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gridwxcomp/interpgdal.html#InterpGdal"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gridwxcomp.InterpGdal" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference external" href="https://docs.python.org/3/library/functions.html#object" title="(in Python v3.8)"><code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></a></p>
 <p>Usage of gdal command line tools within <code class="docutils literal notranslate"><span class="pre">gridwxcomp</span></code>, currently
 utilizes the <a class="reference external" href="https://www.gdal.org/gdal_grid.html">gdal_grid</a>
@@ -1818,7 +1826,7 @@ by <a class="reference internal" href="#module-gridwxcomp.calc_bias_ratios" titl
 lat, and long.</p>
 </dd>
 </dl>
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="gridwxcomp.InterpGdal.CELL_SIZE">
 <code class="sig-name descname">CELL_SIZE</code><a class="headerlink" href="#gridwxcomp.InterpGdal.CELL_SIZE" title="Permalink to this definition">¶</a></dt>
 <dd><p>resolution of gridMET dataset in decimal degrees.</p>
@@ -1829,7 +1837,7 @@ lat, and long.</p>
 </dl>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="gridwxcomp.InterpGdal.interp_methods">
 <code class="sig-name descname">interp_methods</code><a class="headerlink" href="#gridwxcomp.InterpGdal.interp_methods" title="Permalink to this definition">¶</a></dt>
 <dd><p>gdal_grid interpolation algorithms.</p>
@@ -1840,7 +1848,7 @@ lat, and long.</p>
 </dl>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="gridwxcomp.InterpGdal.default_layers">
 <code class="sig-name descname">default_layers</code><a class="headerlink" href="#gridwxcomp.InterpGdal.default_layers" title="Permalink to this definition">¶</a></dt>
 <dd><p>layers to interpolate created by
@@ -1853,7 +1861,7 @@ lat, and long.</p>
 </dl>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="gridwxcomp.InterpGdal.default_params">
 <code class="sig-name descname">default_params</code><a class="headerlink" href="#gridwxcomp.InterpGdal.default_params" title="Permalink to this definition">¶</a></dt>
 <dd><p>dictionary with default parameters for each
@@ -1867,7 +1875,7 @@ parameter names keys and corresponding values.</p>
 </dl>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="gridwxcomp.InterpGdal.var_residual_names">
 <code class="sig-name descname">var_residual_names</code><a class="headerlink" href="#gridwxcomp.InterpGdal.var_residual_names" title="Permalink to this definition">¶</a></dt>
 <dd><p>dictionary that maps names of bias ratios
@@ -1880,7 +1888,7 @@ storing as a field name in an ESRI shapefile (i.e. &gt; 10 chars).</p>
 </dl>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="gridwxcomp.InterpGdal.summary_csv_path">
 <code class="sig-name descname">summary_csv_path</code><a class="headerlink" href="#gridwxcomp.InterpGdal.summary_csv_path" title="Permalink to this definition">¶</a></dt>
 <dd><p>absolute path object to
@@ -1892,12 +1900,12 @@ input <code class="docutils literal notranslate"><span class="pre">summary_csv_p
 </dl>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="gridwxcomp.InterpGdal.layers">
 <code class="sig-name descname">layers</code><a class="headerlink" href="#gridwxcomp.InterpGdal.layers" title="Permalink to this definition">¶</a></dt>
 <dd><p>list of layers in <code class="docutils literal notranslate"><span class="pre">summary_csv_path</span></code> to interpolate
 e.g. when using <a class="reference internal" href="#gridwxcomp.InterpGdal.gdal_grid" title="gridwxcomp.InterpGdal.gdal_grid"><code class="xref py py-meth docutils literal notranslate"><span class="pre">InterpGdal.gdal_grid</span></code></a> with <code class="docutils literal notranslate"><span class="pre">layer=&quot;all&quot;</span></code>
-defaults to <a class="reference internal" href="#gridwxcomp.InterpGdal.default_layers" title="gridwxcomp.InterpGdal.default_layers"><code class="xref py py-attr docutils literal notranslate"><span class="pre">InterpGdal.default_layers</span></code></a>.</p>
+defaults to <a class="reference internal" href="#id14" title="gridwxcomp.InterpGdal.default_layers"><code class="xref py py-attr docutils literal notranslate"><span class="pre">InterpGdal.default_layers</span></code></a>.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Type</dt>
 <dd class="field-odd"><p><a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#list" title="(in Python v3.8)">list</a></p>
@@ -1905,7 +1913,7 @@ defaults to <a class="reference internal" href="#gridwxcomp.InterpGdal.default_l
 </dl>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="gridwxcomp.InterpGdal.grid_bounds">
 <code class="sig-name descname">grid_bounds</code><a class="headerlink" href="#gridwxcomp.InterpGdal.grid_bounds" title="Permalink to this definition">¶</a></dt>
 <dd><p>default None. Extent for interpolation
@@ -1917,7 +1925,7 @@ raster in order (min long, max long, min lat, max lat).</p>
 </dl>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="gridwxcomp.InterpGdal.interp_meth">
 <code class="sig-name descname">interp_meth</code><a class="headerlink" href="#gridwxcomp.InterpGdal.interp_meth" title="Permalink to this definition">¶</a></dt>
 <dd><p>default ‘invdist’. gdal_grid interpolation method.</p>
@@ -1928,7 +1936,7 @@ raster in order (min long, max long, min lat, max lat).</p>
 </dl>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="gridwxcomp.InterpGdal.interped_rasters">
 <code class="sig-name descname">interped_rasters</code><a class="headerlink" href="#gridwxcomp.InterpGdal.interped_rasters" title="Permalink to this definition">¶</a></dt>
 <dd><p>empty list that is appended with
@@ -1941,7 +1949,7 @@ raster in order (min long, max long, min lat, max lat).</p>
 </dl>
 </dd></dl>
 
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="gridwxcomp.InterpGdal.params">
 <code class="sig-name descname">params</code><a class="headerlink" href="#gridwxcomp.InterpGdal.params" title="Permalink to this definition">¶</a></dt>
 <dd><p>default None. After <a class="reference internal" href="#gridwxcomp.InterpGdal.gdal_grid" title="gridwxcomp.InterpGdal.gdal_grid"><code class="xref py py-meth docutils literal notranslate"><span class="pre">InterpGdal.gdal_grid</span></code></a>
@@ -1985,37 +1993,37 @@ inverse distance to a power interpolation method,</p>
 is the default. To use another interpolation method we would
 assign the <code class="docutils literal notranslate"><span class="pre">interp_meth</span></code> kwarg to <a class="reference internal" href="#gridwxcomp.InterpGdal.gdal_grid" title="gridwxcomp.InterpGdal.gdal_grid"><code class="xref py py-meth docutils literal notranslate"><span class="pre">InterpGdal.gdal_grid</span></code></a>.
 Similarly, we could experiment with other parameters which all can be
-found in the class attribute <a class="reference internal" href="#gridwxcomp.InterpGdal.default_params" title="gridwxcomp.InterpGdal.default_params"><code class="xref py py-attr docutils literal notranslate"><span class="pre">InterpGdal.default_params</span></code></a>. The
+found in the class attribute <a class="reference internal" href="#id15" title="gridwxcomp.InterpGdal.default_params"><code class="xref py py-attr docutils literal notranslate"><span class="pre">InterpGdal.default_params</span></code></a>. The
 instance variable <a class="reference internal" href="#gridwxcomp.InterpGdal.params" title="gridwxcomp.InterpGdal.params"><code class="xref py py-attr docutils literal notranslate"><span class="pre">InterpGdal.params</span></code></a> can also be used to save
 metadata on parameters used for each run.</p>
-<dl class="attribute">
+<dl class="py attribute">
 <dt id="gridwxcomp.InterpGdal.GRIDMET_RES">
 <code class="sig-name descname">GRIDMET_RES</code><em class="property"> = 0.041666666666666664</em><a class="headerlink" href="#gridwxcomp.InterpGdal.GRIDMET_RES" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
-<dt>
-<code class="sig-name descname">interp_methods</code><em class="property"> = ('average', 'invdist', 'invdistnn', 'linear', 'nearest')</em></dt>
+<dl class="py attribute">
+<dt id="id0">
+<code class="sig-name descname">interp_methods</code><em class="property"> = ('average', 'invdist', 'invdistnn', 'linear', 'nearest')</em><a class="headerlink" href="#id0" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
-<dt>
-<code class="sig-name descname">default_layers</code><em class="property"> = ('Jan_mean', 'Feb_mean', 'Mar_mean', 'Apr_mean', 'May_mean', 'Jun_mean', 'Jul_mean', 'Aug_mean', 'Sep_mean', 'Oct_mean', 'Nov_mean', 'Dec_mean', 'growseason_mean', 'annual_mean', 'summer_mean')</em></dt>
+<dl class="py attribute">
+<dt id="id14">
+<code class="sig-name descname">default_layers</code><em class="property"> = ('Jan_mean', 'Feb_mean', 'Mar_mean', 'Apr_mean', 'May_mean', 'Jun_mean', 'Jul_mean', 'Aug_mean', 'Sep_mean', 'Oct_mean', 'Nov_mean', 'Dec_mean', 'growseason_mean', 'annual_mean', 'summer_mean')</em><a class="headerlink" href="#id14" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
-<dt>
-<code class="sig-name descname">default_params</code><em class="property"> = {'average': {'angle': 0, 'min_points': 0, 'nodata': -999, 'radius1': 2, 'radius2': 2}, 'invdist': {'angle': 0, 'max_points': 0, 'min_points': 0, 'nodata': -999, 'power': 4, 'radius1': 0, 'radius2': 0, 'smoothing': 0.2}, 'invdistnn': {'max_points': 12, 'min_points': 0, 'nodata': -999, 'power': 4, 'radius': 10, 'smoothing': 0.2}, 'linear': {'nodata': -999, 'radius': -1}, 'nearest': {'angle': 0, 'nodata': -999, 'radius1': 0, 'radius2': 0}}</em></dt>
+<dl class="py attribute">
+<dt id="id15">
+<code class="sig-name descname">default_params</code><em class="property"> = {'average': {'angle': 0, 'min_points': 0, 'nodata': -999, 'radius1': 0, 'radius2': 0}, 'invdist': {'angle': 0, 'max_points': 0, 'min_points': 0, 'nodata': -999, 'power': 2, 'radius1': 0, 'radius2': 0, 'smoothing': 0}, 'invdistnn': {'max_points': 12, 'min_points': 0, 'nodata': -999, 'power': 2, 'radius': 10, 'smoothing': 0}, 'linear': {'nodata': -999, 'radius': -1}, 'nearest': {'angle': 0, 'nodata': -999, 'radius1': 0, 'radius2': 0}}</em><a class="headerlink" href="#id15" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="attribute">
-<dt>
-<code class="sig-name descname">var_residual_names</code><em class="property"> = {'annual_mean': 'annual_res', 'growseason_mean': 'grow_res', 'summer_mean': 'summer_res'}</em></dt>
+<dl class="py attribute">
+<dt id="id16">
+<code class="sig-name descname">var_residual_names</code><em class="property"> = {'annual_mean': 'annual_res', 'growseason_mean': 'grow_res', 'summer_mean': 'summer_res'}</em><a class="headerlink" href="#id16" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
-<dl class="method">
+<dl class="py method">
 <dt id="gridwxcomp.InterpGdal.gdal_grid">
-<code class="sig-name descname">gdal_grid</code><span class="sig-paren">(</span><em class="sig-param">layer='all'</em>, <em class="sig-param">out_dir=''</em>, <em class="sig-param">interp_meth='invdist'</em>, <em class="sig-param">params=None</em>, <em class="sig-param">bounds=None</em>, <em class="sig-param">nx_cells=None</em>, <em class="sig-param">ny_cells=None</em>, <em class="sig-param">scale_factor=0.1</em>, <em class="sig-param">z_stats=True</em>, <em class="sig-param">res_plot=True</em>, <em class="sig-param">grid_res=None</em>, <em class="sig-param">grid_id_name='GRIDMET_ID'</em>, <em class="sig-param">options=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gridwxcomp/interpgdal.html#InterpGdal.gdal_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gridwxcomp.InterpGdal.gdal_grid" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">gdal_grid</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">layer</span><span class="o">=</span><span class="default_value">'all'</span></em>, <em class="sig-param"><span class="n">out_dir</span><span class="o">=</span><span class="default_value">''</span></em>, <em class="sig-param"><span class="n">interp_meth</span><span class="o">=</span><span class="default_value">'invdist'</span></em>, <em class="sig-param"><span class="n">params</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">bounds</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">nx_cells</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ny_cells</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">scale_factor</span><span class="o">=</span><span class="default_value">1</span></em>, <em class="sig-param"><span class="n">z_stats</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">res_plot</span><span class="o">=</span><span class="default_value">True</span></em>, <em class="sig-param"><span class="n">grid_res</span><span class="o">=</span><span class="default_value">None</span></em>, <em class="sig-param"><span class="n">grid_id_name</span><span class="o">=</span><span class="default_value">'GRIDMET_ID'</span></em>, <em class="sig-param"><span class="n">options</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gridwxcomp/interpgdal.html#InterpGdal.gdal_grid"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gridwxcomp.InterpGdal.gdal_grid" title="Permalink to this definition">¶</a></dt>
 <dd><p>Run gdal_grid command line tool to interpolate point ratios.</p>
 <p>For further information on theinterpolation algorithms including
 their function, parameters, and options see
@@ -2041,7 +2049,7 @@ buffer.</p></li>
 if None calculated from <code class="docutils literal notranslate"><span class="pre">bounds</span></code>.</p></li>
 <li><p><strong>ny_cells</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – default None. Number of pixels in y dim. of raster,
 if None calculated from <code class="docutils literal notranslate"><span class="pre">bounds</span></code>.</p></li>
-<li><p><strong>scale_factor</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><em>float</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – default 0.1. Scaling factor to apply to
+<li><p><strong>scale_factor</strong> (<a class="reference external" href="https://docs.python.org/3/library/functions.html#float" title="(in Python v3.8)"><em>float</em></a><em>, </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – default 1. Scaling factor to apply to
 original gridMET fishnet to create resampling resolution. If
 scale_factor = 0.1, the resolution will be one tenth gridMET
 resolution or 400 m.</p></li>
@@ -2063,7 +2071,7 @@ gdal_grid spatial interpolation.</p></li>
 <p>The default interpolation algorithm ‘invdist’ or inverse distance
 weighting to a power to interpolate bias ratios in a summary CSV
 file that was first created by <a class="reference internal" href="#module-gridwxcomp.calc_bias_ratios" title="gridwxcomp.calc_bias_ratios"><code class="xref py py-mod docutils literal notranslate"><span class="pre">gridwxcomp.calc_bias_ratios</span></code></a>.
-The default option will interpolate all layers in <a class="reference internal" href="#gridwxcomp.InterpGdal.default_layers" title="gridwxcomp.InterpGdal.default_layers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">InterpGdal.default_layers</span></code></a>
+The default option will interpolate all layers in <a class="reference internal" href="#id14" title="gridwxcomp.InterpGdal.default_layers"><code class="xref py py-obj docutils literal notranslate"><span class="pre">InterpGdal.default_layers</span></code></a>
 and calculate zonal statistics for all layers. It will also assume
 the boundaries of the rasters are defined by the centroid locations
 of the <em>outer</em> station locations in the input summary CSV plus a 25
@@ -2140,8 +2148,8 @@ example,</p>
 may be useful, for example to see the parameters that were used
 for the last call to <a class="reference internal" href="#gridwxcomp.InterpGdal.gdal_grid" title="gridwxcomp.InterpGdal.gdal_grid"><code class="xref py py-meth docutils literal notranslate"><span class="pre">InterpGdal.gdal_grid</span></code></a></p>
 <div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">test</span><span class="o">.</span><span class="n">params</span>
-<span class="go">{&#39;power&#39;: 4,</span>
-<span class="go"> &#39;smoothing&#39;: 0.2,</span>
+<span class="go">{&#39;power&#39;: 2,</span>
+<span class="go"> &#39;smoothing&#39;: 0,</span>
 <span class="go"> &#39;radius1&#39;: 0,</span>
 <span class="go"> &#39;radius2&#39;: 0,</span>
 <span class="go"> &#39;angle&#39;: 0,</span>
@@ -2188,23 +2196,23 @@ assumes raster resolution is relative to gridMET (4 km).</p>
 
 </div>
 <div class="section" id="module-gridwxcomp.util">
-<span id="util"></span><h3><a class="toc-backref" href="#id29">util</a><a class="headerlink" href="#module-gridwxcomp.util" title="Permalink to this headline">¶</a></h3>
+<span id="util"></span><h3><a class="toc-backref" href="#id32">util</a><a class="headerlink" href="#module-gridwxcomp.util" title="Permalink to this headline">¶</a></h3>
 <p>Utility functions or classes for <code class="docutils literal notranslate"><span class="pre">gridwxcomp</span></code> package</p>
-<dl class="function">
+<dl class="py function">
 <dt id="gridwxcomp.util.get_gridmet_meta_csv">
-<code class="sig-prename descclassname">gridwxcomp.util.</code><code class="sig-name descname">get_gridmet_meta_csv</code><span class="sig-paren">(</span><em class="sig-param">gridmet_meta_path=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gridwxcomp/util.html#get_gridmet_meta_csv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gridwxcomp.util.get_gridmet_meta_csv" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">gridwxcomp.util.</code><code class="sig-name descname">get_gridmet_meta_csv</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">gridmet_meta_path</span><span class="o">=</span><span class="default_value">None</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gridwxcomp/util.html#get_gridmet_meta_csv"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gridwxcomp.util.get_gridmet_meta_csv" title="Permalink to this definition">¶</a></dt>
 <dd><p>Find path to ‘gridmet_cell_data.csv’ packaged with gridwxcomp</p>
 </dd></dl>
 
-<dl class="function">
+<dl class="py function">
 <dt id="gridwxcomp.util.parse_yr_filter">
-<code class="sig-prename descclassname">gridwxcomp.util.</code><code class="sig-name descname">parse_yr_filter</code><span class="sig-paren">(</span><em class="sig-param">dt_df</em>, <em class="sig-param">years</em>, <em class="sig-param">label</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gridwxcomp/util.html#parse_yr_filter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gridwxcomp.util.parse_yr_filter" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">gridwxcomp.util.</code><code class="sig-name descname">parse_yr_filter</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dt_df</span></em>, <em class="sig-param"><span class="n">years</span></em>, <em class="sig-param"><span class="n">label</span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/gridwxcomp/util.html#parse_yr_filter"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#gridwxcomp.util.parse_yr_filter" title="Permalink to this definition">¶</a></dt>
 <dd><p>Parse string year filter and apply it to datetime-indexed
 DataFrame.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>dt_df</strong> (<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.0.1)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a>) – datetime-indexed DataFrame</p></li>
+<li><p><strong>dt_df</strong> (<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.1.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a>) – datetime-indexed DataFrame</p></li>
 <li><p><strong>years</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a><em> or </em><a class="reference external" href="https://docs.python.org/3/library/functions.html#int" title="(in Python v3.8)"><em>int</em></a>) – years to select, e.g. 2015 or 2000-2010</p></li>
 <li><p><strong>label</strong> (<a class="reference external" href="https://docs.python.org/3/library/stdtypes.html#str" title="(in Python v3.8)"><em>str</em></a>) – identifier to print warning message if <code class="docutils literal notranslate"><span class="pre">years</span></code>
 filter partially overlaps with actual date index</p></li>
@@ -2219,7 +2227,7 @@ second element is string of year range, e.g. ‘2001_2011’</p>
 </p>
 </dd>
 <dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>ret (tuple of (<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.0.1)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a>, str))</p>
+<dd class="field-odd"><p>ret (tuple of (<a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/reference/api/pandas.DataFrame.html#pandas.DataFrame" title="(in pandas v1.1.0)"><code class="xref py py-obj docutils literal notranslate"><span class="pre">pandas.DataFrame</span></code></a>, str))</p>
 </dd>
 </dl>
 <p class="rubric">Example</p>
