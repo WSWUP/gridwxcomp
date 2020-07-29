@@ -384,6 +384,9 @@ def make_points_file(in_path, grid_id_name='GRIDMET_ID'):
             grid_id_name: 'int'
         }}
 
+    # remove nans- gdal will not recognize  
+    in_df = in_df.where(pd.notnull(in_df), None)
+
     # create shapefile from points, overwrite if exists
     with collection(
         out_file, 'w', 
