@@ -133,15 +133,21 @@ def daily_comparison(input_csv, out_dir=None, year_filter=None):
                 station_path))
             continue
         else:
-            station_data = pd.read_excel(station_path,
-                sheet_name='Corrected Data', parse_dates=True, index_col=0)
+            # pyweather QAQC format if excel
+            if station_path.endswith(('.xlsx','xlx')):
+                station_data = pd.read_excel(station_path,
+                    sheet_name='Corrected Data', parse_dates=True, index_col=0)
+            else:
+                station_data = pd.read_csv(station_path,
+                    parse_dates=True, index_col=0)
+
             # Filter years
             if year:
                 station_data, year_str = parse_yr_filter(
                     station_data, year, label=row.STATION_ID)
             else:
-                start_yr = int(station_data.year.min()) 
-                end_yr = int(station_data.year.max()) 
+                start_yr = int(station_data.index.year.min()) 
+                end_yr = int(station_data.index.year.max()) 
                 year_str = '{}_{}'.format(start_yr, end_yr)
 
         # Import GRIDMET Data
@@ -261,6 +267,7 @@ def daily_comparison(input_csv, out_dir=None, year_filter=None):
                     monthly_data2 = monthly_data2.dropna()
 
                     monthly_data2['date'] = monthly_data2.index
+                    monthly_data2.index.name=''
                     monthly_data2.reset_index(inplace=True)
 
                     if monthly_data2.empty:
@@ -450,8 +457,13 @@ def monthly_comparison(input_csv, out_dir=None, day_limit=10):
                 station_path))
             continue
         else:
-            station_data = pd.read_excel(station_path, index_col=0,
-                    parse_dates=True, sheet_name='Corrected Data')
+            if station_path.endswith(('.xlsx','.xlx')):
+                station_data = pd.read_excel(station_path, index_col=0,
+                        parse_dates=True, sheet_name='Corrected Data')
+            else:
+                station_data = pd.read_csv(station_path, index_col=0,
+                        parse_dates=True)
+
             start_date.append(station_data.index.date.min())
             end_date.append(station_data.index.date.max())
 
