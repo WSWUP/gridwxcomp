@@ -4,6 +4,8 @@ Change Log
 Version 0.1.4
 =============
 
+Add 10 meter wind direction as an optional gridMET variable to download, from command line as the ``'--optional-vars'`` argument or the ``optional_vars`` keyword argument to the ``download_gridmet_opendap`` function. Additional optional variables can now be easily added in the future. If downloaded, this variable will be written to the gridMET time series files with the header name 'wdir_deg'. This change is incorporated in version 0.1.4.post3.
+
 Change calculation for maximum and minimum air temperature from station/gridMET ratios to station - gridMET (difference). The procedure for time aggregation has not changed.  
 
 Improve monthly comparison plots by pairing up data at daily frequency, dropping months where less than the newly added ``day_limit`` parameter (default 10) paired days per month exist for each variable, and show gaps in line plots. 

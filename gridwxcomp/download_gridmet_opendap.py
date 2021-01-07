@@ -17,11 +17,8 @@ pd.options.display.float_format = '{:,.10f}'.format
 import refet
 import xarray
 
-# for connection to Earth Engine
-# ee.Initialize() 
-
 def download_gridmet_opendap(input_csv, out_folder, year_filter='', 
-        update_data=False):
+        update_data=False, optional_vars=None):
 
     """
     Download gridMET time series data for multiple climate variables for 
@@ -31,8 +28,13 @@ def download_gridmet_opendap(input_csv, out_folder, year_filter='',
         input_csv (str): file path of input CSV produced by 
             :mod:`prep_input.py`
         out_folder (str): directory path to save gridmet timeseries CSV files
+
+    Keyword Arguments:
         year_filter (list): default ''. Single year or range to download
         update_data (bool): default False. Re-download existing data
+        optional_vars (None or list): default None. List of additional gridMET 
+            vars to download using gridMET short names, currently only 
+            wind direction named "th" is available.
 
     Returns:
         None
@@ -81,8 +83,8 @@ def download_gridmet_opendap(input_csv, out_folder, year_filter='',
     # Specify column order for output .csv Variables:
     output_order = ['date', 'year', 'month', 'day', 'centroid_lat',
                     'centroid_lon', 'elev_m', 'u2_ms', 'tmin_c', 'tmax_c',
-                    'srad_wm2', 'ea_kpa', 'prcp_mm', 'etr_mm', 'eto_mm']
-
+                    'srad_wm2', 'ea_kpa', 'pair_kpa', 'prcp_mm', 'etr_mm', 
+                    'eto_mm']
     opendap_url = 'http://thredds.northwestknowledge.net:8080/thredds/dodsC'
     elev_nc = '{}/{}'.format(
         opendap_url, '/MET/elev/metdata_elevationdata.nc#fillmismatch')
@@ -119,7 +121,34 @@ def download_gridmet_opendap(input_csv, out_folder, year_filter='',
             'nc': 'agg_met_tmmn_1979_CurrentYear_CONUS',
             'var': 'daily_minimum_temperature',
             'col': 'tmin_k'},
+        'th': {
+            'nc': 'agg_met_th_1979_CurrentYear_CONUS',
+            'var': 'daily_mean_wind_direction',
+            'col': 'wdir_deg'}
     }
+
+    extra_vars_available = ['th']
+    default_vars = list(set(params.keys()).difference(extra_vars_available))
+
+    if optional_vars is not None:
+        if isinstance(optional_vars, list):
+            pass
+        elif isinstance(optional_vars, str): # if using CLI
+            optional_vars = optional_vars.split(',')
+
+        if not set(optional_vars).issubset(extra_vars_available):
+            raise ValueError(
+                'ERROR: one or more optional gridMET variables is not'
+                'avaliable, these are all currently available: '
+                f'{",".join(params.keys())}'
+            )
+        # add the written names to list 
+        else:
+            for el in optional_vars:
+                output_order.append(params[el].get('col'))
+    else:
+        optional_vars = []
+
     
     # Year Filter
     if year_filter:
@@ -230,7 +259,8 @@ def download_gridmet_opendap(input_csv, out_folder, year_filter='',
         
         # OpenDAP call for each variable
         met_df_list = []
-        for met_name in params.keys():
+        vars_to_download = default_vars + optional_vars
+        for met_name in vars_to_download:
             logging.debug('  Variable: {}'.format(met_name))
             # connect with the full time series then filtering later is faster              # # day=pd.date_range(start=start_date, end=end_date), 
 
@@ -249,7 +279,6 @@ def download_gridmet_opendap(input_csv, out_folder, year_filter='',
             met_df = met_ds.to_dataframe()
             # logging.debug(met_df.head())
             met_df_list.append(met_df)
-            # print(met_df.head())
 
         # This might need to be a merge call if the indices don't match
         export_df = pd.concat(met_df_list, axis=1)
@@ -385,6 +414,9 @@ def arg_parse():
         '-u','--update-data', required=False, default=False, 
         action='store_true', help='Flag to re-download existing data')
     optional.add_argument(
+        '-ov','--optional-vars', required=False, default=None, 
+        type=str, help='Additional gridMET vars as comma separated list')
+    optional.add_argument(
         '--debug', default=logging.INFO, const=logging.DEBUG,
         help='Debug level logging', action="store_const", dest="loglevel")
     parser._action_groups.append(optional)# to avoid optionals listed first
@@ -405,11 +437,3 @@ if __name__ == '__main__':
 
     download_gridmet_opendap(input_csv=args.input, out_folder=args.out_dir,
          year_filter=args.years, update_data=args.update_data)
-
-    # Saturated vapor pressure
-    # export_df['esat_min_kPa'] =
-    # refet.calcs._sat_vapor_pressure(export_df.Tmin_C)
-    # export_df['esat_max_kPa'] =
-    # refet.calcs._sat_vapor_pressure(export_df.Tmax_C)
-    # export_df['esat_avg_kPa'] =
-    # (export_df.esat_min_kPa + export_df.esat_max_kPa)/2
