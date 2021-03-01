@@ -34,17 +34,6 @@ class InterpGdal(object):
             
     Attributes:
         CELL_SIZE (float): resolution of gridMET dataset in decimal degrees.
-        interp_methods (tuple): gdal_grid interpolation algorithms.
-        default_layers (tuple): layers to interpolate created by 
-            :mod:`gridwxcomp.calc_bias_ratios`, e.g. "Jan_mean", found in 
-            ``summary_csv_path``.
-        default_params (dict): dictionary with default parameters for each
-            interpolation algorithm, slightly modified from gdal defaults.
-            Keys are interpolation method names, keys are dictionaries with
-            parameter names keys and corresponding values.
-        var_residual_names (dict): dictionary that maps names of bias ratios 
-            to the name of their intepolated residual if they are too long for
-            storing as a field name in an ESRI shapefile (i.e. > 10 chars).
         summary_csv_path (:obj:`pathlib.Path`): absolute path object to 
             input ``summary_csv_path``.
         layers (list): list of layers in ``summary_csv_path`` to interpolate
@@ -104,7 +93,9 @@ class InterpGdal(object):
                      'invdistnn',
                      'linear',
                      'nearest')
-    
+    """
+        interp_methods (tuple): gdal_grid interpolation algorithms.
+    """
     # default layers calculated by calc bias ratios module
     default_layers = ('Jan_mean',
                      'Feb_mean',
@@ -121,7 +112,12 @@ class InterpGdal(object):
                      'growseason_mean',
                      'annual_mean',
                      'summer_mean')
-    
+    """
+    default_layers (tuple): Layers to interpolate created by 
+        :mod:`gridwxcomp.calc_bias_ratios`, e.g. "Jan_mean", found in 
+        ``summary_csv_path``.
+    """
+
     # interp params, method key, param dic as values
     default_params = {
         'invdist':{
@@ -160,6 +156,12 @@ class InterpGdal(object):
             'nodata': -999
         }
     }
+    """
+    default_params (dict): Dictionary with default parameters for each
+        interpolation algorithm, slightly modified from GDAL defaults.
+        Keys are interpolation method names, keys are dictionaries with
+        parameter names keys and corresponding values.
+    """
 
     # maps bias ratio variables names to residual names for point shapefile
     # which must be shorter (< 11 characters) to be stored as fields
@@ -168,6 +170,12 @@ class InterpGdal(object):
         'growseason_mean': 'grow_res',
         'summer_mean': 'summer_res'
     }
+
+    """
+    var_residual_names (dict): Dictionary that maps names of bias ratios 
+        to the name of their intepolated residual if they are too long for
+        storing as a field name in an ESRI shapefile (i.e. > 10 chars).
+    """
 
     def __init__(self, summary_csv_path):
         

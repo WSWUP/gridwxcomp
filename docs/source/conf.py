@@ -25,7 +25,7 @@ autodoc_mock_imports = ['bokeh', 'click', 'numpy', 'pandas', 'refet',
 # -- Project information -----------------------------------------------------
 
 project = 'gridwxcomp'
-copyright = '2019, John Volk and Chris Pearson'
+copyright = '2019-2021, John Volk and Chris Pearson'
 author = 'John Volk and Chris Pearson'
 
 # The short X.Y version
