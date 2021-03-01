@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>gridwxcomp.download_gridmet_opendap &mdash; gridwxcomp 0.1.4 documentation</title>
+  <title>gridwxcomp.download_gridmet_opendap &mdash; gridwxcomp 0.1.4.post3 documentation</title>
   
 
   
@@ -64,7 +64,7 @@
             
             
               <div class="version">
-                0.1.4
+                0.1.4.post3
               </div>
             
           
@@ -97,6 +97,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../../getting_started.html#quick-start-from-command-line">Quick start from command line</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../../faq.html">FAQ</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../api.html">API Reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="../../api.html#command-line-interface">Command Line Interface</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="../../api.html#gridwxcomp">gridwxcomp</a></li>
@@ -220,11 +221,8 @@
 <span class="kn">import</span> <span class="nn">refet</span>
 <span class="kn">import</span> <span class="nn">xarray</span>
 
-<span class="c1"># for connection to Earth Engine</span>
-<span class="c1"># ee.Initialize() </span>
-
 <div class="viewcode-block" id="download_gridmet_opendap"><a class="viewcode-back" href="../../api.html#gridwxcomp.download_gridmet_opendap">[docs]</a><span class="k">def</span> <span class="nf">download_gridmet_opendap</span><span class="p">(</span><span class="n">input_csv</span><span class="p">,</span> <span class="n">out_folder</span><span class="p">,</span> <span class="n">year_filter</span><span class="o">=</span><span class="s1">&#39;&#39;</span><span class="p">,</span> 
-        <span class="n">update_data</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="n">update_data</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">optional_vars</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 
     <span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Download gridMET time series data for multiple climate variables for </span>
@@ -234,8 +232,13 @@
 <span class="sd">        input_csv (str): file path of input CSV produced by </span>
 <span class="sd">            :mod:`prep_input.py`</span>
 <span class="sd">        out_folder (str): directory path to save gridmet timeseries CSV files</span>
+
+<span class="sd">    Keyword Arguments:</span>
 <span class="sd">        year_filter (list): default &#39;&#39;. Single year or range to download</span>
 <span class="sd">        update_data (bool): default False. Re-download existing data</span>
+<span class="sd">        optional_vars (None or list): default None. List of additional gridMET </span>
+<span class="sd">            vars to download using gridMET short names, currently only </span>
+<span class="sd">            wind direction named &quot;th&quot; is available.</span>
 
 <span class="sd">    Returns:</span>
 <span class="sd">        None</span>
@@ -284,8 +287,8 @@
     <span class="c1"># Specify column order for output .csv Variables:</span>
     <span class="n">output_order</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;date&#39;</span><span class="p">,</span> <span class="s1">&#39;year&#39;</span><span class="p">,</span> <span class="s1">&#39;month&#39;</span><span class="p">,</span> <span class="s1">&#39;day&#39;</span><span class="p">,</span> <span class="s1">&#39;centroid_lat&#39;</span><span class="p">,</span>
                     <span class="s1">&#39;centroid_lon&#39;</span><span class="p">,</span> <span class="s1">&#39;elev_m&#39;</span><span class="p">,</span> <span class="s1">&#39;u2_ms&#39;</span><span class="p">,</span> <span class="s1">&#39;tmin_c&#39;</span><span class="p">,</span> <span class="s1">&#39;tmax_c&#39;</span><span class="p">,</span>
-                    <span class="s1">&#39;srad_wm2&#39;</span><span class="p">,</span> <span class="s1">&#39;ea_kpa&#39;</span><span class="p">,</span> <span class="s1">&#39;prcp_mm&#39;</span><span class="p">,</span> <span class="s1">&#39;etr_mm&#39;</span><span class="p">,</span> <span class="s1">&#39;eto_mm&#39;</span><span class="p">]</span>
-
+                    <span class="s1">&#39;srad_wm2&#39;</span><span class="p">,</span> <span class="s1">&#39;ea_kpa&#39;</span><span class="p">,</span> <span class="s1">&#39;pair_kpa&#39;</span><span class="p">,</span> <span class="s1">&#39;prcp_mm&#39;</span><span class="p">,</span> <span class="s1">&#39;etr_mm&#39;</span><span class="p">,</span> 
+                    <span class="s1">&#39;eto_mm&#39;</span><span class="p">]</span>
     <span class="n">opendap_url</span> <span class="o">=</span> <span class="s1">&#39;http://thredds.northwestknowledge.net:8080/thredds/dodsC&#39;</span>
     <span class="n">elev_nc</span> <span class="o">=</span> <span class="s1">&#39;</span><span class="si">{}</span><span class="s1">/</span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span>
         <span class="n">opendap_url</span><span class="p">,</span> <span class="s1">&#39;/MET/elev/metdata_elevationdata.nc#fillmismatch&#39;</span><span class="p">)</span>
@@ -322,7 +325,34 @@
             <span class="s1">&#39;nc&#39;</span><span class="p">:</span> <span class="s1">&#39;agg_met_tmmn_1979_CurrentYear_CONUS&#39;</span><span class="p">,</span>
             <span class="s1">&#39;var&#39;</span><span class="p">:</span> <span class="s1">&#39;daily_minimum_temperature&#39;</span><span class="p">,</span>
             <span class="s1">&#39;col&#39;</span><span class="p">:</span> <span class="s1">&#39;tmin_k&#39;</span><span class="p">},</span>
+        <span class="s1">&#39;th&#39;</span><span class="p">:</span> <span class="p">{</span>
+            <span class="s1">&#39;nc&#39;</span><span class="p">:</span> <span class="s1">&#39;agg_met_th_1979_CurrentYear_CONUS&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;var&#39;</span><span class="p">:</span> <span class="s1">&#39;daily_mean_wind_direction&#39;</span><span class="p">,</span>
+            <span class="s1">&#39;col&#39;</span><span class="p">:</span> <span class="s1">&#39;wdir_deg&#39;</span><span class="p">}</span>
     <span class="p">}</span>
+
+    <span class="n">extra_vars_available</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;th&#39;</span><span class="p">]</span>
+    <span class="n">default_vars</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="nb">set</span><span class="p">(</span><span class="n">params</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="o">.</span><span class="n">difference</span><span class="p">(</span><span class="n">extra_vars_available</span><span class="p">))</span>
+
+    <span class="k">if</span> <span class="n">optional_vars</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">optional_vars</span><span class="p">,</span> <span class="nb">list</span><span class="p">):</span>
+            <span class="k">pass</span>
+        <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">optional_vars</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span> <span class="c1"># if using CLI</span>
+            <span class="n">optional_vars</span> <span class="o">=</span> <span class="n">optional_vars</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s1">&#39;,&#39;</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">set</span><span class="p">(</span><span class="n">optional_vars</span><span class="p">)</span><span class="o">.</span><span class="n">issubset</span><span class="p">(</span><span class="n">extra_vars_available</span><span class="p">):</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s1">&#39;ERROR: one or more optional gridMET variables is not&#39;</span>
+                <span class="s1">&#39;avaliable, these are all currently available: &#39;</span>
+                <span class="sa">f</span><span class="s1">&#39;</span><span class="si">{</span><span class="s2">&quot;,&quot;</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">params</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s1">&#39;</span>
+            <span class="p">)</span>
+        <span class="c1"># add the written names to list </span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">for</span> <span class="n">el</span> <span class="ow">in</span> <span class="n">optional_vars</span><span class="p">:</span>
+                <span class="n">output_order</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">params</span><span class="p">[</span><span class="n">el</span><span class="p">]</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s1">&#39;col&#39;</span><span class="p">))</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">optional_vars</span> <span class="o">=</span> <span class="p">[]</span>
+
     
     <span class="c1"># Year Filter</span>
     <span class="k">if</span> <span class="n">year_filter</span><span class="p">:</span>
@@ -433,7 +463,8 @@
         
         <span class="c1"># OpenDAP call for each variable</span>
         <span class="n">met_df_list</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">for</span> <span class="n">met_name</span> <span class="ow">in</span> <span class="n">params</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
+        <span class="n">vars_to_download</span> <span class="o">=</span> <span class="n">default_vars</span> <span class="o">+</span> <span class="n">optional_vars</span>
+        <span class="k">for</span> <span class="n">met_name</span> <span class="ow">in</span> <span class="n">vars_to_download</span><span class="p">:</span>
             <span class="n">logging</span><span class="o">.</span><span class="n">debug</span><span class="p">(</span><span class="s1">&#39;  Variable: </span><span class="si">{}</span><span class="s1">&#39;</span><span class="o">.</span><span class="n">format</span><span class="p">(</span><span class="n">met_name</span><span class="p">))</span>
             <span class="c1"># connect with the full time series then filtering later is faster              # # day=pd.date_range(start=start_date, end=end_date), </span>
 
@@ -452,7 +483,6 @@
             <span class="n">met_df</span> <span class="o">=</span> <span class="n">met_ds</span><span class="o">.</span><span class="n">to_dataframe</span><span class="p">()</span>
             <span class="c1"># logging.debug(met_df.head())</span>
             <span class="n">met_df_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">met_df</span><span class="p">)</span>
-            <span class="c1"># print(met_df.head())</span>
 
         <span class="c1"># This might need to be a merge call if the indices don&#39;t match</span>
         <span class="n">export_df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">(</span><span class="n">met_df_list</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
@@ -588,6 +618,9 @@
         <span class="s1">&#39;-u&#39;</span><span class="p">,</span><span class="s1">&#39;--update-data&#39;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> 
         <span class="n">action</span><span class="o">=</span><span class="s1">&#39;store_true&#39;</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Flag to re-download existing data&#39;</span><span class="p">)</span>
     <span class="n">optional</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
+        <span class="s1">&#39;-ov&#39;</span><span class="p">,</span><span class="s1">&#39;--optional-vars&#39;</span><span class="p">,</span> <span class="n">required</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
+        <span class="nb">type</span><span class="o">=</span><span class="nb">str</span><span class="p">,</span> <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Additional gridMET vars as comma separated list&#39;</span><span class="p">)</span>
+    <span class="n">optional</span><span class="o">.</span><span class="n">add_argument</span><span class="p">(</span>
         <span class="s1">&#39;--debug&#39;</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">INFO</span><span class="p">,</span> <span class="n">const</span><span class="o">=</span><span class="n">logging</span><span class="o">.</span><span class="n">DEBUG</span><span class="p">,</span>
         <span class="n">help</span><span class="o">=</span><span class="s1">&#39;Debug level logging&#39;</span><span class="p">,</span> <span class="n">action</span><span class="o">=</span><span class="s2">&quot;store_const&quot;</span><span class="p">,</span> <span class="n">dest</span><span class="o">=</span><span class="s2">&quot;loglevel&quot;</span><span class="p">)</span>
     <span class="n">parser</span><span class="o">.</span><span class="n">_action_groups</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">optional</span><span class="p">)</span><span class="c1"># to avoid optionals listed first</span>
@@ -608,14 +641,6 @@
 
     <span class="n">download_gridmet_opendap</span><span class="p">(</span><span class="n">input_csv</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">input</span><span class="p">,</span> <span class="n">out_folder</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">out_dir</span><span class="p">,</span>
          <span class="n">year_filter</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">years</span><span class="p">,</span> <span class="n">update_data</span><span class="o">=</span><span class="n">args</span><span class="o">.</span><span class="n">update_data</span><span class="p">)</span>
-
-    <span class="c1"># Saturated vapor pressure</span>
-    <span class="c1"># export_df[&#39;esat_min_kPa&#39;] =</span>
-    <span class="c1"># refet.calcs._sat_vapor_pressure(export_df.Tmin_C)</span>
-    <span class="c1"># export_df[&#39;esat_max_kPa&#39;] =</span>
-    <span class="c1"># refet.calcs._sat_vapor_pressure(export_df.Tmax_C)</span>
-    <span class="c1"># export_df[&#39;esat_avg_kPa&#39;] =</span>
-    <span class="c1"># (export_df.esat_min_kPa + export_df.esat_max_kPa)/2</span>
 </pre></div>
 
            </div>
@@ -628,7 +653,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, John Volk and Chris Pearson
+        &copy; Copyright 2019-2021, John Volk and Chris Pearson
 
     </p>
   </div>

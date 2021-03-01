@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Change Log &mdash; gridwxcomp 0.1.4 documentation</title>
+  <title>Change Log &mdash; gridwxcomp 0.1.4.post3 documentation</title>
   
 
   
@@ -65,7 +65,7 @@
             
             
               <div class="version">
-                0.1.4
+                0.1.4.post3
               </div>
             
           
@@ -98,6 +98,7 @@
 <li class="toctree-l2"><a class="reference internal" href="getting_started.html#quick-start-from-command-line">Quick start from command line</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="faq.html">FAQ</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api.html">API Reference</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="api.html#command-line-interface">Command Line Interface</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="api.html#gridwxcomp">gridwxcomp</a></li>
@@ -207,6 +208,7 @@
 <h1>Change Log<a class="headerlink" href="#change-log" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="version-0-1-4">
 <h2>Version 0.1.4<a class="headerlink" href="#version-0-1-4" title="Permalink to this headline">¶</a></h2>
+<p>Add 10 meter wind direction as an optional gridMET variable to download, from command line as the <code class="docutils literal notranslate"><span class="pre">'--optional-vars'</span></code> argument or the <code class="docutils literal notranslate"><span class="pre">optional_vars</span></code> keyword argument to the <code class="docutils literal notranslate"><span class="pre">download_gridmet_opendap</span></code> function. Additional optional variables can now be easily added in the future. If downloaded, this variable will be written to the gridMET time series files with the header name ‘wdir_deg’. This change is incorporated in version 0.1.4.post3.</p>
 <p>Change calculation for maximum and minimum air temperature from station/gridMET ratios to station - gridMET (difference). The procedure for time aggregation has not changed.</p>
 <p>Improve monthly comparison plots by pairing up data at daily frequency, dropping months where less than the newly added <code class="docutils literal notranslate"><span class="pre">day_limit</span></code> parameter (default 10) paired days per month exist for each variable, and show gaps in line plots.</p>
 <p>Change default interpolation parameters (power and smooth) for inverse distance weighting algorithms to the default used by GDAL_GRID, i.e. power=2, smoothing=0.</p>
@@ -216,7 +218,7 @@
 <h2>Version 0.1.3<a class="headerlink" href="#version-0-1-3" title="Permalink to this headline">¶</a></h2>
 <p>The “Filename” column in the station metadata file that is the first input to <a class="reference internal" href="api.html#gridwxcomp.prep_input" title="gridwxcomp.prep_input"><code class="xref py py-func docutils literal notranslate"><span class="pre">gridwxcomp.prep_input</span></code></a> now requires the exact full name (with or without file extension) of climate time series files to be provided. This prevents loose matching overwriting site file paths based on matching the beginning of file names only.</p>
 <p>Add the <code class="docutils literal notranslate"><span class="pre">method</span></code> option/argument to the <a class="reference internal" href="api.html#module-gridwxcomp.calc_bias_ratios" title="gridwxcomp.calc_bias_ratios"><code class="xref py py-func docutils literal notranslate"><span class="pre">gridwxcomp.calc_bias_ratios</span></code></a> function and CLI script which now has two options ‘long_term_mean’ (new default) or ‘mean_of_annual’. The ‘long_term_mean’ method calculates bias ratios between station and grid variables in the following manner: long-term mean of station to long-term mean of grid for each month and other time interval. For example, for June ratios this method would take all paired data (spanning the full time period) that lie in June, then take the means of both station and grid data and then take their ratio. The other option ‘mean_of_annual’ (previous versions’ behavior) does the following: group the station and grid data first by year and then by month and longer time intervals (growing season, summer) and calculate the ratioas station sum to grid sum for each year, finally take the mean across the years to get the final ratio. The number of days of paired data in each temporal interval that ratios are calculated for are also recorded as well as the standard deviation and coefficient of variation across years (if multiple exist in the paired input). If for any month the number of paired days is below <code class="docutils literal notranslate"><span class="pre">day_limit</span></code> that month is excluded for both ratio calculation methods. Also the latter method will still be used to calculate the statistics count, standard deviation and coefficient of variation if <code class="docutils literal notranslate"><span class="pre">method='long_term_mean'</span></code>, the only thing that will be altered is the calculation of the mean ratios, e.g. “Jan_mean” or generally all the columns that end with “_mean” in the resulting output files from <a class="reference internal" href="api.html#module-gridwxcomp.calc_bias_ratios" title="gridwxcomp.calc_bias_ratios"><code class="xref py py-func docutils literal notranslate"><span class="pre">gridwxcomp.calc_bias_ratios</span></code></a>.</p>
-<p>Bug fixes related to deprecated functionality of various <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/index.html#module-pandas" title="(in pandas v1.1.0)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pandas</span></code></a> tools in newer Pandas version 1+.</p>
+<p>Bug fixes related to deprecated functionality of various <a class="reference external" href="https://pandas.pydata.org/pandas-docs/stable/index.html#module-pandas" title="(in pandas v1.2.2)"><code class="xref py py-mod docutils literal notranslate"><span class="pre">pandas</span></code></a> tools in newer Pandas version 1+.</p>
 <p>Add more Travis CI test coverage for spatial grid creation, point vector file creation, spatial interpolation, zonal stats, interpolation residual calculations, etc.</p>
 <p>Add error handling and checks for cases where input data is missing all data causing unhandled crashes later in the workflow.</p>
 </div>
@@ -360,7 +362,7 @@
 
   <div role="contentinfo">
     <p>
-        &copy; Copyright 2019, John Volk and Chris Pearson
+        &copy; Copyright 2019-2021, John Volk and Chris Pearson
 
     </p>
   </div>

@@ -23,6 +23,7 @@ Bias ratios calculated by ``gridwxcomp`` can be used to correct bias of grid to 
    :caption: Contents:
    
    getting_started
+   faq
    api
    changelog
 

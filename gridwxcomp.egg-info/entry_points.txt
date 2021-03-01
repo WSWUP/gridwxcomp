@@ -1,0 +1,4 @@
+
+        [console_scripts]
+        gridwxcomp=gridwxcomp.scripts.gridwxcomp:gridwxcomp
+    
