@@ -342,7 +342,7 @@ def download_gridmet_opendap(input_csv, out_folder, year_filter='',
                               sort=True)
         export_df = export_df[output_order].drop_duplicates('date')
         export_df = export_df.sort_values(by=['year', 'month', 'day'])
-        export_df = export_df.dropna()
+        export_df = export_df.dropna(how='all')
 
         # Add gridMET file path to input table
         input_df.loc[input_df.GRIDMET_ID == row.GRIDMET_ID,\
