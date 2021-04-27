@@ -117,9 +117,12 @@ def prep_input(station_meta_path, out_path, grid_meta, grid_path, grid_id_name,
         help='Year(s) to download, single year (YYYY) or range (YYYY-YYYY)')
 @click.option('--update-data', '-u', default=False, is_flag=True,
         help='Redownload existing data for given year(s)')
+@click.option('--optional-vars', '-ov', nargs=1, type=str, default=None, 
+        help='Additional gridMET vars as comma separated list')
 @click.option('--quiet', default=False, is_flag=True, 
         help='Supress command line output')
-def download_gridmet_opendap(input_csv, out_dir, years, update_data, quiet):
+def download_gridmet_opendap(input_csv, out_dir, years, update_data, 
+        optional_vars, quiet):
     """
     Download gridMET climate time series using `OpeNDAP <https://www.opendap.org>`_
 
@@ -136,7 +139,8 @@ def download_gridmet_opendap(input_csv, out_dir, years, update_data, quiet):
         logging.getLogger().setLevel(logging.INFO)
     # call gridwxcomp.download_gridmet_opendap
     download_od(
-        input_csv, out_dir, year_filter=years, update_data=update_data)
+        input_csv, out_dir, year_filter=years, update_data=update_data,
+        optional_vars=optional_vars)
 
 
 @gridwxcomp.command()

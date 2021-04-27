@@ -436,4 +436,5 @@ if __name__ == '__main__':
         'Script:', os.path.basename(sys.argv[0])))
 
     download_gridmet_opendap(input_csv=args.input, out_folder=args.out_dir,
-         year_filter=args.years, update_data=args.update_data)
+         year_filter=args.years, update_data=args.update_data, 
+         optional_vars=args.optional_vars)
