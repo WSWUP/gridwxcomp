@@ -124,10 +124,14 @@ def download_gridmet_opendap(input_csv, out_folder, year_filter='',
         'th': {
             'nc': 'agg_met_th_1979_CurrentYear_CONUS',
             'var': 'daily_mean_wind_direction',
-            'col': 'wdir_deg'}
+            'col': 'wdir_deg'},
+        'vpd': {
+            'nc': 'agg_met_vpd_1979_CurrentYear_CONUS',
+            'var': 'daily_mean_vapor_pressure_deficit',
+            'col': 'vpd_kpa'}
     }
 
-    extra_vars_available = ['th']
+    extra_vars_available = ['th','vpd']
     default_vars = list(set(params.keys()).difference(extra_vars_available))
 
     if optional_vars is not None:
