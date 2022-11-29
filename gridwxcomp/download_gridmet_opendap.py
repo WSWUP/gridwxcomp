@@ -272,14 +272,33 @@ def download_gridmet_opendap(input_csv, out_folder, year_filter='',
             # a different type (presumably incorrectly filled null values
             # by the OpenDap Thredds server) with null values. 
             # issue here: https://github.com/Unidata/netcdf-c/issues/1299
-            met_nc = '{}/{}.nc#fillmismatch'.format(
-                opendap_url, params[met_name]['nc']
-            )
-            met_ds = xarray.open_dataset(met_nc).sel(
-                    lon=gridcell_lon, lat=gridcell_lat, method='nearest'
-                ).drop_vars(['crs', 'lat', 'lon']).rename({
-                    params[met_name]['var']:params[met_name]['col'],'day':'date'
-            })
+            n_attempts = 3
+            for i in range(n_attempts):
+                try:# try to download up to n times before raising error
+                    met_nc = '{}/{}.nc#fillmismatch'.format(
+                        opendap_url, params[met_name]['nc']
+                    )
+                    met_ds = xarray.open_dataset(met_nc).sel(
+                            lon=gridcell_lon, lat=gridcell_lat, method='nearest'
+		            ).drop_vars(
+                            ['crs', 'lat', 'lon']
+                        ).rename({
+			            params[met_name]['var']:params[met_name]['col'],
+                        'day':'date'
+                    })
+                except:
+                    sleep(5)
+                    logging.info(
+                        f'Failed to download {met_name}, attempt {i+1}'
+                    )
+                    if i == n_attempts-1:
+                        raise RuntimeError(
+			                f'ERROR: Failed to download {met_name} after '
+                            f'{n_attempts} attempts'
+                        )
+                    continue
+                break
+
             met_df = met_ds.to_dataframe()
             # logging.debug(met_df.head())
             met_df_list.append(met_df)

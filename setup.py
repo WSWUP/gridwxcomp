@@ -14,6 +14,7 @@ requires = [
     'gdal',
     'netCDF4',
     'numpy>=1.15',
+    'openpyxl',
     'pandas>=0.24',
     'rasterstats>=0.13',
     'refet>=0.3.7',

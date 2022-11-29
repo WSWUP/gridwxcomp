@@ -17,6 +17,7 @@ dependencies:
   - shapely=1.6.4
   - xarray
   - xlrd>=1.2.0
+  - openpyxl
   - pip
   - pip:
     - gridwxcomp
