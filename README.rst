@@ -5,17 +5,20 @@ gridwxcomp
 
 -----------
 
-A package for comparing climate station time series data to `gridMET <http://www.climatologylab.org/gridmet.html>`_ (or other gridded) data. Major functionality includes tools to: 
+A package for comparing weather station data to gridded weather data including `gridMET <http://www.climatologylab.org/gridmet.html>`_ and other gridded datasets that are hosted on Google Earth Engine. Major functionality includes: 
 
-* pair station locations with overlapping grid cells 
-* download gridMET data from OpenDap server 
-* calculate mean bias ratios between station and gridded data and other statistics 
-* spatial interpolation of bias ratios with multiple interpolation options 
-* build geo-referenced files of point data and interpolated rasters
-* extract zonal means for a subset of gridcells  
-* graphics, e.g. time series comparisons and interpolated residuals at stations 
+* pairing of station locations with overlapping grid cells 
+* downloading point data from gridded datasets on Google Earth Engine or gridMET data from OpenDap server 
+* calculation of mean bias ratios between station and gridded data and other statistics 
+* performing spatial interpolation of bias ratios with multiple options 
+* building geo-referenced vector and raster data of spatially interpolated bias ratios and statistics
+* extraction of zonal means from spatially interpolated bias ratios using the gridded dataset resolution 
+* production of interactive time series and scatter plot comparisons between station and gridded data
+* calculation and plotting of the residuals between spatially interpolated bias ratios and those computed at station locations 
 
 Bias ratios calculated by ``gridwxcomp`` can be used to correct bias of grid to station data based on the properties of the stations. For example, monthly humidity ratios between station and grid for stations within agricultural settings can be used to estimate grid bias relative to agricultural locations. ``gridwxcomp`` includes an intuitive command line interface and a Python API.
+
+``gridwxcomp`` was used to create monthly bias ratios of `gridMET <http://www.climatologylab.org/gridmet.html>`_ reference evapotranspiration (ETo) data relative to ETo calculated at irrigated weather stations. The bias ratios were subsequently interpolated and used to correct gridMET ETo which is a key scaling flux for most of the remote sensing models that are part of the `OpenET <http://www.openetdata.org>`_ platform. 
 
 Documentation
 -------------
