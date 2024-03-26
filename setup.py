@@ -8,7 +8,7 @@ with io.open("gridwxcomp/__init__.py", "rt", encoding="utf8") as f:
     version = re.search(r"__version__ = \'(.*?)\'", f.read()).group(1)
 
 requires = [
-    'bokeh>=1.0.4',
+    'bokeh>=1.0.4, <=2.4.3',
     'click>=7.0',
     'fiona>=1.7.13',
     'gdal',
