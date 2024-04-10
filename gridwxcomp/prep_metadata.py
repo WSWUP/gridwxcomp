@@ -7,7 +7,6 @@ TODO: add logging
 
 """
 
-
 import os
 import pandas as pd                                                             
 from pathlib import Path
@@ -154,3 +153,61 @@ def prep_metadata(station_path, grid_name, out_path='formatted_input.csv'):
 
     # save CSV 
     stations.to_csv(out_path, index=False)
+
+
+def get_subgrid_bounds(in_path, grid_res, rounding_decimals, buffer=0):
+    """
+    Calculate bounding box for spatial interpolation grid from
+    output of prep_metadata.prep_metadata()
+
+    Arguments:
+        in_path (str): path to comprehensive summary file containing
+            monthly bias ratios, created by :func:`gridwxcomp.calc_bias_ratios`.
+        grid_res (float): the resolution of the fishnet grid, in the units projection the input data is in
+        rounding_decimals (int): number of decimal places to round the subgrid bounds to
+        buffer (int): number of grid cells to expand the rectangular extent
+            of the subgrid fishnet.
+
+    Returns:
+        bounds (dict): dictionary with coordinates that
+            define the outer bounds of the subgrid fishnet in the format
+            (min long, max long, min lat, max lat)
+
+    Raises:
+        FileNotFoundError: if input summary CSV file is not found.
+
+    Note:
+        By expanding the grid to a larger area encompassing the climate
+        stations of interest :func:`interpolate` can be used to extrapolate
+        passed the bounds of the outer station locations.
+
+    """
+    if not os.path.isfile(in_path):
+        raise FileNotFoundError('Input metadata file given was invalid or not found')
+
+
+    in_df = pd.read_csv(in_path)
+
+    lons = in_df.sort_values('STATION_LON')['STATION_LON'].values
+    lats = in_df.sort_values('STATION_LAT')['STATION_LAT'].values
+
+    if rounding_decimals == 0:
+        # likely projection is in meters, use modulo to ensure grid alignment
+        lon_min = (lons[0] - (lons[0] % grid_res)) - grid_res
+        lon_max = (lons[0] + (lons[0] % grid_res)) + grid_res
+        lat_min = (lons[0] - (lats[0] % grid_res)) - grid_res
+        lat_max = (lons[0] + (lats[0] % grid_res)) + grid_res
+    else:
+        lon_min = lons[0] - grid_res
+        lon_max = lons[-1] + grid_res
+        lat_min = lats[0] - grid_res
+        lat_max = lats[-1] + grid_res
+
+    # expand bounding extent based on buffer cells
+    lon_min -= grid_res * buffer
+    lat_min -= grid_res * buffer
+    lon_max += grid_res * buffer
+    lat_max += grid_res * buffer
+
+    return {'xmin': round(lon_min, rounding_decimals), 'xmax': round(lon_max, rounding_decimals),
+            'ymin': round(lat_min, rounding_decimals), 'ymax': round(lat_max, rounding_decimals)}

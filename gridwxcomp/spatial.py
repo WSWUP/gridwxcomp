@@ -281,61 +281,6 @@ def make_points_file(in_path, grid_id_name='GRID_ID'):
     lcc_shapefile.to_file(lcc_out_file)
 
 
-def get_subgrid_bounds(in_path, buffer, grid_res):
-    """
-    # TODO this function is currently setup to work in the WGS84 projection and needs to be updated
-        #   need to include argument as to whether or not bounds should be in WGS84 or LCC
-    Calculate bounding box for spatial interpolation grid from 
-    comprehensive summary CSV file containing monthly bias ratios
-    and station locations. 
-    
-    Arguments:
-        in_path (str): path to comprehensive summary file containing
-            monthly bias ratios, created by :func:`gridwxcomp.calc_bias_ratios`.
-        buffer (int): number of grid cells to expand the rectangular extent
-            of the subgrid fishnet.
-        grid_res (float): the resolution of the fishnet grid, in decimal degrees
-        
-    Returns:
-        bounds (tuple): tuple with coordinates in decimal degrees or meters that
-            define the outer bounds of the subgrid fishnet in the format
-            (min long, max long, min lat, max lat)
-
-    Raises:
-        FileNotFoundError: if input summary CSV file is not found.
-
-    Note:
-        By expanding the grid to a larger area encompassing the climate 
-        stations of interest :func:`interpolate` can be used to extrapolate
-        passed the bounds of the outer station locations.
-        
-    """
-    if not os.path.isfile(in_path):
-        raise FileNotFoundError('Input summary CSV file given was invalid or not found')
-
-    in_df = pd.read_csv(in_path)
-
-    # user provided uniform grid, grid_res should be in dec. degrees
-    # values are centroids of grid, get corners
-    lons = in_df.sort_values('LON')['LON'].values
-    lon_min = lons[0] - grid_res / 2
-    lon_max = lons[-1] + grid_res / 2
-
-    lats = in_df.sort_values('LAT')['LAT'].values
-    lat_min = lats[0] - grid_res / 2
-    lat_max = lats[-1] + grid_res / 2
-    
-    # expand bounding extent based on buffer cells
-    lon_min -= grid_res*buffer
-    lat_min -= grid_res*buffer
-    lon_max += grid_res*buffer
-    lat_max += grid_res*buffer
-    
-    bounds = lon_min, lon_max, lat_min, lat_max
-    
-    return bounds
-
-
 def make_grid(in_path, grid_res, bounds, overwrite=False, grid_id_name='GRID_ID'):
     """
     Make fishnet grid (vector file of polygon geometry) for 

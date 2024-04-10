@@ -11,7 +11,7 @@ import subprocess
 import xml.dom.minidom
 import xml.etree.cElementTree
 
-from .spatial import get_subgrid_bounds, zonal_stats, calc_pt_error, make_points_file
+from .spatial import zonal_stats, calc_pt_error, make_points_file
 from .plot import station_bar_plot
 
 
