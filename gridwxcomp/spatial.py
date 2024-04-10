@@ -336,7 +336,7 @@ def get_subgrid_bounds(in_path, buffer, grid_res):
     return bounds
 
 
-def make_grid(in_path, grid_res, bounds=None, buffer=25, overwrite=False, grid_id_name='GRID_ID'):
+def make_grid(in_path, grid_res, bounds, overwrite=False, grid_id_name='GRID_ID'):
     """
     Make fishnet grid (vector file of polygon geometry) for 
     select gridcells based on bounding coordinates. Each cell in the grid will be assigned
@@ -351,12 +351,7 @@ def make_grid(in_path, grid_res, bounds=None, buffer=25, overwrite=False, grid_i
             monthly bias ratios, lat, long, and other data. Created by 
             :func:`gridwxcomp.calc_bias_ratios`.
         grid_res (float):  Cell size of grid in decimal degrees
-        bounds (tuple or None): default None. Tuple of bounding coordinates 
-            in the following order (min long, max long, min lat, max lat) 
-            which need to be in decimal degrees or meters. Need to align with grid
-            resolution outer corners. If None, get extent from centoid
-            locations of climate stations in ``in_path`` summary CSV. 
-        buffer (int): default 25. Number of gridcells to expand 
+        bounds (dict): dict of bounding coordinates
             the rectangular extent of the subgrid fishnet and interpolated
             output raster.
         overwrite (bool): default False. If True, overwrite the grid
@@ -428,15 +423,12 @@ def make_grid(in_path, grid_res, bounds=None, buffer=25, overwrite=False, grid_i
     if not os.path.isdir(out_dir):
         print(os.path.abspath(out_dir), ' does not exist, creating directory.\n')
         os.mkdir(out_dir)
-    # user provided uniform grid, grid_res should be in dec. degrees
-    # get grid extent based on station locations in CSV
-    if not bounds:
-        # TODO get_subgrid_bounds will return values in WGS84 and needs to updated
-        raise NotImplementedError(f'The function get_subgrid_bounds() has not been updated yet to work '
-                                  f'with Lambert Conformal Conic Projection and will return values in WGS84.\n\n'
-                                  f'Specify "bounds" argument to proceed.')
-        # bounds = get_subgrid_bounds(in_path, buffer=buffer, grid_res=grid_res)
-    xmin, xmax, ymin, ymax = bounds
+
+    # extract values from dict for readability
+    xmin = bounds['xmin']
+    xmax = bounds['xmax']
+    ymin = bounds['ymin']
+    ymax = bounds['ymax']
 
     # read path and make parent directories if they don't exist    
     if not os.path.isdir(path_root):
@@ -771,7 +763,7 @@ def interpolate(in_path, proj_dict, proj_name, layer='all', out=None, scale_fact
     # run gdal_grid interpolation
     if function in InterpGdal.interp_methods:
         gg = InterpGdal(in_path)
-        gg.gdal_grid(proj_dict[proj_name], proj_name, layer=layer, out_dir=out_dir, interp_meth=function,
+        gg.gdal_grid(proj_dict, proj_name, layer=layer, out_dir=out_dir, interp_meth=function,
                      params=params, scale_factor=scale_factor, z_stats=z_stats, res_plot=res_plot,
                      grid_id_name=grid_id_name, options=options)
     else:

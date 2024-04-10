@@ -369,7 +369,7 @@ class InterpGdal(object):
         file_name = os.path.split(self.summary_csv_path)[1]
         var_name = file_name.split('_summ')[0]
         spatial_dir = os.path.join(path_root, 'spatial')
-        lcc_shapefile_path = os.path.join(spatial_dir, '{v}_summary_pts_lcc.shp'.format(v=var_name))
+        lcc_shapefile_path = os.path.join(spatial_dir, '{v}_summary_pts_{p}.shp'.format(v=var_name, p=proj_name))
 
         # to parse options, like --config GDAL_NUM_THREADS update here
         if not options:
@@ -417,9 +417,7 @@ class InterpGdal(object):
             p.stdout.close()
             p.stderr.close()
 
-            # # TODO fix these hardcoded values
-            grid_extent = {'xmin': -127.05, 'xmax': -65.05,
-                           'ymin': 23.95, 'ymax': 55.05}
+            grid_extent = proj_dict['wgs84']['bounds']
             resample_res = 0.1  # in decimal degrees
             # Resample using gdal warp, to the gridded extent, and exact cell size, using bilinear method
             # instead of "bilinear" you could use "near" for nearest neighbor, documentation says the fastest and worst

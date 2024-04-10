@@ -119,7 +119,7 @@ def download_grid_data(metadata_path, dataset, export_bucket, export_path, force
         ee.Authenticate()
     else:
         pass
-    ee.Initialize()
+    ee.Initialize(project='openet-dri')
 
     # Initialize local directory files will be downloaded to
     Path(f'{dataset}/').mkdir(parents=True, exist_ok=True)
