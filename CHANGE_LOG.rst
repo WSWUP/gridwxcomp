@@ -1,6 +1,11 @@
 Change Log
 **********
 
+Version 0.2.0
+=============
+
+# TODO, needs to be filled out
+
 Version 0.1.4
 =============
 
