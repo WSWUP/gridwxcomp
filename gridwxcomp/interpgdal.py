@@ -155,17 +155,6 @@ class InterpGdal(object):
         parameter names keys and corresponding values.
     """
 
-    var_residual_names = {
-        'annual_mean': 'annual_res',
-        'growseason_mean': 'grow_res',
-        'summer_mean': 'summer_res'
-    }
-    """
-    var_residual_names (dict): Dictionary that maps names of bias ratios 
-        to the name of their intepolated residual if they are too long for
-        storing as a field name in an ESRI shapefile (i.e. > 10 chars).
-    """
-
     def __init__(self, summary_csv_path):
         
         if not Path(summary_csv_path).is_file():
@@ -450,18 +439,17 @@ class InterpGdal(object):
                 zonal_stats(self.summary_csv_path, out_file, grid_id_name=grid_id_name)
             # residual (error) bar plot, only for mean bias ratios
             if res_plot and layer in InterpGdal.default_layers:
-                layer = self.var_residual_names.get(
-                    layer, 
-                    layer.replace('mean', 'res')
-                )
                 y_label = 'residual (interpolated minus station value)'
                 title = 'layer: {} algorithm: {} (gdal_grid) res: {} deg.'.\
                         format(layer, self.interp_meth, grid_res)
                 res_plot_dir = Path(out_dir)/'residual_plots'
                 subtitle = 'parameters: {}'.format(params)
+                # residual name has _res suffix
+                layer_name = f"{layer.replace('growseason','grow')}_res"
+                
                 source_file = Path(out_dir)/Path(self.summary_csv_path).name
 
-                station_bar_plot(source_file, layer, out_dir=res_plot_dir,
+                station_bar_plot(source_file, layer_name, out_dir=res_plot_dir,
                                  y_label=y_label, title=title, subtitle=subtitle)
 
         # run interpolation and zonal statistics depending on layer kwarg
