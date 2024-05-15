@@ -27,6 +27,7 @@ jobs:
         sudo apt-add-repository ppa:ubuntugis/ubuntugis-unstable
         sudo apt-get update
         sudo apt-get install gdal-bin libgdal-dev
+        pip install -e .
         if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
     - name: Lint with flake8
       run: |
