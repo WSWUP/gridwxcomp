@@ -20,7 +20,7 @@ def test_init():
         print('Writing privatekey.json from environmental variable ...')
         content = base64.b64decode(
             os.environ['EARTHENGINE_TOKEN']
-        ).decode('ascii')
+        )#.decode('ascii')
         EE_KEY_FILE = 'privatekey.json'
         with open(EE_KEY_FILE, 'w') as f:
             f.write(content)
