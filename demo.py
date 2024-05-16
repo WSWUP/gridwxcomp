@@ -6,20 +6,34 @@ from gridwxcomp.calc_bias_ratios import calc_bias_ratios
 from gridwxcomp.spatial import make_grid, interpolate
 
 
-gridded_dataset_name = 'conus404'  # name of the dataset comparison is being made with
-station_meta_path = './gridwxcomp/example_data/Station_Data.txt'  # Path to station metadata file with lat/long coords
-config_path = f'./gridwxcomp/example_data/gridwxcomp_config_{gridded_dataset_name}.ini'  # local path for config file
+# name of the dataset comparison is being made with
+gridded_dataset_name = 'conus404'
+# Path to station metadata file with lat/long coords
+station_meta_path = './gridwxcomp/example_data/Station_Data.txt'
+# local path for config file
+config_path = f'./gridwxcomp/example_data/gridwxcomp_config_{gridded_dataset_name}.ini'
 
-export_bucket = 'openet'  # name of bucket data will be exported to once the earth engine calls complete
-export_path = f'bias_correction_gridwxcomp_testing/gridwxcomp_{gridded_dataset_name}/'  # path in bucket to export to
+# name of bucket data will be exported to once the earth engine calls complete
+export_bucket = 'openet'
+# path in bucket to export to
+export_path = f'bias_correction_gridwxcomp_testing/gridwxcomp_{gridded_dataset_name}/'
 
-gridwxcomp_input = f'{gridded_dataset_name}_gridwxcomp_metadata.csv'  # local path for prep_metadata output
-output_dir = f'bias_outputs_{gridded_dataset_name}'  # Directory that bias ratio/interpolation outputs will be saved to
+# local path for prep_metadata output
+gridwxcomp_input = f'{gridded_dataset_name}_gridwxcomp_metadata.csv'
+# Directory that bias ratio/interpolation outputs will be saved to
+output_dir = f'bias_outputs_{gridded_dataset_name}'
 
 # Defining the parameters for the interpolation
-search_radius = 15*100*1000
-params = {'power': 4, 'smoothing': 0.0, 'max_points': 25, 'min_points': 0, 'radius': search_radius, 'nodata': -999}
-lcc_interpolation_resolution = 1000  # in meters, since interpolation will happen in Lambert Conformal Conic
+search_radius = 15 * 100 * 1000
+params = {
+    'power': 4,
+    'smoothing': 0.0,
+    'max_points': 25,
+    'min_points': 0,
+    'radius': search_radius,
+    'nodata': -999}
+# in meters, since interpolation will happen in Lambert Conformal Conic
+lcc_interpolation_resolution = 1000
 
 '''
 prep_metadata
@@ -27,15 +41,18 @@ prep_metadata
         it has everything needed in order to proceed with acquiring gridded data and comparing it against
         the observed station data
 '''
-prep_metadata(station_meta_path, gridded_dataset_name, out_path=gridwxcomp_input)
+prep_metadata(
+    station_meta_path,
+    gridded_dataset_name,
+    out_path=gridwxcomp_input)
 
 '''
 define_projection_parameters
     Functions in gridwxcomp.spatial and gridwxcomp.interpgdal are expecting projection information in a dictionary
-    
+
     This might seem cumbersome but if this is fleshed out a little more we could have gridwxcomp function with any two
     EPSG projections, although the first is required to be the same projection as the input data coordinates
-    
+
     This should eventually be made its own function under prep_metadata.py, where it asks for:
         - two projection names (arbitrary, user will refer to them later in other functions)
         - two projection resolutions
@@ -60,29 +77,37 @@ projection_dict = {
 
 if len(projection_dict['wgs84']['bounds']) == 0:
     # Calculate interpolation grid bounds if not provided
-    # TODO improve alignment of get_subgrid_bounds, currently wont snap on NLDAS resolution (0.125) but will for (0.1)
-    projection_dict['wgs84']['bounds'] = get_subgrid_bounds(gridwxcomp_input, projection_dict['wgs84']['resolution'],
-                                                            1, buffer=25)
+    # TODO improve alignment of get_subgrid_bounds, currently wont snap on
+    # NLDAS resolution (0.125) but will for (0.1)
+    projection_dict['wgs84']['bounds'] = get_subgrid_bounds(
+        gridwxcomp_input, projection_dict['wgs84']['resolution'], 1, buffer=25)
 
-# Convert WGS84 coordinates into LCC coordinates and add them to projection_dict
-lcc_transformer = pyproj.Transformer.from_crs(projection_dict['wgs84']['crs_id'],
-                                              projection_dict['lcc']['crs_id'], always_xy=True)
+# Convert WGS84 coordinates into LCC coordinates and add them to
+# projection_dict
+lcc_transformer = pyproj.Transformer.from_crs(
+    projection_dict['wgs84']['crs_id'],
+    projection_dict['lcc']['crs_id'],
+    always_xy=True)
 # Calculate xmin at the SW corner
 projection_dict['lcc']['bounds']['xmin'], projection_dict['lcc']['bounds']['_ignore'] = (
-    lcc_transformer.transform(projection_dict['wgs84']['bounds']['xmin'], projection_dict['wgs84']['bounds']['ymin']))
+    lcc_transformer.transform(
+        projection_dict['wgs84']['bounds']['xmin'], projection_dict['wgs84']['bounds']['ymin']))
 # Calculate xmax at the SE corner
 projection_dict['lcc']['bounds']['xmax'], projection_dict['lcc']['bounds']['_ignore'] = (
-    lcc_transformer.transform(projection_dict['wgs84']['bounds']['xmax'], projection_dict['wgs84']['bounds']['ymin']))
+    lcc_transformer.transform(
+        projection_dict['wgs84']['bounds']['xmax'], projection_dict['wgs84']['bounds']['ymin']))
 # Calculate ymax at the NE corner, could've also been NW corner
 projection_dict['lcc']['bounds']['_ignore'], projection_dict['lcc']['bounds']['ymax'] = (
-    lcc_transformer.transform(projection_dict['wgs84']['bounds']['xmax'], projection_dict['wgs84']['bounds']['ymax']))
+    lcc_transformer.transform(
+        projection_dict['wgs84']['bounds']['xmax'], projection_dict['wgs84']['bounds']['ymax']))
 # Calculate lcc's ymin as at the average between the east and west extent
-projection_dict['lcc']['bounds']['_ignore'], projection_dict['lcc']['bounds']['ymin'] = (
-    lcc_transformer.transform((projection_dict['wgs84']['bounds']['xmax']+projection_dict['wgs84']['bounds']['xmin'])/2, projection_dict['wgs84']['bounds']['ymin']))
+projection_dict['lcc']['bounds']['_ignore'], projection_dict['lcc']['bounds']['ymin'] = (lcc_transformer.transform(
+    (projection_dict['wgs84']['bounds']['xmax'] + projection_dict['wgs84']['bounds']['xmin']) / 2, projection_dict['wgs84']['bounds']['ymin']))
 
 # Round the entries in the LCC dict to the nearest meter
 for key in projection_dict['lcc']['bounds'].keys():
-    projection_dict['lcc']['bounds'][key] = round(projection_dict['lcc']['bounds'][key], 0)
+    projection_dict['lcc']['bounds'][key] = round(
+        projection_dict['lcc']['bounds'][key], 0)
 
 '''
 download_grid_data
@@ -98,8 +123,13 @@ download_grid_data
         download the 'conus404' folder from the bucket to the local directory of trial_runs.py it will work without
         further modification.
 '''
-download_grid_data(gridwxcomp_input, dataset=gridded_dataset_name, export_bucket=export_bucket,
-                   export_path=export_path, force_download=False, authorize=False)
+download_grid_data(
+    gridwxcomp_input,
+    dataset=gridded_dataset_name,
+    export_bucket=export_bucket,
+    export_path=export_path,
+    force_download=False,
+    authorize=False)
 
 '''
 plotting
@@ -123,11 +153,21 @@ plotting
         in the form of bar plots.
 
 '''
-monthly_comparison(gridwxcomp_input, config_path, dataset_name=gridded_dataset_name)
-daily_comparison(gridwxcomp_input, config_path, dataset_name=gridded_dataset_name)
+monthly_comparison(
+    gridwxcomp_input,
+    config_path,
+    dataset_name=gridded_dataset_name)
+daily_comparison(
+    gridwxcomp_input,
+    config_path,
+    dataset_name=gridded_dataset_name)
 
-for var in ['tmax', 'tmin', 'eto']:  # Iterate over vars in list. Valid entries found in calc_bias_ratios.py VAR_LIST
-    ratio_filepath = f'{output_dir}/gridded_{var}_summary_comp_1980_2020.csv'  # path to bias ratios output file
+for var in [
+    'tmax',
+    'tmin',
+        'eto']:  # Iterate over vars in list. Valid entries found in calc_bias_ratios.py VAR_LIST
+    # path to bias ratios output file
+    ratio_filepath = f'{output_dir}/gridded_{var}_summary_comp_1980_2020.csv'
     interpolation_out_path = (f'{var}_invdistnn_p{params["power"]}_'  # directory for interpolation outputs
                               f's{params["smoothing"]}_maxpoints{params["max_points"]}_radius{params["radius"]}')
 
@@ -136,19 +176,28 @@ for var in ['tmax', 'tmin', 'eto']:  # Iterate over vars in list. Valid entries 
        The purpose of this module is to calculate the monthly bias
             (either the long-term-mean [default] or mean-of-annual)
             between the gridded dataset and the station observations.
-    
+
        IMPORTANT: The bias factors are either
             (station - gridded) [Temperature] or (station / gridded) [Everything else].
             This is the reverse relationship from how we normally think of modeled / observed, so a temperature bias
             of -2 means that the gridded dataset is hotter than observed, not colder. This reversal was done to make
             applying bias a matter of addition/multiplication.
-    
+
        This module requires the configuration .ini file (stored under the example_data folder)
             to be set up so that it can correct interpret the columns within the station and gridded data files.
             The acceptable parameters for 'comparison_var' are coded in ACCEPTABLE_VAR_LIST within calc_bias_ratios.py
     '''
-    calc_bias_ratios(gridwxcomp_input, config_path, output_dir, method='long_term_mean', grid_id_name='GRID_ID',
-                     comparison_var=var, grid_id=None, day_limit=10, years='1980-2020', comp=True)
+    calc_bias_ratios(
+        gridwxcomp_input,
+        config_path,
+        output_dir,
+        method='long_term_mean',
+        grid_id_name='GRID_ID',
+        comparison_var=var,
+        grid_id=None,
+        day_limit=10,
+        years='1980-2020',
+        comp=True)
 
     '''
     station_bar_plot
@@ -167,8 +216,12 @@ for var in ['tmax', 'tmin', 'eto']:  # Iterate over vars in list. Valid entries 
         This step is not required if the desired output is just the interpolation surfaces. It becomes necessary
             zonal statistics are going to be generated by spatial.interpolate.
     '''
-    make_grid(ratio_filepath, projection_dict['wgs84']['resolution'],
-              bounds=projection_dict['wgs84']['bounds'], overwrite=False, grid_id_name='GRID_ID')
+    make_grid(
+        ratio_filepath,
+        projection_dict['wgs84']['resolution'],
+        bounds=projection_dict['wgs84']['bounds'],
+        overwrite=False,
+        grid_id_name='GRID_ID')
 
     '''
     interpolate
@@ -182,6 +235,17 @@ for var in ['tmax', 'tmin', 'eto']:  # Iterate over vars in list. Valid entries 
         The default behavior will also calculate zonal statistics (which requires having run spatial.make_grid).
             To disable this you must specifically pass z_stats=False
     '''
-    interpolate(ratio_filepath, projection_dict, proj_name='lcc', layer='all', out=interpolation_out_path, scale_factor=1,
-                function='invdistnn', params=params, buffer=5, z_stats=False, res_plot=False,
-                grid_id_name='GRID_ID', options=None)
+    interpolate(
+        ratio_filepath,
+        projection_dict,
+        proj_name='lcc',
+        layer='all',
+        out=interpolation_out_path,
+        scale_factor=1,
+        function='invdistnn',
+        params=params,
+        buffer=5,
+        z_stats=False,
+        res_plot=False,
+        grid_id_name='GRID_ID',
+        options=None)

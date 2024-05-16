@@ -11,20 +11,22 @@ import ee
 
 @pytest.fixture(scope="session", autouse=True)
 def test_init():
-    logging.basicConfig(level=logging.DEBUG, format='%(message)s')
-    logging.getLogger('googleapiclient').setLevel(logging.ERROR)
-    logging.debug('Test Setup')
+    logging.basicConfig(level=logging.DEBUG, format='%(message)s')
+    logging.getLogger('googleapiclient').setLevel(logging.ERROR)
+    logging.debug('Test Setup')
 
-    # For GitHub Actions authenticate using private key environment variable
-    if 'EARTHENGINE_TOKEN' in os.environ:
-        print('Writing privatekey.json from environmental variable ...')
-        content = base64.b64decode(os.environ['EARTHENGINE_TOKEN']).decode('ascii')
-        EE_KEY_FILE = 'privatekey.json'
-        with open(EE_KEY_FILE, 'w') as f:
-            f.write(content)
-        ee.Initialize(ee.ServiceAccountCredentials('', key_file=EE_KEY_FILE))
-    else:
-        ee.Initialize()
+    # For GitHub Actions authenticate using private key environment variable
+    if 'EARTHENGINE_TOKEN' in os.environ:
+        print('Writing privatekey.json from environmental variable ...')
+        content = base64.b64decode(
+            os.environ['EARTHENGINE_TOKEN']
+        ).decode('ascii')
+        EE_KEY_FILE = 'privatekey.json'
+        with open(EE_KEY_FILE, 'w') as f:
+            f.write(content)
+        ee.Initialize(ee.ServiceAccountCredentials('', key_file=EE_KEY_FILE))
+    else:
+        ee.Initialize()
 
 
 

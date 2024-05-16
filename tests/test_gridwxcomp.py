@@ -27,6 +27,11 @@ def data(request):
                 'gridwxcomp', 'example_data/Station_Data.txt'
                 )
             )
+    d['conus404_ini_path'] = Path(
+            pkg_resources.resource_filename(
+                'gridwxcomp', 'example_data/gridwxcomp_config_conus404.ini'
+                )
+            )
     # make copy of all example data for use in tests in tests/example_data
     example_files = [f for f in d.get('station_meta_path').parent.glob('*')]
     if not (Path('tests')/'example_data').is_dir():
@@ -53,7 +58,8 @@ def data(request):
         d.get('station_meta_path').parent.parent/'merged_input.csv'
     d['prep_metadata_outpath_copy'] =\
         d.get('station_meta_path').parent.parent/'merged_input_cp.csv'
-    d['od_download_dir'] = d.get('prep_metadata_outpath').parent/'od_gridmet_data'
+    d['conus404_download_dir'] =\
+        d.get('prep_metadata_outpath').parent/'conus404'
     d['ratio_dir'] = d.get('prep_metadata_outpath').parent/'test_ratios'
 
     def teardown():
@@ -62,8 +68,8 @@ def data(request):
             d['prep_metadata_outpath'].unlink()
         if d['prep_metadata_outpath_copy'].is_file():
             d['prep_metadata_outpath_copy'].unlink()
-        if d['od_download_dir'].is_dir():
-            rmtree(d['od_download_dir'])
+        if d['conus404_download_dir'].is_dir():
+            rmtree(d['conus404_download_dir'])
         if d['ratio_dir'].is_dir():
             rmtree(d['ratio_dir'])
         if (Path('tests')/'__pycache__').is_dir():
@@ -135,18 +141,10 @@ class TestPrepMetadata(object):
     def test_prep_metadata(self, data):
         prep_metadata(
             data['station_meta_path'], 
-            'gridMET',
+            'conus404',
             out_path=data['prep_metadata_outpath']
         )
         assert data['prep_metadata_outpath'].is_file()
-
-    def test_prep_metadata_gridmet_cell_kwarg(self, data):
-        prep_metadata(
-            data['station_meta_path'], 
-            'gridMET',
-            out_path=data['prep_metadata_outpath_copy'],
-        )
-        assert data['prep_metadata_outpath_copy'].is_file()
 
     def test_prep_metadata_missing_input_col(self, data):
         with pytest.raises(Exception) as e_info:
@@ -159,6 +157,27 @@ class TestPrepMetadata(object):
         test_lon = df.loc[df['STATION_ID']=='Loa']['STATION_LON'].values[0]
         assert np.isclose(test_lon, -111.635832870077)
 
+class TestEEDownload(object):
+
+    def setup_method(self):
+        self.gridmet_cols = ('date', 'year', 'month', 'day', 'centroid_lat',
+                    'centroid_lon', 'elev_m', 'u2_ms', 'tmin_c', 'tmax_c',
+                    'srad_wm2', 'ea_kpa', 'prcp_mm', 'etr_mm', 'eto_mm')
+
+                
+    def test_download_grid_data_conus404(self, data):
+    	download_grid_data(
+            data['prep_metadata_outpath'],
+            dataset='conus404',
+            export_bucket='openet',
+            export_path=f'bias_correction_gridwxcomp_testing/gridwxcomp_conus404/',
+            local_folder='tests',
+            force_download=False,
+            authorize=False)
+    
+        
+
+
 #class TestDownloadGridmetOpenDap(object):
 #
 #    def setup_method(self):
@@ -166,13 +185,6 @@ class TestPrepMetadata(object):
 #                    'centroid_lon', 'elev_m', 'u2_ms', 'tmin_c', 'tmax_c',
 #                    'srad_wm2', 'ea_kpa', 'prcp_mm', 'etr_mm', 'eto_mm')
 #
-#        self.gridmet_ids = ('441130', '443835', '452205', '509011')
-#
-#    def test_download_gridmet_od_single_year(self, data):
-#        download_dir = data['prep_metadata_outpath'].parent/'od_gridmet_data'
-#        download_gridmet_opendap(
-#            data['prep_metadata_outpath'],
-#            out_folder=download_dir,
 #            year_filter='2016',
 #            update_data=False
 #        )
@@ -352,3 +364,10 @@ class TestPrepMetadata(object):
 #    def test_monthly_comparison(self, data):
 #        input_path=data.get('prep_metadata_outpath') 
 #        plot.monthly_comparison(input_path, out_dir=self.monthly_plot_dir)
+# -*- coding: utf-8 -*-
+
+import os
+import pkg_resources
+import pytest
+from datetime import datetime
+from pathlib import Path
