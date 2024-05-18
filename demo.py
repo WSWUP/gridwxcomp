@@ -43,6 +43,7 @@ prep_metadata
 '''
 prep_metadata(
     station_meta_path,
+    config_path,
     gridded_dataset_name,
     out_path=gridwxcomp_input)
 

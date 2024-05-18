@@ -8,11 +8,12 @@ import os
 import pandas as pd
 import pathlib as pl
 import pkg_resources
+import pyproj
 
 
 def get_gridmet_meta_csv(gridmet_meta_path=None):
     """Find path to 'gridmet_cell_data.csv' packaged with gridwxcomp"""
-    # look for pacakged gridmet_cell_data.csv if path not given
+    # look for packaged gridmet_cell_data.csv if path not given
     if not gridmet_meta_path:
         try:
             if pkg_resources.resource_exists('gridwxcomp',
@@ -165,6 +166,28 @@ def read_config(config_file_path):
     config_dict = {**config_reader._sections['DATA'], **config_reader._sections['UNITS']}
 
     # METADATA Section
+    config_dict['input_data_projection'] =\
+        config_reader['METADATA']['input_data_projection']
+    config_dict['input_data_resolution'] =\
+        config_reader['METADATA'].getfloat('input_data_resolution')
+    config_dict['interpolation_projection'] =\
+        config_reader['METADATA']['interpolation_projection']
+    config_dict['interpolation_resolution'] =\
+        config_reader['METADATA'].getfloat('interpolation_resolution')
+    config_dict['output_data_projection'] =\
+        config_reader['METADATA']['output_data_projection']
+    config_dict['output_data_resolution'] =\
+        config_reader['METADATA'].getfloat('output_data_resolution')
+
+    # Below variables are for obtaining decimal places on resolution if it's a float
+    # might be useful in developing eventual way to force snapping to grid
+    for res in ['input_data_resolution', 'interpolation_resolution', 'output_data_resolution']:
+        if '.' in config_reader['METADATA'][res]:
+            config_dict[f'{res}_decimals'] = \
+                len(config_reader['METADATA'][res].split('.')[1])
+        else:
+            config_dict[f'{res}_decimals'] = 0
+
     config_dict['station_anemometer_height'] = config_reader['METADATA'].getfloat('station_anemometer_height')
     config_dict['station_lines_of_header'] = config_reader['METADATA'].getint('station_lines_of_header')
     config_dict['station_missing_data_value'] = config_reader['METADATA']['station_missing_data_value']
@@ -374,3 +397,89 @@ def convert_units(config_dictionary, version, df):
         converted_df[var_list[i]] = converted_data
 
     return converted_df
+
+
+def reproject_crs_for_point(orig_lon, orig_lat, orig_crs, requested_crs):
+    """
+        Uses the pyproj library to reproject point data from one CRS to another
+            ex. will be used to make input coords wgs84 for earth engine
+
+        Will return original data without any reprojection if orig_crs
+            and requested_crs are the same
+
+        Args:
+            orig_lon: float of original longitude
+            orig_lat: float of original latitude
+            orig_crs: string of EPSG code for orig_lat and orig_lon
+            requested_crs: string of EPSG code to reproject into
+        Returns:
+            Reprojected latitude and longitude for point
+    """
+    if orig_crs == requested_crs:
+        return orig_lon, orig_lat
+
+    proj_transformer = pyproj.Transformer.from_crs(orig_crs, requested_crs,
+                                                   always_xy=True)
+    return proj_transformer.transform(orig_lon, orig_lat)
+
+
+def reproject_crs_for_bounds(bounds, resolution, orig_crs, requested_crs,
+                             requested_decimals):
+    """
+        Uses the pyproj library to reproject dictionary of bounds for
+            interpolation extent. This is done in more than just two calls
+            (ex. NW and SE corners) as some projections may have curvature
+
+        Afterwords it rounds the coordinates to the requested decimals
+        #TODO can we modify this further to make snapping to grid occur here?
+
+        If orig_crs and requested_crs are the same it will just round the coords
+            without reprojecting
+
+        Args:
+            bounds: dictionary of bounds, containing the following keys:
+                xmin, xmax, ymin, ymax
+            resolution: resolution used for interpolation, coordinates will
+                be rounded in an attempt to snap to grid
+            orig_crs: string of EPSG code for original bounds
+            requested_crs: string of EPSG code to reprojected bounds
+            requested_decimals: int of number of decimals to round coords to
+        Returns:
+            Reprojected bounds into new CRS
+    """
+
+    if orig_crs == requested_crs:
+        projection_dict = {key: value for key, value in bounds.items()}
+    else:
+        projection_dict = {}
+        proj_transformer = (
+            pyproj.Transformer.from_crs(orig_crs, requested_crs,
+                                        always_xy=True))
+
+        # Calculate xmin at the SW corner
+        projection_dict['xmin'], _ignore =\
+            proj_transformer.transform(bounds['xmin'], bounds['ymin'])
+        # Calculate xmax at the SE corner
+        projection_dict['xmax'], _ignore =\
+            proj_transformer.transform(bounds['xmax'], bounds['ymin'])
+        # Calculate ymax at the NE corner, could've also been NW corner
+        _ignore, projection_dict['ymax'] =\
+            proj_transformer.transform(bounds['xmax'], bounds['ymax'])
+        # Calculate ymin as at the average between the east and west extent
+        _ignore, projection_dict['ymin'] =\
+            proj_transformer.transform(
+                (bounds['xmax'] + bounds['xmin']) / 2, bounds['ymin']
+            )
+
+    # Round the entries in the reproj dict to the resolution if above 1
+    # Mainly used to cut off decimal places on projections defined in meters
+    for key in projection_dict.keys():
+        if requested_decimals > 0:
+            projection_dict[key] = round(projection_dict[key], requested_decimals)
+        else:
+            # if resolution is above 1, turn it into an int and subtract modulo
+            int_res = int(projection_dict[key])
+            remainder = int_res % int(resolution)
+            projection_dict[key] = int_res - remainder
+
+    return projection_dict

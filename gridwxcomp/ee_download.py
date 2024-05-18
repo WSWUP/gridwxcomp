@@ -206,8 +206,8 @@ def download_grid_data(
             _download_point_data(
                 start_date=gridded_dataset_date_start,
                 end_date=gridded_dataset_date_end,
-                lat=row['STATION_LAT'],
-                lon=row['STATION_LON'],
+                lat=row['STATION_LAT_WGS84'],
+                lon=row['STATION_LON_WGS84'],
                 station_name=str(formatted_station_id),
                 dataset_path=gridded_dataset_path,
                 dataset_name=dataset,

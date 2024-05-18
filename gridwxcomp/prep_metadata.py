@@ -8,8 +8,11 @@ TODO: add logging
 """
 
 import os
+
+import numpy as np
 import pandas as pd                                                             
 from pathlib import Path
+from gridwxcomp.util import read_config, reproject_crs_for_point
 
 
 def _read_station_list(station_path):
@@ -85,7 +88,7 @@ def _read_station_list(station_path):
     return station_list
 
 
-def prep_metadata(station_path, grid_name, out_path='formatted_input.csv'):
+def prep_metadata(station_path, config_path, grid_name, out_path='formatted_input.csv'):
     """
     Read list of climate stations in metadata and verify all needed parameters exist
 
@@ -96,6 +99,7 @@ def prep_metadata(station_path, grid_name, out_path='formatted_input.csv'):
         station_path (str): path to CSV file containing metadata of climate
             stations that will later be used to calculate bias ratios to 
             the gridded dataset.
+        config_path (str): path to config file containing projection info
         grid_name (str): name of the gridded dataset that is being used
             for comparison against observed data.
         out_path (str): path to save output CSV, default is to save as 
@@ -145,13 +149,31 @@ def prep_metadata(station_path, grid_name, out_path='formatted_input.csv'):
     print('station list CSV: ', os.path.abspath(station_path))
     print('merged CSV will be saved to: ', os.path.abspath(out_path))
 
+    config = read_config(config_path)
+
     stations = _read_station_list(station_path)
     stations[f'GRID_ID'] = f'{grid_name}_' + stations['STATION_ID']
 
     if 'ELEV_M' in stations.columns:
         stations['ELEV_FT'] = stations.ELEV_M * 3.28084  # m to ft
 
-    # save CSV 
+
+    # Add WGS84 projection columns for earth engine requests
+    temp_proj_df = stations[['STATION_LAT', 'STATION_LON']].copy(deep=True)
+    temp_proj_df['STATION_LAT_WGS84'] = np.nan
+    temp_proj_df['STATION_LON_WGS84'] = np.nan
+
+    for index, row in temp_proj_df.iterrows():
+        (temp_proj_df.loc[index, 'STATION_LON_WGS84'],
+         temp_proj_df.loc[index, 'STATION_LAT_WGS84']) =\
+            reproject_crs_for_point(
+            row['STATION_LON'], row['STATION_LAT'],
+            config['input_data_projection'], 'EPSG:4326')
+
+    stations['STATION_LAT_WGS84'] = temp_proj_df['STATION_LAT_WGS84']
+    stations['STATION_LON_WGS84'] = temp_proj_df['STATION_LON_WGS84']
+
+    # save CSV
     stations.to_csv(out_path, index=False)
 
 
