@@ -57,7 +57,8 @@ def data(request):
         d.get('station_meta_path').parent/'gridwxcomp_config_conus404.ini'
     d['conus404_download_dir'] =\
         d.get('prep_metadata_outpath').parent/'conus404'
-    d['ratio_dir'] = d.get('prep_metadata_outpath').parent/'test_ratios'
+    d['conus404_output_dir'] =\
+        d.get('prep_metadata_outpath').parent/'bias_outputs_conus404'
 
     def teardown():
         rmtree(Path('tests')/'example_data')
@@ -67,8 +68,8 @@ def data(request):
             d['prep_metadata_outpath_copy'].unlink()
         if d['conus404_download_dir'].is_dir():
             rmtree(d['conus404_download_dir'])
-        if d['ratio_dir'].is_dir():
-            rmtree(d['ratio_dir'])
+        if d['conus404_output_dir'].is_dir():
+            rmtree(d['conus404_output_dir'])
         if (Path('tests')/'__pycache__').is_dir():
             rmtree(Path('tests')/'__pycache__')
         if (Path('tests')/'daily_comp_plots').is_dir():
@@ -161,171 +162,116 @@ class TestEEDownload(object):
         self.gridmet_cols = ('date', 'year', 'month', 'day', 'centroid_lat',
                     'centroid_lon', 'elev_m', 'u2_ms', 'tmin_c', 'tmax_c',
                     'srad_wm2', 'ea_kpa', 'prcp_mm', 'etr_mm', 'eto_mm')
-
+        self.conus404_cols = ('ACSWDNB', 'ETO_ASCE', 'ETR_ASCE', 'PREC_ACC_NC',
+            'PSFC', 'T2_MAX', 'T2_MIN', 'TD2', 'WIND10', 'date', 'station_name')
                 
     def test_download_grid_data_conus404(self, data):
-    	download_grid_data(
+        download_grid_data(
             data['prep_metadata_outpath'],
             dataset='conus404',
             export_bucket='openet',
             export_path=f'bias_correction_gridwxcomp_testing/gridwxcomp_conus404/',
             local_folder='tests',
             force_download=False)
+
+        # download dir
+        assert Path('tests/conus404').is_dir()
+
+        # check if output metadata file has been updated
+        meta_df = pd.read_csv(data['prep_metadata_outpath'])
+
+        # check all four station time series were downloaded
+        for grid_file_path in meta_df.GRID_FILE_PATH:
+            assert Path(grid_file_path).is_file()
+
+        # open a downloaded grid data file and make checks
+        df = pd.read_csv(
+            meta_df.loc[
+                meta_df.Station_ID == 'loau', 'GRID_FILE_PATH'
+            ].values[0])
+            
+        assert not set(df.columns).isdisjoint(self.conus404_cols)
+        assert df.notna().all().all()
+        assert df.T2_MAX.dtype == 'float'
+
+    @pytest.mark.slow
+    def test_download_grid_data_conus404_overwrite(self, data):
+        download_grid_data(
+            data['prep_metadata_outpath'],
+            dataset='conus404',
+            export_bucket='openet',
+            export_path=f'bias_correction_gridwxcomp_testing/gridwxcomp_conus404/',
+            local_folder='tests',
+            force_download=True)
+
+        # download dir
+        assert Path('tests/conus404').is_dir()
+
+        # check if output metadata file has been updated
+        meta_df = pd.read_csv(data['prep_metadata_outpath'])
+
+        # check all four station time series were downloaded
+        for grid_file_path in meta_df.GRID_FILE_PATH:
+            assert Path(grid_file_path).is_file()
+
+        # open a downloaded grid data file and make checks
+        df = pd.read_csv(
+            meta_df.loc[
+                meta_df.Station_ID == 'loau', 'GRID_FILE_PATH'
+            ].values[0])
+            
+        assert not set(df.columns).isdisjoint(self.conus404_cols)
+        assert df.notna().all().all()
+        assert df.T2_MAX.dtype == 'float'
     
         
 
 
-#class TestDownloadGridmetOpenDap(object):
-#
-#    def setup_method(self):
-#        self.gridmet_cols = ('date', 'year', 'month', 'day', 'centroid_lat',
-#                    'centroid_lon', 'elev_m', 'u2_ms', 'tmin_c', 'tmax_c',
-#                    'srad_wm2', 'ea_kpa', 'prcp_mm', 'etr_mm', 'eto_mm')
-#
-#            year_filter='2016',
-#            update_data=False
-#        )
-#        assert download_dir.is_dir()
-#        # check all four gridMET cells time series were downloaded
-#        for id in self.gridmet_ids:
-#            gridmet_file = download_dir.joinpath(
-#                'gridmet_historical_{}.csv'.format(id)
-#            )
-#            assert gridmet_file.is_file()
-#        df = pd.read_csv(download_dir/'gridmet_historical_441130.csv')
-#        assert not set(df.columns).isdisjoint(self.gridmet_cols)
-#        assert df.notna().all().all()
-#        assert df.etr_mm.dtype == 'float'
-#        #### test is input file from prep_metadata is updated with gridmet ts path
-#        df = pd.read_csv(data['prep_metadata_outpath'])
-#        assert 'GRID_FILE_PATH' in df.columns
-#        # check correct path to gridmet time series file
-#        assert not set(
-#            df.loc[0,'GRID_FILE_PATH'].split(os.sep)).isdisjoint(
-#                ['tests','od_gridmet_data','gridmet_historical_509011.csv'])
-#
-#    @pytest.mark.slow
-#    def test_download_gridmet_od_multiple_years(self, data):
-#        download_dir = data['prep_metadata_outpath'].parent/'od_gridmet_data'
-#        download_gridmet_opendap(
-#            data['prep_metadata_outpath'],
-#            out_folder=download_dir,
-#            year_filter='2016-2018',
-#            update_data=False
-#        )
-#        for id in self.gridmet_ids:
-#            gridmet_file = download_dir.joinpath(
-#                'gridmet_historical_{}.csv'.format(id)
-#            )
-#            assert gridmet_file.is_file()
-#        df = pd.read_csv(download_dir/'gridmet_historical_441130.csv',
-#            parse_dates=True, index_col='date')
-#        # make sure new years data exists and full range
-#        assert df.index.year.min() == 2016
-#        assert df.index.year.max() == 2018
-#        assert not set(df.columns).isdisjoint(self.gridmet_cols)
-#        assert df.notna().all().all()
-#        assert df.etr_mm.dtype == 'float'
-#        #### test is input file from prep_metadata is updated with gridmet ts path
-#        df = pd.read_csv(data['prep_metadata_outpath'])
-#        assert 'GRID_FILE_PATH' in df.columns
-#        # check correct path to gridmet time series file
-#        assert not set(
-#            df.loc[0,'GRID_FILE_PATH'].split(os.sep)).isdisjoint(
-#                ['tests','od_gridmet_data','gridmet_historical_509011.csv'])
-#
-#    @pytest.mark.slow
-#    def test_download_gridmet_od_update_years(self, data):
-#        """
-#        Open one gridmet time series file after downloading and change
-#        etr values to -1 for April 2016, redownload with update option and 
-#        check that they are not -1 (i.e. they should have correct values)
-#        """
-#        download_dir = data['prep_metadata_outpath'].parent/'od_gridmet_data'
-#        # first download only if this test is run first
-#        if not download_dir.joinpath('gridmet_historical_441130.csv').is_file():
-#            download_gridmet_opendap(
-#                data['prep_metadata_outpath'],
-#                out_folder=download_dir,
-#                year_filter='2016',
-#                update_data=False
-#            )
-#        df = pd.read_csv(download_dir/'gridmet_historical_441130.csv',
-#            parse_dates=True, index_col='date')
-#        df.loc['04/2016', 'etr_mm'] = -1
-#        assert (df.loc['04/2016', 'etr_mm'] == -1).all()
-#        # second download should update 2016
-#        download_gridmet_opendap(
-#            data['prep_metadata_outpath'],
-#            out_folder=download_dir,
-#            year_filter='2016',
-#            update_data=True
-#        )
-#        # should be updated and no values of -1
-#        df = pd.read_csv(download_dir/'gridmet_historical_441130.csv',
-#            parse_dates=True, index_col='date')
-#        assert not (df.loc['04/2016', 'etr_mm'] == -1).any()
-#        # make sure other tests also pass
-#        for id in self.gridmet_ids:
-#            gridmet_file = download_dir.joinpath(
-#                'gridmet_historical_{}.csv'.format(id)
-#            )
-#            assert gridmet_file.is_file()
-#
-#        assert not set(df.columns).isdisjoint(self.gridmet_cols)
-#        assert df.notna().all().all()
-#        assert df.etr_mm.dtype == 'float'
-#        #### test is input file from prep_metadata is updated with gridmet ts path
-#        df = pd.read_csv(data['prep_metadata_outpath'])
-#        assert 'GRID_FILE_PATH' in df.columns
-#        # check correct path to gridmet time series file
-#        assert not set(
-#            df.loc[0,'GRID_FILE_PATH'].split(os.sep)
-#        ).isdisjoint(['tests','gridmet_data','gridmet_historical_509011.csv'])
-#
-#
-#class TestCalcBiasRatios(object):
-#
-#    def setup_method(self):
-#        # header of station metadata file should carry through plus ratio stats 
-#        self.comp_header = (
-#           'Jan_mean', 'Feb_mean', 'Mar_mean', 'Apr_mean', 'May_mean', 
-#           'Jun_mean', 'Jul_mean', 'Aug_mean', 'Sep_mean', 'Oct_mean', 
-#           'Nov_mean', 'Dec_mean', 'Jan_count', 'Feb_count', 'Mar_count', 
-#           'Apr_count', 'May_count', 'Jun_count', 'Jul_count', 'Aug_count', 
-#           'Sep_count', 'Oct_count', 'Nov_count', 'Dec_count', 'Jan_stdev', 
-#           'Feb_stdev', 'Mar_stdev', 'Apr_stdev', 'May_stdev', 'Jun_stdev', 
-#           'Jul_stdev', 'Aug_stdev', 'Sep_stdev', 'Oct_stdev', 'Nov_stdev', 
-#           'Dec_stdev', 'Jan_cv', 'Feb_cv', 'Mar_cv', 'Apr_cv', 'May_cv', 
-#           'Jun_cv', 'Jul_cv', 'Aug_cv', 'Sep_cv', 'Oct_cv', 'Nov_cv', 'Dec_cv',
-#           'growseason_mean', 'summer_mean', 'annual_mean', 'growseason_count', 
-#           'summer_count', 'annual_count', 'growseason_stdev', 'summer_stdev', 
-#           'annual_stdev', 'growseason_cv', 'summer_cv', 'annual_cv', 
-#           'start_year', 'end_year', 'GRIDMET_ID', 'FID', 'OBJECTID', 'Id', 
-#           'State', 'Source', 'Status', 'STATION_LAT', 'STATION_LON', 'Date', 
-#           'Station_ID', 'STATION_ELEV_FT', 'Comments', 'Location', 
-#           'STATION_FILE_PATH', 'Irrigation', 'Website', 'STATION_ELEV_M', 
-#           'LAT', 'LON', 'ELEV_M', 'ELEV_FT', 'FIPS_C', 'STPO', 'COUNTYNAME', 
-#           'CNTYCATEGO', 'STATENAME', 'HUC8', 'GRID_FILE_PATH'
-#        )
-#
-#    def test_calc_bias_ratios_default_options(self, data):
-#        comp_out_file = data.get('ratio_dir')/'etr_mm_summary_comp_all_yrs.csv'
-#        short_out_file = data.get('ratio_dir')/'etr_mm_summary_all_yrs.csv'
-#
-#        calc_bias_ratios(
-#            input_path=data.get('prep_metadata_outpath'), 
-#            out_dir=data.get('ratio_dir')
-#        )
-#
-#        assert comp_out_file.is_file()
-#        assert short_out_file.is_file()
-#        df = pd.read_csv(
-#            comp_out_file, 
-#            index_col='STATION_ID', 
-#            na_values=[-999]
-#        )
-#        assert not set(df.columns).isdisjoint(self.comp_header)
+class TestCalcBiasRatios(object):
+
+    def setup_method(self):
+        # header of station metadata file should carry through plus ratio stats 
+        self.comp_header = (
+           'Jan_mean', 'Feb_mean', 'Mar_mean', 'Apr_mean', 'May_mean', 
+           'Jun_mean', 'Jul_mean', 'Aug_mean', 'Sep_mean', 'Oct_mean', 
+           'Nov_mean', 'Dec_mean', 'Jan_count', 'Feb_count', 'Mar_count', 
+           'Apr_count', 'May_count', 'Jun_count', 'Jul_count', 'Aug_count', 
+           'Sep_count', 'Oct_count', 'Nov_count', 'Dec_count', 'Jan_stdev', 
+           'Feb_stdev', 'Mar_stdev', 'Apr_stdev', 'May_stdev', 'Jun_stdev', 
+           'Jul_stdev', 'Aug_stdev', 'Sep_stdev', 'Oct_stdev', 'Nov_stdev', 
+           'Dec_stdev', 'Jan_cv', 'Feb_cv', 'Mar_cv', 'Apr_cv', 'May_cv', 
+           'Jun_cv', 'Jul_cv', 'Aug_cv', 'Sep_cv', 'Oct_cv', 'Nov_cv', 'Dec_cv',
+           'growseason_mean', 'summer_mean', 'annual_mean', 'growseason_count', 
+           'summer_count', 'annual_count', 'growseason_stdev', 'summer_stdev', 
+           'annual_stdev', 'growseason_cv', 'summer_cv', 'annual_cv', 
+           'start_year', 'end_year', 'GRIDMET_ID', 'FID', 'OBJECTID', 'Id', 
+           'State', 'Source', 'Status', 'STATION_LAT', 'STATION_LON', 'Date', 
+           'Station_ID', 'STATION_ELEV_FT', 'Comments', 'Location', 
+           'STATION_FILE_PATH', 'Irrigation', 'Website', 'STATION_ELEV_M', 
+           'LAT', 'LON', 'ELEV_M', 'ELEV_FT', 'FIPS_C', 'STPO', 'COUNTYNAME', 
+           'CNTYCATEGO', 'STATENAME', 'HUC8', 'GRID_FILE_PATH'
+        )
+
+    def test_calc_bias_ratios_default_options(self, data):
+        comp_out_file = data.get(
+            'conus404_output_dir')/'etr_summary_comp_all_yrs.csv'
+        short_out_file = data.get(
+            'conus404_output_dir')/'etr_summary_all_yrs.csv'
+
+        calc_bias_ratios(
+            input_path=data.get('prep_metadata_outpath'), 
+            config_path=data.get('conus404_config_path'),
+            out_dir=data.get('conus404_output_dir')
+        )
+
+        assert comp_out_file.is_file()
+        assert short_out_file.is_file()
+        df = pd.read_csv(
+            comp_out_file, 
+            index_col='STATION_ID', 
+            na_values=[-999]
+        )
+        assert not set(df.columns).isdisjoint(self.comp_header)
 #
 #    #TODO:
 #    # make a long version to check year range mark it
@@ -361,10 +307,4 @@ class TestEEDownload(object):
 #    def test_monthly_comparison(self, data):
 #        input_path=data.get('prep_metadata_outpath') 
 #        plot.monthly_comparison(input_path, out_dir=self.monthly_plot_dir)
-# -*- coding: utf-8 -*-
 
-import os
-import pkg_resources
-import pytest
-from datetime import datetime
-from pathlib import Path

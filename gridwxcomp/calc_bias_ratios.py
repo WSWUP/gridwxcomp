@@ -286,6 +286,7 @@ def calc_bias_ratios(input_path, config_path, out_dir, method='long_term_mean', 
         result = result[result[grid_var, 'count'] >= day_limit]
 
         # calc mean growing season and June to August ratios with month sums
+        # temperature deltas
         if grid_var in ('gridded_tmin', 'gridded_tmax', 'gridded_tdew'):
             grow_season = \
                 result.loc[result.index.get_level_values('month').isin(grow_months), station_var]['mean'].mean() - \
@@ -296,6 +297,7 @@ def calc_bias_ratios(input_path, config_path, out_dir, method='long_term_mean', 
             annual = \
                 result.loc[result.index.get_level_values('month').isin(ann_months), station_var]['mean'].mean() - \
                 result.loc[result.index.get_level_values('month').isin(ann_months), grid_var]['mean'].mean()
+        # ratios for other variables
         else:
             grow_season = \
                 result.loc[result.index.get_level_values('month').isin(grow_months), station_var]['mean'].mean() / \
@@ -308,7 +310,7 @@ def calc_bias_ratios(input_path, config_path, out_dir, method='long_term_mean', 
                 result.loc[result.index.get_level_values('month').isin(ann_months), grid_var]['mean'].mean()
 
         ratio = pd.DataFrame(columns=['ratio', 'count'])
-        # ratio of monthly sums for each year
+        # ratio/deltas of monthly sums for each year
         if grid_var in ('gridded_tmin', 'gridded_tmax', 'gridded_tdew'):
             ratio['ratio'] = (result[station_var, 'mean']) - (result[grid_var, 'mean'])
         else:
@@ -496,7 +498,9 @@ def calc_bias_ratios(input_path, config_path, out_dir, method='long_term_mean', 
             comp_out = comp
 
         # save output depending on options
-        _save_output(out, comp_out, out_dir, grid_id, grid_var, years_str)
+        _save_output(
+            out, comp_out, out_dir, grid_id, 
+            grid_var.replace('gridded_',''), years_str)
 
     print('\nSummary file(s) for bias ratios saved to: \n', os.path.abspath(out_dir))    
 
