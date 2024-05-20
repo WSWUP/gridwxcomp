@@ -27,11 +27,6 @@ def data(request):
                 'gridwxcomp', 'example_data/Station_Data.txt'
                 )
             )
-    d['conus404_ini_path'] = Path(
-            pkg_resources.resource_filename(
-                'gridwxcomp', 'example_data/gridwxcomp_config_conus404.ini'
-                )
-            )
     # make copy of all example data for use in tests in tests/example_data
     example_files = [f for f in d.get('station_meta_path').parent.glob('*')]
     if not (Path('tests')/'example_data').is_dir():
@@ -58,6 +53,8 @@ def data(request):
         d.get('station_meta_path').parent.parent/'merged_input.csv'
     d['prep_metadata_outpath_copy'] =\
         d.get('station_meta_path').parent.parent/'merged_input_cp.csv'
+    d['conus404_config_path'] =\
+        d.get('station_meta_path').parent/'gridwxcomp_config_conus404.ini'
     d['conus404_download_dir'] =\
         d.get('prep_metadata_outpath').parent/'conus404'
     d['ratio_dir'] = d.get('prep_metadata_outpath').parent/'test_ratios'
@@ -141,6 +138,7 @@ class TestPrepMetadata(object):
     def test_prep_metadata(self, data):
         prep_metadata(
             data['station_meta_path'], 
+            data['conus404_config_path'],
             'conus404',
             out_path=data['prep_metadata_outpath']
         )
@@ -172,8 +170,7 @@ class TestEEDownload(object):
             export_bucket='openet',
             export_path=f'bias_correction_gridwxcomp_testing/gridwxcomp_conus404/',
             local_folder='tests',
-            force_download=False,
-            authorize=False)
+            force_download=False)
     
         
 
