@@ -121,9 +121,9 @@ def _save_output(out_df, comp_out_df, out_dir, grid_id, var_name, yrs):
 def calc_bias_ratios(input_path, config_path, out_dir, method='long_term_mean', grid_id_name='GRID_ID',
                      comparison_var='etr', grid_id=None, day_limit=10, years='all', comp=True):
     """
-    Read input metadata CSV file and config file, use them to calculate mean monthly bias ratios between
-    station to corresponding grid cells for all station and grid 
-    pairs, optionally calculate ratios for a single gridcell.
+    Read input metadata CSV file and config file, use them to calculate mean
+    monthly bias ratios between station to corresponding grid cells for all
+    station and grid pairs, optionally calculate ratios for a single gridcell.
     
     Arguments:
         input_path (str): path to input CSV file with matching station climate and grid metadata.
@@ -169,8 +169,9 @@ def calc_bias_ratios(input_path, config_path, out_dir, method='long_term_mean', 
 
     Raises:
         FileNotFoundError: if input file or config file are invalid or not found.
-        KeyError: if the input file does not contain file paths to the climate station and grid time series files. This
-            occurs if, for example, the :mod:`gridwxcomp.prep_metadata` and/or
+        KeyError: if the input file does not contain file paths to the climate station and 
+            grid time series files. This occurs if, for example, the 
+            :mod:`gridwxcomp.prep_metadata` and/or
             :mod:`gridwxcomp.ee_download` scripts have not been run first.
             Also raised if the given the values specified in the config file are not found
             within the station and gridded data files.
@@ -199,7 +200,8 @@ def calc_bias_ratios(input_path, config_path, out_dir, method='long_term_mean', 
 
     method_options = ('long_term_mean', 'mean_of_annual')
     if method not in method_options:
-        raise ValueError('{} is not a valid method, use one of: {}'.format(method, method_options))
+        raise ValueError('{} is not a valid method, use one of: {}'.format(
+            method, method_options))
 
     if not os.path.isdir(out_dir):
         print('{} does not exist, creating directory'.format(out_dir))
@@ -213,7 +215,8 @@ def calc_bias_ratios(input_path, config_path, out_dir, method='long_term_mean', 
         single_grid_cell_msg = ''
 
     if comparison_var not in VAR_LIST:
-        raise ValueError('{} is not a valid option, use one of: {}'.format(comparison_var, VAR_LIST))
+        raise ValueError('{} is not a valid option, use one of: {}'.format(
+            comparison_var, VAR_LIST))
 
     station_var = f'station_{comparison_var}'
     grid_var = f'gridded_{comparison_var}'
@@ -232,7 +235,7 @@ def calc_bias_ratios(input_path, config_path, out_dir, method='long_term_mean', 
     for index, row in input_df.iterrows():
         if 'STATION_FILE_PATH' not in row or 'GRID_FILE_PATH' not in row:
             raise KeyError('Missing station and/or grid file paths in ' +
-                           'input file. Run prep_metadata.py followed by ee_download.py first.')
+                'input file. Run prep_metadata.py followed by ee_download.py first.')
 
         # if only doing a single grid cell check for matching ID
         if grid_id and grid_id != row[grid_id_name]:
@@ -247,7 +250,8 @@ def calc_bias_ratios(input_path, config_path, out_dir, method='long_term_mean', 
                 uz=converted_station_df['wind'], zw=config_dict['station_anemometer_height'])
             prepped_station_df = converted_station_df.add_prefix('station_', axis='columns')
         except IOError:
-            print('Time series file for station: ', row.STATION_ID, ' was not found, skipping.')
+            print(
+                'Time series file for station: ', row.STATION_ID, ' was not found, skipping.')
             continue
 
         try:
@@ -258,13 +262,16 @@ def calc_bias_ratios(input_path, config_path, out_dir, method='long_term_mean', 
                 uz=converted_gridded_df['wind'], zw=config_dict['gridded_anemometer_height'])
             prepped_gridded_df = converted_gridded_df.add_prefix('gridded_', axis='columns')
         except IOError:
-            print('Time series file for gridded: ', row.STATION_ID, 'was not found, skipping.')
+            print(
+                'Time series file for gridded: ', row.STATION_ID, 'was not found, skipping.')
             continue
 
         if station_var not in prepped_station_df.columns:
-            err_msg = '{v} not found in the station file: {p}'.format(v=station_var, p=row.STATION_FILE_PATH)
+            err_msg = '{v} not found in the station file: {p}'.format(
+                v=station_var, p=row.STATION_FILE_PATH)
             raise KeyError(err_msg)
-        print('\nIndex {u}: Calculating {v} bias ratios for station:'.format(u=index, v=grid_var), row.STATION_ID)
+        print('\nIndex {u}: Calculating {v} bias ratios for station:'.format(
+            u=index, v=grid_var), row.STATION_ID)
 
         # merge both datasets drop missing days
         result = pd.concat(
@@ -421,9 +428,10 @@ def calc_bias_ratios(input_path, config_path, out_dir, method='long_term_mean', 
         # annual ratios - default less bias potential
         if method == 'long_term_mean':
             month_means = orig.groupby(orig.index.month).mean()
-            month_means['month'] = month_means.index
+            # cast as str to avoid deprecation warning assigning str to int
+            month_means['month'] = month_means.index.astype(str) 
             for m in month_means.index:
-                month_means.loc[m, 'month'] = f'{calendar.month_abbr[m]}_mean'
+                month_means.loc[m, 'month'] = f'{calendar.month_abbr[int(m)]}_mean'
             month_means.set_index('month', inplace=True)
             if grid_var in ('gridded_tmin', 'gridded_tmax', 'gridded_tdew'):
                 month_means['ratios'] = month_means[station_var] - month_means[grid_var]

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """
-Create interactive HTML comparison plots between paired station and 
+Create interactive HTML comparison plots between paired station and
 gridded climatic variables or bar comparison plots between interpolated and
-station point data. 
+station point data.
 
 """
 import logging
@@ -17,24 +17,49 @@ from bokeh.layouts import gridplot
 from refet.calcs import _wind_height_adjust
 from .util import parse_yr_filter, read_config, read_data, convert_units
 
-VAR_LIST = ['tmax', 'tmin', 'tdew', 'rs', 'wind', 'ea', 'rhmax', 'rhmin', 'rhavg', 'eto', 'etr']
+VAR_LIST = [
+    'tmax',
+    'tmin',
+    'tdew',
+    'rs',
+    'wind',
+    'ea',
+    'rhmax',
+    'rhmin',
+    'rhavg',
+    'eto',
+    'etr']
 UNITS_DICT = {'tmax': '(C)', 'tmin': '(C)', 'tdew': '(C)',
               'rs': '(w/m2)', 'wind': '(m/s)', 'ea': '(kpa)',
               'rhmax': '(%)', 'rhmin': '(%)', 'rhavg': '(%)',
               'eto': '(mm)', 'etr': '(mm)'}
 
 # TITLES_LIST and MONTHLY_TITLES_LIST are formatted as LaTeX
-TITLES_LIST = ['$$Maximum\:Temperature$$', '$$Minimum\:Temperature$$', '$$Dewpoint\:Temperature$$',
-               '$$Solar\:Radiation$$', '$$Wind\:Speed\:_{2m}$$', '$$Vapor\:Pressure$$',
-               '$$RH\:Maximum$$', '$$RH\:Minimum$$', '$$RH\:Average$$',
-               '$$ET_{O}$$', '$$ET_{r}$$']
+TITLES_LIST = [
+    '$$Maximum\\:Temperature$$',
+    '$$Minimum\\:Temperature$$',
+    '$$Dewpoint\\:Temperature$$',
+    '$$Solar\\:Radiation$$',
+    '$$Wind\\:Speed\\:_{2m}$$',
+    '$$Vapor\\:Pressure$$',
+    '$$RH\\:Maximum$$',
+    '$$RH\\:Minimum$$',
+    '$$RH\\:Average$$',
+    '$$ET_{O}$$',
+    '$$ET_{r}$$']
 
-MONTHLY_TITLES_LIST = ['$$Maximum\:Temperature\:Monthly\:Averages$$', '$$Minimum\:Temperature\:Monthly\:Averages$$',
-                       '$$Dewpoint\:Temperature\:Monthly\:Averages$$', '$$Solar\:Radiation\:Monthly\:Averages$$',
-                       '$$Wind\:Speed\:_{2m}\:Monthly\:Averages$$', '$$Vapor\:Pressure\:Monthly\:Averages$$',
-                       '$$RH\:Maximum\:Monthly\:Averages$$', '$$RH\:Minimum\:Monthly\:Averages$$',
-                       '$$RH\:Average\:Monthly\:Averages$$',
-                       '$$ET_{O}\:Monthly\:Averages$$', '$$ET_{r}\:Monthly\:Averages$$']
+MONTHLY_TITLES_LIST = [
+    '$$Maximum\\:Temperature\\:Monthly\\:Averages$$',
+    '$$Minimum\\:Temperature\\:Monthly\\:Averages$$',
+    '$$Dewpoint\\:Temperature\\:Monthly\\:Averages$$',
+    '$$Solar\\:Radiation\\:Monthly\\:Averages$$',
+    '$$Wind\\:Speed\\:_{2m}\\:Monthly\\:Averages$$',
+    '$$Vapor\\:Pressure\\:Monthly\\:Averages$$',
+    '$$RH\\:Maximum\\:Monthly\\:Averages$$',
+    '$$RH\\:Minimum\\:Monthly\\:Averages$$',
+    '$$RH\\:Average\\:Monthly\\:Averages$$',
+    '$$ET_{O}\\:Monthly\\:Averages$$',
+    '$$ET_{r}\\:Monthly\\:Averages$$']
 
 
 # list of x (station), y (gridded) variables
@@ -52,16 +77,21 @@ ylabel_list = [f'Gridded {var.upper()} {UNITS_DICT[var]}' for var in VAR_LIST]
 legendx_list = ['Station'] * len(TITLES_LIST)
 
 
-def daily_comparison(input_csv, config_path, dataset_name='gridded', out_dir=None, year_filter=None):
+def daily_comparison(
+        input_csv,
+        config_path,
+        dataset_name='gridded',
+        out_dir=None,
+        year_filter=None):
     """
-    Compare daily weather station data from 
+    Compare daily weather station data from
     `PyWeatherQAQC <https://github.com/WSWUP/pyWeatherQAQC>`_ with gridded data
     for each month in year specified.
 
-    The :func:`daily_comparison` function produces HTML files with time series 
+    The :func:`daily_comparison` function produces HTML files with time series
     and scatter plots of station versus gridded climate variables. It uses the
-    `bokeh <https://bokeh.pydata.org/en/latest/>`_ module to create interactive 
-    plots, e.g. they can be zoomed in/out and panned. Separate plot files are 
+    `bokeh <https://bokeh.pydata.org/en/latest/>`_ module to create interactive
+    plots, e.g. they can be zoomed in/out and panned. Separate plot files are
     created for each month of a single year.
 
     The scatterplots for each month will allow you to visualize the
@@ -78,16 +108,16 @@ def daily_comparison(input_csv, config_path, dataset_name='gridded', out_dir=Non
         config_path (str): path to the config file that has the parameters used
             to interpret the station and gridded data files
         dataset_name (str): Name of gridded dataset to be used in plots
-        out_dir (str or None): default None. Directory to save comparison 
-            plots, if None save to "daily_comp_plots" in currect directory. 
-        year_filter (str or None): default None. Single year YYYY or range 
+        out_dir (str or None): default None. Directory to save comparison
+            plots, if None save to "daily_comp_plots" in currect directory.
+        year_filter (str or None): default None. Single year YYYY or range
             YYYY-YYYY
 
     Returns:
         None
 
     Example:
-        The :func:`daily_comparison` function will generate HTML files with 
+        The :func:`daily_comparison` function will generate HTML files with
         bokeh plots for all paired climate variables within the config file
 
 
@@ -96,10 +126,10 @@ def daily_comparison(input_csv, config_path, dataset_name='gridded', out_dir=Non
         >>> from gridwxcomp.plot import daily_comparison
         >>> daily_comparison('merged_input.csv', 'config_file.ini', 'comp_plots_2016', '2016')
 
-        Both methods result in monthly HTML `bokeh <https://bokeh.pydata.org/en/latest/>`_ 
-        plots being saved to "comp_plots_2016/STATION_ID/" where "STATION_ID" 
-        is the station ID as found in the input CSV file. A file is saved for 
-        each month with the station ID, month, and year in the file name. 
+        Both methods result in monthly HTML `bokeh <https://bokeh.pydata.org/en/latest/>`_
+        plots being saved to "comp_plots_2016/STATION_ID/" where "STATION_ID"
+        is the station ID as found in the input CSV file. A file is saved for
+        each month with the station ID, month, and year in the file name.
         If ``out_dir`` keyword argument is not given the plots will be saved to a directory named
         "daily_comp_plots".
 
@@ -127,30 +157,43 @@ def daily_comparison(input_csv, config_path, dataset_name='gridded', out_dir=Non
     # loop through each station and calculate monthly ratio
     for index, row in input_df.iterrows():
         if 'STATION_FILE_PATH' not in row or 'GRID_FILE_PATH' not in row:
-            raise KeyError('Missing station and/or grid file paths in ' +
-                           'input file. Run prep_metadata.py followed by ee_download.py first.')
+            raise KeyError(
+                'Missing station and/or grid file paths in ' +
+                'input file. Run prep_metadata.py followed by ee_download.py first.')
 
         # load station and grid time series files
         try:
             # open file, convert units, then adjust wind measurement height
-            raw_station_df = read_data(config_dict, 'station', row.STATION_FILE_PATH)
-            converted_station_df = convert_units(config_dict, 'station', raw_station_df)
+            raw_station_df = read_data(
+                config_dict, 'station', row.STATION_FILE_PATH)
+            converted_station_df = convert_units(
+                config_dict, 'station', raw_station_df)
             converted_station_df['wind'] = _wind_height_adjust(
                 uz=converted_station_df['wind'], zw=config_dict['station_anemometer_height'])
-            prepped_station_df = converted_station_df.add_prefix('station_', axis='columns')
+            prepped_station_df = converted_station_df.add_prefix(
+                'station_', axis='columns')
         except IOError:
-            print('Time series file for station: ', row.STATION_ID, ' was not found, skipping.')
+            print(
+                'Time series file for station: ',
+                row.STATION_ID,
+                ' was not found, skipping.')
             continue
 
         try:
             # open file, convert units, then adjust wind measurement height
-            raw_gridded_df = read_data(config_dict, 'gridded', row.GRID_FILE_PATH)
-            converted_gridded_df = convert_units(config_dict, 'gridded', raw_gridded_df)
+            raw_gridded_df = read_data(
+                config_dict, 'gridded', row.GRID_FILE_PATH)
+            converted_gridded_df = convert_units(
+                config_dict, 'gridded', raw_gridded_df)
             converted_gridded_df['wind'] = _wind_height_adjust(
                 uz=converted_gridded_df['wind'], zw=config_dict['gridded_anemometer_height'])
-            prepped_gridded_df = converted_gridded_df.add_prefix('gridded_', axis='columns')
+            prepped_gridded_df = converted_gridded_df.add_prefix(
+                'gridded_', axis='columns')
         except IOError:
-            print('Time series file for gridded: ', row.STATION_ID, 'was not found, skipping.')
+            print(
+                'Time series file for gridded: ',
+                row.STATION_ID,
+                'was not found, skipping.')
             continue
 
         # Filter years
@@ -167,7 +210,8 @@ def daily_comparison(input_csv, config_path, dataset_name='gridded', out_dir=Non
 
         # Check to see if any overlapping data exists
         if merged.shape[0] == 0:
-            print(f'No overlapping data between gridded and station source for {row.STATION_ID}')
+            print(
+                f'No overlapping data between gridded and station source for {row.STATION_ID}')
             continue
 
         for month in range(1, 13):
@@ -179,7 +223,9 @@ def daily_comparison(input_csv, config_path, dataset_name='gridded', out_dir=Non
                 continue
             # Output Folder
             out_folder = os.path.join(
-                out_dir, 'daily_comp_plots', '{}'.format(row.STATION_ID.replace(" ", "")))
+                out_dir, 'daily_comp_plots', '{}'.format(
+                    row.STATION_ID.replace(
+                        " ", "")))
 
             # Create path if it doesn't exist
             if not os.path.exists(out_folder):
@@ -204,7 +250,8 @@ def daily_comparison(input_csv, config_path, dataset_name='gridded', out_dir=Non
                                               xlabel_list, ylabel_list,
                                               legendx_list, legendy_list)):
 
-                # least squares cannot have nans (drop nas for each var separately)
+                # least squares cannot have nans (drop nas for each var
+                # separately)
                 monthly_data_subset = monthly_data[[x_var, y_var]]
                 monthly_data_subset = monthly_data_subset.dropna()
 
@@ -222,10 +269,10 @@ def daily_comparison(input_csv, config_path, dataset_name='gridded', out_dir=Non
                                 title=title, x_axis_type="datetime",
                                 y_axis_label=ts_ylabel)
                     p1.line(monthly_data_subset.index,
-                            monthly_data_subset[x_var],  color="navy",
+                            monthly_data_subset[x_var], color="navy",
                             alpha=0.5, legend_label=legendx, line_width=2)
                     p1.line(monthly_data_subset.index,
-                            monthly_data_subset[y_var],  color="red",
+                            monthly_data_subset[y_var], color="red",
                             alpha=0.5, legend_label=legendy, line_width=2)
                     p1.xaxis.major_label_overrides = {
                         i: date.strftime('%Y %b %d') for i, date in enumerate(
@@ -240,11 +287,15 @@ def daily_comparison(input_csv, config_path, dataset_name='gridded', out_dir=Non
                                 title=title, x_axis_type="datetime",
                                 y_axis_label=ts_ylabel,
                                 x_range=p1.x_range)
+                    p1.line(
+                        monthly_data_subset.index,
+                        monthly_data_subset[x_var],
+                        color="navy",
+                        alpha=0.5,
+                        legend_label=legendx,
+                        line_width=2)
                     p1.line(monthly_data_subset.index,
-                            monthly_data_subset[x_var],  color="navy", alpha=0.5,
-                            legend_label=legendx, line_width=2)
-                    p1.line(monthly_data_subset.index,
-                            monthly_data_subset[y_var],  color="red", alpha=0.5,
+                            monthly_data_subset[y_var], color="red", alpha=0.5,
                             legend_label=legendy, line_width=2)
 
                 p1.xaxis.major_label_overrides = {
@@ -257,23 +308,28 @@ def daily_comparison(input_csv, config_path, dataset_name='gridded', out_dir=Non
                 # Regression through Zero
                 # https://stackoverflow.com/questions/9990789/how-to-force-
                 #   zero-interception-in-linear-regression/9994484#9994484
-                m = np.linalg.lstsq(monthly_data_subset[x_var].values.reshape(-1, 1),
-                                    monthly_data_subset[y_var], rcond=None)[0][0]
+                m = np.linalg.lstsq(
+                    monthly_data_subset[x_var].values.reshape(
+                        -1, 1), monthly_data_subset[y_var], rcond=None)[0][0]
                 r_x, r_y = zip(*((i, i * m) for i in range(
-                    int(np.min([monthly_data_subset[y_var], monthly_data_subset[x_var]])-2),
-                    int(np.max([monthly_data_subset[y_var], monthly_data_subset[x_var]])+3), 1)))
+                    int(np.min([monthly_data_subset[y_var], monthly_data_subset[x_var]]) - 2),
+                    int(np.max([monthly_data_subset[y_var], monthly_data_subset[x_var]]) + 3), 1)))
                 # Plots
                 p2 = figure(width=400, height=400,
                             x_axis_label=xlabel, y_axis_label=ylabel,
                             title='Slope Through Zero: m = {}'.format(
                                 round(m, 4)))
-                p2.scatter(monthly_data_subset[x_var], monthly_data_subset[y_var],
-                          size=15, color="navy", alpha=0.5)
+                p2.scatter(
+                    monthly_data_subset[x_var],
+                    monthly_data_subset[y_var],
+                    size=15,
+                    color="navy",
+                    alpha=0.5)
                 p2.line(
-                    [int(np.min([monthly_data_subset[y_var], monthly_data_subset[x_var]])-2),
-                     int(np.max([monthly_data_subset[y_var], monthly_data_subset[x_var]])+2)],
-                    [int(np.min([monthly_data_subset[y_var], monthly_data_subset[x_var]])-2),
-                     int(np.max([monthly_data_subset[y_var], monthly_data_subset[x_var]])+2)],
+                    [int(np.min([monthly_data_subset[y_var], monthly_data_subset[x_var]]) - 2),
+                     int(np.max([monthly_data_subset[y_var], monthly_data_subset[x_var]]) + 2)],
+                    [int(np.min([monthly_data_subset[y_var], monthly_data_subset[x_var]]) - 2),
+                     int(np.max([monthly_data_subset[y_var], monthly_data_subset[x_var]]) + 2)],
                     color="black", legend_label='1 to 1 line')
 
                 p2.line(r_x, r_y, color="red", legend_label='Reg thru zero')
@@ -288,7 +344,12 @@ def daily_comparison(input_csv, config_path, dataset_name='gridded', out_dir=Non
             save(fig)
 
 
-def monthly_comparison(input_csv, config_path, dataset_name='gridded', out_dir=None, day_limit=10):
+def monthly_comparison(
+        input_csv,
+        config_path,
+        dataset_name='gridded',
+        out_dir=None,
+        day_limit=10):
     """
     Compare monthly average weather station data from
     `PyWeatherQAQC <https://github.com/WSWUP/pyWeatherQAQC>`_ with the gridded dataset.
@@ -296,7 +357,7 @@ def monthly_comparison(input_csv, config_path, dataset_name='gridded', out_dir=N
     The :func:`monthly_comparison` function produces HTML files with time series
     and scatter plots of station versus gridded climate variables of monthly
     mean data. It uses the `bokeh <https://bokeh.pydata.org/en/latest/>`_ module
-    to create interactive plots, e.g. they can be zoomed in/out and panned. 
+    to create interactive plots, e.g. they can be zoomed in/out and panned.
 
     Arguments:
         input_csv (str): path to input CSV file containing paired station/gridded metadata.
@@ -306,8 +367,8 @@ def monthly_comparison(input_csv, config_path, dataset_name='gridded', out_dir=N
             to interpret the station and gridded data files'
         dataset_name (str): Name of gridded dataset to be used in plots
         out_dir (str): default None. Directory to save comparison plots.
-        day_limit (int): default 10. Number of paired days per month that must 
-            exist for variable to be plotted. 
+        day_limit (int): default 10. Number of paired days per month that must
+            exist for variable to be plotted.
 
     Returns:
         None
@@ -342,41 +403,60 @@ def monthly_comparison(input_csv, config_path, dataset_name='gridded', out_dir=N
     # loop through each station and calculate monthly ratio
     for index, row in input_df.iterrows():
         if 'STATION_FILE_PATH' not in row or 'GRID_FILE_PATH' not in row:
-            raise KeyError('Missing station and/or grid file paths in ' +
-                           'input file. Run prep_metadata.py followed by ee_download.py first.')
+            raise KeyError(
+                'Missing station and/or grid file paths in ' +
+                'input file. Run prep_metadata.py followed by ee_download.py first.')
 
         # load station and grid time series files
         try:
             # open file, convert units, then adjust wind measurement height
-            raw_station_df = read_data(config_dict, 'station', row.STATION_FILE_PATH)
-            converted_station_df = convert_units(config_dict, 'station', raw_station_df)
+            raw_station_df = read_data(
+                config_dict, 'station', row.STATION_FILE_PATH)
+            converted_station_df = convert_units(
+                config_dict, 'station', raw_station_df)
             converted_station_df['wind'] = _wind_height_adjust(
                 uz=converted_station_df['wind'], zw=config_dict['station_anemometer_height'])
-            prepped_station_df = converted_station_df.add_prefix('station_', axis='columns')
+            prepped_station_df = converted_station_df.add_prefix(
+                'station_', axis='columns')
         except IOError:
-            print('Time series file for station: ', row.STATION_ID, ' was not found, skipping.')
+            print(
+                'Time series file for station: ',
+                row.STATION_ID,
+                ' was not found, skipping.')
             continue
 
         try:
             # open file, convert units, then adjust wind measurement height
-            raw_gridded_df = read_data(config_dict, 'gridded', row.GRID_FILE_PATH)
-            converted_gridded_df = convert_units(config_dict, 'gridded', raw_gridded_df)
+            raw_gridded_df = read_data(
+                config_dict, 'gridded', row.GRID_FILE_PATH)
+            converted_gridded_df = convert_units(
+                config_dict, 'gridded', raw_gridded_df)
             converted_gridded_df['wind'] = _wind_height_adjust(
                 uz=converted_gridded_df['wind'], zw=config_dict['gridded_anemometer_height'])
-            prepped_gridded_df = converted_gridded_df.add_prefix('gridded_', axis='columns')
+            prepped_gridded_df = converted_gridded_df.add_prefix(
+                'gridded_', axis='columns')
         except IOError:
-            print('Time series file for gridded: ', row.STATION_ID, 'was not found, skipping.')
+            print(
+                'Time series file for gridded: ',
+                row.STATION_ID,
+                'was not found, skipping.')
             continue
 
-        # Combine station and gridded dataframes and crop to just the shared data
-        start_date = max(prepped_station_df.index.date.min(), prepped_gridded_df.index.date.min())
-        end_date = min(prepped_station_df.index.date.max(), prepped_gridded_df.index.date.max())
+        # Combine station and gridded dataframes and crop to just the shared
+        # data
+        start_date = max(
+            prepped_station_df.index.date.min(),
+            prepped_gridded_df.index.date.min())
+        end_date = min(
+            prepped_station_df.index.date.max(),
+            prepped_gridded_df.index.date.max())
         merged = pd.concat([prepped_station_df, prepped_gridded_df], axis=1)
         merged = merged.loc[start_date:end_date]
 
         # Check to see if any overlapping data exists
         if merged.shape[0] == 0:
-            print(f'No overlapping data between gridded and station source for {row.STATION_ID}')
+            print(
+                f'No overlapping data between gridded and station source for {row.STATION_ID}')
             continue
 
         # remove all pairs where one var missing
@@ -422,7 +502,7 @@ def monthly_comparison(input_csv, config_path, dataset_name='gridded', out_dir=N
 
         # loop through and create figures for each variable using vars
         # and plot labels from lists above
-        first_plot=True
+        first_plot = True
         for i, (x_var, y_var, title, ts_ylabel, xlabel, ylabel, legendx, legendy) in enumerate(zip(
             x_var_list, y_var_list, MONTHLY_TITLES_LIST, ts_ylabel_list,
                 xlabel_list, ylabel_list, legendx_list, legendy_list)):
@@ -457,10 +537,10 @@ def monthly_comparison(input_csv, config_path, dataset_name='gridded', out_dir=N
                             y_axis_label=ts_ylabel,
                             x_range=p1.x_range)
                 p1.line(monthly.index.to_pydatetime(),
-                        monthly[x_var, stat],  color="navy", alpha=0.5,
+                        monthly[x_var, stat], color="navy", alpha=0.5,
                         legend_label=legendx, line_width=2)
                 p1.line(monthly.index.to_pydatetime(),
-                        monthly[y_var, stat],  color="red", alpha=0.5,
+                        monthly[y_var, stat], color="red", alpha=0.5,
                         legend_label=legendy, line_width=2)
 
             # 1 to 1 Plot
@@ -469,11 +549,11 @@ def monthly_comparison(input_csv, config_path, dataset_name='gridded', out_dir=N
             #   zero-interception-in-linear-regression/9994484#9994484
             m = np.linalg.lstsq(monthly2[x_var, stat].values.reshape(-1, 1),
                                 monthly2[y_var, stat], rcond=None)[0][0]
-            r_x, r_y = zip(*((i, i*m) for i in range(
+            r_x, r_y = zip(*((i, i * m) for i in range(
                 int(np.min([monthly2[y_var, stat],
-                            monthly2[x_var, stat]])-2),
+                            monthly2[x_var, stat]]) - 2),
                 int(np.max([monthly2[y_var, stat],
-                            monthly2[x_var, stat]])+3), 1)))
+                            monthly2[x_var, stat]]) + 3), 1)))
             # Plots
             p2 = figure(width=400, height=400,
                         x_axis_label=xlabel, y_axis_label=ylabel,
@@ -482,10 +562,10 @@ def monthly_comparison(input_csv, config_path, dataset_name='gridded', out_dir=N
             p2.scatter(monthly2[x_var, stat], monthly2[y_var, stat],
                        size=15, color="navy", alpha=0.5)
             p2.line(
-                [int(np.min([monthly2[y_var, stat], monthly2[x_var, stat]])-2),
-                 int(np.max([monthly2[y_var, stat], monthly2[x_var, stat]])+2)],
-                [int(np.min([monthly2[y_var, stat], monthly2[x_var, stat]])-2),
-                 int(np.max([monthly2[y_var, stat], monthly2[x_var, stat]])+2)],
+                [int(np.min([monthly2[y_var, stat], monthly2[x_var, stat]]) - 2),
+                 int(np.max([monthly2[y_var, stat], monthly2[x_var, stat]]) + 2)],
+                [int(np.min([monthly2[y_var, stat], monthly2[x_var, stat]]) - 2),
+                 int(np.max([monthly2[y_var, stat], monthly2[x_var, stat]]) + 2)],
                 color="black", legend_label='1 to 1 line')
             p2.line(r_x, r_y, color="red", legend_label='Reg thru zero')
             p2.legend.location = "top_left"
@@ -500,8 +580,14 @@ def monthly_comparison(input_csv, config_path, dataset_name='gridded', out_dir=N
         save(fig)
 
 
-def station_bar_plot(summary_csv, bar_plot_layer, out_dir=None, y_label=None, title=None, subtitle=None,
-                     year_subtitle=True):
+def station_bar_plot(
+        summary_csv,
+        bar_plot_layer,
+        out_dir=None,
+        y_label=None,
+        title=None,
+        subtitle=None,
+        year_subtitle=True):
     """
         Produce an interactive bar chart comparing multiple climate stations to each other for a particular variable,
         e.g. bias ratios or interpolated residuals.
@@ -548,13 +634,14 @@ def station_bar_plot(summary_csv, bar_plot_layer, out_dir=None, y_label=None, ti
 
     if not Path(summary_csv).is_file():
         err_msg = '\n{} is not a valid path to a summary CSV file!'.\
-                format(summary_csv)
+            format(summary_csv)
         raise FileNotFoundError(err_msg)
 
     df = pd.read_csv(summary_csv, na_values=[-999])
 
     if bar_plot_layer not in df.columns:
-        err_msg = '\nColumn {} was not found in {}'.format(bar_plot_layer, summary_csv)
+        err_msg = '\nColumn {} was not found in {}'.format(
+            bar_plot_layer, summary_csv)
         raise KeyError(err_msg)
 
     df.sort_values(bar_plot_layer, inplace=True)
@@ -571,7 +658,7 @@ def station_bar_plot(summary_csv, bar_plot_layer, out_dir=None, y_label=None, ti
         y_label = bar_plot_layer
     # save to working directory in 'station_bar_plots' if not specified
     if not out_dir:
-        out_dir = Path(summary_csv).parent/'station_bar_plots'
+        out_dir = Path(summary_csv).parent / 'station_bar_plots'
     else:
         out_dir = Path(out_dir)
     if not out_dir.is_dir():
@@ -579,7 +666,7 @@ def station_bar_plot(summary_csv, bar_plot_layer, out_dir=None, y_label=None, ti
             out_dir.absolute()))
         out_dir.mkdir(parents=True, exist_ok=True)
 
-    out_file = out_dir/'{}.html'.format(bar_plot_layer)
+    out_file = out_dir / '{}.html'.format(bar_plot_layer)
     print('\nCreating station bar plot for variable: ', bar_plot_layer,
           '\nUsing data from file: ', Path(summary_csv).absolute())
 
@@ -587,7 +674,7 @@ def station_bar_plot(summary_csv, bar_plot_layer, out_dir=None, y_label=None, ti
 
     p = figure(x_range=df.STATION_ID, y_axis_label=y_label, title=title)
     p.vbar(x='STATION_ID', top=bar_plot_layer, width=0.8, source=source)
-    p.xaxis.major_label_orientation = pi/2
+    p.xaxis.major_label_orientation = pi / 2
     p.add_tools(hover, models.BoxSelectTool())
 
     if year_subtitle:
@@ -599,17 +686,32 @@ def station_bar_plot(summary_csv, bar_plot_layer, out_dir=None, y_label=None, ti
         else:
             year_str = 'years: {}-{}'.format(min_yr, max_yr)
         # caution note if not all stations use full year range
-        if not (df.end_year == max_yr).all() or not (df.start_year == min_yr).all():
-            year_str = '{} (less years exist for some stations)'.format(year_str)
+        if not (
+                df.end_year == max_yr).all() or not (
+                df.start_year == min_yr).all():
+            year_str = '{} (less years exist for some stations)'.format(
+                year_str)
 
-        p.add_layout(models.Title(text=year_str, text_font_style="italic"), 'above')
+        p.add_layout(
+            models.Title(
+                text=year_str,
+                text_font_style="italic"),
+            'above')
 
     # add arbitrary number of custom subtitles as lines above plot
     if isinstance(subtitle, (list, tuple)):
         for st in subtitle:
-            p.add_layout(models.Title(text=st, text_font_style="italic"), 'above')
+            p.add_layout(
+                models.Title(
+                    text=st,
+                    text_font_style="italic"),
+                'above')
     elif subtitle:
-        p.add_layout(models.Title(text=subtitle, text_font_style="italic"), 'above')
+        p.add_layout(
+            models.Title(
+                text=subtitle,
+                text_font_style="italic"),
+            'above')
 
     save(p)
     print('\nPlot saved to: ', out_file.absolute())

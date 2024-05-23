@@ -164,13 +164,16 @@ class TestEEDownload(object):
                     'srad_wm2', 'ea_kpa', 'prcp_mm', 'etr_mm', 'eto_mm')
         self.conus404_cols = ('ACSWDNB', 'ETO_ASCE', 'ETR_ASCE', 'PREC_ACC_NC',
             'PSFC', 'T2_MAX', 'T2_MIN', 'TD2', 'WIND10', 'date', 'station_name')
+        self.export_path =\
+            'bias_correction_gridwxcomp_testing/gridwxcomp_conus404'
+ 
                 
     def test_download_grid_data_conus404(self, data):
         download_grid_data(
             data['prep_metadata_outpath'],
             dataset='conus404',
             export_bucket='openet',
-            export_path=f'bias_correction_gridwxcomp_testing/gridwxcomp_conus404/',
+            export_path=self.export_path,
             local_folder='tests',
             force_download=False)
 
@@ -200,7 +203,7 @@ class TestEEDownload(object):
             data['prep_metadata_outpath'],
             dataset='conus404',
             export_bucket='openet',
-            export_path=f'bias_correction_gridwxcomp_testing/gridwxcomp_conus404/',
+            export_path=self.export_path,
             local_folder='tests',
             force_download=True)
 
@@ -272,13 +275,83 @@ class TestCalcBiasRatios(object):
             na_values=[-999]
         )
         assert not set(df.columns).isdisjoint(self.comp_header)
-#
-#    #TODO:
-#    # make a long version to check year range mark it
-#    # along with multiple year download, mark everything else as short 
-#    # add tests for spatial and plot modules
-#
-#
+
+        assert df.loc[df.Station_ID == 'loau', 'ratio_method'].values[0]\
+            == 'long_term_mean'
+
+
+    def test_calc_bias_ratios_temp_delta_mean_of_annual_meth(self, data):
+        comp_out_file = data.get(
+            'conus404_output_dir')/'tmax_summary_comp_all_yrs.csv'
+        short_out_file = data.get(
+            'conus404_output_dir')/'tmax_summary_all_yrs.csv'
+
+        calc_bias_ratios(
+            input_path=data.get('prep_metadata_outpath'), 
+            config_path=data.get('conus404_config_path'),
+            out_dir=data.get('conus404_output_dir'),
+            comparison_var='tmax',
+            method='mean_of_annual'
+        )
+
+        assert comp_out_file.is_file()
+        assert short_out_file.is_file()
+        df = pd.read_csv(
+            comp_out_file, 
+            index_col='STATION_ID', 
+            na_values=[-999]
+        )
+        assert not set(df.columns).isdisjoint(self.comp_header)
+
+        assert df.loc[df.Station_ID == 'loau', 'ratio_method'].values[0]\
+            == 'mean_of_annual'
+
+class TestPlot(object):
+
+    # note station bar plot gets tested in spatial default settings
+    def setup_method(self):
+        self.daily_plot_dir = Path('tests')/'daily_comp_plots'
+        self.monthly_plot_dir = Path('tests')/'monthly_comp_plots'
+    
+    def test_daily_comparison(self, data):
+        input_path=data.get('prep_metadata_outpath') 
+        plot.daily_comparison(
+            input_path, 
+            data.get('conus404_config_path'),
+            out_dir='tests')
+        assert len(list(self.daily_plot_dir.glob('*'))) == 4
+        assert Path(self.daily_plot_dir/'Bedrock').is_dir()
+        assert len(
+            list(Path(self.daily_plot_dir/'Bedrock').glob('*.html'))) == 12
+
+    def test_monthly_comparison(self, data):
+        input_path=data.get('prep_metadata_outpath') 
+        plot.monthly_comparison(
+            input_path, 
+            data.get('conus404_config_path'),
+            out_dir='tests')
+        assert len(list(self.monthly_plot_dir.glob('*.html'))) == 4
+
+    def test_station_bar_plot(self, data):
+        input_path = data.get(
+            'conus404_output_dir')/'tmax_summary_all_yrs.csv'
+        plot.station_bar_plot(
+            input_path, 
+            bar_plot_layer='growseason_mean')
+        outpath = data.get('conus404_output_dir')\
+                /'station_bar_plots'/'growseason_mean.html'
+        assert outpath.is_file()
+
+        # same but using other file and coef. of variation
+        input_path = data.get(
+            'conus404_output_dir')/'etr_summary_comp_all_yrs.csv'
+        plot.station_bar_plot(
+            input_path, 
+            bar_plot_layer='Jun_cv')
+        outpath = data.get('conus404_output_dir')\
+                /'station_bar_plots'/'Jun_cv.html'
+        assert outpath.is_file()
+
 #class TestSpatial(object):
 #
 #    def setup_method(self):
@@ -293,18 +366,3 @@ class TestCalcBiasRatios(object):
 #            scale_factor=1
 #        )
 #
-#class TestPlot(object):
-#
-#    # note station bar plot gets tested in spatial default settings
-#    def setup_method(self):
-#        self.daily_plot_dir =  Path('tests')/'daily_comp_plots'
-#        self.monthly_plot_dir =  Path('tests')/'monthly_comp_plots'
-#
-#    def test_daily_comparison(self, data):
-#        input_path=data.get('prep_metadata_outpath') 
-#        plot.daily_comparison(input_path, out_dir=self.daily_plot_dir)
-#
-#    def test_monthly_comparison(self, data):
-#        input_path=data.get('prep_metadata_outpath') 
-#        plot.monthly_comparison(input_path, out_dir=self.monthly_plot_dir)
-
