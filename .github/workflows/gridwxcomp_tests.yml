@@ -16,7 +16,6 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - uses: 'google-github-actions/auth@v2'
     - name: Set up Python 3.11
       uses: actions/setup-python@v3
       with:
@@ -37,10 +36,11 @@ jobs:
         flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics
         # exit-zero treats all errors as warnings. The GitHub editor is 127 chars wide
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
+    - uses: google-github-actions/auth@v2
+      with:
+        credentials_json: ${{ secrets.EARTHENGINE_TOKEN }}
     - name: Test with pytest
       env:
-        EARTHENGINE_TOKEN: '${{ secrets.EARTHENGINE_TOKEN }}'
-      with:
-        credentials_json: '${{ secrets.EARTHENGINE_TOKEN }}'
+        EARTHENGINE_TOKEN: ${{ secrets.EARTHENGINE_TOKEN }}
       run: |
         pytest
