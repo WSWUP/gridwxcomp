@@ -166,6 +166,7 @@ def read_config(config_file_path):
     config_dict = {**config_reader._sections['DATA'], **config_reader._sections['UNITS']}
 
     # METADATA Section
+    # Projection information
     config_dict['input_data_projection'] =\
         config_reader['METADATA']['input_data_projection']
     config_dict['input_data_resolution'] =\
@@ -188,6 +189,21 @@ def read_config(config_file_path):
         else:
             config_dict[f'{res}_decimals'] = 0
 
+    # Bounding information
+    config_dict['input_bounds'] = {}
+    config_dict['input_bounds']['xmin'] = config_reader['METADATA'].getfloat('xmin')
+    config_dict['input_bounds']['xmax'] = config_reader['METADATA'].getfloat('xmax')
+    config_dict['input_bounds']['ymin'] = config_reader['METADATA'].getfloat('ymin')
+    config_dict['input_bounds']['ymax'] = config_reader['METADATA'].getfloat('ymax')
+
+    # Gridded dataset information
+    config_dict['collection_info'] = {}
+    config_dict['collection_info']['name'] = config_reader['METADATA']['collection_name']
+    config_dict['collection_info']['path'] = config_reader['METADATA']['collection_path']
+    config_dict['collection_info']['start_date'] = config_reader['METADATA']['start_date']
+    config_dict['collection_info']['end_date'] = config_reader['METADATA']['end_date']
+
+    # File structure information
     config_dict['station_anemometer_height'] = config_reader['METADATA'].getfloat('station_anemometer_height')
     config_dict['station_lines_of_header'] = config_reader['METADATA'].getint('station_lines_of_header')
     config_dict['station_missing_data_value'] = config_reader['METADATA']['station_missing_data_value']
@@ -431,7 +447,6 @@ def reproject_crs_for_bounds(bounds, resolution, orig_crs, requested_crs,
             (ex. NW and SE corners) as some projections may have curvature
 
         Afterwords it rounds the coordinates to the requested decimals
-        #TODO can we modify this further to make snapping to grid occur here?
 
         If orig_crs and requested_crs are the same it will just round the coords
             without reprojecting

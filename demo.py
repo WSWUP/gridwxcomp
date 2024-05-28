@@ -1,11 +1,15 @@
+import ee
 import pyproj
 from gridwxcomp.prep_metadata import prep_metadata, get_subgrid_bounds
 from gridwxcomp.ee_download import download_grid_data
 from gridwxcomp.plot import daily_comparison, monthly_comparison, station_bar_plot
 from gridwxcomp.calc_bias_ratios import calc_bias_ratios
 from gridwxcomp.spatial import make_grid, interpolate
+from gridwxcomp.util import reproject_crs_for_bounds
 
 
+# initialize earth engine
+ee.Initialize()
 # name of the dataset comparison is being made with
 gridded_dataset_name = 'conus404'
 # Path to station metadata file with lat/long coords
@@ -60,11 +64,9 @@ define_projection_parameters
         - optionally, bounds for the first projection, if none provided uses spatial.get_subgrid_bounds(),
             which should also be reclassified under prep_metadata.py
 '''
-
-# TODO: this should be made a function
 projection_dict = {
     'wgs84': {  # WGS84 is EPSG:4326 and is in decimal degrees
-        'bounds': {},
+        'bounds': {'xmin': -115.0, 'xmax': -101.0, 'ymin': 35.5, 'ymax': 42.5},
         'resolution': 0.1,
         'crs_id': 'EPSG:4326'},
     'lcc': {  # Lambert Conformal Conic is ESRI:102004 and is in meters
@@ -73,42 +75,13 @@ projection_dict = {
         'crs_id': 'ESRI:102004'}
 }
 
-# User has option to specify bounds
-# projection_dict['wgs84']['bounds'] = {'xmin': -115.0, 'xmax': -101.0, 'ymin': 35.5, 'ymax': 42.5}
+# User has option to automatically pull bounds, aee TODO in function over assumptions
+# projection_dict['wgs84']['bounds'] = get_subgrid_bounds(gridwxcomp_input, config_path, buffer=25)
 
-if len(projection_dict['wgs84']['bounds']) == 0:
-    # Calculate interpolation grid bounds if not provided
-    # TODO improve alignment of get_subgrid_bounds, currently wont snap on
-    # NLDAS resolution (0.125) but will for (0.1)
-    projection_dict['wgs84']['bounds'] = get_subgrid_bounds(
-        gridwxcomp_input, projection_dict['wgs84']['resolution'], 1, buffer=25)
+projection_dict['lcc']['bounds'] = reproject_crs_for_bounds(
+    projection_dict['wgs84']['bounds'], projection_dict['lcc']['resolution'],
+    projection_dict['wgs84']['crs_id'], projection_dict['lcc']['crs_id'], 0)
 
-# Convert WGS84 coordinates into LCC coordinates and add them to
-# projection_dict
-lcc_transformer = pyproj.Transformer.from_crs(
-    projection_dict['wgs84']['crs_id'],
-    projection_dict['lcc']['crs_id'],
-    always_xy=True)
-# Calculate xmin at the SW corner
-projection_dict['lcc']['bounds']['xmin'], projection_dict['lcc']['bounds']['_ignore'] = (
-    lcc_transformer.transform(
-        projection_dict['wgs84']['bounds']['xmin'], projection_dict['wgs84']['bounds']['ymin']))
-# Calculate xmax at the SE corner
-projection_dict['lcc']['bounds']['xmax'], projection_dict['lcc']['bounds']['_ignore'] = (
-    lcc_transformer.transform(
-        projection_dict['wgs84']['bounds']['xmax'], projection_dict['wgs84']['bounds']['ymin']))
-# Calculate ymax at the NE corner, could've also been NW corner
-projection_dict['lcc']['bounds']['_ignore'], projection_dict['lcc']['bounds']['ymax'] = (
-    lcc_transformer.transform(
-        projection_dict['wgs84']['bounds']['xmax'], projection_dict['wgs84']['bounds']['ymax']))
-# Calculate lcc's ymin as at the average between the east and west extent
-projection_dict['lcc']['bounds']['_ignore'], projection_dict['lcc']['bounds']['ymin'] = (lcc_transformer.transform(
-    (projection_dict['wgs84']['bounds']['xmax'] + projection_dict['wgs84']['bounds']['xmin']) / 2, projection_dict['wgs84']['bounds']['ymin']))
-
-# Round the entries in the LCC dict to the nearest meter
-for key in projection_dict['lcc']['bounds'].keys():
-    projection_dict['lcc']['bounds'][key] = round(
-        projection_dict['lcc']['bounds'][key], 0)
 
 '''
 download_grid_data
@@ -126,11 +99,10 @@ download_grid_data
 '''
 download_grid_data(
     gridwxcomp_input,
-    dataset=gridded_dataset_name,
+    config_path,
     export_bucket=export_bucket,
     export_path=export_path,
-    force_download=False,
-    authorize=False)
+    force_download=False)
 
 '''
 plotting
@@ -166,7 +138,7 @@ daily_comparison(
 for var in [
     'tmax',
     'tmin',
-        'eto']:  # Iterate over vars in list. Valid entries found in calc_bias_ratios.py VAR_LIST
+    'eto']:  # Iterate over vars in list. Valid entries found in calc_bias_ratios.py VAR_LIST
     # path to bias ratios output file
     ratio_filepath = f'{output_dir}/gridded_{var}_summary_comp_1980_2020.csv'
     interpolation_out_path = (f'{var}_invdistnn_p{params["power"]}_'  # directory for interpolation outputs

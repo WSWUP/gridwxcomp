@@ -6,7 +6,7 @@ with the later steps. The output from this module will be the input for main bia
 TODO: add logging
 
 """
-
+import ee
 import os
 
 import numpy as np
@@ -177,16 +177,16 @@ def prep_metadata(station_path, config_path, grid_name, out_path='formatted_inpu
     stations.to_csv(out_path, index=False)
 
 
-def get_subgrid_bounds(in_path, grid_res, rounding_decimals, buffer=0):
+def get_subgrid_bounds(in_path, config_path, buffer=0):
     """
     Calculate bounding box for spatial interpolation grid from
-    output of prep_metadata.prep_metadata()
+    output of prep_metadata.prep_metadata(), will attempt to make it snap
+    to grid by querying catalog on earth engine
 
     Arguments:
-        in_path (str): path to comprehensive summary file containing
-            monthly bias ratios, created by :func:`gridwxcomp.calc_bias_ratios`.
-        grid_res (float): the resolution of the fishnet grid, in the units projection the input data is in
-        rounding_decimals (int): number of decimal places to round the subgrid bounds to
+        in_path (str): path to metadata file created by
+        :func:`gridwxcomp.prep_metadata.prep_metadata()`.
+        config_path (str): path to config file containing projection/catalog info
         buffer (int): number of grid cells to expand the rectangular extent
             of the subgrid fishnet.
 
@@ -198,38 +198,77 @@ def get_subgrid_bounds(in_path, grid_res, rounding_decimals, buffer=0):
     Raises:
         FileNotFoundError: if input summary CSV file is not found.
 
-    Note:
+    Notes:
         By expanding the grid to a larger area encompassing the climate
         stations of interest :func:`interpolate` can be used to extrapolate
         passed the bounds of the outer station locations.
 
+        You must authenticate with Google Earth Engine before using
+        this function.
+
     """
+
+    # TODO - a potential oversight of this function is that it assumes
+    #   the CRS of the metadata file and the CRS of the EE catalog are the same
+    #   right now we're testing with the CONUS404 collection and its in meters
+    #   Idea:
+    #       As a stopgap raise an error if the resolution of the ee dataset is
+    #       Value that wouldn't make sense for WGS84
+
+    def _find_nearest(val, array):
+        """Element in numpy array `array` closest to the scalar value `val`"""
+        idx = (np.abs(array - val)).argmin()
+        return array[idx]
+
     if not os.path.isfile(in_path):
         raise FileNotFoundError('Input metadata file given was invalid or not found')
 
-
+    # read metadata from prep_metadata
     in_df = pd.read_csv(in_path)
 
-    lons = in_df.sort_values('STATION_LON')['STATION_LON'].values
-    lats = in_df.sort_values('STATION_LAT')['STATION_LAT'].values
+    # read in config information from file
+    config = read_config(config_path)  # Read config
+    gridded_dataset_path = config['collection_info']['path']
 
-    if rounding_decimals == 0:
-        # likely projection is in meters, use modulo to ensure grid alignment
-        lon_min = (lons[0] - (lons[0] % grid_res)) - grid_res
-        lon_max = (lons[0] + (lons[0] % grid_res)) + grid_res
-        lat_min = (lons[0] - (lats[0] % grid_res)) - grid_res
-        lat_max = (lons[0] + (lats[0] % grid_res)) + grid_res
-    else:
-        lon_min = lons[0] - grid_res
-        lon_max = lons[-1] + grid_res
-        lat_min = lats[0] - grid_res
-        lat_max = lats[-1] + grid_res
+    station_lons = in_df.sort_values('STATION_LON')['STATION_LON'].values
+    station_lats = in_df.sort_values('STATION_LAT')['STATION_LAT'].values
+
+    # Obtain CRS info from earth engine
+    image_for_crs = ee.ImageCollection(gridded_dataset_path).first()
+    image_info = image_for_crs.select([0]).getInfo()
+
+    # Image crs data stored as list, [0] is resolution, [2] and [5]
+    # are the latitude and longitude of the NW corner
+    image_geo = image_info['bands'][0]['crs_transform']
+    origin_longitude = image_geo[2]
+    origin_latitude = image_geo[5]
+    resolution = image_geo[0]
+
+    # Image shape is stored as rows (latitude), columns (longitude)
+    image_shape = image_info['bands'][0]['dimensions']
+
+    # Create arrays of lat/lon values to find nearest
+    lon_values = np.linspace(
+        origin_longitude,
+        (origin_longitude + (resolution * image_shape[1])),
+        num=image_shape[1],
+        endpoint=False)
+    lat_values = np.linspace(
+        origin_latitude,
+        (origin_latitude - (resolution * image_shape[0])),
+        num=image_shape[0],
+        endpoint=False)
+
+    snapped_lon_min = _find_nearest(station_lons[0], lon_values) - resolution
+    snapped_lon_max = _find_nearest(station_lons[-1], lon_values) + resolution
+    snapped_lat_min = _find_nearest(station_lats[0], lat_values) - resolution
+    snapped_lat_max = _find_nearest(station_lats[-1], lat_values) + resolution
 
     # expand bounding extent based on buffer cells
-    lon_min -= grid_res * buffer
-    lat_min -= grid_res * buffer
-    lon_max += grid_res * buffer
-    lat_max += grid_res * buffer
+    snapped_lon_min -= resolution * buffer
+    snapped_lon_max += resolution * buffer
+    snapped_lat_min -= resolution * buffer
+    snapped_lat_max += resolution * buffer
 
-    return {'xmin': round(lon_min, rounding_decimals), 'xmax': round(lon_max, rounding_decimals),
-            'ymin': round(lat_min, rounding_decimals), 'ymax': round(lat_max, rounding_decimals)}
+    return {'xmin': snapped_lon_min, 'xmax': snapped_lon_max,
+            'ymin': snapped_lat_min, 'ymax': snapped_lat_max}
