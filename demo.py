@@ -66,7 +66,11 @@ define_projection_parameters
 '''
 projection_dict = {
     'wgs84': {  # WGS84 is EPSG:4326 and is in decimal degrees
-        'bounds': {'xmin': -115.0, 'xmax': -101.0, 'ymin': 35.5, 'ymax': 42.5},
+        'bounds': {
+            'xmin': -111.8708332996666428, 
+            'xmax': -108.6208332996662733, 
+            'ymin': 38.0874999999668162, 
+            'ymax': 40.5874999999666741},
         'resolution': 0.1,
         'crs_id': 'EPSG:4326'},
     'lcc': {  # Lambert Conformal Conic is ESRI:102004 and is in meters
@@ -140,7 +144,7 @@ for var in [
     'tmin',
     'eto']:  # Iterate over vars in list. Valid entries found in calc_bias_ratios.py VAR_LIST
     # path to bias ratios output file
-    ratio_filepath = f'{output_dir}/gridded_{var}_summary_comp_1980_2020.csv'
+    ratio_filepath = f'{output_dir}/{var}_summary_comp_1980_2020.csv'
     interpolation_out_path = (f'{var}_invdistnn_p{params["power"]}_'  # directory for interpolation outputs
                               f's{params["smoothing"]}_maxpoints{params["max_points"]}_radius{params["radius"]}')
 

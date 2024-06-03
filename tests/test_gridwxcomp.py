@@ -10,7 +10,7 @@ from shutil import move, copy, rmtree
 import numpy as np
 import pandas as pd
 
-from gridwxcomp.util import get_gridmet_meta_csv, parse_yr_filter
+from gridwxcomp.util import read_config, parse_yr_filter
 from gridwxcomp.prep_metadata import prep_metadata, _read_station_list
 #from gridwxcomp.download_gridmet_opendap import download_gridmet_opendap
 from gridwxcomp.ee_download import download_grid_data
@@ -171,7 +171,7 @@ class TestEEDownload(object):
     def test_download_grid_data_conus404(self, data):
         download_grid_data(
             data['prep_metadata_outpath'],
-            dataset='conus404',
+            config_path=data['conus404_config_path'],
             export_bucket='openet',
             export_path=self.export_path,
             local_folder='tests',
@@ -201,7 +201,7 @@ class TestEEDownload(object):
     def test_download_grid_data_conus404_overwrite(self, data):
         download_grid_data(
             data['prep_metadata_outpath'],
-            dataset='conus404',
+            config_path=data['conus404_config_path'],
             export_bucket='openet',
             export_path=self.export_path,
             local_folder='tests',
@@ -313,6 +313,7 @@ class TestPlot(object):
         self.daily_plot_dir = Path('tests')/'daily_comp_plots'
         self.monthly_plot_dir = Path('tests')/'monthly_comp_plots'
     
+    @pytest.mark.slow
     def test_daily_comparison(self, data):
         input_path=data.get('prep_metadata_outpath') 
         plot.daily_comparison(
@@ -352,17 +353,29 @@ class TestPlot(object):
                 /'station_bar_plots'/'Jun_cv.html'
         assert outpath.is_file()
 
-#class TestSpatial(object):
-#
-#    def setup_method(self):
-#        pass
-#
-#    def test_spatial_basic_options(self, data):
-#        comp_out_file = data.get('ratio_dir')/'etr_mm_summary_comp_all_yrs.csv'
-#
-#        spatial.main(
-#            input_file_path=comp_out_file, 
-#            buffer=1,
-#            scale_factor=1
-#        )
-#
+class TestSpatial(object):
+
+    def test_make_points_file(self, data):
+        input_path = data.get(
+            'conus404_output_dir')/'etr_summary_comp_all_yrs.csv'
+
+        spatial.make_points_file(input_path)
+        
+        point_file = data.get(
+            'conus404_output_dir')/'spatial'/'etr_summary_pts_wgs84.shp'
+        assert point_file.is_file()
+
+    def test_make_grid(self, data):
+        config = read_config(data['conus404_config_path'])
+
+        input_path = data.get(
+            'conus404_output_dir')/'etr_summary_comp_all_yrs.csv'
+
+        spatial.make_grid(
+            input_path, 
+            grid_res=config['output_data_resolution'],
+            bounds=config['input_bounds'],
+        )
+
+        grid_path = data.get('conus404_output_dir')/'spatial'/'grid.shp'
+        assert grid_path.is_file()
