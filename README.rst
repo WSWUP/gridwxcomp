@@ -5,10 +5,10 @@ gridwxcomp
 
 -----------
 
-A package for comparing weather station data to gridded weather data including `gridMET <http://www.climatologylab.org/gridmet.html>`_ and other gridded datasets that are hosted on Google Earth Engine. Major functionality includes: 
+A package for comparing weather station data to gridded weather data that are hosted on Google Earth Engine. Major functionality includes: 
 
 * pairing of station locations with overlapping grid cells 
-* downloading point data from gridded datasets on Google Earth Engine or gridMET data from OpenDap server 
+* downloading point data from gridded datasets on Google Earth Engine 
 * calculation of mean bias ratios between station and gridded data and other statistics 
 * performing spatial interpolation of bias ratios with multiple options 
 * building geo-referenced vector and raster data of spatially interpolated bias ratios and statistics
@@ -139,8 +139,8 @@ To get abbreviated descriptions for any of the above ``gridwxcomp`` commands use
 .. |Coverage| image:: https://coveralls.io/repos/github/WSWUP/gridwxcomp/badge.svg?branch=master&kill_cache=1
    :target: https://coveralls.io/github/WSWUP/gridwxcomp?branch=master&kill_cache=1
 
-.. |Build| image:: https://travis-ci.org/WSWUP/gridwxcomp.svg?branch=master
-   :target: https://travis-ci.org/WSWUP/gridwxcomp
+.. |Build| image:: https://github.com/WSWUP/gridwxcomp/actions/workflows/gridwxcomp_tests.yml/badge.svg
+   :target: https://github.com/WSWUP/gridwxcomp/actions
 
 .. |Downloads per month| image:: https://img.shields.io/pypi/dm/gridwxcomp.svg
    :target: https://pypi.python.org/pypi/gridwxcomp/
