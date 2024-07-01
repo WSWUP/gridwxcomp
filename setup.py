@@ -8,7 +8,7 @@ with io.open("gridwxcomp/__init__.py", "rt", encoding="utf8") as f:
     version = re.search(r"__version__ = \'(.*?)\'", f.read()).group(1)
 
 requires = [
-    'bokeh>=1.0.4, <=2.4.3',
+    'bokeh>=1.0.4',
     'click>=7.0',
     'fiona>=1.7.13',
     'gdal',
@@ -19,15 +19,17 @@ requires = [
     'rasterstats>=0.13',
     'refet>=0.3.7',
     'scipy>=1.1.0',
-    'shapely==1.6.4',
-    'xlrd==1.2.0'
+    'shapely',
+    'xlrd>=1.2.0',
+    'geopandas',
+    'earthengine-api'
 ]
 
 tests_require = ['pytest']
 
 classifiers = [
     'License :: OSI Approved :: Apache Software License',
-    'Programming Language :: Python :: 3.7',
+    'Programming Language :: Python :: 3.11',
     'Environment :: Console',
     'Development Status :: 4 - Beta',
     'Topic :: Scientific/Engineering',
@@ -39,8 +41,8 @@ setup(
     version=version,
     description='Compare meterological station data to gridded data',
     long_description=readme,
-    author='John Volk and Chris Pearson',
-    author_email='jmvolk@unr.edu',
+    author='John Volk, Christian Dunkerly, Chris Pearson, and Sayantan Majumdar',
+    author_email='john.volk@dri.edu',
     license='Apache',
     url='https://github.com/WSWUP/gridwxcomp',
     download_url='https://github.com/WSWUP/gridwxcomp/archive/v0.1.0.tar.gz',

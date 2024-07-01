@@ -1,180 +1,35 @@
 # -*- coding: utf-8 -*-
 """
 Calculate monthly bias ratios of variables from climate station 
-to overlapping gridMET (or other gridded dataset) cells. 
+to overlapping gridded dataset cells.
 
 Input file for this module must first be created by running 
-:mod:`gridwxcomp.prep_input` followed by :mod:`gridwxcomp.download_gridmet_opendap`. 
+:mod:`gridwxcomp.prep_metadata` followed by :mod:`gridwxcomp.ee_download`.
 
-Attributes:
-    GRIDMET_STATION_VARS (:obj:`dict`): mapping dictionary with gridMET
-        variable names as keys and station variable names as values.
-        Used to determine which station variable to calculate bias
-        ratios according to the given gridMET variable. 
-
-Default values::
-
-    GRIDMET_STATION_VARS = {
-        'u2_ms' : 'ws_2m (m/s)',
-        'tmin_c' : 'TMin (C)',
-        'tmax_c' : 'TMax (C)',
-        'srad_wm2' : 'Rs (w/m2)',
-        'ea_kpa' : 'Vapor Pres (kPa)',
-        'prcp_mm' : 'Precip (mm)',
-        'etr_mm' : 'ETr (mm)',
-        'eto_mm' : 'ETo (mm)'
-    }
-
-Note: The module attribute ``GRIDMET_STATION_VARS`` can be manually adjusted,
-    if ``gridwxcomp`` is installed in editable mode or used as scripts from the
-    root directory. New pairs of station-to-grid variables can then be made
-    or removed to efficiently use :mod:`gridwxcomp` on station data that was
-    **not** created by `PyWeatherQAQC
-    <https://github.com/WSWUP/pyWeatherQAQC>`_.  Otherwise, the same can be
-    achieved by the ``var_dict`` or ``grid_var`` and ``station_var`` arguments 
-    to :func:`calc_bias_ratios`.
+Note: The module is reliant on values within the specified config file
+    in order to interpret the station and gridded data values successfully.
+    If you are experiencing errors or bad values please check it is set up
+    correctly.
     
 """
 
+
 import os
 import calendar
-import argparse
-import warnings
-
-import pandas as pd
 import numpy as np
+import pandas as pd
+import warnings
+from refet.calcs import _wind_height_adjust
+from .util import parse_yr_filter, read_config, read_data, convert_units
 
-# allows for CL script usage if gridwxcomp not installed
-try:
-    from .util import parse_yr_filter
-except:
-    from util import parse_yr_filter
 
-# keys = gridMET variable name
-# values = climate station variable name
-GRIDMET_STATION_VARS = {
-    'u2_ms' : 'ws_2m (m/s)',
-    'tmin_c' : 'TMin (C)',
-    'tmax_c' : 'TMax (C)',
-    'srad_wm2' : 'Rs (w/m2)',
-    'ea_kpa' : 'Vapor Pres (kPa)',
-    'prcp_mm' : 'Precip (mm)',
-    'etr_mm' : 'ETr (mm)',
-    'eto_mm' : 'ETo (mm)'
-}
+VAR_LIST = ['tmax', 'tmin', 'tdew', 'rs', 'wind', 'ea', 'rhmax', 'rhmin', 'rhavg', 'eto', 'etr']
+GROW_THRESH = 65
+SUM_THRESH = 35
+ANN_THRESH = 125
 
-OPJ = os.path.join
 
-def main(input_file_path, out_dir, method='long_term_mean', 
-        grid_id_name='GRIDMET_ID', grid_var='etr_mm', station_var=None, 
-        station_date_name='date', grid_date_name='date', grid_ID=None, 
-        day_limit=10, years='all', comp=True):
-    """
-    Calculate monthly bias ratios between station climate and gridMET
-    cells that correspond with each other geographically. Saves data
-    to CSV files in the given output directory. If run later with
-    new station data, bias ratios for new stations will be appended
-    to existing output summary CSV.
-    
-    Arguments:
-        input_file_path (str): path to input CSV file containing
-            paired station/gridMET metadata. This file is 
-            created by running :mod:`gridwxcomp.prep_input` followed by 
-            :mod:`gridwxcomp.download_gridmet_opendap`.
-        out_dir (str): path to directory to save CSV files with
-            monthly bias ratios of etr.
-            
-    Keyword Arguments:
-        method (str): default 'long_term_mean'. How to calculate mean station to
-            grid ratios, currently two options 'long_term_mean' takes the 
-            mean of all dates for the station variable that fall in a time 
-            periods, e.g. the month of January, to the mean of all paired 
-            January dates in the gridded product. The other option is 
-            'mean_of_annual' which calculates ratios, for each time period if
-            enough paired days exist, the ratio of sums for each year in the 
-            record and then takes the mean of the annual ratios. This method 
-            is always used to calculate standard deviation and coefficient of 
-            variation of ratios which describe interannual variation of ratios. 
-        grid_var (str): default 'etr_mm'. Grid climate variable
-            to calculate bias ratios.
-        station_var (str): default None. Climate station variable to use
-            to calculate bias ratios. If None, look up using ``grid_var`` 
-            as a key to :attr:`GRIDMET_STATION_VARS` dictionary found as a 
-            module attribute to :mod:`gridwxcomp.calc_bias_ratios`.
-        grid_ID (int): default None. Grid ID (int cell identifier) to only 
-            calculate bias ratios for a single gridcell.
-        day_limit (int): default 10. Threshold number of days in month
-            of missing data, if less exclude month from calculations.
-        years (int or str): default 'all'. Years to use for calculations
-            e.g. 2000-2005 or 2011.
-        comp (bool): default True. Flag to save a "comprehensive" 
-            summary output CSV file that contains station metadata and 
-            statistics in addition to the mean monthly ratios.
-
-    Returns:
-        None
-
-    Examples:
-        From the command line interface,
-
-        .. code-block:: sh
-
-            $ # for all gridMET cells in input file for gridMET var "etr_mm" (default)
-            $ python calc_bias_ratios.py -i merged_input.csv -o monthly_ratios
-            $ # for all gridMET cells in input file for gridMET var "eto_mm"
-            $ python calc_bias_ratios.py -i merged_input.csv -o monthly_ratios -gv eto_mm
-            $ # for a specific gridMET cell ID for "etr_mm"
-            $ python calc_bias_ratios.py -i merged_input.csv -o monthly_ratios -id 509011
-            $ # to exclude any months with less than 15 days of data
-            $ python calc_bias_ratios.py -i merged_input.csv -o monthly_ratios -d 15
-            
-        It is also possible for the user to define their own station 
-        variable name if, for example, they are using station data that was
-        **not** created by `PyWeatherQAQC <https://github.com/WSWUP/pyWeatherQAQC>`_.
-        Let's say our station time series has ETo named as 'EO' then 
-        use the ``[-sv, --station-var]`` and ``[-gv, --grid-var]`` options
-        
-        .. code-block:: sh
-
-            $ python calc_bias_ratios.py -i merged_input.csv -o monthly_ratios -sv EO -gv eto_mm
-
-        This will produce two CSV files in ``out_dir`` named 
-        "eto_mm_summary_all_yrs.csv" and "eto_mm_summary_comp_all_yrs.csv". If 
-        the ``[-y, --years]`` option is assigned, e.g. as '2010', then the 
-        output CSVs will have '2010' suffix, i.e. 'eto_mm_summary_comp_2010.csv'
-        
-        For use within Python see :func:`calc_bias_ratios`.
-
-    Note:
-        If ``[-gv, --grid-var]`` command line option or ``grid_var`` 
-        keyword argument is given but the station variable is left as default 
-        (None), the corresponding station variable is looked up from the mapping
-        dictionary in :mod:`gridwxcomp.calc_bias_ratios` named 
-        ``GRIDMET_STATION_VARS``. To efficiently use climate data that was  
-        **not** created by `PyWeatherQAQC <https://github.com/WSWUP/pyWeatherQAQC>`_ 
-        which is where the default names are derived you can manually adjust
-        ``GRIDMET_STATION_VARS`` near the top of the :mod:`gridwxcomp.calc_bias_ratios`
-        submodule file. Alternatively, the gridMET and station variable names
-        may be explicitly passed as command line or function arguments. 
-        
-    """
-
-    # calculate monthly bias ratios and save to CSV files
-    calc_bias_ratios(
-        input_file_path, 
-        out_dir, 
-        method=method,
-        grid_id_name=grid_id_name,
-        grid_var=grid_var,
-        station_var=station_var, 
-        station_date_name=station_date_name,
-        grid_date_name=grid_date_name,
-        grid_ID=grid_ID, 
-        day_limit=day_limit,
-        comp=comp
-    )
-
-def _save_output(out_df, comp_out_df, out_dir, grid_ID, var_name, yrs):
+def _save_output(out_df, comp_out_df, out_dir, grid_id, var_name, yrs):
     """
     Save short summary file or overwrite existing data for a single
     climate station.
@@ -190,7 +45,7 @@ def _save_output(out_df, comp_out_df, out_dir, grid_ID, var_name, yrs):
             is passed then save or update existing file.
         out_dir (str): path to directory to save or update summary data
             for monthly bias ratios.
-        grid_ID (int, optional): depends on ``grid_ID`` argument
+        grid_id (int, optional): depends on ``grid_id`` argument
             passed to :func:`calc_bias_ratios`. If not None (default)
             then save summary files for stations that correspond with
             the given gridMET ID with the suffix "_X" where X is the
@@ -202,7 +57,7 @@ def _save_output(out_df, comp_out_df, out_dir, grid_ID, var_name, yrs):
         None       
         
     """
-        
+
     def __save_update(out_df, out_file):
 
         """ 
@@ -234,80 +89,64 @@ def _save_output(out_df, comp_out_df, out_dir, grid_ID, var_name, yrs):
         os.mkdir(out_dir)   
         
     # save/update short summary file or update existing with new station
-    if not grid_ID:
-        out_file = OPJ(
+    if not grid_id:
+        out_file = os.path.join(
             out_dir, 
             '{v}_summary_{y}.csv'.format(v=var_name, y=yrs)
         )
     else: 
-        out_file = OPJ(
+        out_file = os.path.join(
             out_dir,
             '{v}_summary_grid_{g}_{y}.csv'.format(
-                v=var_name, g=grid_ID, y=yrs)
+                v=var_name, g=grid_id, y=yrs)
         )
     __save_update(out_df, out_file)
 
     # if comprehensive summary is requested save/update
     if isinstance(comp_out_df, pd.DataFrame):
-        if not grid_ID:
-            comp_out_file = OPJ(
+        if not grid_id:
+            comp_out_file = os.path.join(
                 out_dir, 
                 '{v}_summary_comp_{y}.csv'.format(v=var_name, y=yrs)
             )
         else:
-            comp_out_file = OPJ(
+            comp_out_file = os.path.join(
                 out_dir,
                 '{v}_summary_comp_{g}_{y}.csv'.format(
-                    v=var_name, g=grid_ID, y=yrs)
+                    v=var_name, g=grid_id, y=yrs)
             )
         __save_update(comp_out_df, comp_out_file)
-    
-def calc_bias_ratios(input_path, out_dir, method='long_term_mean',
-        grid_id_name='GRIDMET_ID', grid_var='etr_mm', station_var=None, 
-        var_dict=None, station_date_name='date', grid_date_name='date', 
-        grid_ID=None, day_limit=10, years='all', comp=True):
+
+
+def calc_bias_ratios(input_path, config_path, out_dir, method='long_term_mean', grid_id_name='GRID_ID',
+                     comparison_var='etr', grid_id=None, day_limit=10, years='all', comp=True):
     """
-    Read input CSV file and calculate mean monthly bias ratios between
-    station to corresponding grid cells for all station and grid 
-    pairs, optionally calculate ratios for a single gridcell.
+    Read input metadata CSV file and config file, use them to calculate mean
+    monthly bias ratios between station to corresponding grid cells for all
+    station and grid pairs, optionally calculate ratios for a single gridcell.
     
     Arguments:
-        input_path (str): path to input CSV file with matching
-            station climate and grid metadata. This file is 
-            created by running :func:`gridwxcomp.prep_input` followed by 
-            :func:`gridwxcomp.download_gridmet_opendap`.
-        out_dir (str): path to directory to save CSV files with
-            monthly bias ratios of etr.
-            
-    Keyword Arguments:
-        method (str): default 'long_term_mean'. How to calculate mean station to
-            grid ratios, currently two options 'long_term_mean' takes the 
-            mean of all dates for the station variable that fall in a time 
-            periods, e.g. the month of January, to the mean of all paired 
-            January dates in the gridded product. The other option is 
-            'mean_of_annual' which calculates ratios, for each time period if
-            enough paired days exist, the ratio of sums for each year in the 
-            record and then takes the mean of the annual ratios. This method 
-            is always used to calculate standard deviation and coefficient of 
-            variation of ratios which describe interannual variation of ratios. 
-        grid_id_name (str): default 'GRIDMET_ID'. Name of index/cell identifier
-            for gridded dataset, only change if supplying user grid data.
-        grid_var (str): default 'etr_mm'. Grid climate variable
-            to calculate bias ratios.
-        station_var (str): default None. Climate station variable to use
-            to calculate bias ratios. If None, look up using ``grid_var`` 
-            as a key to :attr:`GRIDMET_STATION_VARS` dictionary found as a 
-            module attribute to :mod:`gridwxcomp.calc_bias_ratios`.
-        var_dict (dict): default None. Dictionary that maps grid variable names
-            to station variable names to overide gridMET and PyWeatherQaQc
-            defaules used by :attr:`GRIDMET_STATION_VARS`.
-        grid_ID (int): default None. Grid ID (int cell identifier) to only 
+        input_path (str): path to input CSV file with matching station climate and grid metadata.
+            This file is created by running :func:`gridwxcomp.prep_metadata` followed by
+            :func:`gridwxcomp.ee_download`.
+        config_path (str): path to the config file that has the parameters used
+            to interpret the station and gridded data files
+        out_dir (str): path to directory to save CSV files with monthly bias ratios of etr.
+        method (str): default 'long_term_mean'. How to calculate mean station to grid ratios,
+            currently two options 'long_term_mean' takes the mean of all dates for the station variable
+            that fall in a time periods, e.g. the month of January, to the mean of all paired
+            January dates in the gridded product. The other option is  'mean_of_annual' which calculates ratios,
+            for each time period if enough paired days exist, the ratio of sums for each year in the
+            record and then takes the mean of the annual ratios. This method is always used to calculate
+            standard deviation and coefficient of variation of ratios which describe interannual variation of ratios.
+        grid_id_name (str): default 'GRID_ID'. Name of column containing index/cell identifiers for gridded dataset.
+        comparison_var (str): default 'etr'. Grid climate variable to calculate bias ratios. This value must be found
+            within the module parameter VAR_LIST.
+        grid_id (int or str or None): default None. Grid ID (int cell identifier) to only
             calculate bias ratios for a single gridcell.
-        day_limit (int): default 10. Threshold number of days in month
-            of missing data, if less exclude month from calculations. Ignored 
-            when ``method='long_term_mean'``.
-        years (int or str): default 'all'. Years to use for calculations
-            e.g. 2000-2005 or 2011.
+        day_limit (int): default 10. Threshold number of days in month of missing data,
+            if less, exclude month from calculations. Ignored when ``method='long_term_mean'``.
+        years (int or str): default 'all'. Years to use for calculations e.g. 2000-2005 or 2011.
         comp (bool): default True. Flag to save a "comprehensive" 
             summary output CSV file that contains station metadata and 
             statistics in addition to the mean monthly ratios.
@@ -315,34 +154,27 @@ def calc_bias_ratios(input_path, out_dir, method='long_term_mean',
     Returns:
         None
         
-    Examples:
-        To use within Python for observed ET,
+    Example:
+        To use within Python for observed ETo
         
         >>> from gridwxcomp import calc_bias_ratios
-        >>> input_path = 'merged_input.csv'
-        >>> out_dir = 'monthly_ratios'
-        >>> grid_variable = 'eto_mm'
-        >>> calc_bias_ratios(input_path, out_dir, grid_var=grid_variable)
-        
-        To use custom station data, give the keyword argument ``station_var``, 
-        e.g. if we had climate daily time series data for precipitation 
-        with the column named "p" then,
-        
-        >>> calc_bias_ratios(input_path, out_dir, grid_var='prcp_mm', 
-        >>>     station_var='p')
-                
-        This results in two CSV files in ``out_dir`` named 
-        "prcp_mm_summary_all_yrs.csv" and "prcp_mm_summary_comp_all_yrs.csv". 
+        >>> input_file = 'prepped_metadata.csv'
+        >>> config_file = 'gridwxcomp_config.ini'
+        >>> out_directory = 'monthly_ratios'
+        >>> grid_variable = 'eto'
+        >>> calc_bias_ratios(input_file, config_file, out_directory, comparison_var=grid_variable, comp=True)
+
+        This results in two CSV files in ``out_directory`` named
+        "eto_summary_all_yrs.csv" and "eto_summary_comp_all_yrs.csv".
 
     Raises:
-        FileNotFoundError: if input file is invalid or not found.
-        KeyError: if the input file does not contain file paths to
-            the climate station and grid time series files. This
-            occurs if, for example, the :mod:`gridwxcomp.prep_input` and/or 
-            :mod:`gridwxcomp.download_gridmet_opendap` scripts have not been 
-            run first (if using gridMET data). Also raised if the given 
-            ``grid_var``, ``station_var``, or values of ``var_dict`` kwargs 
-            are invalid.
+        FileNotFoundError: if input file or config file are invalid or not found.
+        KeyError: if the input file does not contain file paths to the climate station and 
+            grid time series files. This occurs if, for example, the 
+            :mod:`gridwxcomp.prep_metadata` and/or
+            :mod:`gridwxcomp.ee_download` scripts have not been run first.
+            Also raised if the given the values specified in the config file are not found
+            within the station and gridded data files.
         ValueError: if the ``method`` kwarg is invalid.
 
     Note:
@@ -353,111 +185,100 @@ def calc_bias_ratios(input_path, out_dir, method='long_term_mean',
         If an existing summary file contains a climate station that is being 
         reprocessed its monthly bias ratios and other data will be overwritten. 
         Also, to proceed with spatial analysis scripts, the comprehensive 
-        summary file must be produced using this function first. If 
-        ``grid_var`` keyword argument is given but the ``station_var`` is 
-        left as default (None), the corresponding station variable is looked 
-        up from the mapping dictionary in :mod:`calc_bias_ratios.py` 
-        named :attr:`GRIDMET_STATION_VARS`. To use climate data 
-        that was  **not** created by `pyWeatherQAQC <https://github.com/WSWUP/pyWeatherQAQC>`_ 
-        for station data and/or gridded data other than gridMET, which is 
-        where the default names are derived, the grid and station 
-        variable names need to be explicitly passed as function arguments. 
-        
+        summary file must be produced using this function first.
     """
+
     # ignore np runtime warnings due to calcs with nans, div by 0
     np.seterr(divide='ignore', invalid='ignore')
     # specific for standard deviation of nans
     std_warning = "Degrees of freedom <= 0 for slice"
     warnings.filterwarnings("ignore", message=std_warning)
 
-    method_options = ('long_term_mean','mean_of_annual')
+    # Define months belonging to growing season and annual
+    grow_months = list(range(4, 11))
+    ann_months = list(range(1, 13))
+
+    method_options = ('long_term_mean', 'mean_of_annual')
     if method not in method_options:
         raise ValueError('{} is not a valid method, use one of: {}'.format(
-            method, method_options)
-        )
-
-    if var_dict is None:
-        var_dict = GRIDMET_STATION_VARS
-
-    if not var_dict.get(grid_var, None):
-        print(
-            'Valid grid variable names:\n',
-            '\n'.join([i for i in var_dict.keys()]),
-            '\n'
-        )
-        err_msg = 'Invalid grid variable name {}'.format(grid_var)
-        raise KeyError(err_msg)
+            method, method_options))
 
     if not os.path.isdir(out_dir):
         print('{} does not exist, creating directory'.format(out_dir))
         os.mkdir(out_dir)
     if not os.path.isfile(input_path):
         raise FileNotFoundError('Input CSV file given was invalid or not found')
-
-    input_df = pd.read_csv(input_path)
-    # get matching station variable name
-    if not station_var:
-        station_var = var_dict.get(grid_var)
     # If only calculating ratios for a single cell, change console message
-    if grid_ID:
-        single_grid_cell_msg = f'For grid cell ID: {grid_ID}.'
+    if grid_id:
+        single_grid_cell_msg = f'For grid cell ID: {grid_id}.'
     else:
         single_grid_cell_msg = ''
+
+    if comparison_var not in VAR_LIST:
+        raise ValueError('{} is not a valid option, use one of: {}'.format(
+            comparison_var, VAR_LIST))
+
+    station_var = f'station_{comparison_var}'
+    grid_var = f'gridded_{comparison_var}'
+
     print(
         f'Calculating ratios between climate station variable: {station_var}'
         f'\nand grid variable: {grid_var} using the "{method.replace("_"," ")}"'
         f' method. {single_grid_cell_msg}'
     )
+
+    # Read in metadata file to iterate over and config file to interpret data files
+    input_df = pd.read_csv(input_path)
+    config_dict = read_config(config_path)
+
     # loop through each station and calculate monthly ratio
     for index, row in input_df.iterrows():
-        if not 'STATION_FILE_PATH' in row or not 'GRID_FILE_PATH' in row:
-            raise KeyError('Missing station and/or grid file paths in '+\
-                           'input file. Run prep_input.py followed '+\
-                           'by download_gridmet_opendap.py first.')
+        if 'STATION_FILE_PATH' not in row or 'GRID_FILE_PATH' not in row:
+            raise KeyError('Missing station and/or grid file paths in ' +
+                'input file. Run prep_metadata.py followed by ee_download.py first.')
+
         # if only doing a single grid cell check for matching ID
-        if grid_ID and int(grid_ID) != row[grid_id_name]:
+        if grid_id and grid_id != row[grid_id_name]:
             continue
 
         # load station and grid time series files
         try:
-            # if time series not from PyWeatherQaQc, CSV with 'date' column
-            if not row.STATION_FILE_PATH.endswith('.xlsx'):
-                station_df = pd.read_csv(
-                    row.STATION_FILE_PATH, parse_dates=True,
-                    index_col=station_date_name
-                )
-                station_df.index = station_df.index.date # for joining
-            # if excel file, assume PyWeatherQaQc format
-            else:
-                station_df = pd.read_excel(
-                    row.STATION_FILE_PATH,
-                    sheet_name='Corrected Data', parse_dates=True,
-                    index_col=0
-                )
-        except:
-            print('Time series file for station: ', row.STATION_ID, 
-                  'was not found, skipping.')
+            # open file, convert units, then adjust wind measurement height
+            raw_station_df = read_data(config_dict, 'station', row.STATION_FILE_PATH)
+            converted_station_df = convert_units(config_dict, 'station', raw_station_df)
+            converted_station_df['wind'] = _wind_height_adjust(
+                uz=converted_station_df['wind'], zw=config_dict['station_anemometer_height'])
+            prepped_station_df = converted_station_df.add_prefix('station_', axis='columns')
+        except IOError:
+            print(
+                'Time series file for station: ', row.STATION_ID, ' was not found, skipping.')
             continue
 
-        if not station_var in station_df.columns:
-            err_msg = '{v} not found in the station file: {p}'.\
-                format(v=station_var, p=row.STATION_FILE_PATH)
+        try:
+            # open file, convert units, then adjust wind measurement height
+            raw_gridded_df = read_data(config_dict, 'gridded', row.GRID_FILE_PATH)
+            converted_gridded_df = convert_units(config_dict, 'gridded', raw_gridded_df)
+            converted_gridded_df['wind'] = _wind_height_adjust(
+                uz=converted_gridded_df['wind'], zw=config_dict['gridded_anemometer_height'])
+            prepped_gridded_df = converted_gridded_df.add_prefix('gridded_', axis='columns')
+        except IOError:
+            print(
+                'Time series file for gridded: ', row.STATION_ID, 'was not found, skipping.')
+            continue
+
+        if station_var not in prepped_station_df.columns:
+            err_msg = '{v} not found in the station file: {p}'.format(
+                v=station_var, p=row.STATION_FILE_PATH)
             raise KeyError(err_msg)
-        print(
-            '\nCalculating {v} bias ratios for station:'.format(v=grid_var),
-            row.STATION_ID
-        )
-        grid_df = pd.read_csv(row.GRID_FILE_PATH, parse_dates=True, 
-                                 index_col=grid_date_name)
+        print('\nIndex {u}: Calculating {v} bias ratios for station:'.format(
+            u=index, v=grid_var), row.STATION_ID)
+
         # merge both datasets drop missing days
         result = pd.concat(
-            [
-                station_df[station_var], 
-                grid_df[grid_var]
-            ], 
+            [prepped_station_df[station_var], prepped_gridded_df[grid_var]],
             axis=1 
         )
-        result = result.reindex(grid_df.index)
+        result = result.reindex(prepped_gridded_df.index)
         result.dropna(inplace=True)
         # make datetime index
         result.index = pd.to_datetime(result.index)
@@ -466,75 +287,60 @@ def calc_bias_ratios(input_path, out_dir, method='long_term_mean',
         # for calculating ratios with long-term means later
         orig = result.copy()
         # monthly sums and day counts for each year
-        result = result.groupby([result.index.year, result.index.month])\
-                .agg(['sum','mean','count'])
+        result = result.groupby([result.index.year, result.index.month]).agg(['sum', 'mean', 'count'])
         result.index.set_names(['year', 'month'], inplace=True)
         # remove totals with less than XX days
-        result = result[result[grid_var,'count']>=day_limit]
+        result = result[result[grid_var, 'count'] >= day_limit]
+
         # calc mean growing season and June to August ratios with month sums
-        if grid_var in ('tmin_c','tmax_c'):
-            grow_season = result.loc[
-                result.index.get_level_values('month').isin([4,5,6,7,8,9,10]),\
-                        (station_var)]['mean'].mean() - result.loc[
-                            result.index.get_level_values('month').isin(
-                                [4,5,6,7,8,9,10]),(grid_var)]['mean'].mean()
-            june_to_aug = result.loc[
-                result.index.get_level_values('month').isin(
-                    [6,7,8]), (station_var)]['mean'].mean()\
-                            -result.loc[result.index.get_level_values('month')\
-                        .isin([6,7,8]), (grid_var)]['mean'].mean()
-            ann_months = list(range(1,13))
-            annual = result.loc[
-                result.index.get_level_values('month').isin(ann_months),\
-                        (station_var)]['mean'].mean() - result.loc[
-                    result.index.get_level_values('month').isin(ann_months),\
-                            (grid_var)]['mean'].mean()
+        # temperature deltas
+        if grid_var in ('gridded_tmin', 'gridded_tmax', 'gridded_tdew'):
+            grow_season = \
+                result.loc[result.index.get_level_values('month').isin(grow_months), station_var]['mean'].mean() - \
+                result.loc[result.index.get_level_values('month').isin(grow_months), grid_var]['mean'].mean()
+            june_to_aug = \
+                result.loc[result.index.get_level_values('month').isin([6, 7, 8]), station_var]['mean'].mean() - \
+                result.loc[result.index.get_level_values('month').isin([6, 7, 8]), grid_var]['mean'].mean()
+            annual = \
+                result.loc[result.index.get_level_values('month').isin(ann_months), station_var]['mean'].mean() - \
+                result.loc[result.index.get_level_values('month').isin(ann_months), grid_var]['mean'].mean()
+        # ratios for other variables
         else:
-            grow_season = result.loc[
-                result.index.get_level_values('month').isin([4,5,6,7,8,9,10]),\
-                    (station_var)]['sum'].sum() / result.loc[
-                        result.index.get_level_values('month').isin(
-                            [4,5,6,7,8,9,10]),(grid_var)]['sum'].sum()
-            june_to_aug = result.loc[
-                result.index.get_level_values('month').isin(
-                    [6,7,8]), (station_var)]['sum'].sum()\
-                            /result.loc[result.index.get_level_values('month')\
-                        .isin([6,7,8]), (grid_var)]['sum'].sum()
-            ann_months = list(range(1,13))
-            annual = result.loc[
-                result.index.get_level_values('month').isin(ann_months),\
-                        (station_var)]['sum'].sum() / result.loc[
-                    result.index.get_level_values('month').isin(ann_months),\
-                            (grid_var)]['sum'].sum()
-        ratio = pd.DataFrame(columns = ['ratio', 'count'])
-        # ratio of monthly sums for each year
-        if grid_var in ('tmin_c','tmax_c'):
-            ratio['ratio']=\
-                (result[station_var,'mean'])-(result[grid_var,'mean'])
+            grow_season = \
+                result.loc[result.index.get_level_values('month').isin(grow_months), station_var]['mean'].mean() / \
+                result.loc[result.index.get_level_values('month').isin(grow_months), grid_var]['mean'].mean()
+            june_to_aug = \
+                result.loc[result.index.get_level_values('month').isin([6, 7, 8]), station_var]['mean'].mean() / \
+                result.loc[result.index.get_level_values('month').isin([6, 7, 8]), grid_var]['mean'].mean()
+            annual = \
+                result.loc[result.index.get_level_values('month').isin(ann_months), station_var]['mean'].mean() / \
+                result.loc[result.index.get_level_values('month').isin(ann_months), grid_var]['mean'].mean()
+
+        ratio = pd.DataFrame(columns=['ratio', 'count'])
+        # ratio/deltas of monthly sums for each year
+        if grid_var in ('gridded_tmin', 'gridded_tmax', 'gridded_tdew'):
+            ratio['ratio'] = (result[station_var, 'mean']) - (result[grid_var, 'mean'])
         else:
-            ratio['ratio']=(result[station_var,'sum'])/(result[grid_var,'sum'])
+            ratio['ratio'] = (result[station_var, 'sum']) / (result[grid_var, 'sum'])
+
         # monthly counts and stddev
-        ratio['count'] = result.loc[:,(grid_var,'count')]
+        ratio['count'] = result.loc[:, (grid_var, 'count')]
         if result.empty:
             print(f'WARNING: no data for site: {row.STATION_ID}, skipping')
             continue
 
         # rebuild Index DateTime
         ratio['year'] = ratio.index.get_level_values('year').values.astype(int)
-        ratio['month']=ratio.index.get_level_values('month').values.astype(int)
-        ratio.index = pd.to_datetime(
-            ratio.year*10000+ratio.month*100+15,format='%Y%m%d'
-        )
+        ratio['month'] = ratio.index.get_level_values('month').values.astype(int)
+        ratio.index = pd.to_datetime(ratio.year*10000+ratio.month*100+15, format='%Y%m%d')
+
         # useful to know how many years were used in addition to day counts
         start_year = ratio.year.min()
         end_year = ratio.year.max()
         counts = ratio.groupby(ratio.index.month).sum()['count']
+
         # get standard deviation of each years' monthly mean ratio
-        stdev = {
-            month: np.std(
-                ratio.loc[ratio.month.isin([month]), 'ratio'].values
-            ) for month in ann_months
-        }
+        stdev = {month: np.std(ratio.loc[ratio.month.isin([month]), 'ratio'].values) for month in ann_months}
         stdev = pd.Series(stdev, name='stdev')
 
         # mean of monthly means of all years, can change to median or other meth
@@ -544,24 +350,18 @@ def calc_bias_ratios(input_path, out_dir, method='long_term_mean',
         final_ratio['stdev'] = stdev
         final_ratio['cv'] = stdev / final_ratio['ratio']
         # calc mean growing season, June through August, ann stdev
-        grow_season_std = np.std(
-            ratio.loc[ratio.month.isin([4,5,6,7,8,9,10]), 'ratio'].values
-        )
-        june_to_aug_std = np.std(
-            ratio.loc[ratio.month.isin([6,7,8]), 'ratio'].values
-        )
-        annual_std = np.std(
-            ratio.loc[ratio.month.isin(ann_months), 'ratio'].values
-        )
+        grow_season_std = np.std(ratio.loc[ratio.month.isin(grow_months), 'ratio'].values)
+        june_to_aug_std = np.std(ratio.loc[ratio.month.isin([6, 7, 8]), 'ratio'].values)
+        annual_std = np.std(ratio.loc[ratio.month.isin(ann_months), 'ratio'].values)
         # get month abbreviations in a column and drop index values
         for m in final_ratio.index:
-            final_ratio.loc[m,'month'] = calendar.month_abbr[m]
+            final_ratio.loc[m, 'month'] = calendar.month_abbr[m]
         # restructure as a row with station index
         months = final_ratio.month.values
         final_ratio = final_ratio.T
         final_ratio.columns = months
         final_ratio.drop('month', inplace=True)
-        # add monthy means and counts into single row dataframe
+        # add monthly means and counts into single row dataframe
         ratio_cols = [c + '_mean' for c in final_ratio.columns]
         count_cols = [c + '_count' for c in final_ratio.columns]
         stddev_cols = [c + '_stdev' for c in final_ratio.columns]
@@ -581,11 +381,11 @@ def calc_bias_ratios(input_path, out_dir, method='long_term_mean',
         final_ratio['growseason_mean'] = grow_season
         final_ratio['summer_mean'] = june_to_aug
         final_ratio['annual_mean'] = annual
-        # day counts for all years in non monthly periods
+        # day counts for all years in non-monthly periods
         final_ratio['growseason_count'] =\
-            counts.loc[counts.index.isin([4,5,6,7,8,9,10])].sum()
+            counts.loc[counts.index.isin(grow_months)].sum()
         final_ratio['summer_count'] =\
-            counts.loc[counts.index.isin([6,7,8])].sum()
+            counts.loc[counts.index.isin([6, 7, 8])].sum()
         final_ratio['annual_count'] =\
             counts.loc[counts.index.isin(ann_months)].sum()
         # assign stdev, coef. var. 
@@ -606,6 +406,7 @@ def calc_bias_ratios(input_path, out_dir, method='long_term_mean',
                 final_ratio[v] = final_ratio[v].astype(float).round(3)
             else:
                 final_ratio[v] = final_ratio[v].astype(float).round(0)
+
         # set station ID as index
         final_ratio['STATION_ID'] = row.STATION_ID
         final_ratio.set_index('STATION_ID', inplace=True)
@@ -616,50 +417,45 @@ def calc_bias_ratios(input_path, out_dir, method='long_term_mean',
         # save grid ID for merging with input table, merge other metadata
         final_ratio[grid_id_name] = row[grid_id_name]    
         final_ratio = final_ratio.merge(input_df, on=grid_id_name)
+
         # if more than one site in same gridcell- will have multiple rows 
         # after merge, select the one for the current station 
         if final_ratio.shape[0] > 1:
-            final_ratio=final_ratio.loc[final_ratio.STATION_ID==row.STATION_ID]
-            final_ratio.reset_index(inplace=True) # for slicing with .at[0] 
+            final_ratio = final_ratio.loc[final_ratio.STATION_ID == row.STATION_ID]
+            final_ratio.reset_index(inplace=True)  # for slicing with .at[0]
  
         # long term mean station to mean grid ratio calc as opposed to mean of
-        # annual ratios- default less bias potential
+        # annual ratios - default less bias potential
         if method == 'long_term_mean':
             month_means = orig.groupby(orig.index.month).mean()
-            month_means['month'] = month_means.index
+            # cast as str to avoid deprecation warning assigning str to int
+            month_means['month'] = month_means.index.astype(str) 
             for m in month_means.index:
-                month_means.loc[m,'month'] = f'{calendar.month_abbr[m]}_mean'
+                month_means.loc[m, 'month'] = f'{calendar.month_abbr[int(m)]}_mean'
             month_means.set_index('month', inplace=True)
-            if grid_var in ('tmin_c','tmax_c'):
-                month_means['ratios'] =\
-                    month_means[station_var] - month_means[grid_var]
+            if grid_var in ('gridded_tmin', 'gridded_tmax', 'gridded_tdew'):
+                month_means['ratios'] = month_means[station_var] - month_means[grid_var]
             else:
-                month_means['ratios'] =\
-                    month_means[station_var] / month_means[grid_var]
+                month_means['ratios'] = month_means[station_var] / month_means[grid_var]
 
-            long_term = month_means.drop([station_var, grid_var],1).T
+            long_term = month_means.drop(labels=[station_var, grid_var], axis=1).T
+
             # non-monthly periods long-term mean to mean ratios
-            grow_season = orig.loc[orig.index.month.isin([4,5,6,7,8,9,10])]
-            summer_season = orig.loc[orig.index.month.isin([6,7,8])]
-            if grid_var in ('tmin_c','tmax_c'):
-                long_term['growseason_mean'] =\
-                    grow_season[station_var].mean()-grow_season[grid_var].mean()
-                long_term['summer_mean'] =\
-                    summer_season[station_var].mean()-summer_season[grid_var].mean()
-                long_term['annual_mean'] =\
-                    orig[station_var].mean() - orig[grid_var].mean()
+            grow_season = orig.loc[orig.index.month.isin(grow_months)]
+            summer_season = orig.loc[orig.index.month.isin([6, 7, 8])]
+            if grid_var in ('gridded_tmin', 'gridded_tmax', 'gridded_tdew'):
+                long_term['growseason_mean'] = grow_season[station_var].mean() - grow_season[grid_var].mean()
+                long_term['summer_mean'] = summer_season[station_var].mean() - summer_season[grid_var].mean()
+                long_term['annual_mean'] = orig[station_var].mean() - orig[grid_var].mean()
 
             else:
-                long_term['growseason_mean'] =\
-                    grow_season[station_var].mean() / grow_season[grid_var].mean()
-                long_term['summer_mean'] =\
-                    summer_season[station_var].mean()/summer_season[grid_var].mean()
-                long_term['annual_mean'] =\
-                    orig[station_var].mean() / orig[grid_var].mean()
+                long_term['growseason_mean'] = grow_season[station_var].mean() / grow_season[grid_var].mean()
+                long_term['summer_mean'] = summer_season[station_var].mean() / summer_season[grid_var].mean()
+                long_term['annual_mean'] = orig[station_var].mean() / orig[grid_var].mean()
 
             # overwrite only mean ratios (keep stats from mean of annual ratios)
             overwrite = long_term.columns.intersection(final_ratio.columns)
-            #return long_term, overwrite, final_ratio
+            # return long_term, overwrite, final_ratio
             final_ratio[overwrite] = long_term[overwrite].values
             out[overwrite] = long_term[overwrite].values
 
@@ -677,30 +473,24 @@ def calc_bias_ratios(input_path, out_dir, method='long_term_mean',
         })
 
         # check if day counts for non-monthly periods are too low, if assign na
-        grow_thresh = 65
-        sum_thresh = 35
-        ann_thresh = 125
-
-        if final_ratio.at[0,'summer_count'] < sum_thresh:
-            print('WARNING: less than:', sum_thresh, 'days in summer period',
-                 '\nfor station:',row.STATION_ID,'assigning -999 for all stats')
-            cols = [col for col in final_ratio.columns if 
-                    'summer_' in col and '_count' not in col]
-            final_ratio.loc[:,cols] = np.nan
+        if final_ratio.at[0, 'summer_count'] < SUM_THRESH:
+            print('WARNING: less than:', SUM_THRESH, 'days in summer period', '\nfor station:',
+                  row.STATION_ID, 'assigning -999 for all stats')
+            cols = [col for col in final_ratio.columns if 'summer_' in col and '_count' not in col]
+            final_ratio.loc[:, cols] = np.nan
         
-        if final_ratio.at[0,'growseason_count'] < grow_thresh:
-            print('WARNING: less than:',grow_thresh,'days in growing season',
-                 '\nfor station:',row.STATION_ID,'assigning -999 for all stats')
-            cols = [col for col in final_ratio.columns if 
-                    'growseason_' in col and '_count' not in col]
-            final_ratio.loc[:,cols] = np.nan
+        if final_ratio.at[0, 'growseason_count'] < GROW_THRESH:
+            print('WARNING: less than:', GROW_THRESH, 'days in growing season', '\nfor station:',
+                  row.STATION_ID, 'assigning -999 for all stats')
+            cols = [col for col in final_ratio.columns if 'growseason_' in col and '_count' not in col]
+            final_ratio.loc[:, cols] = np.nan
             
-        if final_ratio.at[0,'annual_count'] < ann_thresh:
-            print('WARNING: less than:',ann_thresh,'days in annual period',
-                 '\nfor station:',row.STATION_ID,'assigning -999 for all stats')
+        if final_ratio.at[0, 'annual_count'] < ANN_THRESH:
+            print('WARNING: less than:', ANN_THRESH, 'days in annual period', '\nfor station:',
+                  row.STATION_ID, 'assigning -999 for all stats')
             cols = [col for col in final_ratio.columns if 
                     'annual_' in col and '_count' not in col]
-            final_ratio.loc[:,cols] = np.nan
+            final_ratio.loc[:, cols] = np.nan
 
         if comp:
             out[grid_id_name] = row[grid_id_name]
@@ -716,88 +506,15 @@ def calc_bias_ratios(input_path, out_dir, method='long_term_mean',
             comp_out = comp
 
         # save output depending on options
-        _save_output(out, comp_out, out_dir, grid_ID, grid_var, years_str)
+        _save_output(
+            out, comp_out, out_dir, grid_id, 
+            grid_var.replace('gridded_',''), years_str)
 
-    print(
-        '\nSummary file(s) for bias ratios saved to: \n', 
-         os.path.abspath(out_dir)
-         )    
-    
-def arg_parse():
-    """
-    Command line usage of calc_bias_ratios.py which calculates monthly bias 
-    ratios between station climate and grid cells that correspond with 
-    each other geographically. Saves data to CSV files in the given output 
-    directory. If run later with new station data, bias ratios for new 
-    stations will be appended to existing output summary CSV.
-    """
-    parser = argparse.ArgumentParser(
-        description=arg_parse.__doc__,
-        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    optional = parser._action_groups.pop() # optionals listed second
-    required = parser.add_argument_group('required arguments')
-    required.add_argument(
-        '-i', '--input', metavar='PATH', required=True,
-        help='Input CSV file of merged climate/grid data that '+\
-            'was created by running prep_input.py and '+\
-            'download_gridmet_opendap.py')
-    required.add_argument(
-        '-o', '--out', metavar='PATH', required=True,
-        help='Output directory to save CSV files containing bias ratios')
-    optional.add_argument('-meth', '--method', metavar='', required=False, 
-        default='long_term_mean', help='ratio calc method "long_term_mean" or'+\
-            '"mean_of_annual"')
-    optional.add_argument('-gin', '--grid-id-name', metavar='', required=False, 
-        default='GRIDMET_ID', help='Name of gridcell identifier if not using '+\
-            'gridMET grid')
-    optional.add_argument(
-        '-y', '--years', metavar='', required=False, default='all',
-        help='Years to use, single or range e.g. 2018 or 1995-2010')
-    optional.add_argument(
-        '-gv', '--grid-var', metavar='', required=False, default='etr_mm',
-        help='Grid variable name for bias ratio calculation')
-    optional.add_argument(
-        '-sv', '--station-var', metavar='', required=False, default=None,
-        help='Station variable name for bias ratio calculation')
-    optional.add_argument(
-        '-sdn', '--station-date-name', metavar='',required=False,default='date',
-        help='Date column name in station time series files if not using '+\
-            'gridMET.')
-    optional.add_argument(
-        '-gdn', '--grid-date-name', metavar='', required=False, default='date',
-        help='Date column name in grid time series files if not using gridMET.')
-    optional.add_argument(
-        '-id', '--grid-id', metavar='', required=False, default=None,
-        help='Optional grid ID to calculate bias ratios for a single '+\
-            'gridcell')
-    optional.add_argument('-d', '--day-limit', metavar='', required=False, 
-        default=10, help='Number of days of valid data per month to '+\
-            'include it in bias correction calculation.')
-    optional.add_argument('-c', '--comprehensive', required=False, 
-        default=True, action='store_false', dest='comprehensive', 
-        help='Flag, if given, to NOT save comprehensive summary file with '+\
-            'extra metadata and statistics with the suffix "_comp"')
-#    parser.add_argument(
-#        '--debug', default=logging.INFO, const=logging.DEBUG,
-#        help='Debug level logging', action="store_const", dest="loglevel")
-    parser._action_groups.append(optional)# to avoid optionals listed first
-    args = parser.parse_args()
-    return args
+    print('\nSummary file(s) for bias ratios saved to: \n', os.path.abspath(out_dir))    
+
 
 if __name__ == '__main__':
-    args = arg_parse()
-
-    main(
-        input_file_path=args.input, 
-        out_dir=args.out,
-        method=args.method,
-        grid_id_name=args.grid_id_name,
-        grid_var=args.grid_var, 
-        station_var=args.station_var,
-        station_date_name=args.station_date_name,
-        grid_date_name=args.grid_date_name,
-        grid_ID=args.grid_id, 
-        day_limit=args.day_limit,
-        years=args.years, 
-        comp=args.comprehensive
-    )
+    print('\n--------------------------------------------------------'
+          ' Functionality for running this library from the terminal'
+          ' was removed. Please refer to the documentation on how to'
+          ' make calls to these functions. \n\n')
