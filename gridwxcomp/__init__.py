@@ -1,5 +1,5 @@
 __name__ = 'gridwxcomp'
-__author__ = 'John Volk, Christian Dunkerly, Sayantan Majumdar, and Chris Pearson'
+__author__ = 'John Volk, Christian Dunkerly, and Chris Pearson'
 __version__ = '0.2.0'
 
 

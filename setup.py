@@ -41,7 +41,7 @@ setup(
     version=version,
     description='Compare meterological station data to gridded data',
     long_description=readme,
-    author='John Volk, Christian Dunkerly, Chris Pearson, and Sayantan Majumdar',
+    author='John Volk, Christian Dunkerly, and Chris Pearson',
     author_email='john.volk@dri.edu',
     license='Apache',
     url='https://github.com/WSWUP/gridwxcomp',
@@ -52,8 +52,7 @@ setup(
     install_requires=requires,
     tests_require=tests_require,
     package_data={'gridwxcomp': ['example_data/*'],
-        'gridwxcomp': ['env/*.yml'],
-        'gridwxcomp': ['gridmet_cell_data.csv']},
+        'gridwxcomp': ['env/*.yml']},
     include_package_data=True,
     entry_points='''
         [console_scripts]

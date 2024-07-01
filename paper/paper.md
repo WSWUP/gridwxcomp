@@ -14,14 +14,9 @@ authors:
   - name: Christian Dunkerly
     orcid: 0000-0003-3592-4118
     affiliation: 1
-  - name: Sayantan Majumdar 
-    orcid: 0000-0002-3539-0147
-    affiliation: 1
   - name: Christopher Pearson
     affiliation: 1 
   - name: Charles G. Morton
-    affiliation: 1
-  - name: Matt Bromley
     affiliation: 1
   - name: Justin L. Huntington
     affiliation: 1 
