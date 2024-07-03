@@ -11,27 +11,6 @@ import pkg_resources
 import pyproj
 
 
-def get_gridmet_meta_csv(gridmet_meta_path=None):
-    """Find path to 'gridmet_cell_data.csv' packaged with gridwxcomp"""
-    # look for packaged gridmet_cell_data.csv if path not given
-    if not gridmet_meta_path:
-        try:
-            if pkg_resources.resource_exists('gridwxcomp',
-                    'gridmet_cell_data.csv'):
-                gridmet_meta_path = pkg_resources.resource_filename(
-                    'gridwxcomp',
-                    'gridmet_cell_data.csv'
-                    )
-        except:
-            gridmet_meta_path = 'gridmet_cell_data.csv'
-    if not pl.Path(gridmet_meta_path).is_file():
-        raise FileNotFoundError('GridMET file path was not given and '+\
-                'gridmet_cell_data.csv was not found in the gridwxcomp '+\
-                'install directory. Please assign the path or put '+\
-                '"gridmet_cell_data.csv" in the current working directory.\n')
-    return gridmet_meta_path
-
-
 def parse_yr_filter(dt_df, years, label):
     """
     Parse string year filter and apply it to datetime-indexed

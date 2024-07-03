@@ -22,7 +22,7 @@ Bias ratios calculated by ``gridwxcomp`` can be used to correct bias of grid to 
 
 Documentation
 -------------
-`Online documentation <https://wswup.github.io/gridwxcomp/>`_
+`Online documentation <https://gridwxcomp.readthedocs.io/en/latest/>`_
 
 Installation
 ------------
