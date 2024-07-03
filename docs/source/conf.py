@@ -14,19 +14,20 @@
 #
 import os
 import sys
-# sys.path.insert(0, os.path.abspath('.'))
+
 sys.path.insert(0, os.path.abspath('../../'))
 
 # for ReadTheDocs to prevent C-based module import issues
-autodoc_mock_imports = ['bokeh', 'click', 'numpy', 'pandas', 'refet', 
+autodoc_mock_imports = ['bokeh', 'numpy', 'pandas', 'refet', 
                        'fiona', 'gdal', 'rasterio', 'rasterstats', 'shapely', 
-                       'osgeo', 'scipy', 'xarray', 'netCDF4']
+                       'osgeo', 'scipy', 'xarray', 'netCDF4', 'geopandas',
+                       'google','ee']
 
 # -- Project information -----------------------------------------------------
 
 project = 'gridwxcomp'
-copyright = '2019-2021, John Volk and Chris Pearson'
-author = 'John Volk and Chris Pearson'
+copyright = '2019-2024, John Volk, Christian Dunkerly, and Chris Pearson'
+author = 'John Volk, Christian Dunkerly, and Chris Pearson'
 
 # The short X.Y version
 version = ''
@@ -53,7 +54,6 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.doctest',
     'sphinx.ext.intersphinx',
-    'sphinx_click.ext',
     'sphinx.ext.todo',
     'sphinx.ext.coverage',
     'sphinx.ext.mathjax',
@@ -80,7 +80,7 @@ master_doc = 'index'
 #
 # This is also used if you do content translation via gettext catalogs.
 # Usually you set "language" from the command line for these cases.
-language = None
+language = 'en'
 
 # List of patterns, relative to source directory, that match files and
 # directories to ignore when looking for source files.
@@ -100,8 +100,7 @@ autodoc_member_order = 'bysource'
 
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
-#
-#html_theme = 'alabaster'
+
 html_theme = 'sphinx_rtd_theme'
 html_theme_path = ['_themes']
 
@@ -178,7 +177,7 @@ latex_elements = {
 #  author, documentclass [howto, manual, or own class]).
 latex_documents = [
     (master_doc, 'gridwxcomp.tex', 'gridwxcomp Documentation',
-     'John Volk and Chris Pearson', 'manual'),
+     'John Volk, Christian Dunkerly, and Chris Pearson', 'manual'),
 ]
 
 
@@ -243,9 +242,9 @@ todo_include_todos = False
 
 # toggle on code blocks to remove prompt ">>> "
 def setup(app):
-    app.add_javascript('copybutton.js')
-    app.add_stylesheet('custom.css')
-    app.add_javascript("custom.js")
-    app.add_javascript("https://cdn.jsdelivr.net/npm/clipboard@1/dist/clipboard.min.js")
+    app.add_js_file('copybutton.js')
+    app.add_js_file('custom.css')
+    app.add_js_file("custom.js")
+    app.add_js_file("https://cdn.jsdelivr.net/npm/clipboard@1/dist/clipboard.min.js")
 
 

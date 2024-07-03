@@ -7,40 +7,19 @@ This page documents all routines provided by ``gridwxcomp``. Tools for different
 .. contents:: :local:
 
 
-Command Line Interface
-^^^^^^^^^^^^^^^^^^^^^^
-
-.. click:: gridwxcomp.scripts.gridwxcomp:gridwxcomp
-  :prog: gridwxcomp
-
-.. click:: gridwxcomp.scripts.gridwxcomp:prep_input
-  :prog: gridwxcomp prep-input
-
-.. click:: gridwxcomp.scripts.gridwxcomp:calc_bias_ratios
-  :prog: gridwxcomp calc-bias-ratios
-
-.. click:: gridwxcomp.scripts.gridwxcomp:download_gridmet_opendap
-  :prog: gridwxcomp download-gridmet-opendap
-
-.. click:: gridwxcomp.scripts.gridwxcomp:spatial
-  :prog: gridwxcomp spatial
-
-.. click:: gridwxcomp.scripts.gridwxcomp:plot
-  :prog: gridwxcomp plot
-
 Python functions, classes, and modules
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-prep\_input
+prep\_metadata
 -----------
 
-.. autofunction:: gridwxcomp.prep_input
+.. autofunction:: gridwxcomp.prep_metadata
 
 
-download\_gridmet\_opendap
+ee\_download
 --------------------------
 
-.. autofunction:: gridwxcomp.download_gridmet_opendap
+.. autofunction:: gridwxcomp.ee_download
 
 
 calc\_bias\_ratios

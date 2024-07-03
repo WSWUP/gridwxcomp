@@ -16,7 +16,7 @@ A package for comparing weather station data to gridded weather data that are ho
 * production of interactive time series and scatter plot comparisons between station and gridded data
 * calculation and plotting of the residuals between spatially interpolated bias ratios and those computed at station locations 
 
-Bias ratios calculated by ``gridwxcomp`` can be used to correct bias of grid to station data based on the properties of the stations. For example, monthly humidity ratios between station and grid for stations within agricultural settings can be used to estimate grid bias relative to agricultural locations. ``gridwxcomp`` includes an intuitive command line interface and a Python API.
+Bias ratios calculated by ``gridwxcomp`` can be used to correct bias of grid to station data based on the properties of the stations. For example, monthly humidity ratios between station and grid for stations within agricultural settings can be used to estimate grid bias relative to agricultural locations. 
 
 ``gridwxcomp`` was used to create monthly bias ratios of `gridMET <http://www.climatologylab.org/gridmet.html>`_ reference evapotranspiration (ETo) data relative to ETo calculated at irrigated weather stations. The bias ratios were subsequently interpolated and used to correct gridMET ETo which is a key scaling flux for most of the remote sensing models that are part of the `OpenET <http://www.openetdata.org>`_ platform. 
 

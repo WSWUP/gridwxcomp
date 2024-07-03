@@ -9,7 +9,6 @@ with io.open("gridwxcomp/__init__.py", "rt", encoding="utf8") as f:
 
 requires = [
     'bokeh>=1.0.4',
-    'click>=7.0',
     'fiona>=1.7.13',
     'gdal',
     'netCDF4',
@@ -53,9 +52,5 @@ setup(
     tests_require=tests_require,
     package_data={'gridwxcomp': ['example_data/*'],
         'gridwxcomp': ['env/*.yml']},
-    include_package_data=True,
-    entry_points='''
-        [console_scripts]
-        gridwxcomp=gridwxcomp.scripts.gridwxcomp:gridwxcomp
-    '''
+    include_package_data=True
 )
