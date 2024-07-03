@@ -3,10 +3,10 @@
 FAQ
 ===
 
-How are monthly station to gridMET bias ratios calculated?
-   The default method for all variables except temperature:
+How are monthly station to gridded data bias ratios calculated?
+   The following steps describes the default method to the ``calc_bias_ratios`` function (i.e., the ``method`` kwarg = 'long_term_mean') for all variables except temperature:
 
-   #. Pair up daily station data with corresponding gridMET data.
+   #. Pair up daily station data with corresponding gridded data.
    #. For each month on record, select those that have at least 10 (default threshold) days of paired data. 
    #. Group all daily data by month, e.g. all dates that lie in the month of July.
    #. Take the mean of the grouped station data and divide by the mean of the grouped gridMET data.

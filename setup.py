@@ -21,7 +21,8 @@ requires = [
     'shapely',
     'xlrd>=1.2.0',
     'geopandas',
-    'earthengine-api'
+    'earthengine-api',
+    'pyproj'
 ]
 
 tests_require = ['pytest']
@@ -47,7 +48,7 @@ setup(
     download_url='https://github.com/WSWUP/gridwxcomp/archive/v0.1.0.tar.gz',
     platforms=['Windows','Linux','Mac OS X'],
     classifiers=classifiers,
-    packages=['gridwxcomp', 'gridwxcomp.scripts'],
+    packages=['gridwxcomp'],
     install_requires=requires,
     tests_require=tests_require,
     package_data={'gridwxcomp': ['example_data/*'],

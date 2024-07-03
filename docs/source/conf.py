@@ -21,7 +21,7 @@ sys.path.insert(0, os.path.abspath('../../'))
 autodoc_mock_imports = ['bokeh', 'numpy', 'pandas', 'refet', 
                        'fiona', 'gdal', 'rasterio', 'rasterstats', 'shapely', 
                        'osgeo', 'scipy', 'xarray', 'netCDF4', 'geopandas',
-                       'google','ee']
+                       'google','ee', 'pyproj']
 
 # -- Project information -----------------------------------------------------
 
