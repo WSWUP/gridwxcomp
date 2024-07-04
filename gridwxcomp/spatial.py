@@ -963,6 +963,57 @@ def zonal_stats(in_path, raster, grid_id_name='GRID_ID'):
             existing_df.to_csv(out_file, index=False)   
 
 
+def get_subgrid_bounds(in_path, config_path, buffer=0):
+    """
+    Calculate bounding box for spatial interpolation grid from
+    output of prep_metadata.prep_metadata(), will attempt to make it snap
+    to grid by querying catalog on earth engine
+
+    Arguments:
+        in_path (str): path to metadata file created by
+            :func:`gridwxcomp.prep_metadata.prep_metadata()`.
+        config_path (str): path to config file containing projection/catalog
+        info buffer (int): number of grid cells to expand the rectangular
+            extent of the subgrid fishnet.
+
+    Returns:
+        bounds (dict): dictionary with coordinates that
+            define the outer bounds of the subgrid fishnet in the format
+            (min long, max long, min lat, max lat)
+
+    Raises:
+        FileNotFoundError: if input summary CSV file is not found.
+
+    Notes:
+        By expanding the grid to a larger area encompassing the climate
+        stations of interest :func:`interpolate` can be used to extrapolate
+        passed the bounds of the outer station locations.
+
+        You must authenticate with Google Earth Engine before using
+        this function.
+
+    """
+
+    # TODO - a potential oversight of this function is that it assumes
+    #   the CRS of the metadata file and the CRS of the EE catalog are the same
+    #   right now we're testing with the CONUS404 collection and its in meters
+    #   Idea:
+    #       As a stopgap raise an error if the resolution of the ee dataset is
+    #       Value that wouldn't make sense for WGS84
+
+    def _find_nearest(val, array):
+        """Element in numpy array `array` closest to the scalar value `val`"""
+        idx = (np.abs(array - val)).argmin()
+        return array[idx]
+
+    if not os.path.isfile(in_path):
+        raise FileNotFoundError('Input metadata file given was invalid or not found')
+
+    # read metadata from prep_metadata
+    in_df = pd.read_csv(in_path)
+
+    # read in config information from file
+
 if __name__ == '__main__':
     print('\n--------------------------------------------------------'
           ' Functionality for running this library from the terminal'

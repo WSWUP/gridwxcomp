@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 """
-Read a CSV of climate station information and verifies it has the contents necessary to proceed
-with the later steps. The output from this module will be the input for main bias correction workflow.
-
-TODO: add logging
-
+This module has tools to read a CSV of climate station metadata information and
+verify it has the contents necessary to proceed with the later steps. The
+output from this module will be the in a standardized format that is used by
+the :mod:`gridwxcomp.ee_download` and :mod:`gridwxcomp.calc_bias_ratios`
+modules for the main bias correction workflows.
 """
 import ee
 import os
@@ -88,12 +88,16 @@ def _read_station_list(station_path):
     return station_list
 
 
-def prep_metadata(station_path, config_path, grid_name, out_path='formatted_input.csv'):
+def prep_metadata(station_path, config_path, grid_name, 
+        out_path='formatted_input.csv'):
     """
-    Read list of climate stations in metadata and verify all needed parameters exist
+    Read list of climate stations in metadata and verify all needed parameters
+    exist. An output CSV file is saved that will be the formatted in a way that
+    is standardized for the variables that are needed by the subsequent 
+    Earth Engine download and bias calculation modules. 
 
-    Station time series files must be in the same directory as `station_path`
-    metadata file.
+    Station time series files must be in the same directory as the main input
+    to this function, i.e., the `station_path` metadata file.
 
     Arguments:
         station_path (str): path to CSV file containing metadata of climate
@@ -116,7 +120,7 @@ def prep_metadata(station_path, config_path, grid_name, out_path='formatted_inpu
         
         outfile.csv will be created containing station and corresponding
         gridded data. This file is later used as input for
-        :mod:`gridwxcomp.download_gridmet_opendap` and
+        :mod:`gridwxcomp.ee_download` and
         :mod:`gridwxcomp.calc_bias_ratios`.
 
     Important:
@@ -177,98 +181,3 @@ def prep_metadata(station_path, config_path, grid_name, out_path='formatted_inpu
     stations.to_csv(out_path, index=False)
 
 
-def get_subgrid_bounds(in_path, config_path, buffer=0):
-    """
-    Calculate bounding box for spatial interpolation grid from
-    output of prep_metadata.prep_metadata(), will attempt to make it snap
-    to grid by querying catalog on earth engine
-
-    Arguments:
-        in_path (str): path to metadata file created by
-        :func:`gridwxcomp.prep_metadata.prep_metadata()`.
-        config_path (str): path to config file containing projection/catalog info
-        buffer (int): number of grid cells to expand the rectangular extent
-            of the subgrid fishnet.
-
-    Returns:
-        bounds (dict): dictionary with coordinates that
-            define the outer bounds of the subgrid fishnet in the format
-            (min long, max long, min lat, max lat)
-
-    Raises:
-        FileNotFoundError: if input summary CSV file is not found.
-
-    Notes:
-        By expanding the grid to a larger area encompassing the climate
-        stations of interest :func:`interpolate` can be used to extrapolate
-        passed the bounds of the outer station locations.
-
-        You must authenticate with Google Earth Engine before using
-        this function.
-
-    """
-
-    # TODO - a potential oversight of this function is that it assumes
-    #   the CRS of the metadata file and the CRS of the EE catalog are the same
-    #   right now we're testing with the CONUS404 collection and its in meters
-    #   Idea:
-    #       As a stopgap raise an error if the resolution of the ee dataset is
-    #       Value that wouldn't make sense for WGS84
-
-    def _find_nearest(val, array):
-        """Element in numpy array `array` closest to the scalar value `val`"""
-        idx = (np.abs(array - val)).argmin()
-        return array[idx]
-
-    if not os.path.isfile(in_path):
-        raise FileNotFoundError('Input metadata file given was invalid or not found')
-
-    # read metadata from prep_metadata
-    in_df = pd.read_csv(in_path)
-
-    # read in config information from file
-    config = read_config(config_path)  # Read config
-    gridded_dataset_path = config['collection_info']['path']
-
-    station_lons = in_df.sort_values('STATION_LON')['STATION_LON'].values
-    station_lats = in_df.sort_values('STATION_LAT')['STATION_LAT'].values
-
-    # Obtain CRS info from earth engine
-    image_for_crs = ee.ImageCollection(gridded_dataset_path).first()
-    image_info = image_for_crs.select([0]).getInfo()
-
-    # Image crs data stored as list, [0] is resolution, [2] and [5]
-    # are the latitude and longitude of the NW corner
-    image_geo = image_info['bands'][0]['crs_transform']
-    origin_longitude = image_geo[2]
-    origin_latitude = image_geo[5]
-    resolution = image_geo[0]
-
-    # Image shape is stored as rows (latitude), columns (longitude)
-    image_shape = image_info['bands'][0]['dimensions']
-
-    # Create arrays of lat/lon values to find nearest
-    lon_values = np.linspace(
-        origin_longitude,
-        (origin_longitude + (resolution * image_shape[1])),
-        num=image_shape[1],
-        endpoint=False)
-    lat_values = np.linspace(
-        origin_latitude,
-        (origin_latitude - (resolution * image_shape[0])),
-        num=image_shape[0],
-        endpoint=False)
-
-    snapped_lon_min = _find_nearest(station_lons[0], lon_values) - resolution
-    snapped_lon_max = _find_nearest(station_lons[-1], lon_values) + resolution
-    snapped_lat_min = _find_nearest(station_lats[0], lat_values) - resolution
-    snapped_lat_max = _find_nearest(station_lats[-1], lat_values) + resolution
-
-    # expand bounding extent based on buffer cells
-    snapped_lon_min -= resolution * buffer
-    snapped_lon_max += resolution * buffer
-    snapped_lat_min -= resolution * buffer
-    snapped_lat_max += resolution * buffer
-
-    return {'xmin': snapped_lon_min, 'xmax': snapped_lon_max,
-            'ymin': snapped_lat_min, 'ymax': snapped_lat_max}
