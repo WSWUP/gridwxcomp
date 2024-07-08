@@ -11,13 +11,13 @@ Python functions, classes, and modules
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 prep\_metadata
------------
+--------------
 
 .. autofunction:: gridwxcomp.prep_metadata
 
 
 ee\_download
---------------------------
+------------
 
 .. autofunction:: gridwxcomp.ee_download
 

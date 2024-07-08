@@ -19,10 +19,11 @@ A package for comparing weather station data to gridded weather data that are ho
 Bias ratios calculated by ``gridwxcomp`` can be used to correct bias of grid to station data based on the properties of the stations. For example, monthly humidity ratios between station and grid for stations within agricultural settings can be used to estimate grid bias relative to agricultural locations. 
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 3
    :caption: Contents:
    
-   getting_started
+   install
+   tutorial
    faq
    api
    changelog
