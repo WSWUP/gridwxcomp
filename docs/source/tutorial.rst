@@ -7,8 +7,9 @@ and pairing it with station weather data, calculating monthly bias
 ratios between station and gridded data, spatial interpolation of point
 results, and generating interactive graphics files.
 
-.. code:: ipython3
+.. code:: python
     
+    # module and function imports
     import pandas as pd
     import numpy as np
         
@@ -42,6 +43,9 @@ exists (in the same directory) by running:
 Or you can directly download the example files from GitHub
 `here <https://github.com/WSWUP/gridwxcomp/tree/master/gridwxcomp/example_data>`__.
 
+**Note:** To follow this tutorial it is recommended to start a Python 
+script or Jupyter Notebook from within the provided "example_data" folder.
+
 The configuration file
 ~~~~~~~~~~~~~~~~~~~~~~
 
@@ -63,7 +67,7 @@ to download. Most of these options are self explanatory, here is an
 example **METADATA** snippet from the provided example configuration
 file that was built to download gridded data from the CONUS404 dataset:
 
-.. code:: verbatim
+::
 
    [METADATA]
    # Projection information
@@ -122,7 +126,7 @@ CSV files (in the headers) and as they are named for the specified
 Google Earth Engine data collection. Here is an example for the CONUS404
 dataset and the provided weather data:
 
-.. code:: verbatim
+::
 
    [DATA]
    # For the below parameters, enter the name of the column containing the following values
@@ -163,7 +167,7 @@ station:gridded monthy bias ratios. The unit conversion is done by the
 :func:`gridwxcomp.calc_bias_ratios` function. Here is an example of
 this section from the provided example data:
 
-.. code:: verbatim
+::
 
    [UNITS]
    # For the parameters in this section, enter the corresponding units from the options commented above.
@@ -191,6 +195,9 @@ this section from the provided example data:
    # inches, mm
    station_et_units = mm
    gridded_et_units = mm
+
+Weather variables processed by ``gridwxcomp``
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 The available input options for weather variables and their units
 currently allowed by ``gridwxcomp`` are as follows:
@@ -247,11 +254,183 @@ provide a text file [.CSV] that lists all the weather stations that are
 to be included in the ``gridwxcomp`` routines and for each station, this
 file lists some key metadata. There are four columns that are required
 by ``gridwxcomp`` to be provided in this file: ‘Latitude’, ‘Longitude’,
-‘Filename’, and ‘Station’.
+‘Filename’, and ‘Station’. Filename refers to the name of the weather
+station data file, e.g., “BedrockCO_Daily_output.xlsx”. The “Station”
+column should contain the ID that the user wants to use for that station
+and this will be used for output file names that apply to that station
+and in different outputs, e.g., the ID given to to the stations in the
+bias ratio files and point shapefiles. Here is an example of a station
+metadata file with the four required columns:
+
++-------------------------+------------------+-------------------+----------------------------------+---------+
+| Station                 | Latitude         | Longitude         | Filename                         | Elev_FT |
++=========================+==================+===================+==================================+=========+
+| Bluebell (Neola Area)   | 40.3723213601075 | -110.209184085302 | BluebellUT_Daily_output.xlsx     | 6186    |
++-------------------------+------------------+-------------------+----------------------------------+---------+
+| Loa                     | 38.3834675639262 | -111.635832870077 | LoaUT_Daily_output.xlsx          | 7116    |
++-------------------------+------------------+-------------------+----------------------------------+---------+
+| Bedrock                 | 38.328297440752  | -108.855494308994 | BedrockCO_Daily_output.xlsx      | 4973    |
++-------------------------+------------------+-------------------+----------------------------------+---------+
+| Castle Valley near Moab | 38.6429447999517 | -109.398808843297 | CastleValleyUT_Daily_output.xlsx | 4687    |
++-------------------------+------------------+-------------------+----------------------------------+---------+
 
 
 
+**Note:** Any additional columns that exist in the weather station
+metadata file will be retained and added to the formatted output CSV
+file that is produced by the :func:`gridwxcomp.prep_metadata`
+function. However they will not be used by any of the following
+procedures, only the four required columns’ values are used (‘Latitude’,
+‘Longitude’, ‘Filename’, and ‘Station’). In the exampe above, the extra
+columns that were provided are “Elev_FT” and “Location”.
 
+
+Step 1: Parse input data
+------------------------
+
+The first step to running ``gridwxcomp`` after preparing the required
+input data as specified in
+:ref:`Input data files and formatting requirements` is to run the
+:func:`gridwxcomp.prep_metadata` function which reads the station
+metadata file and prepares for downloading gridded data. This step is 
+straightforward with minimal options involved:
+
+.. code:: python
+
+    # specify the paths to input data files, in this case using the provided example data:
+    station_meta_path = '/home/john/gridwxcomp/gridwxcomp/example_data/Station_Data.txt'
+    conus404_config = '/home/john/gridwxcomp/gridwxcomp/example_data/gridwxcomp_config_conus404.ini'
+    gridded_dataset_name = 'conus404'
+    
+    # run the function 
+    prep_metadata(station_meta_path, conus404_config, gridded_dataset_name)
+
+
+The file that was produced from running
+:func:`gridwxcomp.prep_metadata` is named “formatted_input.csv” by
+default and it will be saved to the workspace where the function is
+called from unless otherwise stated in the . It has updated the paths to the station weather data and
+reformatted the station metadata file. This will be the input file used
+for the next two steps in the ``gridwxcomp`` workflow which are
+:func:`gridwxcomp.ee_download` and
+:func:`gridwxcomp.calc_bias_ratios`.
+
+Step 2: Download gridded timeseries data from Google Earth Engine
+-----------------------------------------------------------------
+
+After running :func:`gridwxcomp.prep_metadata` the next step is to use
+the formatted CSV file that was created alongwith the configuration
+input file as input to download the specified gridded data that
+corresponds with the locations and variables of the weather stations.
+Some of that required information is in the configuration file, such as
+the dataset collection path on Google Earth Engine and its name. Some
+data required to download Earth Engine gridded climate data needs to be
+specified as arguments to the :func:`gridwxcomp.download_grid_data`
+function, such as the bucket to export the extracted point time series
+data to and the local folder to download the same data to.
+
+**Important:** Before downloading data using the Earth Engine Python
+API, the use must initialize Earth Engine locally and have permissions
+to access the requested data as well as to export data on the Google
+Cloud. After setting up Google Earth Engine locally following the
+`online
+instructions <https://developers.google.com/earth-engine/guides/python_install>`__,
+one can initialize Earth Engine in Python using the following line:
+
+.. code:: python
+
+   import ee
+   ee.Authenticate()
+   ee.Initialize(project='my-project')
+
+Now we can download gridded data:
+
+.. code:: ipython
+
+    # Specify the path to the file created by running prep_metadata
+    formatted_input_file = '/home/john/gridwxcomp/gridwxcomp/example_data/formatted_input.csv'
+    
+    import ee
+    ee.Initialize()
+    # download the gridded data
+    download_grid_data(
+        formatted_input_file, 
+        conus404_config, 
+        export_bucket='openet', # bucket root to export to
+        export_path=f'bias_correction_gridwxcomp_testing/gridwxcomp_conus404/', # path to export data to
+        local_folder=None, # If not specified then the gridded data will be downloaded to a new folder
+        force_download=False, # if False check if data already exists locally, if True overwrite
+    )
+
+
+**Note:** If the start and end dates for downloading gridded weather
+data are not specified in the configuration file, the entire period of
+record of gridded data will be downloaded for each station (at the
+overlapping grid cell).
+
+After running :func:`gridwxcomp.download_grid_data` time series of the
+weather data will be saved to a folder that is named using the gridded
+data collection name as specified in the configuration file. This folder
+will be created where the download function is called, in this case in
+the “example_data” folder. The individual files containing the gridded
+time series at the station locations will be named using the gridded
+dataset name, the station name, and the start and end dates that were
+used for downloading, for example:
+``"[collection_name]_[station]_[start_date]_[end_date]_all_vars.csv"``
+
+Here is the file structure that should have been produced after up to
+this stage assuming that the “example_data” folder was used as the
+working space for running this tutorial:
+
+::
+
+   example_data/
+   ├── BedrockCO_Daily_output.xlsx
+   ├── BluebellUT_Daily_output.xlsx
+   ├── CastleValleyUT_Daily_output.xlsx
+   ├── conus404
+   │   ├── conus404_bedrock_19791001_20220928_all_vars.csv
+   │   ├── conus404_bluebell_neola_area_19791001_20220928_all_vars.csv
+   │   ├── conus404_castle_valley_near_moab_19791001_20220928_all_vars.csv
+   │   └── conus404_loa_19791001_20220928_all_vars.csv
+   ├── formatted_input.csv
+   ├── gridwxcomp_config_conus404.ini
+   ├── LoaUT_Daily_output.xlsx
+   └── Station_Data.txt
+
+Step 3: Calculate monthly, seasonal, and annual station:gridded biases and statistics
+-------------------------------------------------------------------------------------
+
+After parsing the input station weather data and configuration options,
+and downloading the corresponding gridded weather data of choice, the
+next step in the ``gridwxcomp`` workflow is computing station:gridded
+biases. This process involved pairing the station and gridded time
+series together for overlapping time periods, making necessary unit
+conversions, and computing monthly, seasonal, and annual average bias
+ratios (or differences for air temperature) between the station and
+gridded data for each variable that is available or specified.
+Additional metrics are calculated that are helpful to evaluate the
+variability in the station:gridded ratios such as the annual standard
+deviation and coefficients of variation for the bias ratios or
+differences, as well as the number of paired data points used to compute
+the bias ratios or differences. In addition to calculating long-term
+average monthly bias ratios or differences between station:gridded data,
+summer periods (JJA), growing season (AMJJASO), and annual periods are
+also used for computing the metrics.
+
+To run the bias corrections, the :func:`gridwxcomp.calc_bias_ratios`
+reads the formatted metadata file created by
+:func:`gridwxcomp.prep_metadata` and the configuration file. The user
+should also specify the folder to save the output file, which variable
+to use for the calculations from the list of available variables: see
+:ref:\`Weather variables processed by \``gridwxcomp``\`, the maximum
+number of gaps days per month allowed for computations, and the year
+range to use for the calculations in case one is not interested in using
+the full data record.
+
+
+    
+    
 
 References
 ----------
