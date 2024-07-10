@@ -196,6 +196,7 @@ this section from the provided example data:
    station_et_units = mm
    gridded_et_units = mm
 
+.. _variable_list:
 Weather variables processed by ``gridwxcomp``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -423,7 +424,7 @@ reads the formatted metadata file created by
 :func:`gridwxcomp.prep_metadata` and the configuration file. The user
 should also specify the folder to save the output file, which variable
 to use for the calculations from the list of available variables: see
-:ref:\`Weather variables processed by \``gridwxcomp``\`, the maximum
+:ref:`variable_list`, the maximum
 number of gaps days per month allowed for computations, and the year
 range to use for the calculations in case one is not interested in using
 the full data record.

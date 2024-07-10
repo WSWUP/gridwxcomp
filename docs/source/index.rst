@@ -1,7 +1,7 @@
 gridwxcomp - Grid Weather Station Comparison
 ===============================================
 
-|Build| |Coverage| |Downloads per month| |PyPI version| 
+|Build| |Downloads per month| |PyPI version| 
 
 -----------
 
@@ -28,9 +28,6 @@ Bias ratios calculated by ``gridwxcomp`` can be used to correct bias of grid to 
    api
    changelog
 
-
-.. |Coverage| image:: https://coveralls.io/repos/github/WSWUP/gridwxcomp/badge.svg?branch=master
-   :target: https://coveralls.io/github/WSWUP/gridwxcomp?branch=master
 
 .. |Build| image:: https://github.com/WSWUP/gridwxcomp/actions/workflows/gridwxcomp_tests.yml/badge.svg
    :target: https://github.com/WSWUP/gridwxcomp/actions
