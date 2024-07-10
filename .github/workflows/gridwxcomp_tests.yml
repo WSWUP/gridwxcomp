@@ -43,9 +43,9 @@ jobs:
       env:
         EARTHENGINE_TOKEN: ${{ secrets.EARTHENGINE_TOKEN }}
       run: |
-        pytest --cov-report lcov:tests/lcov.info
+        pytest --cov-report
     - name: Publish to coveralls.io
       uses: coverallsapp/github-action@master
       with:
         github-token: ${{ secrets.COVERALLS_TOKEN }}
-        path-to-lcov: tests/lcov.info
+        path-to-lcov: coverage.xml
