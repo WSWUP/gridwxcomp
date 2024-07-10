@@ -43,7 +43,7 @@ jobs:
       env:
         EARTHENGINE_TOKEN: ${{ secrets.EARTHENGINE_TOKEN }}
       run: |
-        pytest --cov-report
+        pytest --cov-report xml
     - name: Publish to coveralls.io
       uses: coverallsapp/github-action@master
       with:
