@@ -19,7 +19,11 @@ prep\_metadata
 ee\_download
 ------------
 
-.. autofunction:: gridwxcomp.ee_download
+.. automodule:: gridwxcomp.ee_download
+    :members:
+    :exclude-members: main, arg_parse
+    :undoc-members:
+    :show-inheritance:
 
 
 calc\_bias\_ratios

@@ -326,7 +326,7 @@ corresponds with the locations and variables of the weather stations.
 Some of that required information is in the configuration file, such as
 the dataset collection path on Google Earth Engine and its name. Some
 data required to download Earth Engine gridded climate data needs to be
-specified as arguments to the :func:`gridwxcomp.download_grid_data`
+specified as arguments to the :func:`gridwxcomp.ee_download.download_grid_data`
 function, such as the bucket to export the extracted point time series
 data to and the local folder to download the same data to.
 
@@ -369,7 +369,7 @@ data are not specified in the configuration file, the entire period of
 record of gridded data will be downloaded for each station (at the
 overlapping grid cell).
 
-After running :func:`gridwxcomp.download_grid_data` time series of the
+After running :func:`gridwxcomp.ee_download.download_grid_data` time series of the
 weather data will be saved to a folder that is named using the gridded
 data collection name as specified in the configuration file. This folder
 will be created where the download function is called, in this case in
@@ -399,6 +399,8 @@ working space for running this tutorial:
    ├── LoaUT_Daily_output.xlsx
    └── Station_Data.txt
 
+At this step in the normal workflow of ``gridwxcomp`` the output file created by :func:`gridwxcomp.ee_download.download_grid_data` can be used for making interactive daily and monthly time series and scatter plots of paired station and gridded weather data using the :mod:`gridwxcomp.plot` module.
+
 Step 3: Calculate monthly, seasonal, and annual station:gridded biases and statistics
 -------------------------------------------------------------------------------------
 
@@ -424,11 +426,80 @@ reads the formatted metadata file created by
 :func:`gridwxcomp.prep_metadata` and the configuration file. The user
 should also specify the folder to save the output file, which variable
 to use for the calculations from the list of available variables: see
-:ref:`variable_list`, the maximum
-number of gaps days per month allowed for computations, and the year
-range to use for the calculations in case one is not interested in using
-the full data record.
+:ref:`variable_list`, the maximum number of gaps days per month
+allowed for computations (``day_limit`` kwarg to
+:func:`gridwxcomp.calc_bias_ratios`, default is ten days maximum of
+gap days), and the year range to use for the calculations in case one is
+not interested in using the full data record.
 
+There are two methods for calculating the bias ratios or differences,
+the “long_term_mean” and the “mean_of_annual”. The default method
+(``method='long_term_mean'``) first groups the paired station and
+gridded data for each time period (monthly, etc.) and then takes the
+average of station and gridded data respectively before taking the ratio
+or difference, for example,
+
+.. math::  \frac{ \frac{\sum_{i=1}^{n} station_i}{n}} {\frac{\sum_{i=1}^{n} grid_i}{n}} 
+
+where :math:`station_i` and :math:`grid_i` are the :math:`i^{th}` paired
+daily weather data in the full record for a given temporal period, such
+as all the summer days or all the days that fall within the month of
+May. For air temperature variables, as opposed to taking the ratio the
+calculation is
+
+.. math::   \frac{\sum_{i=1}^{n} station_i}{n} - \frac{\sum_{i=1}^{n} grid_i}{n}. 
+
+The other option for calculating the bias ratios or temperature
+differences between station and gridded data
+(``method='mean_of_annual'``) is similar except it makes the calculation
+as shown above for each year in the paired data record separately, and
+then it takes the average of those annual ratios or differences. This
+approach is always used for calculating the statndard deviation and
+coefficient of variation variables that are also computed by the
+:func:`gridwxcomp.calc_bias_ratios` function.
+
+Here is an example code using the default method, next we will examine
+the output:
+
+.. code:: python3
+
+    # directory to save results of point calculations
+    output_dir = 'test_data_bias_results'
+    
+    calc_bias_ratios(
+        input_path=formatted_input_file,
+        config_path=conus404_config,
+        out_dir=output_dir,
+        method='long_term_mean',
+        comparison_var='wind'
+    )
+
+
+Here is a selection of the results for the month of January from the
+output CSV file that was created which was named
+“wind_summary_comp_all_yrs.csv”:
+
++-----------------------+-------------------+-----+-----------+-----+-----------+-----+--------+
+| STATION_ID            | Jan_mean          | ... | Jan_count | ... | Jan_stdev | ... | Jan_cv |
++=======================+===================+=====+===========+=====+===========+=====+========+
+| Bluebell (Neola Area) | 0.648012105097692 | ... | 62        | ... | 0.108     | ... | 0.163  |
++-----------------------+-------------------+-----+-----------+-----+-----------+-----+--------+
+| Loa                   | 1.15758848442987  | ... | 62        | ... | 0.001     | ... | 0      |
++-----------------------+-------------------+-----+-----------+-----+-----------+-----+--------+
+
+
+The file retains the structure of the station metadata that was
+previously reformmated by the :func:`gridwxcomp.prep_metadata` and :func:`gridwxcomp.ee_download.download_grid_data`, 
+in that it each rows refers to a distinct weather station and any metadata 
+that was in the original station metadata file created by the user 
+is retained. There are four major variables calculated by :func:`gridwxcomp.calc_bias_ratios` 
+that were added to this file, they are the long-term mean bias ratios (suffix
+“\_mean”), the count of paired days used in those calculations (suffix
+“\_count”), the standard deviation of the annual bias ratios or
+differences (suffix “stdev”), and the coefficient of variation (suffix
+“\_cv”).
+
+At this step in the normal workflow of ``gridwxcomp`` the output file created by :func:`gridwxcomp.calc_bias_ratios` can be used for spatial mapping of point data and interpolation of the results using the :mod:`gridwxcomp.spatial` module.
 
     
     
