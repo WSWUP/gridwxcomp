@@ -78,12 +78,12 @@ file that was built to download gridded data from the CONUS404 dataset:
    input_data_projection = EPSG:4326
 
 
-	# Bounding information
-	# 	The bounds/extents for the interpolation area in decimal degrees.
-	xmin = -111.8708332996666428
-	xmax = -108.6208332996662733
-	ymin = 38.0874999999668162
-	ymax = 40.5874999999666741
+   # Bounding information
+   # 	The bounds/extents for the interpolation area in decimal degrees.
+   xmin = -111.8708332996666428
+   xmax = -108.6208332996662733
+   ymin = 38.0874999999668162
+   ymax = 40.5874999999666741
 
 
    # Gridded dataset information
@@ -290,7 +290,7 @@ input data as specified in
 metadata file and prepares for downloading gridded data. This step is 
 straightforward with minimal options involved:
 
-.. code:: python
+.. code:: python3
 
     # specify the paths to input data files, in this case using the provided example data:
     station_meta_path = '/home/john/gridwxcomp/gridwxcomp/example_data/Station_Data.txt'
@@ -332,7 +332,7 @@ Cloud. After setting up Google Earth Engine locally following the
 instructions <https://developers.google.com/earth-engine/guides/python_install>`__,
 one can initialize Earth Engine in Python using the following line:
 
-.. code:: python
+.. code:: python3
 
    import ee
    ee.Authenticate()
@@ -340,7 +340,7 @@ one can initialize Earth Engine in Python using the following line:
 
 Now we can download gridded data:
 
-.. code:: ipython
+.. code:: python3
 
     # Specify the path to the file created by running prep_metadata
     formatted_input_file = '/home/john/gridwxcomp/gridwxcomp/example_data/formatted_input.csv'
@@ -495,8 +495,46 @@ differences (suffix “stdev”), and the coefficient of variation (suffix
 
 At this step in the normal workflow of ``gridwxcomp`` the output file created by :func:`gridwxcomp.calc_bias_ratios` can be used for spatial mapping of point data and interpolation of the results using the :mod:`gridwxcomp.spatial` module.
 
+Spatial mapping and interpolation of station:grid bias results
+--------------------------------------------------------------
+
+One of the key functionalities of ``gridwxcomp`` is the ability to
+spatially map and interpolate point data of station:gridded bias. The
+point bias and variability statistics that have been produced using the
+:func:`gridwxcomp.calc_bias_ratios` is the main input to the spatial
+functions along with geographic reference system information that is
+defined in the configuration file.
+
+Mapping point data
+~~~~~~~~~~~~~~~~~~
+
+It is useful to make a 2-D map of station point data results from the
+bias correction calculations. The
+:func:`gridwxcomp.spatial.make_points_file` offers a quick routine for
+making a georeferenced point vector file (shapefile) of the station
+results using the data output from
+:func:`gridwxcomp.calc_bias_ratios`:
+
+.. code:: python3
+
+    # path to output from calc_bias_ratios
+    bias_ratios_file = '/home/john/gridwxcomp/my_specific_tests/test_data_bias_results/wind_summary_comp_all_yrs.csv'
     
-    
+    # make point shapefile
+    spatial.make_points_file(bias_ratios_file)
+
+Here is a screenshot of the resulting shapefile in QGIS: 
+
+.. image:: _static/points_wgs84.png
+   :align: center
+
+.. raw:: html
+
+       <br />
+
+Two shapefiles files were output from this function, one in the WGS84 geographic coordinate system and another in the Lambert Conformal Conic "ESRI:102004" (abbreviated "LCC") projected space. As you can see from the screenshot, the average monthly, seasonal, and annual ratios, day counts, standard deviation, and coefficient of variation statistics are included in these shapefiles.
+
+**Note:** ``gridwxcomp`` currently uses the Lambert Conformal Conic "ESRI:102004" (abbreviated "LCC") projected space for spatial interpolation. The LCC projection is useful for minimizing distortion for larger interpolation areas, particularly those that span areas that cross larger distances from east-to-west, as opposed to north-south. Future versions of ``gridwxcomp`` will allow the user to specify the projected coordinate system they would like to use for spatial interpolation of point results. 
 
 References
 ----------
