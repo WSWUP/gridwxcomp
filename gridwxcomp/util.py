@@ -148,23 +148,25 @@ def read_config(config_file_path):
     # Projection information
     config_dict['input_data_projection'] =\
         config_reader['METADATA']['input_data_projection']
+    # TODO: these parameters below are not yet used, WGS84 and LCC are hardcoded
+    ## and resolution is given in the spatial functions not read here. 
     config_dict['input_data_resolution'] =\
-        config_reader['METADATA'].getfloat('input_data_resolution')
+        config_reader.getfloat('METADATA','input_data_resolution', fallback=0.1)
     config_dict['interpolation_projection'] =\
-        config_reader['METADATA']['interpolation_projection']
+        config_reader.get('METADATA','interpolation_projection', fallback='ESRI:102004')
     config_dict['interpolation_resolution'] =\
-        config_reader['METADATA'].getfloat('interpolation_resolution')
+        config_reader.getfloat('METADATA','interpolation_resolution', fallback=1000)
     config_dict['output_data_projection'] =\
-        config_reader['METADATA']['output_data_projection']
+        config_reader.get('METADATA','output_data_projection', fallback='ESRI:4326')
     config_dict['output_data_resolution'] =\
-        config_reader['METADATA'].getfloat('output_data_resolution')
+        config_reader.getfloat('METADATA','output_data_resolution', fallback=0.1)
 
     # Below variables are for obtaining decimal places on resolution if it's a float
     # might be useful in developing eventual way to force snapping to grid
     for res in ['input_data_resolution', 'interpolation_resolution', 'output_data_resolution']:
-        if '.' in config_reader['METADATA'][res]:
+        if '.' in str(config_dict[res]):
             config_dict[f'{res}_decimals'] = \
-                len(config_reader['METADATA'][res].split('.')[1])
+                len(str(config_dict[res]).split('.')[1])
         else:
             config_dict[f'{res}_decimals'] = 0
 

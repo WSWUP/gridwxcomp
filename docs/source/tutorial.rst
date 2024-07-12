@@ -71,25 +71,19 @@ file that was built to download gridded data from the CONUS404 dataset:
 
    [METADATA]
    # Projection information
-   #   gridwxcomp will reproject data for interpolation and output if requested. 
-   #   Fill out the lines below with EPSG codes and desired resolutions
-   #   If no reprojection is desired then set input/interpolation/output to the same values.
+   #   gridwxcomp will reproject point data to WGS84 geographic for consistency with
+   #   point data that is downloaded from Google Earth Engine, if the input coordinates
+   #   are not already in WGS84 decimal degrees then specify they are in here using EPSG
+   #   or ESRI code. 
    input_data_projection = EPSG:4326
-   input_data_resolution = 0.1
-   interpolation_projection = ESRI:102004
-   interpolation_resolution = 1000
-   output_data_projection = EPSG:4326
-   output_data_resolution = 0.1
 
 
-   # Bounding information
-   #   You can manually specify the bounds/extents for the interpolation area below.
-   #   If any of xmin, xmax, ymin, ymax are left blank then gridwxcomp will 
-   #   generate these values automatically
-   xmin = -111.8708332996666428
-   xmax = -108.6208332996662733
-   ymin = 38.0874999999668162
-   ymax = 40.5874999999666741
+	# Bounding information
+	# 	The bounds/extents for the interpolation area in decimal degrees.
+	xmin = -111.8708332996666428
+	xmax = -108.6208332996662733
+	ymin = 38.0874999999668162
+	ymax = 40.5874999999666741
 
 
    # Gridded dataset information
