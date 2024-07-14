@@ -186,7 +186,7 @@ def download_grid_data(
         cloud_path = f'{export_path}{dataset}_{formatted_station_id}_' \
             f'{gridded_dataset_date_start.replace("-", "")}_{gridded_dataset_end_name}_all_vars.csv'
 
-        metadata_df.loc[index, 'GRID_FILE_PATH'] = local_path
+        metadata_df.loc[index, 'GRID_FILE_PATH'] = Path(local_path).absolute()
 
         # Check if file exists on the cloud and skip unless force_download is
         # true
@@ -210,7 +210,7 @@ def download_grid_data(
             print('Downloading', local_path, '...')
             gcloud_blob.download_to_filename(local_path)
 
-    metadata_df.to_csv(metadata_path)
+    metadata_df.to_csv(metadata_path, index=False)
     print(
         'All points have been requested and the metadata has been updated.')
 

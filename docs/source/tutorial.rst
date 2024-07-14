@@ -43,8 +43,9 @@ exists (in the same directory) by running:
 Or you can directly download the example files from GitHub
 `here <https://github.com/WSWUP/gridwxcomp/tree/master/gridwxcomp/example_data>`__.
 
-**Note:** To follow this tutorial it is recommended to start a Python 
-script or Jupyter Notebook from within the provided "example_data" folder.
+.. Tip:: 
+    To follow this tutorial it is recommended to start a Python script or
+    Jupyter Notebook from within the provided "example_data" folder.
 
 The configuration file
 ~~~~~~~~~~~~~~~~~~~~~~
@@ -109,9 +110,10 @@ file that was built to download gridded data from the CONUS404 dataset:
    gridded_lines_of_header = 1
    gridded_missing_data_value = nan
 
-**Note:** The station and gridded data wind speed height are needed so
-that the wind speed variables can both be scaled to 2 m using the
-logarithmic vertical velocity profile, see equation 33 in [Allen2005]_.
+.. Note::
+    The station and gridded data wind speed height (anemometer height) are
+    needed so that the wind speed data can both be scaled to 2 m using the
+    logarithmic vertical velocity profile, see equation 33 in [Allen2005]_.
 
 The second section of the configuration file is called **DATA**; this
 section is exclusivly for the user to specify the names of the station
@@ -236,10 +238,11 @@ example weather station data:
 +---------------------+----------+----------+----------+----------+------------------+-----------+
 
 
-**Note:** The “date” column in the provided weather data will be parsed
-by :mod:`Pandas` and should be in a format that is able to
-automatically converted to a :obj:`Pandas.datetime` object. For
-example, “YYYY/MM/DD” or “YYYY-MM-DD HH:MM:SS”
+.. tip:: 
+    The “date” column in the provided weather data will be parsed by
+    :mod:`Pandas` and should be in a format that is able to automatically
+    converted to a :obj:`Pandas.datetime` object. For example, “YYYY/MM/DD” or
+    “YYYY-MM-DD HH:MM:SS”
 
 The weather station’s metadata file
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -271,13 +274,14 @@ metadata file with the four required columns:
 
 
 
-**Note:** Any additional columns that exist in the weather station
-metadata file will be retained and added to the formatted output CSV
-file that is produced by the :func:`gridwxcomp.prep_metadata`
-function. However they will not be used by any of the following
-procedures, only the four required columns’ values are used (‘Latitude’,
-‘Longitude’, ‘Filename’, and ‘Station’). In the exampe above, the extra
-columns that were provided are “Elev_FT” and “Location”.
+.. Tip::
+    Any additional columns that exist in the weather station metadata file will
+    be retained and added to the formatted output CSV file that is produced by
+    the :func:`gridwxcomp.prep_metadata` function. However they will not be
+    used by any of the following procedures, only the four required columns’
+    values are used (‘Latitude’, ‘Longitude’, ‘Filename’, and ‘Station’). In
+    the exampe above, the extra columns that were provided are “Elev_FT” and
+    “Location”.
 
 
 Step 1: Parse input data
@@ -293,8 +297,8 @@ straightforward with minimal options involved:
 .. code:: python3
 
     # specify the paths to input data files, in this case using the provided example data:
-    station_meta_path = '/home/john/gridwxcomp/gridwxcomp/example_data/Station_Data.txt'
-    conus404_config = '/home/john/gridwxcomp/gridwxcomp/example_data/gridwxcomp_config_conus404.ini'
+    station_meta_path = '/path/to/gridwxcomp/gridwxcomp/example_data/Station_Data.txt'
+    conus404_config = '/path/to/gridwxcomp/gridwxcomp/example_data/gridwxcomp_config_conus404.ini'
     gridded_dataset_name = 'conus404'
     
     # run the function 
@@ -324,13 +328,13 @@ specified as arguments to the :func:`gridwxcomp.ee_download.download_grid_data`
 function, such as the bucket to export the extracted point time series
 data to and the local folder to download the same data to.
 
-**Important:** Before downloading data using the Earth Engine Python
-API, the use must initialize Earth Engine locally and have permissions
-to access the requested data as well as to export data on the Google
-Cloud. After setting up Google Earth Engine locally following the
-`online
-instructions <https://developers.google.com/earth-engine/guides/python_install>`__,
-one can initialize Earth Engine in Python using the following line:
+.. important::
+    Before downloading data using the Earth Engine Python API, the use must
+    initialize Earth Engine locally and have permissions to access the
+    requested data as well as to export data on the Google Cloud. After setting
+    up Google Earth Engine locally following the `online instructions
+    <https://developers.google.com/earth-engine/guides/python_install>`__, one
+    can initialize Earth Engine in Python using the following line:
 
 .. code:: python3
 
@@ -343,7 +347,7 @@ Now we can download gridded data:
 .. code:: python3
 
     # Specify the path to the file created by running prep_metadata
-    formatted_input_file = '/home/john/gridwxcomp/gridwxcomp/example_data/formatted_input.csv'
+    formatted_input_file = '/path/to/gridwxcomp/gridwxcomp/example_data/formatted_input.csv'
     
     import ee
     ee.Initialize()
@@ -358,10 +362,11 @@ Now we can download gridded data:
     )
 
 
-**Note:** If the start and end dates for downloading gridded weather
-data are not specified in the configuration file, the entire period of
-record of gridded data will be downloaded for each station (at the
-overlapping grid cell).
+.. Note::
+    If the start and end dates for downloading gridded weather data are not
+    specified in the configuration file, the entire period of record of gridded
+    data will be downloaded for each station (at the overlapping grid cell).
+    And this process may be time consuming.
 
 After running :func:`gridwxcomp.ee_download.download_grid_data` time series of the
 weather data will be saved to a folder that is named using the gridded
@@ -452,8 +457,8 @@ approach is always used for calculating the statndard deviation and
 coefficient of variation variables that are also computed by the
 :func:`gridwxcomp.calc_bias_ratios` function.
 
-Here is an example code using the default method, next we will examine
-the output:
+This example code uses the default methods for calculating the station:gridded
+point bias statistics:
 
 .. code:: python3
 
@@ -518,7 +523,7 @@ results using the data output from
 .. code:: python3
 
     # path to output from calc_bias_ratios
-    bias_ratios_file = '/home/john/gridwxcomp/my_specific_tests/test_data_bias_results/wind_summary_comp_all_yrs.csv'
+    bias_ratios_file = '/path/to/gridwxcomp/my_specific_tests/test_data_bias_results/wind_summary_comp_all_yrs.csv'
     
     # make point shapefile
     spatial.make_points_file(bias_ratios_file)
@@ -532,9 +537,39 @@ Here is a screenshot of the resulting shapefile in QGIS:
 
        <br />
 
-Two shapefiles files were output from this function, one in the WGS84 geographic coordinate system and another in the Lambert Conformal Conic "ESRI:102004" (abbreviated "LCC") projected space. As you can see from the screenshot, the average monthly, seasonal, and annual ratios, day counts, standard deviation, and coefficient of variation statistics are included in these shapefiles.
 
-**Note:** ``gridwxcomp`` currently uses the Lambert Conformal Conic "ESRI:102004" (abbreviated "LCC") projected space for spatial interpolation. The LCC projection is useful for minimizing distortion for larger interpolation areas, particularly those that span areas that cross larger distances from east-to-west, as opposed to north-south. Future versions of ``gridwxcomp`` will allow the user to specify the projected coordinate system they would like to use for spatial interpolation of point results. 
+Two shapefiles files were output from this function, one in the WGS84 geographic coordinate system and another in the coordinate reference system that the user supplied in the configuration file as defined by the "interpolated_projection" parameter in the **METADATA** section, see :ref:`The configuration file`. The coordinate reference system will be added as a suffix to the two shapefiles, in this case the files are named "wind_summary_pts_wgs84.shp" and "wind_summary_pts_ESRI_102004.shp" respectively. As shown in the screenshot the average monthly, seasonal, and annual ratios, day counts, standard deviation, and coefficient of variation statistics are included in these shapefiles.
+
+.. Caution::
+    If the "interpolation_projection" parameter is not specified in the
+    configuration file, ``gridwxcomp`` will default to use the Lambert
+    Conformal Conic "ESRI:102004" projected space for spatial interpolation.
+    The LCC projection is useful for minimizing distortion for larger
+    interpolation areas, particularly those that span areas that cross larger
+    distances from east-to-west, as opposed to north-south. 
+
+
+Making a fishnet polygon (grid) around stations
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The :func:`gridwxcomp.spatial.make_grid` function offers a quick way to make a uniform (square) fishnet or grid polygon file that is defined by the output and grid resolution parameters set in the configuration file. The grids coordinate reference system will be WGS 84 and therefore the grid_resolution and bounds parameters in the configuration file should be in decimal degrees. 
+
+This is an optional step that is only used again by ``gridwxcomp`` if the user sets the ``z_stats==True`` kwarg to the :func:`gridwxcomp.spatial.interpolate` function, that option will conduct zonal averages of the interpolated bias surfaces using the grid produced by :func:`gridwxcomp.spatial.make_grid`.
+
+.. code:: python3
+
+    # Example making the spatial grid
+    spatial.make_grid(bias_ratios_file, conus404_config)
+
+Here is a screenshot of the resulting grid that was produced using the bounds and resolution of 0.1 degrees as set in the configuration file:
+
+.. image:: _static/grid.png
+   :align: center
+
+.. raw:: html
+
+       <br />
+
 
 References
 ----------

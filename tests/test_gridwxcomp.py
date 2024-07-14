@@ -359,22 +359,30 @@ class TestSpatial(object):
         input_path = data.get(
             'conus404_output_dir')/'etr_summary_comp_all_yrs.csv'
 
-        spatial.make_points_file(input_path)
+        config_path = data['conus404_config_path']
+        config_dict = read_config(config_path)
+
+        spatial.make_points_file(input_path, config_path)
         
         point_file = data.get(
             'conus404_output_dir')/'spatial'/'etr_summary_pts_wgs84.shp'
         assert point_file.is_file()
 
+        crs_proj = config_dict.get('interpolation_projection')
+        projected_point_file = data.get(
+            'conus404_output_dir'
+                )/'spatial'/f'etr_summary_pts_{crs_proj.replace(":","_")}.shp'
+        assert projected_point_file.is_file()
+
     def test_make_grid(self, data):
-        config = read_config(data['conus404_config_path'])
+        config_path = data['conus404_config_path']
 
         input_path = data.get(
             'conus404_output_dir')/'etr_summary_comp_all_yrs.csv'
 
         spatial.make_grid(
             input_path, 
-            grid_res=config['output_data_resolution'],
-            bounds=config['input_bounds'],
+            config_path
         )
 
         grid_path = data.get('conus404_output_dir')/'spatial'/'grid.shp'

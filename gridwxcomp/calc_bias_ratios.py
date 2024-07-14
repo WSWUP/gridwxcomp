@@ -129,8 +129,8 @@ def calc_bias_ratios(input_path, config_path, out_dir, method='long_term_mean', 
         input_path (str): path to input CSV file with matching station climate and grid metadata.
             This file is created by running :func:`gridwxcomp.prep_metadata` followed by
             :func:`gridwxcomp.ee_download`.
-        config_path (str): path to the config file that has the parameters used
-            to interpret the station and gridded data files
+        config_path (str): path to the configuration file that has the 
+            parameters used to interpret the station and gridded data files.
         out_dir (str): path to directory to save CSV files with monthly bias ratios of etr.
         method (str): default 'long_term_mean'. How to calculate mean station to grid ratios,
             currently two options 'long_term_mean' takes the mean of all dates for the station variable

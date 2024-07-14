@@ -34,7 +34,7 @@ from fiona import collection
 from fiona.crs import from_epsg
 from osgeo import gdal, osr, ogr
 from rasterstats import zonal_stats as zstats
-
+from .util import read_config, reproject_crs_for_bounds
 
 # point shapefile attributes except for station and grid IDs
 PT_ATTRS = (
@@ -55,7 +55,7 @@ PT_ATTRS = (
 OPJ = os.path.join
 
 
-def make_points_file(in_path, grid_id_name='GRID_ID'):
+def make_points_file(in_path, config_path, grid_id_name='GRID_ID'):
     """
     Create vector shapefile of points with monthly mean bias ratios 
     for climate stations using all stations found in a comprehensive
@@ -66,6 +66,8 @@ def make_points_file(in_path, grid_id_name='GRID_ID'):
             monthly bias ratios, lat, long, and other data. Shapefile 
             "[var]_summary_pts.shp" is saved to parent directory of 
             ``in_path`` under "spatial" subdirectory.
+        config_path (str): path to the configuration file that has the 
+            parameters used to interpret the station and gridded data files.
         grid_id_name (str): name of the column containing grid ID's
             
     Returns:
@@ -78,25 +80,47 @@ def make_points_file(in_path, grid_id_name='GRID_ID'):
         >>> from gridwxcomp import spatial
         >>> # path to comprehensive summary CSV
         >>> summary_file = 'monthly_ratios/etr_mm_summary_comp_all_yrs.csv'
-        >>> spatial.make_points_file(summary_file)
+        >>> config_file = 'gridwxcomp_config.ini'      
+        >>> spatial.make_points_file(summary_file, config_file)
         
         The result is the file "etr_mm_summary_pts.shp" being saved to 
         a subdirectory created in the directory containing ``in_path``
         named "spatial", i.e.::
 
-            "monthly_ratios/spatial/etr_mm_summary_pts.shp". 
+            "monthly_ratios/spatial/etr_mm_summary_pts_wgs84.shp". 
         
+        This file has the points projected in the WGS 84 geographic coordinate system. 
+        Another point shapefile will also be made if the "interpolation_projection"
+        was listed in the user provided configuration file as a coordinate
+        reference system that differs from WGS84, i.e., a projected coordinate system.
+        The user can provide a EPSG code or an ESRI code such as ESRI:102004 
+        which refers to a coordinate reference system and the other shapefile will then
+        have the following path and suffix:: 
+        
+            "monthly_ratios/spatial/etr_mm_summary_pts_ESRI_102004.shp".
+            
     Raises:
-        FileNotFoundError: if input summary CSV file is not found.
+        FileNotFoundError: if input summary CSV or configuration INI files 
+            are not found. 
         
     Note:
         :func:`make_points_file` will overwrite any existing point
-        shapefile of the same climate variable. 
+        shapefile of the same climate variable. If no "interpolation_projection"
+        option is listed in the configuration file's METADATA section the default
+        will be ESRI:102004 which refers to the Lambert Conformal Conic projected
+        coordinate system.
         
     """
     if not os.path.isfile(in_path):
-        raise FileNotFoundError('Input summary CSV file: {}\nwas not found.'.format(in_path))
+        raise FileNotFoundError(
+            'Input summary CSV file: {}\nwas not found.'.format(in_path))
+    if not os.path.isfile(config_path):
+        raise FileNotFoundError(
+            'Input configuration INI file given was invalid or not found')
+            
     print('\nMapping point data for climate stations in: \n', in_path, '\n')
+    
+    config_dict = read_config(config_path)
 
     in_df = pd.read_csv(in_path, index_col='STATION_ID', na_values=[-999])
     # add in potentially missing columns to avoid errors when no ratios exist
@@ -111,7 +135,7 @@ def make_points_file(in_path, grid_id_name='GRID_ID'):
     out_dir = OPJ(path_root, 'spatial')
     out_file = OPJ(out_dir, '{v}_summary_pts_wgs84.shp'.format(v=var_name))
     print(            
-        'Creating point shapefile of station bias ratios, saving to: \n',
+        '\nCreating point shapefile of station bias ratios, saving to: \n',
         os.path.abspath(out_file),
         '\n'
     )
@@ -272,21 +296,32 @@ def make_points_file(in_path, grid_id_name='GRID_ID'):
                 'geometry': mapping(point)
             })
 
+	
     # Now that the shapefile has been created, open it and
-    # reproject it from wsg84 to LCC before saving
-    # ESRI:102004 is what I have inferred the correct projection is from John Volk's workflow
-    lcc_out_file = OPJ(out_dir, '{v}_summary_pts_lcc.shp'.format(v=var_name))
+    # reproject it from wsg84 to the user specified CRS from the config file
+    crs_proj = config_dict.get('interpolation_projection')
+    
+    reproj_out_file = OPJ(
+        out_dir, '{v}_summary_pts_{c}.shp'.format(
+            v=var_name, c=crs_proj.replace(':', '_')))
+            
+    print(            
+        '\nCreating point shapefile of reprojected station bias ratios, saving to: \n',
+        os.path.abspath(reproj_out_file),
+        '\n'
+    )
+    
     wgs84_shapefile = gpd.read_file(out_file)
-    lcc_shapefile = wgs84_shapefile.to_crs(crs='ESRI:102004')
-    lcc_shapefile.to_file(lcc_out_file)
+    reproj_shapefile = wgs84_shapefile.to_crs(crs=crs_proj)
+    reproj_shapefile.to_file(reproj_out_file)
 
 
-def make_grid(in_path, grid_res, bounds, overwrite=False, grid_id_name='GRID_ID'):
+def make_grid(in_path, config_path, overwrite=False, grid_id_name='GRID_ID'):
     """
-    Make fishnet grid (vector file of polygon geometry) for 
-    select gridcells based on bounding coordinates. Each cell in the grid will be assigned
-    a unique numerical identifier (property specified by grid_id_name) and the grid will be in
-    the WGS84 coordinate system.
+    Make fishnet grid (vector file of polygon geometry) for select gridcells 
+    based on bounding coordinates. Each cell in the grid will be assigned
+    a unique numerical identifier (property specified by grid_id_name) and 
+    the grid will be in the WGS84 coordinate system.
     
     Modified from the
     `Python GDAL/OGR Cookbook <https://pcjericks.github.io/py-gdalogr-cookbook/vector_layers.html#create-fishnet-grid>`.
@@ -295,10 +330,8 @@ def make_grid(in_path, grid_res, bounds, overwrite=False, grid_id_name='GRID_ID'
         in_path (str): path to [var]_summary_comp_[years].csv file containing 
             monthly bias ratios, lat, long, and other data. Created by 
             :func:`gridwxcomp.calc_bias_ratios`.
-        grid_res (float):  Cell size of grid in decimal degrees
-        bounds (dict): dict of bounding coordinates
-            the rectangular extent of the subgrid fishnet and interpolated
-            output raster.
+        config_path (str): path to the configuration file that has the 
+            parameters used to interpret the station and gridded data files.
         overwrite (bool): default False. If True, overwrite the grid
             shapefile at ``out_path`` if it already exists.
         grid_id_name (str): default "GRID_ID". Name of gridcell identifier column
@@ -308,15 +341,16 @@ def make_grid(in_path, grid_res, bounds, overwrite=False, grid_id_name='GRID_ID'
         None
         
     Examples:
-        Build a fishnet uniform grid that matches gridded data cells around
-        climate stations found in ``in_path`` summary CSV file with a 
-        25 cell buffer. The gridded dataset has a resolution of 0.1 decimal degrees.
+        Build a fishnet uniform grid that is defined by the bounds and
+        resolution defined in the **METADATA** section of the configuration
+        file. These parameters should be provided in decimal degrees.
         
         >>> from gridwxcomp import spatial
         >>> # assign input paths
         >>> summary_file = 'monthly_ratios/etr_mm_summary_comp_all_yrs.csv'
+        >>> config_file = 'gridwxcomp_config.ini'
         >>> # make fishnet of grid cells for interpolation
-        >>> spatial.make_grid(summary_file, 0.1)
+        >>> spatial.make_grid(summary_file, config_file)
             
         The file will be saved as "grid.shp" to a newly created subdirectory
         "spatial" in the same directory as the input summary CSV file. i.e.::
@@ -330,27 +364,37 @@ def make_grid(in_path, grid_res, bounds, overwrite=False, grid_id_name='GRID_ID'
                 ├── grid.prj
                 ├── grid.shp
                 └── grid.shx
-        
-        To use a smaller buffer to the extent of the grid assign the 
-        ``buffer`` keyword argument
-        
-        >>> spatial.make_grid(summary_file, 0.1, buffer=5)
             
         If the grid file already exists the default action is to not 
         overwrite. To overwrite an existing grid if, for example, you 
         are working with a new set of climate stations as input, then 
         set the ``overwrite`` keyword argument to True. 
         
-        >>> spatial.make_grid(summary_file, 0.1, overwrite=True, buffer=5)
+        >>> spatial.make_grid(summary_file, config_file, overwrite=True,)
             
+    Note:
+        If the "grid_resolution" is not assigned in the configuration file
+        a default resolution of 0.1 degrees will be used to make the fishnet.
+        
     Raises:
-        FileNotFoundError: if input summary CSV file is not found. 
+        FileNotFoundError: if input summary CSV or configuration INI files 
+            are not found. 
 
         
     """
         
     if not os.path.isfile(in_path):
-        raise FileNotFoundError('Input summary CSV file given was invalid or not found')
+        raise FileNotFoundError(
+            'Input summary CSV file: {}\nwas not found.'.format(in_path))
+    if not os.path.isfile(config_path):
+        raise FileNotFoundError(
+            'Input configuration INI file given was invalid or not found')
+        
+    # read config for bounds and resolution
+    config_dict = read_config(config_path)
+    bounds = config_dict.get('input_bounds')
+    grid_res = config_dict.get('grid_resolution')
+    
     # save grid to "spatial" subdirectory of in_path
     path_root = os.path.split(in_path)[0]
     out_dir = OPJ(path_root, 'spatial')
@@ -624,7 +668,7 @@ def interpolate(in_path, proj_dict, proj_name, layer='all', out=None, scale_fact
         grid ETr will be stored along with grid IDs, e.g.
         
             ==========  =================
-            GRID_ID  Annual_mean
+            GRID_ID     Annual_mean
             ==========  =================
             515902      0.87439453125
             514516      0.888170013427734
@@ -633,13 +677,13 @@ def interpolate(in_path, proj_dict, proj_name, layer='all', out=None, scale_fact
             ==========  =================      
             
         To calculate zonal statistics of bias ratios that are not part of 
-        the default or command line workflow we can assign any numeric layer
-        in the input summary CSV to be interpolations. For example if 
+        the default workflow we can assign any numeric layer
+        in the input summary CSV to be interpolations. For example, if 
         we wanted to interpolate the coefficient of variation of the growing
-        season bias ratio "April_to_oct_cv", then we could 
+        season bias ratio "grow_cv", then we could 
         estimate the surface of this variable straightforwardly,
         
-        >>> layer = 'April_to_oct_cv'
+        >>> layer = 'grow_cv'
         >>> func = 'invdistnn'
         >>> # we can also 'upscale' the interpolation resolution
         >>> interpolate(summary_file, dataset_resolution, layer=layer, scale_factor=2,
@@ -647,9 +691,9 @@ def interpolate(in_path, proj_dict, proj_name, layer='all', out=None, scale_fact
                     
         This will create the GeoTIFF raster::
         
-            'monthly_ratios/spatial/etr_mm_invdistnn_400m/April_to_oct_cv.tiff'
+            'monthly_ratios/spatial/etr_mm_invdistnn_400m/grow_cv.tiff'
                
-        And the zonal means will be added as a column named "April_to_oct_cv"
+        And the zonal means will be added as a column named "grow_cv"
         to:: 
         
             'monthly_ratios/spatial/etr_mm_invdistnn_400m/zonal_stats.csv'
@@ -682,6 +726,7 @@ def interpolate(in_path, proj_dict, proj_name, layer='all', out=None, scale_fact
         from gridwxcomp.interpgdal import InterpGdal
     except: # for use as script, i.e. $ python spatial ...
         from interpgdal import InterpGdal
+        
     if not os.path.isfile(in_path):
         raise FileNotFoundError('Input summary CSV file given was invalid or not found')
 
