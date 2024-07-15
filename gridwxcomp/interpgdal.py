@@ -13,6 +13,7 @@ import xml.etree.cElementTree
 
 from .spatial import zonal_stats, calc_pt_error, make_points_file
 from .plot import station_bar_plot
+from .util import read_config, reproject_crs_for_bounds
 
 
 class InterpGdal(object):
@@ -22,12 +23,19 @@ class InterpGdal(object):
     
     Arguments:
         summary_csv_path (str): path to [var]_summary_comp CSV file created 
-            by :mod:`gridwxcomp.calc_bias_ratios` containing point bias ratios,
-            lat, and long. 
+            by :func:`gridwxcomp.calc_bias_ratios.calc_bias_ratios` containing 
+            point bias ratios and statistics, station coordinates, etc.
+        config_path (str): path to the input configuration file with control
+            parameters such as spatial coordinate reference system, resolution,
+            and the bounds for spatial interpolation.
             
     Attributes:
         summary_csv_path (:obj:`pathlib.Path`): absolute path object to 
             input ``summary_csv_path``.
+        config_path (:obj:`pathlib.Path`): absolute path to configuration 
+            input file. 
+        config_dict (dict): dictionary of items read from the configuration 
+            file.
         layers (list): list of layers in ``summary_csv_path`` to interpolate
             e.g. when using :meth:`InterpGdal.gdal_grid` with ``layer="all"``
             defaults to :attr:`InterpGdal.default_layers`.
@@ -56,8 +64,7 @@ class InterpGdal(object):
             >>> import os
             >>> # create instance variable from summary csv
             >>> summary_file = 'PATH/TO/etr_mm_summary_comp.csv'
-            >>> # define grid resolution in meters
-            >>> grid_resolution = 1000  # will be modified by argument scale_factor if it's provided
+            >>> config_file = 'PATH/TO/gridwxcomp_config.ini'
             >>> # create a InterpGdal instance
             >>> test = InterpGdal(summary_file)
             >>> layer = 'growseason_mean' # could be a list
@@ -68,7 +75,7 @@ class InterpGdal(object):
             >>>         out_dir = os.path.join('spatial', 'invdist',
             >>>             'power={}_smooth={}'.format(p, s))
             >>>         params = {'power': p, 'smooth': s}
-            >>>         test.gdal_grid(grid_resolution, out_dir=out_dir, layer=layer, params=params)
+            >>>         test.gdal_grid(out_dir=out_dir, layer=layer, params=params)
 
         Note, we did not assign the interpolation method 'invdist' because it 
         is the default. To use another interpolation method we would
@@ -155,24 +162,31 @@ class InterpGdal(object):
         parameter names keys and corresponding values.
     """
 
-    def __init__(self, summary_csv_path):
+    def __init__(self, summary_csv_path, config_path):
         
         if not Path(summary_csv_path).is_file():
             raise FileNotFoundError(
                 'Summary CSV file: {} not found!'.format(
                     Path(summary_csv_path).absolute())
             )
+        if not Path(config_path).is_file():
+            raise FileNotFoundError(
+                'Configuration file: {} not found!'.format(
+                    Path(config_path).absolute())
+            )
             
         self.summary_csv_path = Path(summary_csv_path).absolute()
+        self.config_path = Path(config_path).absolute()
+        self.config_dict = read_config(config_path)
         self.layers = list(self.default_layers)  # mutable instance attr.
         self.grid_bounds = None
         self.interp_meth = 'invdist'
         self.interped_rasters = []  # appended with Path objects
         self.params = None  # to hold last used interp. parameters as dict
 
-    def gdal_grid(self, proj_dict, proj_name, layer='all', out_dir='', interp_meth='invdist',
-                  params=None, scale_factor=1, z_stats=True, res_plot=True,
-                  grid_id_name='GRID_ID', options=None):
+    def gdal_grid(self, layer='all', out_dir='', 
+            interp_meth='invdist', params=None, scale_factor=1, z_stats=True, 
+            res_plot=True, grid_id_name='GRID_ID', options=None):
         """
         Run gdal_grid command line tool to interpolate point ratios.
         
@@ -181,8 +195,6 @@ class InterpGdal(object):
         `gdal_grid <https://www.gdal.org/gdal_grid.html>`
         
         Arguments:
-            proj_dict (dict): Dictionary containing CRS information, grid resolution, and bounds.
-            proj_name (str): entry in proj_dict to pull projection info from
             layer (str, list): default 'all'. Name of summary file column
                 to interpolate, e.g. 'Jan_mean', or list of names. If 'all'
                 use all variables in mutable instance attribute "layers".
@@ -192,13 +204,13 @@ class InterpGdal(object):
             interp_meth (str): default 'invdist'. gdal interpolation algorithm
             params (dict, str, or None): default None. Parameters for 
                 interpolation algorithm. See examples for format rules.
-            bounds (tuple or None): default None. Tuple of bounding coordinates
+            bounds (tuple): default None. Tuple of bounding coordinates
                 in the following order (min long, max long, min lat, max lat) 
-                which need to be in decimal degrees or meters. If None, get extent from
-                locations of climate stations in input summary CSV with 25 cell
-                buffer.
+                which need to be in decimal degrees or meters. 
             scale_factor (float, int): default 1. Scaling factor to apply to 
-                original grid_res fishnet to create resampling resolution.
+                original grid resolution to create resampling resolution. If 
+                scale_factor = 0.1, the interpolation resolution will be
+                one tenth of the grid resolution listed in the config file.
             z_stats (bool): default True. Calculate zonal means of 
                 interpolated surface to gridded cells in fishnet and save to a
                 CSV file. The CSV file will be saved to the same directory as 
@@ -212,28 +224,28 @@ class InterpGdal(object):
             None
                 
         Examples:
-            The default interpolation algorithm 'invdist' or inverse distance 
-            weighting to a power to interpolate bias ratios in a summary CSV 
+            The default interpolation algorithm 'invdist' or inverse distance
+            weighting to a power to interpolate bias ratios in a summary CSV
             file that was first created by :mod:`gridwxcomp.calc_bias_ratios`.
-            The default option will interpolate all layers in :obj:`InterpGdal.default_layers` 
-            and calculate zonal statistics for all layers. It will also assume 
-            the boundaries of the rasters are defined by the centroid locations 
-            of the *outer* station locations in the input summary CSV plus a 25 
-            gridded cell buffer, the pixel size will be 400m (scale_factor=0.1).
-            We also limit the interpolation to two layers, growing season and
+            The default option will interpolate all layers in
+            :obj:`InterpGdal.default_layers` and calculate zonal statistics for
+            all layers. The interpolation resolution and projection are
+            specified by the user in the configuration file which was used to
+            create the :obj:`gridwxcomp.InterpGdal` object, however if they are
+            not specified there, the fallback used is Lambert Conformal Conic
+            projected coordinate reference system and 1000 m resolution. This 
+            example limits the interpolation to two layers, growing season and
             annual mean bias ratios,
             
             >>> from gridwxcomp.interpgdal import InterpGdal
             >>> summary_file = 'PATH/TO/[var]_summary_comp.csv'
             >>> out_dir = 'default_params'
             >>> layers = ['growseason_mean', 'annual_mean']
-            >>> proj_dict = {
-            >>>     'wgs84': {'bounds': {'xmin': -115.0, 'xmax': -101.0, 'ymin': 35.5, 'ymax': 42.5},
-            >>>               'resolution': 0.1, 'crs_id': 'EPSG:4326'}}
+            >>> 
             >>> # create a InterpGdal instance
             >>> test = InterpGdal(summary_file)
             >>> # run inverse distance interpolation
-            >>> test.gdal_grid(proj_dict, 'wgs84', out_dir=out_dir, layer=layers)
+            >>> test.gdal_grid(out_dir=out_dir, layer=layers)
             
             Note, zonal statistics to gridded cells and interpolated residual
             plots are computed by default. A gridded fishnet must have been
@@ -264,11 +276,9 @@ class InterpGdal(object):
                     ├── annual_res.html
                     └── grow_res.html
 
-            GeoTiff interpolated raster files are now created for select layers
-            as well as VRT (virtual raster) meta files that store info
-            on each raster's data source. The file "gridded_stats.csv" contains
-            grid_id as an index and each layer zonal mean as columns. For
-            example,
+            GeoTiff interpolated raster files are now created for the select
+            layers. The file "zonal_stats.csv" contains grid_id as an index and
+            each layer zonal mean as columns. For example,
             
                 ========== ================== ================== 
                 grid_id      growseason_mean    annual_mean
@@ -342,23 +352,40 @@ class InterpGdal(object):
         # update instance parameters for later reference
         self.params = params
         # parameters to command line input str :name=value:name=value ...
-        param_str = ':'+':'.join('{}={}'.format(key, val) for (key, val) in params.items())
+        param_str = ':'+':'.join(
+            '{}={}'.format(key, val) for (key, val) in params.items())
 
         # get boundary and projection info
-        self.grid_bounds = proj_dict[proj_name]['bounds']
-        xmin = self.grid_bounds['xmin']
-        xmax = self.grid_bounds['xmax']
-        ymin = self.grid_bounds['ymin']
-        ymax = self.grid_bounds['ymax']
-        grid_res = proj_dict[proj_name]['resolution']
+        reproj_bounds = reproject_crs_for_bounds(
+            self.config_dict.get('input_bounds'), 
+            self.config_dict.get('interpolation_resolution'), 
+            self.config_dict.get('input_data_projection'), 
+            self.config_dict.get('interpolation_projection'), 
+            self.config_dict.get('interpolation_resolution_decimals'))
+
+        xmin = reproj_bounds['xmin']
+        xmax = reproj_bounds['xmax']
+        ymin = reproj_bounds['ymin']
+        ymax = reproj_bounds['ymax']
+        grid_res = self.config_dict['interpolation_resolution']
 
         # create the points shapefile and construct path to the correct one in LCC projection
-        make_points_file(self.summary_csv_path, grid_id_name='GRID_ID')
+        make_points_file(
+            self.summary_csv_path, 
+            self.config_path, 
+            grid_id_name=grid_id_name)
+        
         path_root = os.path.split(self.summary_csv_path)[0]
         file_name = os.path.split(self.summary_csv_path)[1]
         var_name = file_name.split('_summ')[0]
         spatial_dir = os.path.join(path_root, 'spatial')
-        lcc_shapefile_path = os.path.join(spatial_dir, '{v}_summary_pts_{p}.shp'.format(v=var_name, p=proj_name))
+        
+        crs_proj = self.config_dict.get('interpolation_projection')
+        reproj_name = crs_proj.replace(':', '_')
+    
+        reproj_shapefile_path = os.path.join(
+            spatial_dir, '{v}_summary_pts_{c}.shp'.format(
+                v=var_name, c=reproj_name))
 
         # to parse options, like --config GDAL_NUM_THREADS update here
         if not options:
@@ -375,23 +402,25 @@ class InterpGdal(object):
             # move to out_dir to run gdal command
             os.chdir(out_dir)
 
-            lcc_tiff_file = '{}_lcc.tiff'.format(layer)
+            reproj_tiff_file = '{}_{}.tiff'.format(
+                layer, reproj_name)
+            # always in WGS84 to match grid
             resampled_tiff_file = '{}.tiff'.format(layer)
 
-            # TODO out_file is currently the LCC version but is being passed to zonal stats which will expect WGS84
-            #   fix this and update the output status message
             # add raster path to instance if not already there (overwritten)
-            out_file = out_dir.joinpath(lcc_tiff_file)
+            out_file = out_dir.joinpath(reproj_tiff_file)
             # print message to console/logging about interpolation
             grid_var = Path(self.summary_csv_path).name.split('_summ')[0]
-            _interp_msg(grid_var, layer, self.interp_meth, (scale_factor * grid_res), out_file)
+            _interp_msg(
+                grid_var, layer, self.interp_meth, 
+                (scale_factor * grid_res), out_file)
             # build command line arguments
-            cmd = (f'gdal_grid -l {var_name}_summary_pts_lcc -zfield {layer} '
-                   f'-a {interp_meth}{param_str} '
+            cmd = (f'gdal_grid -l {var_name}_summary_pts_{reproj_name} '
+                   f'-zfield {layer} -a {interp_meth}{param_str} '
                    f'-txe {xmin} {xmax} -tye {ymax} {ymin} '
                    f'-tr {grid_res * scale_factor} {grid_res * scale_factor} '
-                   f'-ot Float32 -of GTiff {lcc_shapefile_path} '
-                   f'{lcc_tiff_file}')
+                   f'-ot Float32 -of GTiff {reproj_shapefile_path} '
+                   f'{reproj_tiff_file}')
 
             # run gdal_grid with arguments, x-platform
             p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE,
@@ -406,14 +435,19 @@ class InterpGdal(object):
             p.stdout.close()
             p.stderr.close()
 
-            grid_extent = proj_dict['wgs84']['bounds']
-            resample_res = 0.1  # in decimal degrees
-            # Resample using gdal warp, to the gridded extent, and exact cell size, using bilinear method
-            # instead of "bilinear" you could use "near" for nearest neighbor, documentation says the fastest and worst
+            # Resample using gdal warp, to the grid extent using bilinear method
+            # always in WGS 84 CRS
+            grid_extent = self.config_dict.get('input_bounds')
+            # resample resolution in decimal degrees
+            resample_res = self.config_dict.get('output_data_resolution') 
             cmd = (f'gdalwarp -overwrite -r bilinear '
-                   f'-te {grid_extent["xmin"]} {grid_extent["ymin"]} {grid_extent["xmax"]} {grid_extent["ymax"]} '
-                   f'-t_srs EPSG:4326 -tr {resample_res} {resample_res} {lcc_tiff_file} {resampled_tiff_file}')
-            p = subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                   f'-te {grid_extent["xmin"]} {grid_extent["ymin"]} '
+                   f'{grid_extent["xmax"]} {grid_extent["ymax"]} '
+                   f'-t_srs EPSG:4326 -tr {resample_res} {resample_res} '
+                   f'{reproj_tiff_file} {resampled_tiff_file}')
+            p = subprocess.Popen(
+                    cmd, shell=True, stdout=subprocess.PIPE, 
+                    stderr=subprocess.PIPE)
             out, err = p.communicate()
             if err:
                 print(err)
@@ -426,7 +460,9 @@ class InterpGdal(object):
             # calculate interpolated values and error at stations
             # only calc residuals for mean bias ratios, i.e. not std dev, etc.
             if layer in InterpGdal.default_layers:
-                calc_pt_error(self.summary_csv_path, out_dir, layer, grid_var, grid_id_name=grid_id_name)
+                calc_pt_error(
+                    self.summary_csv_path, self.config_path, out_dir, layer, 
+                    grid_var, grid_id_name=grid_id_name)
             else:
                 # delete tmp summary csv used in interpgdal _make_pt_vrt method 
                 # normally deleted in calc_pt_error
@@ -436,7 +472,10 @@ class InterpGdal(object):
 
             # zonal means extracted to gridded dataset cell index
             if z_stats:
-                zonal_stats(self.summary_csv_path, out_file, grid_id_name=grid_id_name)
+                zonal_stats(
+                    self.summary_csv_path, 
+                    out_dir.joinpath(resampled_tiff_file), 
+                    grid_id_name=grid_id_name)
             # residual (error) bar plot, only for mean bias ratios
             if res_plot and layer in InterpGdal.default_layers:
                 y_label = 'residual (interpolated minus station value)'
@@ -449,8 +488,9 @@ class InterpGdal(object):
                 
                 source_file = Path(out_dir)/Path(self.summary_csv_path).name
 
-                station_bar_plot(source_file, layer_name, out_dir=res_plot_dir,
-                                 y_label=y_label, title=title, subtitle=subtitle)
+                station_bar_plot(
+                    source_file, layer_name, out_dir=res_plot_dir,
+                    y_label=y_label, title=title, subtitle=subtitle)
 
         # run interpolation and zonal statistics depending on layer kwarg
         if layer == 'all':  # potential for multiprocessing

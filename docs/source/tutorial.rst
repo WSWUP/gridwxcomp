@@ -75,8 +75,22 @@ file that was built to download gridded data from the CONUS404 dataset:
    #   gridwxcomp will reproject point data to WGS84 geographic for consistency with
    #   point data that is downloaded from Google Earth Engine, if the input coordinates
    #   are not already in WGS84 decimal degrees then specify they are in here using EPSG
-   #   or ESRI code. 
-   input_data_projection = EPSG:4326
+   #   or ESRI code. The "grid_resolution" parameter refers to an optional fishnet grid 
+   #   that can be created by gridwxcomp which is always created in the WGS 84 geographic 
+   #   coordinate reference system, hence the resolution is in decimal degrees. gridwxcomp 
+   #   can also reproject point data for the generation of a point shapefile containing 
+   #   bias results and before performing spatial resolution.
+   #   Finally the interpolated rasters can be reprojected and resampled once more using
+   #   the output_data_projection and output_data_resolution parameters. The example values
+   #   shown below refer to WGS 84 (EPSG:4326) geographic coordinate system and the 
+   #   Lambert Conformal Conic (ESRI:102004) projected coordinate system, and these are the
+   #   default options if the user forgets to specify the parameters in the config file.
+   input_data_projection = EPSG:4326 
+   grid_resolution = 0.1 
+   interpolation_projection = ESRI:102004 
+   interpolation_resolution = 1000 
+   output_data_projection = EPSG:4326 
+   output_data_resolution = 0.1 
 
 
    # Bounding information
@@ -240,9 +254,9 @@ example weather station data:
 
 .. tip:: 
     The “date” column in the provided weather data will be parsed by
-    :mod:`Pandas` and should be in a format that is able to automatically
-    converted to a :obj:`Pandas.datetime` object. For example, “YYYY/MM/DD” or
-    “YYYY-MM-DD HH:MM:SS”
+    :mod:`pandas` and should be in a format that is able to automatically
+    converted to a :obj:`datetime.datetime` object using the :func:`pandas.to_datetime` 
+    function. For example, “YYYY/MM/DD” or “YYYY-MM-DD HH:MM:SS”.
 
 The weather station’s metadata file
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~

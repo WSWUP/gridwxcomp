@@ -220,7 +220,11 @@ def make_points_file(in_path, config_path, grid_id_name='GRID_ID'):
     in_df = in_df.where(pd.notnull(in_df), None)
 
     # create shapefile from points, overwrite if exists
-    with collection(out_file, 'w', driver='ESRI Shapefile', crs=crs, schema=schema) as output:
+    with collection(
+        out_file, 'w', 
+        driver='ESRI Shapefile', 
+        crs=crs, 
+        schema=schema) as output:
         # loop through stations and add point data to shapefile
         for index, row in in_df.iterrows():
             print(
@@ -550,11 +554,12 @@ def _update_subgrid(grid_path, grid_id_name='GRID_ID'):
     )
 
     
-def interpolate(in_path, proj_dict, proj_name, layer='all', out=None, scale_factor=1,
-                function='invdist', params=None, buffer=25, z_stats=False, res_plot=True,
-                grid_id_name='GRID_ID', options=None):
-    """
-    Use various methods to interpolate a 2-dimensional surface of
+def interpolate(in_path, config_path, layer='all', out=None, scale_factor=1,
+        function='invdist', params=None, z_stats=False,
+        res_plot=True, grid_id_name='GRID_ID', options=None): 
+        
+    """ 
+    Use GDAL_grid methods to interpolate a 2-dimensional surface of
     calculated bias ratios or other statistics for station/gridded data
     pairs found in input comprehensive summary CSV. 
     
@@ -565,26 +570,21 @@ def interpolate(in_path, proj_dict, proj_name, layer='all', out=None, scale_fact
     the fishnet grid built first by :func:`make_grid`. 
     
     Arguments:
-        in_path (str): path to [var]_summary_comp_[years].csv file containing 
-            monthly bias ratios, lat, long, and other data. Created by 
-            :func:`gridwxcomp.calc_bias_ratios`.
-        proj_dict (dict): Dictionary containing CRS information, grid resolution, and bounds.
-        proj_name (str): entry in proj_dict to pull projection info from
+        in_path (str): path to CSV file containing monthly bias ratios, lat, 
+            lon, and other data. Created by :func:`gridwxcomp.calc_bias_ratios`.
+        config_path (str): path to the configuration input file.
         layer (str or list): default 'all'. Name of variable(s) in ``in_path``
             to conduct 2-D interpolation. e.g. 'Annual_mean'.
         out (str): default None. Subdirectory to save GeoTIFF raster(s).
-        scale_factor (float, int): default 0.1. Scaling factor to apply to 
+        scale_factor (float, int): default 1. Scaling factor to apply to 
             original grid resolution to create resampling resolution. If 
             scale_factor = 0.1, the interpolation resolution will be
-            one tenth of the grid resolution
+            one tenth of the grid resolution listed in the configuration file.
         function (str): default 'invdist'. Interpolation method, gdal 
             methods include: 'invdist', 'indistnn', 'linear', 'average',
             and 'nearest' see `gdal_grid <https://www.gdal.org/gdal_grid.html>`.
         params (dict, str, or None): default None. Parameters for interpolation
             using gdal, see defaults in :class:`gridwxcomp.InterpGdal`.
-        buffer (int): default 25. Number of grid cells to expand 
-            the rectangular extent of the subgrid fishnet and interpolated
-            output raster.
         z_stats (bool): default True. Calculate zonal means of interpolated
             surface to grid cells in fishnet and save to a CSV file.
             The CSV file will be saved to the same directory as the interpolated
@@ -599,27 +599,24 @@ def interpolate(in_path, proj_dict, proj_name, layer='all', out=None, scale_fact
         None
         
     Examples:
-        Let's say we wanted to interpolate the "Annual_mean" bias 
-        ratio in an input CSV first created by :func:`gridwxcomp.calc_bias_ratios` and a fishnet
-        grid was first created by :func:`make_grid`. This example uses the 
-        "invdist" method (default) to interpolate to a 0.1 decimal degree grid scaled down
-        to a 0.01 decimal degree surface. The result is a GeoTIFF raster that has an extent that
-        encompasses station locations in the input file plus an additional 
-        optional buffer of outer grid cells. Additionally, point residuals
-        of bias ratios are added to CSV and newly created point shapefiles, 
-        zonal (grid cell) means are also extracted and stored in a CSV.
+        Let's say we wanted to interpolate the "Annual_mean" bias ratio in an
+        input CSV first created by :func:`gridwxcomp.calc_bias_ratios` and a
+        fishnet grid was first created by :func:`make_grid`. This example uses
+        the "invdist" method (default) to interpolate to a 0.1 decimal degree
+        grid scaled down to a 0.01 decimal degree surface. The result is a
+        GeoTIFF raster that has an extent that is defined by the bounds in the
+        configuration file.  Additionally, point residuals of bias ratios are
+        added to CSV and newly created point shapefiles, zonal (grid cell)
+        means are also extracted and stored in a CSV.
         
         >>> from gridwxcomp import spatial
         >>> summary_file = 'monthly_ratios/etr_mm_summary_comp_all_yrs.csv'
-        >>> buffer = 10
         >>> layer = 'annual_mean'
         >>> params = {'power':1, 'smooth':20}
-        >>> proj_dict = {
-        >>>     'wgs84': {'bounds': {'xmin': -115.0, 'xmax': -101.0, 'ymin': 35.5, 'ymax': 42.5},
-        >>>               'resolution': 0.1, 'crs_id': 'EPSG:4326'}}
+        >>> config_file = 'gridwxcomp_config.ini'
         >>> out_dir = 's20_p1' # optional subdir name for saving rasters
-        >>> interpolate(summary_file, proj_dict, 'wgs84', layer=layer, out=out_dir,
-        >>>     scale_factor=0.1, params=params, buffer=buffer)
+        >>> interpolate(summary_file, config_file, layer=layer, out=out_dir,
+        >>>     scale_factor=0.1, params=params)
 
         The resulting file structure that is created by the above command is::
 
@@ -686,8 +683,8 @@ def interpolate(in_path, proj_dict, proj_name, layer='all', out=None, scale_fact
         >>> layer = 'grow_cv'
         >>> func = 'invdistnn'
         >>> # we can also 'upscale' the interpolation resolution
-        >>> interpolate(summary_file, dataset_resolution, layer=layer, scale_factor=2,
-        >>>     function=func, buffer=buffer)
+        >>> interpolate(summary_file, config_file, layer=layer, 
+        >>>     scale_factor=2, function=func)
                     
         This will create the GeoTIFF raster::
         
@@ -710,15 +707,11 @@ def interpolate(in_path, proj_dict, proj_name, layer='all', out=None, scale_fact
         
     Raises:
         FileNotFoundError: if the input summary CSV file or the 
-            fishnet for extracting zonal statistics do not exist.
-            The fishnet should be in the subdirectory of ``in_path``
+            configuration file do not exist or can't be found. If the 
+            fishnet for extracting zonal statistics does not exist
+            and ``z_stats==True`` also raises error. The fishnet i
+            should be in the subdirectory of ``in_path``
             i.e. "<in_path>/spatial/grid.shp".
-    Note:
-        This function can be used independently of :func:`make_grid`
-        however, if the buffer and input [var]_summary_comp_[years].csv files 
-        arguments differ from those used for :func:`interpolate` the 
-        raster may not fully cover the fishnet which may result in 
-        gaps in the zonal statistics.
         
     """
     # avoid circular import for InterpGdal for gdal interpolation methods
@@ -728,10 +721,16 @@ def interpolate(in_path, proj_dict, proj_name, layer='all', out=None, scale_fact
         from interpgdal import InterpGdal
         
     if not os.path.isfile(in_path):
-        raise FileNotFoundError('Input summary CSV file given was invalid or not found')
+        raise FileNotFoundError(
+            'Input summary CSV file given was invalid or not found')
+    if not os.path.isfile(config_path):
+        raise FileNotFoundError(
+            'Input configuration INI file given was invalid or not found')
 
+    config_dict = read_config(config_path)
+    interp_res = config_dict.get('interpolation_resolution')
     # calc raster resolution
-    interpolation_res = scale_factor * proj_dict[proj_name]['resolution']
+    interpolation_res = scale_factor * interp_res 
     # path to save raster of interpolated grid scaled by scale_factor
     path_root = os.path.split(in_path)[0]
     file_name = os.path.split(in_path)[1]
@@ -748,31 +747,36 @@ def interpolate(in_path, proj_dict, proj_name, layer='all', out=None, scale_fact
             'summary CSV file. Output will be saved to:\n{}'.format(out_dir)
         )
     else:
-        out_dir = OPJ('spatial', '{}_{}_{:.1f}_meters'.format(grid_var, function, interpolation_res), out)
+        out_dir = OPJ('spatial', '{}_{}_{:.1f}_meters'.format(
+            grid_var, function, interpolation_res), out)
 
     # run gdal_grid interpolation
     if function in InterpGdal.interp_methods:
-        gg = InterpGdal(in_path)
-        gg.gdal_grid(proj_dict, proj_name, layer=layer, out_dir=out_dir, interp_meth=function,
-                     params=params, scale_factor=scale_factor, z_stats=z_stats, res_plot=res_plot,
-                     grid_id_name=grid_id_name, options=options)
+        gg = InterpGdal(in_path, config_path)
+        gg.gdal_grid(
+            layer=layer, out_dir=out_dir, interp_meth=function,
+            params=params, scale_factor=scale_factor, z_stats=z_stats,
+            res_plot=res_plot, grid_id_name=grid_id_name, options=options)
+
     else:
         # Invalid method, raise error
-        raise ValueError(f'Interpolation method "{function}" not included in list of GDAL methods of interpolation\n'
-                         f'must be one of: {InterpGdal.interp_methods}')
+        raise ValueError(
+            f'Interpolation method "{function}" not included in list of GDAL '
+            'methods of interpolation\n'
+            f'must be one of: {InterpGdal.interp_methods}')
 
 
-def calc_pt_error(in_path, out_dir, layer, grid_var, grid_id_name='GRID_ID'):
+def calc_pt_error(in_path, config_file, out_dir, layer, 
+        grid_var, grid_id_name='GRID_ID'):
     """
     Calculate point ratio estimates from interpolated raster, residuals,
     and add to output summary CSV and point shapefile. Make copies of
     updated files and saves to directory with interpolated rasters.
 
-    This function will search for the LCC projection of the points shapefile
-    
     Arguments:
         in_path (str): path to comprehensive summary CSV created by 
             :mod:`gridwxcomp.calc_bias_ratios`
+        config_file (str): path to configuration input file
         out_dir (str): path to dir that contains interpolated raster
         layer (str): layer to calculate error e.g. "annual_mean"
         grid_var (str): name of grid variable e.g. "etr_mm"
@@ -784,14 +788,19 @@ def calc_pt_error(in_path, out_dir, layer, grid_var, grid_id_name='GRID_ID'):
         This function should be run **after** :func:`make_points_file`
         because it copies data from the shapefile it created.
     """
-    raster = str(Path(out_dir)/'{}_lcc.tiff'.format(layer))
-    pt_shp = '{}_summary_pts_lcc.shp'.format(grid_var)
+    config_dict = read_config(config_file)
+    crs_proj = config_dict.get('interpolation_projection')
+    reproj_name = crs_proj.replace(':', '_')
+    
+    raster = str(Path(out_dir)/'{}_{}.tiff'.format(layer, reproj_name))
+    pt_shp = '{}_summary_pts_{}.shp'.format(grid_var, reproj_name)
     pt_shp = str(Path(in_path).parent/'spatial'/pt_shp)
 
     if not Path(pt_shp).is_file():
-        make_points_file(in_path, grid_id_name=grid_id_name)
+        make_points_file(in_path, config_file, grid_id_name=grid_id_name)
 
-    pt_shp_out = str(Path(out_dir)/'{}_summary_pts_lcc.shp'.format(grid_var))
+    pt_shp_out = str(
+        Path(out_dir)/'{}_summary_pts_{}.shp'.format(grid_var, reproj_name))
     # mean fields in point shapefile does not include '_mean'
     pt_layer = layer.replace('_mean', '')
     if pt_layer == 'growseason':
@@ -876,18 +885,6 @@ def calc_pt_error(in_path, out_dir, layer, grid_var, grid_id_name='GRID_ID'):
         for f in os.listdir(out_dir):
             if '_tmp.' in f:
                 move(OPJ(out_dir, f), OPJ(out_dir, f.replace('_tmp', '')))
-
-    # # remove point shapefile from "spatial" directory and tmp files
-    # spatial_dir = Path(in_path).parent.joinpath('spatial')
-    # for f in os.listdir(spatial_dir):
-    #     if Path(f).stem == '{}_summary_pts_lcc'.format(grid_var):
-    #         # delete temp point shapefile
-    #         (Path(in_path).parent/'spatial'/f).resolve().unlink()
-    #
-    # # delete tmp summary csv used in interpgdal _make_pt_vrt method
-    # tmp_csv = str(in_path).replace('.csv', '_tmp.csv')
-    # if Path(tmp_csv).resolve().is_file():
-    #     Path(tmp_csv).resolve().unlink()
 
 
 def zonal_stats(in_path, raster, grid_id_name='GRID_ID'):
@@ -1008,7 +1005,7 @@ def zonal_stats(in_path, raster, grid_id_name='GRID_ID'):
             existing_df.to_csv(out_file, index=False)   
 
 
-def get_subgrid_bounds(in_path, config_path, buffer=0):
+def get_subgrid_bounds(in_path, config_path):
     """
     Calculate bounding box for spatial interpolation grid from
     output of prep_metadata.prep_metadata(), will attempt to make it snap
@@ -1018,8 +1015,6 @@ def get_subgrid_bounds(in_path, config_path, buffer=0):
         in_path (str): path to metadata file created by
             :func:`gridwxcomp.prep_metadata.prep_metadata()`.
         config_path (str): path to config file containing projection/catalog
-        info buffer (int): number of grid cells to expand the rectangular
-            extent of the subgrid fishnet.
 
     Returns:
         bounds (dict): dictionary with coordinates that
