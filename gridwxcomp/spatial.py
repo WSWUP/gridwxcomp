@@ -328,7 +328,7 @@ def make_grid(in_path, config_path, overwrite=False, grid_id_name='GRID_ID'):
     the grid will be in the WGS84 coordinate system.
     
     Modified from the
-    `Python GDAL/OGR Cookbook <https://pcjericks.github.io/py-gdalogr-cookbook/vector_layers.html#create-fishnet-grid>`.
+    `Python GDAL/OGR Cookbook <https://pcjericks.github.io/py-gdalogr-cookbook/vector_layers.html#create-fishnet-grid>`__.
     
     Arguments:
         in_path (str): path to [var]_summary_comp_[years].csv file containing 
@@ -582,7 +582,7 @@ def interpolate(in_path, config_path, layer='all', out=None, scale_factor=1,
             one tenth of the grid resolution listed in the configuration file.
         function (str): default 'invdist'. Interpolation method, gdal 
             methods include: 'invdist', 'indistnn', 'linear', 'average',
-            and 'nearest' see `gdal_grid <https://www.gdal.org/gdal_grid.html>`.
+            and 'nearest' see `GDAL grid <https://www.gdal.org/gdal_grid.html>`__.
         params (dict, str, or None): default None. Parameters for interpolation
             using gdal, see defaults in :class:`gridwxcomp.InterpGdal`.
         z_stats (bool): default True. Calculate zonal means of interpolated
@@ -738,9 +738,13 @@ def interpolate(in_path, config_path, layer='all', out=None, scale_factor=1,
     grid_var = file_name.split('_summary')[0]
     
     if not out: 
-        out_dir = OPJ('spatial', '{}_{}_{:.1f}_meters'.format(grid_var, function, interpolation_res))
+        out_dir = OPJ(
+            'spatial', 
+            '{}_{}_{:.1f}_meters'.format(grid_var, function, interpolation_res))
     elif out == str(Path(in_path).parent):
-        out_dir = OPJ('spatial', '{}_{}_{:.1f}_meters'.format(grid_var, function, interpolation_res))
+        out_dir = OPJ(
+            'spatial', 
+            '{}_{}_{:.1f}_meters'.format(grid_var, function, interpolation_res))
         print(
             'WARNING: output subdirectory for rasters cannot be named '
             'the same as the parent directory holding the input '
@@ -773,6 +777,25 @@ def calc_pt_error(in_path, config_file, out_dir, layer,
     and add to output summary CSV and point shapefile. Make copies of
     updated files and saves to directory with interpolated rasters.
 
+    The original point shapefiles and summary CSV files that are in the
+    parent directory (inputs to :func:`gridwxcomp.spatial.interpolate`)
+    will not be updated with the point estimates and residuals because 
+    they are specific to a interpolation parameter the copies are made
+    within a interpolation output directory. 
+
+    The output summary CSV and point shapefile will have two sets of 
+    additional columns added to them after running this function, one 
+    for each monthly, seasonal, and annual sets of bias results for
+    point estimates with the suffix "_est", e.g., "Jan_est", and one
+    for the point residuals between the the calculated point bias and
+    the corresponding interpolated bias at the same location, these 
+    will have the suffix "_res", e.g., "Jan_res". The reason that the
+    interpolated surface may be different from the point data that was
+    used for interpolation is because the smoothing used for interpolation
+    can result in a difference in the interpolated surface at the 
+    point locations. See `GDAL grid <https://gdal.org/tutorials/gdal_grid_tut.html#interpolation-of-the-scattered-data>`__
+    for more background on this. 
+
     Arguments:
         in_path (str): path to comprehensive summary CSV created by 
             :mod:`gridwxcomp.calc_bias_ratios`
@@ -780,6 +803,8 @@ def calc_pt_error(in_path, config_file, out_dir, layer,
         out_dir (str): path to dir that contains interpolated raster
         layer (str): layer to calculate error e.g. "annual_mean"
         grid_var (str): name of grid variable e.g. "etr_mm"
+        grid_id_name (str): default 'GRID_ID'. Name of grid shapefile
+            cell ID for computing zonal statistics and other uses. 
 
     Returns:
         None
@@ -822,7 +847,9 @@ def calc_pt_error(in_path, config_file, out_dir, layer,
                 with rasterio.open(raster) as src:
                     value = [v for v in src.sample([coords])][0][0]
             except:
-                raise Exception('ERROR: at least one station location does not overlap with the interpolated raster.')
+                raise Exception(
+                    'ERROR: at least one station location does not overlap '
+                    'with the interpolated raster.')
             # store interpolated point estimates of ratios 
             pt_err.loc[STATION_ID, pt_est] = value
 
@@ -830,11 +857,12 @@ def calc_pt_error(in_path, config_file, out_dir, layer,
     pt_err['STATION_ID'] = pt_err.index
     # read summary CSV with observed ratios
     in_df = pd.read_csv(in_path, index_col='STATION_ID', na_values=[-999])
+
     in_df.loc[pt_err.index, pt_est] = pt_err.loc[:, pt_est]
     # calculate residual estimated minus observed
     in_df.loc[:, pt_res] = in_df.loc[:, pt_est] - in_df.loc[:, f'{layer}_mean']
     # save/overwrite error to input CSV for future interpolation 
-    in_df.to_csv(in_path, index=True, na_rep=-999)
+    #in_df.to_csv(in_path, index=True, na_rep=-999)
 
     # save copy of CSV with updated error info to out_dir with rasters
     out_summary_csv = Path(out_dir)/Path(in_path).name
@@ -998,61 +1026,14 @@ def zonal_stats(in_path, raster, grid_id_name='GRID_ID'):
             except:
                 print('Zonal stats for this variable already exist but they',
                       'appear to have been calculated with a different grid',
-                      'overwriting existing file at:\n',os.path.abspath(out_file))
+                      'overwriting existing file at:\n',os.path.abspath(
+                          out_file))
                 out_df.to_csv(out_file, index=False)
         else:
             existing_df = existing_df.merge(out_df, on=grid_id_name)
             existing_df.to_csv(out_file, index=False)   
 
 
-def get_subgrid_bounds(in_path, config_path):
-    """
-    Calculate bounding box for spatial interpolation grid from
-    output of prep_metadata.prep_metadata(), will attempt to make it snap
-    to grid by querying catalog on earth engine
-
-    Arguments:
-        in_path (str): path to metadata file created by
-            :func:`gridwxcomp.prep_metadata.prep_metadata()`.
-        config_path (str): path to config file containing projection/catalog
-
-    Returns:
-        bounds (dict): dictionary with coordinates that
-            define the outer bounds of the subgrid fishnet in the format
-            (min long, max long, min lat, max lat)
-
-    Raises:
-        FileNotFoundError: if input summary CSV file is not found.
-
-    Notes:
-        By expanding the grid to a larger area encompassing the climate
-        stations of interest :func:`interpolate` can be used to extrapolate
-        passed the bounds of the outer station locations.
-
-        You must authenticate with Google Earth Engine before using
-        this function.
-
-    """
-
-    # TODO - a potential oversight of this function is that it assumes
-    #   the CRS of the metadata file and the CRS of the EE catalog are the same
-    #   right now we're testing with the CONUS404 collection and its in meters
-    #   Idea:
-    #       As a stopgap raise an error if the resolution of the ee dataset is
-    #       Value that wouldn't make sense for WGS84
-
-    def _find_nearest(val, array):
-        """Element in numpy array `array` closest to the scalar value `val`"""
-        idx = (np.abs(array - val)).argmin()
-        return array[idx]
-
-    if not os.path.isfile(in_path):
-        raise FileNotFoundError('Input metadata file given was invalid or not found')
-
-    # read metadata from prep_metadata
-    in_df = pd.read_csv(in_path)
-
-    # read in config information from file
 
 if __name__ == '__main__':
     print('\n--------------------------------------------------------'

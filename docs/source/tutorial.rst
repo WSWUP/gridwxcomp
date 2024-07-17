@@ -80,8 +80,8 @@ file that was built to download gridded data from the CONUS404 dataset:
    #   coordinate reference system, hence the resolution is in decimal degrees. gridwxcomp 
    #   can also reproject point data for the generation of a point shapefile containing 
    #   bias results and before performing spatial resolution.
-   #   Finally the interpolated rasters can be reprojected and resampled once more using
-   #   the output_data_projection and output_data_resolution parameters. The example values
+   #   Finally the interpolated rasters are reprojected back to WGS 84 and resampled once 
+   #   more using the output_data_resolution parameter (degrees). The example values
    #   shown below refer to WGS 84 (EPSG:4326) geographic coordinate system and the 
    #   Lambert Conformal Conic (ESRI:102004) projected coordinate system, and these are the
    #   default options if the user forgets to specify the parameters in the config file.
@@ -89,8 +89,7 @@ file that was built to download gridded data from the CONUS404 dataset:
    grid_resolution = 0.1 
    interpolation_projection = ESRI:102004 
    interpolation_resolution = 1000 
-   output_data_projection = EPSG:4326 
-   output_data_resolution = 0.1 
+   output_data_resolution = 0.1
 
 
    # Bounding information

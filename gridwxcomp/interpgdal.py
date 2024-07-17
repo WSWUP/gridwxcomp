@@ -19,7 +19,8 @@ from .util import read_config, reproject_crs_for_bounds
 class InterpGdal(object):
     """
     Usage of gdal command line tools within ``gridwxcomp``, currently
-    utilizes the `gdal_grid <https://www.gdal.org/gdal_grid.html>` command line tool.
+    utilizes the `gdal_grid <https://www.gdal.org/gdal_grid.html>`__ 
+    command line tool.
     
     Arguments:
         summary_csv_path (str): path to [var]_summary_comp CSV file created 
@@ -93,7 +94,7 @@ class InterpGdal(object):
                       'linear',
                       'nearest')
     """
-        interp_methods (tuple): gdal_grid interpolation algorithms.
+    interp_methods (tuple): gdal_grid interpolation algorithms.
     """
 
     default_layers = ('Jan',
@@ -112,9 +113,10 @@ class InterpGdal(object):
                       'annual',
                       'summer')
     """
-    default_layers (tuple): Layers to interpolate created by 
-        :mod:`gridwxcomp.calc_bias_ratios` and then :mod: `gridwxcomp.make_points_file, 
-        e.g. "Jan" in the shapefile which is "Jan_mean" found in ``summary_csv_path``.
+    default_layers (tuple): Layers to interpolate created by
+    :func:`gridwxcomp.calc_bias_ratios.calc_bias_ratios` and then
+    :func:`gridwxcomp.spatial.make_points_file`, e.g. "Jan" in the shapefile 
+    which is "Jan_mean" found in ``summary_csv_path``.
     """
 
     # interp params, method key, param dic as values
@@ -192,7 +194,7 @@ class InterpGdal(object):
         
         For further information on theinterpolation algorithms including 
         their function, parameters, and options see 
-        `gdal_grid <https://www.gdal.org/gdal_grid.html>`
+        `gdal_grid <https://www.gdal.org/gdal_grid.html>`__.
         
         Arguments:
             layer (str, list): default 'all'. Name of summary file column
