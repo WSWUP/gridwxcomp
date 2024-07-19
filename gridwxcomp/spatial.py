@@ -47,9 +47,9 @@ PT_ATTRS = (
    'Jul_stdev', 'Aug_stdev', 'Sep_stdev', 'Oct_stdev', 'Nov_stdev', 
    'Dec_stdev', 'Jan_cv', 'Feb_cv', 'Mar_cv', 'Apr_cv', 'May_cv', 
    'Jun_cv', 'Jul_cv', 'Aug_cv', 'Sep_cv', 'Oct_cv', 'Nov_cv', 'Dec_cv',
-   'growseason_mean', 'summer_mean', 'annual_mean', 'growseason_count', 
-   'summer_count', 'annual_count', 'growseason_stdev', 'summer_stdev', 
-   'annual_stdev', 'growseason_cv', 'summer_cv', 'annual_cv'
+   'grow_mean', 'summer_mean', 'annual_mean', 'grow_count', 
+   'summer_count', 'annual_count', 'grow_stdev', 'summer_stdev', 
+   'annual_stdev', 'grow_cv', 'summer_cv', 'annual_cv'
 )
 
 OPJ = os.path.join
@@ -165,7 +165,7 @@ def make_points_file(in_path, config_path, grid_id_name='GRID_ID'):
             'Nov': 'float',
             'Dec': 'float',
             'summer': 'float',
-            'growseason': 'float',
+            'grow': 'float',
             'annual': 'float',
             'Jan_cnt': 'float',
             'Feb_cnt': 'float',
@@ -247,7 +247,7 @@ def make_points_file(in_path, config_path, grid_id_name='GRID_ID'):
                     'Nov': row['Nov_mean'],
                     'Dec': row['Dec_mean'],
                     'summer': row['summer_mean'],
-                    'growseason': row['growseason_mean'],
+                    'grow': row['grow_mean'],
                     'annual': row['annual_mean'],
                     'Jan_cnt': row['Jan_count'],
                     'Feb_cnt': row['Feb_count'],
@@ -262,7 +262,7 @@ def make_points_file(in_path, config_path, grid_id_name='GRID_ID'):
                     'Nov_cnt': row['Nov_count'],
                     'Dec_cnt': row['Dec_count'],
                     'summer_cnt': row['summer_count'],
-                    'grow_cnt': row['growseason_count'],
+                    'grow_cnt': row['grow_count'],
                     'annual_cnt': row['annual_count'],
                     'Jan_std': row['Jan_stdev'],
                     'Feb_std': row['Feb_stdev'],
@@ -277,7 +277,7 @@ def make_points_file(in_path, config_path, grid_id_name='GRID_ID'):
                     'Nov_std': row['Nov_stdev'],
                     'Dec_std': row['Dec_stdev'],
                     'summer_std': row['summer_stdev'],
-                    'grow_std': row['growseason_stdev'],
+                    'grow_std': row['grow_stdev'],
                     'annual_std': row['annual_stdev'],
                     'Jan_cv': row['Jan_cv'],
                     'Feb_cv': row['Feb_cv'],
@@ -292,7 +292,7 @@ def make_points_file(in_path, config_path, grid_id_name='GRID_ID'):
                     'Nov_cv': row['Nov_cv'],
                     'Dec_cv': row['Dec_cv'],
                     'summer_cv': row['summer_cv'],
-                    'grow_cv': row['growseason_cv'],
+                    'grow_cv': row['grow_cv'],
                     'annual_cv': row['annual_cv'],
                     'STATION_ID': index,
                     grid_id_name: row[grid_id_name]
@@ -627,18 +627,17 @@ def interpolate(in_path, config_path, layer='all', out=None, scale_factor=1,
                 ├── etr_mm_invdist_400m/
                 │ └── s20_p1/
                 │     ├── annual_mean.tiff
-                │     ├── annual_mean.vrt
                 │     ├── etr_mm_summary_comp_all_yrs.csv
                 │     ├── etr_mm_summary_pts_wgs84.cpg
                 │     ├── etr_mm_summary_pts_wgs84.dbf
                 │     ├── etr_mm_summary_pts_wgs84.prj
                 │     ├── etr_mm_summary_pts_wgs84.shp
                 │     ├── etr_mm_summary_pts_wgs84.shx
-                │     ├── etr_mm_summary_pts_lcc.cpg
-                │     ├── etr_mm_summary_pts_lcc.dbf
-                │     ├── etr_mm_summary_pts_lcc.prj
-                │     ├── etr_mm_summary_pts_lcc.shp
-                │     ├── etr_mm_summary_pts_lcc.shx
+                │     ├── etr_mm_summary_pts_ESRI_102004.cpg
+                │     ├── etr_mm_summary_pts_ESRI_102004.dbf
+                │     ├── etr_mm_summary_pts_ESRI_102004.prj
+                │     ├── etr_mm_summary_pts_ESRI_102004.shp
+                │     ├── etr_mm_summary_pts_ESRI_102004.shx
                 │     ├── zonal_stats.csv
                 │     └── residual_plots
                 │         └── annual_res.html
@@ -650,7 +649,7 @@ def interpolate(in_path, config_path, layer='all', out=None, scale_factor=1,
             
         Specifically, the interpolated raster is saved to::
         
-            'monthly_ratios/spatial/etr_mm_invdist_400m/s20_p1/Annual_mean.tiff'
+            'monthly_ratios/spatial/etr_mm_invdist_400m/s20_p1/annual_mean.tiff'
             
         where the file name and directory is based on the variable being 
         interpolated, methods, and the raster resolution. The ``out`` 
@@ -665,7 +664,7 @@ def interpolate(in_path, config_path, layer='all', out=None, scale_factor=1,
         grid ETr will be stored along with grid IDs, e.g.
         
             ==========  =================
-            GRID_ID     Annual_mean
+            GRID_ID     annual_mean
             ==========  =================
             515902      0.87439453125
             514516      0.888170013427734
@@ -740,18 +739,18 @@ def interpolate(in_path, config_path, layer='all', out=None, scale_factor=1,
     if not out: 
         out_dir = OPJ(
             'spatial', 
-            '{}_{}_{:.1f}_meters'.format(grid_var, function, interpolation_res))
+            '{}_{}_{:.0f}_meters'.format(grid_var, function, interpolation_res))
     elif out == str(Path(in_path).parent):
         out_dir = OPJ(
             'spatial', 
-            '{}_{}_{:.1f}_meters'.format(grid_var, function, interpolation_res))
+            '{}_{}_{:.0f}_meters'.format(grid_var, function, interpolation_res))
         print(
             'WARNING: output subdirectory for rasters cannot be named '
             'the same as the parent directory holding the input '
             'summary CSV file. Output will be saved to:\n{}'.format(out_dir)
         )
     else:
-        out_dir = OPJ('spatial', '{}_{}_{:.1f}_meters'.format(
+        out_dir = OPJ('spatial', '{}_{}_{:.0f}_meters'.format(
             grid_var, function, interpolation_res), out)
 
     # run gdal_grid interpolation
@@ -828,8 +827,7 @@ def calc_pt_error(in_path, config_file, out_dir, layer,
         Path(out_dir)/'{}_summary_pts_{}.shp'.format(grid_var, reproj_name))
     # mean fields in point shapefile does not include '_mean'
     pt_layer = layer.replace('_mean', '')
-    if pt_layer == 'growseason':
-        pt_layer = 'grow'
+
     # names of new fields for estimated and residual e.g. Jan_est, Jan_res
     pt_est = '{}_est'.format(pt_layer)
     pt_res = '{}_res'.format(pt_layer)
@@ -860,7 +858,7 @@ def calc_pt_error(in_path, config_file, out_dir, layer,
 
     in_df.loc[pt_err.index, pt_est] = pt_err.loc[:, pt_est]
     # calculate residual estimated minus observed
-    in_df.loc[:, pt_res] = in_df.loc[:, pt_est] - in_df.loc[:, f'{layer}_mean']
+    in_df.loc[:, pt_res] = in_df.loc[:, pt_est] - in_df.loc[:, f'{layer}_mean'] 
     # save/overwrite error to input CSV for future interpolation 
     #in_df.to_csv(in_path, index=True, na_rep=-999)
 
@@ -980,7 +978,7 @@ def zonal_stats(in_path, raster, grid_id_name='GRID_ID'):
     raster_root = os.path.split(raster)[0]
     out_file = OPJ(raster_root, 'zonal_stats.csv')
 
-    # this error would only occur when using within Python 
+     
     if not os.path.isfile(grid_file):
         raise FileNotFoundError(
             os.path.abspath(grid_file),

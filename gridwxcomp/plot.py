@@ -620,10 +620,10 @@ def station_bar_plot(
                 >>> from gridwxcomp.plot import station_bar_plot
                 >>> # path to summary CSV with station data
                 >>> in_file = 'monthly_ratios/etr_mm_summary_all_yrs.csv'
-                >>> example_layer = 'growseason_mean'
+                >>> example_layer = 'grow_mean'
                 >>> station_bar_plot(in_file, example_layer)
             The resulting file will be saved using the bar_plot_layer name as a file name::
-            'monthly_ratios/station_bar_plots/growseason_mean.html'
+            'monthly_ratios/station_bar_plots/grow_mean.html'
             The plot file will contain the mean growing season bias ratios
             of ETr for each station, sorted from smallest to largest values.
 

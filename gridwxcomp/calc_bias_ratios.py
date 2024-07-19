@@ -378,22 +378,22 @@ def calc_bias_ratios(input_path, config_path, out_dir, method='long_term_mean', 
         # transpose so that each station is one row in final output
         final_ratio = final_ratio.to_frame().T
         # assign non-monthly stats, growing season, annual, june-aug
-        final_ratio['growseason_mean'] = grow_season
+        final_ratio['grow_mean'] = grow_season
         final_ratio['summer_mean'] = june_to_aug
         final_ratio['annual_mean'] = annual
         # day counts for all years in non-monthly periods
-        final_ratio['growseason_count'] =\
+        final_ratio['grow_count'] =\
             counts.loc[counts.index.isin(grow_months)].sum()
         final_ratio['summer_count'] =\
             counts.loc[counts.index.isin([6, 7, 8])].sum()
         final_ratio['annual_count'] =\
             counts.loc[counts.index.isin(ann_months)].sum()
         # assign stdev, coef. var. 
-        final_ratio['growseason_stdev'] = grow_season_std
+        final_ratio['grow_stdev'] = grow_season_std
         final_ratio['summer_stdev'] = june_to_aug_std
         final_ratio['annual_stdev'] = annual_std
         # coefficient of variation
-        final_ratio['growseason_cv'] = grow_season_std / grow_season
+        final_ratio['grow_cv'] = grow_season_std / grow_season
         final_ratio['summer_cv'] = june_to_aug_std / june_to_aug
         final_ratio['annual_cv'] = annual_std / annual
         # start and end years for interpreting annual CV, stdev...
@@ -444,12 +444,12 @@ def calc_bias_ratios(input_path, config_path, out_dir, method='long_term_mean', 
             grow_season = orig.loc[orig.index.month.isin(grow_months)]
             summer_season = orig.loc[orig.index.month.isin([6, 7, 8])]
             if grid_var in ('gridded_tmin', 'gridded_tmax', 'gridded_tdew'):
-                long_term['growseason_mean'] = grow_season[station_var].mean() - grow_season[grid_var].mean()
+                long_term['grow_mean'] = grow_season[station_var].mean() - grow_season[grid_var].mean()
                 long_term['summer_mean'] = summer_season[station_var].mean() - summer_season[grid_var].mean()
                 long_term['annual_mean'] = orig[station_var].mean() - orig[grid_var].mean()
 
             else:
-                long_term['growseason_mean'] = grow_season[station_var].mean() / grow_season[grid_var].mean()
+                long_term['grow_mean'] = grow_season[station_var].mean() / grow_season[grid_var].mean()
                 long_term['summer_mean'] = summer_season[station_var].mean() / summer_season[grid_var].mean()
                 long_term['annual_mean'] = orig[station_var].mean() / orig[grid_var].mean()
 
@@ -479,10 +479,10 @@ def calc_bias_ratios(input_path, config_path, out_dir, method='long_term_mean', 
             cols = [col for col in final_ratio.columns if 'summer_' in col and '_count' not in col]
             final_ratio.loc[:, cols] = np.nan
         
-        if final_ratio.at[0, 'growseason_count'] < GROW_THRESH:
+        if final_ratio.at[0, 'grow_count'] < GROW_THRESH:
             print('WARNING: less than:', GROW_THRESH, 'days in growing season', '\nfor station:',
                   row.STATION_ID, 'assigning -999 for all stats')
-            cols = [col for col in final_ratio.columns if 'growseason_' in col and '_count' not in col]
+            cols = [col for col in final_ratio.columns if 'grow_' in col and '_count' not in col]
             final_ratio.loc[:, cols] = np.nan
             
         if final_ratio.at[0, 'annual_count'] < ANN_THRESH:

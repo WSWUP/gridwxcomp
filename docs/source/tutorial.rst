@@ -53,7 +53,10 @@ The configuration file
 The configuration file is a text file with the “.INI” extension and is
 read using the Python :obj:`configparser.ConfigParser` class to read
 in metadata about the control parameters that the user specifies for
-``gridwxcomp``.
+``gridwxcomp``. This file contains key control parameters for a 
+``gridwxcomp`` workflow such as which gridded data to download, 
+coordinate references system and domain for interpolation, and variable 
+names and units.
 
 The configuration file has three sections, **METADATA**, **DATA**, and
 **UNITS**, and these sections are defined by there names inside of
@@ -565,16 +568,26 @@ Two shapefiles files were output from this function, one in the WGS84 geographic
 Making a fishnet polygon (grid) around stations
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-The :func:`gridwxcomp.spatial.make_grid` function offers a quick way to make a uniform (square) fishnet or grid polygon file that is defined by the output and grid resolution parameters set in the configuration file. The grids coordinate reference system will be WGS 84 and therefore the grid_resolution and bounds parameters in the configuration file should be in decimal degrees. 
+The :func:`gridwxcomp.spatial.make_grid` function offers a quick way
+to make a uniform (square) fishnet or grid polygon file that is defined
+by the output and grid resolution parameters set in the configuration
+file. The grids coordinate reference system will be WGS 84 and therefore
+the grid_resolution and bounds parameters in the configuration file
+should be in decimal degrees.
 
-This is an optional step that is only used again by ``gridwxcomp`` if the user sets the ``z_stats==True`` kwarg to the :func:`gridwxcomp.spatial.interpolate` function, that option will conduct zonal averages of the interpolated bias surfaces using the grid produced by :func:`gridwxcomp.spatial.make_grid`.
+This is an optional step that is only used again by ``gridwxcomp`` if
+the user sets the ``z_stats==True`` kwarg to the
+:func:`gridwxcomp.spatial.interpolate` function, that option will
+conduct zonal averages of the interpolated bias surfaces using the grid
+produced by :func:`gridwxcomp.spatial.make_grid`.
 
 .. code:: python3
 
     # Example making the spatial grid
     spatial.make_grid(bias_ratios_file, conus404_config)
 
-Here is a screenshot of the resulting grid that was produced using the bounds and resolution of 0.1 degrees as set in the configuration file:
+
+Here is a screenshot of the resulting grid shapefile in QGIS: 
 
 .. image:: _static/grid.png
    :align: center
@@ -582,6 +595,644 @@ Here is a screenshot of the resulting grid that was produced using the bounds an
 .. raw:: html
 
        <br />
+
+
+Spatial interpolation of point bias
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+One of the key features of ``gridwxcomp`` is its ability to perform spatial mapping of bias results between station and gridded weather data using the scatter point data previously calculated at the station locations. The
+:func:`gridwxcomp.spatial.interpolate` function has the ability
+interpolate the point bias data calculated by the
+:func:`gridwxcomp.calc_bias_ratios` function using the options that
+are available from
+`GDAL grid <https://www.gdal.org/gdal_grid.html>`__, those options
+are the following:
+
+-  ‘average’
+-  ‘invdist’ (inverse distance weighting)
+-  ‘invdistnn’ (inverse distance weighting with :math:`n` nearest
+   neighbors)
+-  ‘linear’
+-  ‘nearest’
+
+The interpolation of point data will be conducted using the projected coordinate
+reference system and resolution (meters) that was specified for
+interpolation in the configuration file, the default if not specified is
+Lambert Conformal Conic (ESRI:102004) projection and 1000 m resolution.
+For convenience, the :func:`gridwxcomp.spatial.interpolate` function
+offers the ``scale_factor`` argument to quickly scale the interpolation
+resolution that is specified in the configuration file.
+
+The outputs of the :func:`gridwxcomp.spatial.interpolate` function
+include:
+
+-  georeferenced raster images of the interpolated surfaces for the
+   specified variables
+-  a point shapefile in the interpolated reference system updated with
+   point residuals and interpolated values
+-  a CSV file with the station:gridded bias results updated with point
+   residuals and interpolated values
+-  a bar plot with point residuals
+-  an (optional) CSV file with zonal statistics based on the fishnet the
+   grid produced by the :func:`gridwxcomp.spatial.make_grid` function.
+
+Two versions of the interpolated rasters are created for each variable
+specified (e.g., the monthly or seasonal station:gridded bias ratios for
+a given weather variable). One raster is created and saved using the
+coordinate reference system and resolution as specified for
+interpolation in the configuration file, and the other raster will be
+reprojected to WGS 84 geographic reference system and bi-linearly
+resampled using the “output_data_resolution” parameter (degrees) as
+specified in the configuration file. For example, using the defalt
+projections and resolution, if the user ran the following code the
+resulting output file structure would be created:
+
+.. code:: python3
+
+    # The default interpolation method with only one layer (annual) being interpolated
+    spatial.interpolate(bias_ratios_file, conus404_config, layer="annual", z_stats=True)
+
+::
+
+   wind_invdist_1000_meters/
+   ├── annual_ESRI_102004.tiff
+   ├── annual.tiff
+   ├── residual_plots
+   │   └── annual_res.html
+   ├── wind_summary_comp_all_yrs.csv
+   ├── wind_summary_pts_ESRI_102004.cpg
+   ├── wind_summary_pts_ESRI_102004.dbf
+   ├── wind_summary_pts_ESRI_102004.prj
+   ├── wind_summary_pts_ESRI_102004.shp
+   ├── wind_summary_pts_ESRI_102004.shx
+   └── zonal_stats.csv
+
+
+Note that the name of the root directory contains the name of the
+variable that was interpolated (“wind”), the interpolation method
+(“invdist”), and the resolution of the interpolation (1000 m).
+
+Here is a screenshot of the resulting interpolated raster with overlain
+station points:
+
+.. image:: \_static/interpolated_annual_mean.png 
+   :align: center
+
+.. raw:: html
+
+      <br />
+      
+Zonal statistics and resampling of interpolated bias surfaces
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The :func:`gridwxcomp.spatial.interpolate` function will produce a 
+second raster for each specified variable that is interpolated. This 
+raster is always reprojected to the WGS 84 geographic reference system 
+and then bilinearly resampled to the “output_data_resolution” defined 
+in the configuration file. In this example it was resampled to 0.1 
+degrees which was the same resolution as the grid shapefile
+produced by :func:`gridwxcomp.spatial.make_grid`. The WGS 84 
+geographic reference system is always used as the reference system 
+for the grid shapefile generation. Being in the same geographic 
+coordinate reference system allows for using the grid to be used 
+for computing zonal statistics. The WGS 84 resampled raster files can be 
+distinguished from the interpolated files as they do not have 
+a suffix signifying a coordinate reference system code such as 
+“..._ESRI_XXXXX.tif” or “..._EPSG_XXXX.tif”. 
+
+Here is a screenshot of the fishnet grid produced eariler in the tutorial
+(see :ref:`Making a fishnet polygon (grid) around stations`) and the 
+resampled raster in WGS 84:
+
+.. image:: \_static/resampled_annual_mean_with_grid.png
+   :align: center
+
+.. raw:: html
+
+      <br />
+
+.. hint:: The interpolation in this example was performed in the Lambert
+	Conformal Conic projected coordinate reference system, then it was
+	reprojected into the WGS 84 space. When the raster is
+	reprojected it distorts the image with respect to the
+	original bounding coordinates that are used to clip the reprojected
+	raster and to build the fishnet grid. This would vary depending on how much
+	distortion exists between WGS 84 and the specified interpolation
+	projection. To get a larger area covered in the resampled raster it
+	is advised to use a larger bounding area, with a buffer around the
+	outer station locations.
+	
+In this example the grid resolution and the resampling resolution of the
+interpolated surfaces are the same, if that is the case we can see that
+the grid and rasters snap to one another. However it may be useful to
+create the grid at a different resolution depending on the application
+of the zonal statistics (zonal means). Note that in this example the
+zonal statistics were saved to a CSV file, the outputs of which are
+simply a zonal average for each grid cell ID:
+
+.. code:: python3
+
+    # here are the first cells zonal results from the grid
+    pd.read_csv('test_data_bias_results/spatial/wind_invdist_1000_meters/zonal_stats.csv')[:10]
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>GRID_ID</th>
+          <th>annual</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>0</th>
+          <td>1000000</td>
+          <td>NaN</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td>1000001</td>
+          <td>NaN</td>
+        </tr>
+        <tr>
+          <th>2</th>
+          <td>1000002</td>
+          <td>NaN</td>
+        </tr>
+        <tr>
+          <th>3</th>
+          <td>1000003</td>
+          <td>NaN</td>
+        </tr>
+        <tr>
+          <th>4</th>
+          <td>1000004</td>
+          <td>0.773542</td>
+        </tr>
+        <tr>
+          <th>5</th>
+          <td>1000005</td>
+          <td>0.780634</td>
+        </tr>
+        <tr>
+          <th>6</th>
+          <td>1000006</td>
+          <td>0.789373</td>
+        </tr>
+        <tr>
+          <th>7</th>
+          <td>1000007</td>
+          <td>0.799754</td>
+        </tr>
+        <tr>
+          <th>8</th>
+          <td>1000008</td>
+          <td>0.811946</td>
+        </tr>
+        <tr>
+          <th>9</th>
+          <td>1000009</td>
+          <td>0.826092</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+    <br />
+
+
+.. note:: 
+	The grid cell IDs created by the :func:`gridwxcomp.spatial.make_grid` 
+	function assign the first cell in the upper left giving it a value of 
+	1000000 and this increments by one moving down the first column 
+	(left most) then moves to the next column and continues down, from left to right.
+
+
+Estimates and residuals between point data and interpolated surfaces
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+One additional computation that occurs each time the
+:func:`gridwxcomp.spatial.interpolate` function is used, is the
+calculation of point estimates and residuals for the monthly, seasonal,
+and annual bias ratios with respect to the interpolated rasters. In
+other words the bias ratios (or temperature differences) that were
+calculated by the :func:`gridwxcomp.calc_bias_ratios` function at the
+point locations are compared to the interpolated surfaces and their
+point locations, the interpolated values are extracted from the raster
+surfaces and the residuals:
+
+.. math:: residual = interpolated - station~ calculation 
+
+are calculated. The point estimates and residuals are then added 
+to the summary CSV file that is within the interpolation folder 
+and in the copy of the reprojected point shapefile. In this 
+case these are the files:
+
+::
+
+   'test_data_bias_results/spatial/wind_invdist_1000_meters/wind_summary_comp_all_yrs.csv'
+
+and the shapefile:
+
+::
+
+   'test_data_bias_results/spatial/wind_invdist_1000_meters/wind_summary_pts_ESRI_102004.shp'
+
+Here is an example of the newly calculated estimates and residuals which
+are distinguised by the “\_res” and “\_est” suffixes:
+
+.. code:: python3
+
+    df = pd.read_csv('test_data_bias_results/spatial/wind_invdist_1000_meters/wind_summary_comp_all_yrs.csv', index_col='STATION_ID')
+    df[['annual_mean', 'annual_est', 'annual_res']]
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>annual_mean</th>
+          <th>annual_est</th>
+          <th>annual_res</th>
+        </tr>
+        <tr>
+          <th>STATION_ID</th>
+          <th></th>
+          <th></th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>Bluebell (Neola Area)</th>
+          <td>0.728636</td>
+          <td>0.728635</td>
+          <td>-3.342862e-07</td>
+        </tr>
+        <tr>
+          <th>Loa</th>
+          <td>1.058695</td>
+          <td>1.058690</td>
+          <td>-5.699448e-06</td>
+        </tr>
+        <tr>
+          <th>Bedrock</th>
+          <td>0.616712</td>
+          <td>0.616711</td>
+          <td>-7.578612e-07</td>
+        </tr>
+        <tr>
+          <th>Castle Valley near Moab</th>
+          <td>0.509929</td>
+          <td>0.509935</td>
+          <td>5.979035e-06</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+    <br />
+
+
+In this case, the interpolated surface is nearly identical to the point
+bias results (residuals near zero) because no smoothing parameters were
+introduced in the inverse distance weighting algorithm. If we rerun the
+spatial interpolation and introduce smoothing:
+
+.. code:: python3
+
+    # parameters for gdal grid's inverse distance weighting which will result 
+    # in not honoring the station's values used to interpolate as an example to 
+    # illustrate the calculated point estimates and residuals from the interpolated surface:
+    params = {'power':0.5, 'smooth':50}
+    spatial.interpolate(bias_ratios_file, conus404_config, layer="annual", params=params)
+    
+    # now view the same results:
+    df = pd.read_csv('test_data_bias_results/spatial/wind_invdist_1000_meters/wind_summary_comp_all_yrs.csv', index_col='STATION_ID')
+    df[['annual_mean', 'annual_est', 'annual_res']]
+
+
+
+
+
+.. raw:: html
+
+    <div>
+    <style scoped>
+        .dataframe tbody tr th:only-of-type {
+            vertical-align: middle;
+        }
+    
+        .dataframe tbody tr th {
+            vertical-align: top;
+        }
+    
+        .dataframe thead th {
+            text-align: right;
+        }
+    </style>
+    <table border="1" class="dataframe">
+      <thead>
+        <tr style="text-align: right;">
+          <th></th>
+          <th>annual_mean</th>
+          <th>annual_est</th>
+          <th>annual_res</th>
+        </tr>
+        <tr>
+          <th>STATION_ID</th>
+          <th></th>
+          <th></th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>Bluebell (Neola Area)</th>
+          <td>0.728636</td>
+          <td>0.727750</td>
+          <td>-0.000885</td>
+        </tr>
+        <tr>
+          <th>Loa</th>
+          <td>1.058695</td>
+          <td>1.006191</td>
+          <td>-0.052504</td>
+        </tr>
+        <tr>
+          <th>Bedrock</th>
+          <td>0.616712</td>
+          <td>0.625107</td>
+          <td>0.008395</td>
+        </tr>
+        <tr>
+          <th>Castle Valley near Moab</th>
+          <td>0.509929</td>
+          <td>0.544533</td>
+          <td>0.034604</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+    <br />
+
+With these smoothing parameters and a smaller power parameter for inverse
+distance weighting we get significant larger interpolated error or point residuals.
+
+.. seealso:: 
+   There are other interpolation parameters available for the
+   different interpolation methods provided by GDAL, see
+   `this online reference <https://gdal.org/programs/gdal_grid.html#interpolation-algorithms>`__ 
+   for a comprehensive list and description of each. 
+   
+.. hint::
+   The default parameters used by :func:`gridwxcomp.spatial.interpolate` 
+   interpolation algorithms are the same as those specified by GDAL.
+
+Finally, there is a plot (or set of plots) that is produced to visualize
+the residuals between the interpolated and point bias results, these are
+saved as interactive HTML files with bar charts. In this example, here is 
+the relative path to this file:
+
+::
+
+   'test_data_bias_results/spatial/wind_invdist_1000_meters/residual_plots/annual_res.html'
+
+And here is the resulting file:
+
+
+.. raw:: html
+   :file: _static/annual_res.html
+     
+
+Note that the interpolation algorithm used and the parameters are listed
+in the top of the plot, as well as the maximum year range of paired data
+available used to make the bias ratios. These plots are useful when the
+user has a large list of stations used for comparing to gridded data as
+the residuals are sorted and can be useful for quickly identifying
+problem stations.
+
+
+Extra tips and tricks for interpolation
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+In addition to the ability to interpolate the mean bias ratios or differences between paired station and gridded data,
+the :func:`gridwxcomp.spatial.interpolate` function can also be used to perform 2-D interpolation of the other statistics 
+that are calculated by ``gridwxcomp``, see :ref:`Step 3: Calculate monthly, seasonal, and annual station:gridded biases and statistics`. 
+
+For example, we could look at the spatial distribution of the interannual
+variability (coefficient of variation) in the growing season station:grid wind ratios (remember, in this example we have only looked at wind) by running the following:
+
+.. code:: python3
+
+   spatial.interpolate(bias_ratios_file, conus404_config, layer="grow_cv")
+
+The resulting interpolated surface looks like this:
+
+.. image:: _static/grow_cv_interp.png
+   :align: center
+
+.. raw:: html
+
+       <br />
+
+This result shows that the highest interannual variation in the growing season station:gridded bias relative to the mean bias is found in the northern most weather station. 
+
+
+To quickly run the full spatial interpolation for all the time periods aggregated by 
+``gridwxcomp`` one can use the ``layers="all"`` argument:
+
+.. code:: python3
+
+   spatial.interpolate(bias_ratios_file, conus404_config, layer="all")
+   
+Here are a few other useful attributes for custom workflows from object underlying 
+the spatial module, the :obj:`gridwxcomp.interpgdal.InterpGdal` class:
+
+.. code:: python3
+
+    from gridwxcomp import InterpGdal
+    
+    # view all the default layer names of bias ratios run using the layers="all" option
+    # note the "_mean" suffix are removed from these variable names when interpolating
+    InterpGdal.default_layers
+
+gives:
+
+.. parsed-literal::
+
+    ('Jan',
+     'Feb',
+     'Mar',
+     'Apr',
+     'May',
+     'Jun',
+     'Jul',
+     'Aug',
+     'Sep',
+     'Oct',
+     'Nov',
+     'Dec',
+     'grow',
+     'annual',
+     'summer')
+
+
+To view all the interpolation algorithms available:
+
+.. code:: python3
+
+    InterpGdal.interp_methods
+
+gives:
+
+.. parsed-literal::
+
+    ('average', 'invdist', 'invdistnn', 'linear', 'nearest')
+
+
+Or to view the parameter default values for a specific interpolation algorithm by name
+
+.. code:: python3
+
+    InterpGdal.default_params.get('invdistnn')
+
+
+.. parsed-literal::
+
+    {'power': 2,
+     'smoothing': 0,
+     'radius': 10,
+     'max_points': 12,
+     'min_points': 0,
+     'nodata': -999}
+     
+     
+Lastly, using the ``out_dir`` option to :func:`gridwxcomp.spatial.interpolate` is useful
+for saving copies of interpolations which used different interpolation parameter values,
+such as power and smoothing parameters. By default, each time a new interpolation
+call is made, any existing files in the output directory will be overwritten unless
+you specify a new subdir using the ``out`` argument:
+
+.. code:: python3
+
+	params = {'power':0.5, 'smooth':50}
+	out_dir = 'power_pt5_smooth_50'
+	spatial.interpolate(
+		bias_ratios_file, 
+		conus404_config, 
+		out=out_dir,
+		layer="annual", 
+		params=params)
+		
+	params = {'power':1, 'smooth':50}
+	out_dir = 'power_1_smooth_50'
+	spatial.interpolate(
+		bias_ratios_file, 
+		conus404_config, 
+		out=out_dir,
+		layer="annual", 
+		params=params)
+		
+	params = {'power':2, 'smooth':50}
+	out_dir = 'power_2_smooth_50'
+	spatial.interpolate(
+		bias_ratios_file, 
+		conus404_config, 
+		out=out_dir,
+		layer="annual", 
+		params=params)
+		
+Now we get the following file structure:
+
+::
+
+	wind_invdist_1000_meters/
+	├── annual_ESRI_102004.tiff
+	├── annual.tiff
+	├── power_1_smooth_50
+	│   ├── annual_ESRI_102004.tiff
+	│   ├── annual.tiff
+	│   ├── residual_plots
+	│   │   └── annual_res.html
+	│   ├── wind_summary_comp_all_yrs.csv
+	│   ├── wind_summary_pts_ESRI_102004.cpg
+	│   ├── wind_summary_pts_ESRI_102004.dbf
+	│   ├── wind_summary_pts_ESRI_102004.prj
+	│   ├── wind_summary_pts_ESRI_102004.shp
+	│   └── wind_summary_pts_ESRI_102004.shx
+	├── power_2_smooth_50
+	│   ├── annual_ESRI_102004.tiff
+	│   ├── annual.tiff
+	│   ├── residual_plots
+	│   │   └── annual_res.html
+	│   ├── wind_summary_comp_all_yrs.csv
+	│   ├── wind_summary_pts_ESRI_102004.cpg
+	│   ├── wind_summary_pts_ESRI_102004.dbf
+	│   ├── wind_summary_pts_ESRI_102004.prj
+	│   ├── wind_summary_pts_ESRI_102004.shp
+	│   └── wind_summary_pts_ESRI_102004.shx
+	├── power_pt5_smooth_50
+	│   ├── annual_ESRI_102004.tiff
+	│   ├── annual.tiff
+	│   ├── residual_plots
+	│   │   └── annual_res.html
+	│   ├── wind_summary_comp_all_yrs.csv
+	│   ├── wind_summary_pts_ESRI_102004.cpg
+	│   ├── wind_summary_pts_ESRI_102004.dbf
+	│   ├── wind_summary_pts_ESRI_102004.prj
+	│   ├── wind_summary_pts_ESRI_102004.shp
+	│   └── wind_summary_pts_ESRI_102004.shx
+	├── residual_plots
+	│   └── annual_res.html
+	├── wind_summary_comp_all_yrs.csv
+	├── wind_summary_pts_ESRI_102004.cpg
+	├── wind_summary_pts_ESRI_102004.dbf
+	├── wind_summary_pts_ESRI_102004.prj
+	├── wind_summary_pts_ESRI_102004.shp
+	├── wind_summary_pts_ESRI_102004.shx
+	└── zonal_stats.csv
+
+Note that the initial run with default parameters contains all the new sub directories that were named. 
+That initial run also included zonal statistics, but the three new interpolations did not, hence they do
+not contain their own zonal_stats.csv file.
+
+
 
 
 References

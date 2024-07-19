@@ -244,9 +244,9 @@ class TestCalcBiasRatios(object):
            'Jul_stdev', 'Aug_stdev', 'Sep_stdev', 'Oct_stdev', 'Nov_stdev', 
            'Dec_stdev', 'Jan_cv', 'Feb_cv', 'Mar_cv', 'Apr_cv', 'May_cv', 
            'Jun_cv', 'Jul_cv', 'Aug_cv', 'Sep_cv', 'Oct_cv', 'Nov_cv', 'Dec_cv',
-           'growseason_mean', 'summer_mean', 'annual_mean', 'growseason_count', 
-           'summer_count', 'annual_count', 'growseason_stdev', 'summer_stdev', 
-           'annual_stdev', 'growseason_cv', 'summer_cv', 'annual_cv', 
+           'grow_mean', 'summer_mean', 'annual_mean', 'grow_count', 
+           'summer_count', 'annual_count', 'grow_stdev', 'summer_stdev', 
+           'annual_stdev', 'grow_cv', 'summer_cv', 'annual_cv', 
            'start_year', 'end_year', 'GRIDMET_ID', 'FID', 'OBJECTID', 'Id', 
            'State', 'Source', 'Status', 'STATION_LAT', 'STATION_LON', 'Date', 
            'Station_ID', 'STATION_ELEV_FT', 'Comments', 'Location', 
@@ -338,9 +338,9 @@ class TestPlot(object):
             'conus404_output_dir')/'tmax_summary_all_yrs.csv'
         plot.station_bar_plot(
             input_path, 
-            bar_plot_layer='growseason_mean')
+            bar_plot_layer='grow_mean')
         outpath = data.get('conus404_output_dir')\
-                /'station_bar_plots'/'growseason_mean.html'
+                /'station_bar_plots'/'grow_mean.html'
         assert outpath.is_file()
 
         # same but using other file and coef. of variation
