@@ -19,3 +19,6 @@ div.highlight {
     position: relative;
 }
 
+.wy-nav-content {
+    max-width: 90% !important;
+}

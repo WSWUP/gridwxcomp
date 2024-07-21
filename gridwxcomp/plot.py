@@ -30,9 +30,9 @@ VAR_LIST = [
     'eto',
     'etr']
 UNITS_DICT = {'tmax': '(C)', 'tmin': '(C)', 'tdew': '(C)',
-              'rs': '(w/m2)', 'wind': '(m/s)', 'ea': '(kpa)',
-              'rhmax': '(%)', 'rhmin': '(%)', 'rhavg': '(%)',
-              'eto': '(mm)', 'etr': '(mm)'}
+	'rs': '(w/m2)', 'wind': '(m/s)', 'ea': '(kpa)',
+	'rhmax': '(%)', 'rhmin': '(%)', 'rhavg': '(%)',
+	'eto': '(mm)', 'etr': '(mm)'}
 
 # TITLES_LIST and MONTHLY_TITLES_LIST are formatted as LaTeX
 TITLES_LIST = [
@@ -94,17 +94,19 @@ def daily_comparison(
     plots, e.g. they can be zoomed in/out and panned. Separate plot files are
     created for each month of a single year.
 
-    The scatterplots for each month will allow you to visualize the
-    overall correlation and relationship between the gridded and station variables.
+    The scatterplots for each month will allow you to visualize the overall
+    correlation and relationship between the gridded and station variables.
 
-    The timeseries plots will show all daily observations of a single month together,
-    which will highlight any months that differ from their neighboring years,
-    ex: a year that had a significantly colder June than other Junes
+    The timeseries plots will show all daily observations of a single month
+    together, which will highlight any months that differ from their
+    neighboring years, ex: a year that had a significantly colder June than
+    other Junes
 
     Arguments:
         input_csv (str): path to input CSV file containing paired station/
             gridded metadata. This file is created by running
-            :mod:`gridwxcomp.prep_metadata` followed by :mod:`gridwxcomp.ee_download`.
+            :mod:`gridwxcomp.prep_metadata` followed by 
+            :mod:`gridwxcomp.ee_download`.
         config_path (str): path to the config file that has the parameters used
             to interpret the station and gridded data files
         dataset_name (str): Name of gridded dataset to be used in plots
@@ -126,11 +128,12 @@ def daily_comparison(
         >>> from gridwxcomp.plot import daily_comparison
         >>> daily_comparison('merged_input.csv', 'config_file.ini', 'comp_plots_2016', '2016')
 
-        Both methods result in monthly HTML `bokeh <https://bokeh.pydata.org/en/latest/>`_
-        plots being saved to "comp_plots_2016/STATION_ID/" where "STATION_ID"
-        is the station ID as found in the input CSV file. A file is saved for
-        each month with the station ID, month, and year in the file name.
-        If ``out_dir`` keyword argument is not given the plots will be saved to a directory named
+        Both methods result in monthly HTML `bokeh
+        <https://bokeh.pydata.org/en/latest/>`_ plots being saved to
+        "comp_plots_2016/STATION_ID/" where "STATION_ID" is the station ID as
+        found in the input CSV file. A file is saved for each month with the
+        station ID, month, and year in the file name.  If ``out_dir`` keyword
+        argument is not given the plots will be saved to a directory named
         "daily_comp_plots".
 
     Note:
@@ -159,7 +162,8 @@ def daily_comparison(
         if 'STATION_FILE_PATH' not in row or 'GRID_FILE_PATH' not in row:
             raise KeyError(
                 'Missing station and/or grid file paths in ' +
-                'input file. Run prep_metadata.py followed by ee_download.py first.')
+                'input file. Run prep_metadata.py followed by ee_download.py '
+                'first.')
 
         # load station and grid time series files
         try:
@@ -169,7 +173,8 @@ def daily_comparison(
             converted_station_df = convert_units(
                 config_dict, 'station', raw_station_df)
             converted_station_df['wind'] = _wind_height_adjust(
-                uz=converted_station_df['wind'], zw=config_dict['station_anemometer_height'])
+                uz=converted_station_df['wind'], 
+                zw=config_dict['station_anemometer_height'])
             prepped_station_df = converted_station_df.add_prefix(
                 'station_', axis='columns')
         except IOError:
@@ -186,7 +191,8 @@ def daily_comparison(
             converted_gridded_df = convert_units(
                 config_dict, 'gridded', raw_gridded_df)
             converted_gridded_df['wind'] = _wind_height_adjust(
-                uz=converted_gridded_df['wind'], zw=config_dict['gridded_anemometer_height'])
+                uz=converted_gridded_df['wind'], 
+                zw=config_dict['gridded_anemometer_height'])
             prepped_gridded_df = converted_gridded_df.add_prefix(
                 'gridded_', axis='columns')
         except IOError:
@@ -211,7 +217,8 @@ def daily_comparison(
         # Check to see if any overlapping data exists
         if merged.shape[0] == 0:
             print(
-                f'No overlapping data between gridded and station source for {row.STATION_ID}')
+                'No overlapping data between gridded and station source for '
+                f'{row.STATION_ID}')
             continue
 
         for month in range(1, 13):
@@ -312,8 +319,10 @@ def daily_comparison(
                     monthly_data_subset[x_var].values.reshape(
                         -1, 1), monthly_data_subset[y_var], rcond=None)[0][0]
                 r_x, r_y = zip(*((i, i * m) for i in range(
-                    int(np.min([monthly_data_subset[y_var], monthly_data_subset[x_var]]) - 2),
-                    int(np.max([monthly_data_subset[y_var], monthly_data_subset[x_var]]) + 3), 1)))
+                    int(np.min([monthly_data_subset[y_var], 
+                        monthly_data_subset[x_var]]) - 2),
+                    int(np.max([monthly_data_subset[y_var], 
+                        monthly_data_subset[x_var]]) + 3), 1)))
                 # Plots
                 p2 = figure(width=400, height=400,
                             x_axis_label=xlabel, y_axis_label=ylabel,
@@ -326,10 +335,14 @@ def daily_comparison(
                     color="navy",
                     alpha=0.5)
                 p2.line(
-                    [int(np.min([monthly_data_subset[y_var], monthly_data_subset[x_var]]) - 2),
-                     int(np.max([monthly_data_subset[y_var], monthly_data_subset[x_var]]) + 2)],
-                    [int(np.min([monthly_data_subset[y_var], monthly_data_subset[x_var]]) - 2),
-                     int(np.max([monthly_data_subset[y_var], monthly_data_subset[x_var]]) + 2)],
+                    [int(np.min([monthly_data_subset[y_var], 
+                        monthly_data_subset[x_var]]) - 2),
+                     int(np.max([monthly_data_subset[y_var], 
+                         monthly_data_subset[x_var]]) + 2)],
+                    [int(np.min([monthly_data_subset[y_var], 
+                        monthly_data_subset[x_var]]) - 2),
+                     int(np.max([monthly_data_subset[y_var], 
+                         monthly_data_subset[x_var]]) + 2)],
                     color="black", legend_label='1 to 1 line')
 
                 p2.line(r_x, r_y, color="red", legend_label='Reg thru zero')
@@ -351,8 +364,8 @@ def monthly_comparison(
         out_dir=None,
         day_limit=10):
     """
-    Compare monthly average weather station data from
-    `PyWeatherQAQC <https://github.com/WSWUP/pyWeatherQAQC>`_ with the gridded dataset.
+    Compare monthly average weather station data from `PyWeatherQAQC
+    <https://github.com/WSWUP/pyWeatherQAQC>`_ with the gridded dataset.
 
     The :func:`monthly_comparison` function produces HTML files with time series
     and scatter plots of station versus gridded climate variables of monthly
@@ -360,8 +373,9 @@ def monthly_comparison(
     to create interactive plots, e.g. they can be zoomed in/out and panned.
 
     Arguments:
-        input_csv (str): path to input CSV file containing paired station/gridded metadata.
-            This file is created by running :mod:`gridwxcomp.prep_metadata` followed by
+        input_csv (str): path to input CSV file containing paired 
+            station:gridded metadata. This file is created by running 
+            :mod:`gridwxcomp.prep_metadata` followed by
             :mod:`gridwxcomp.ee_download`.
         config_path (str): path to the config file that has the parameters used
             to interpret the station and gridded data files'
@@ -380,13 +394,14 @@ def monthly_comparison(
         >>> from gridwxcomp.plot import monthly_comparison
         >>> monthly_comparison('merged_input.csv', 'monthly_plots')
 
-        Both methods result in monthly HTML bokeh plots being saved
-        to "monthly_plots/" which contains a plot file for each station
-        as found in the input CSV file. If ``out_dir`` keyword argument
-        is not given the plots will be saved to a directory named "monthly_comp_plots".
+        Both methods result in monthly HTML bokeh plots being saved to
+        "monthly_plots/" which contains a plot file for each station as found
+        in the input CSV file. If ``out_dir`` keyword argument is not given the
+        plots will be saved to a directory named "monthly_comp_plots".
 
     Note:
-        If there are less than 2 months of data the plot for that station will not be created.
+        If there are less than 2 months of data the plot for that station 
+        will not be created.
     """
     if not out_dir:
         out_dir = os.getcwd()
@@ -405,7 +420,8 @@ def monthly_comparison(
         if 'STATION_FILE_PATH' not in row or 'GRID_FILE_PATH' not in row:
             raise KeyError(
                 'Missing station and/or grid file paths in ' +
-                'input file. Run prep_metadata.py followed by ee_download.py first.')
+                'input file. Run prep_metadata followed by download_grid_data '
+                'first.')
 
         # load station and grid time series files
         try:
@@ -415,7 +431,8 @@ def monthly_comparison(
             converted_station_df = convert_units(
                 config_dict, 'station', raw_station_df)
             converted_station_df['wind'] = _wind_height_adjust(
-                uz=converted_station_df['wind'], zw=config_dict['station_anemometer_height'])
+                uz=converted_station_df['wind'], 
+                zw=config_dict['station_anemometer_height'])
             prepped_station_df = converted_station_df.add_prefix(
                 'station_', axis='columns')
         except IOError:
@@ -432,7 +449,8 @@ def monthly_comparison(
             converted_gridded_df = convert_units(
                 config_dict, 'gridded', raw_gridded_df)
             converted_gridded_df['wind'] = _wind_height_adjust(
-                uz=converted_gridded_df['wind'], zw=config_dict['gridded_anemometer_height'])
+                uz=converted_gridded_df['wind'], 
+                zw=config_dict['gridded_anemometer_height'])
             prepped_gridded_df = converted_gridded_df.add_prefix(
                 'gridded_', axis='columns')
         except IOError:
@@ -456,7 +474,8 @@ def monthly_comparison(
         # Check to see if any overlapping data exists
         if merged.shape[0] == 0:
             print(
-                f'No overlapping data between gridded and station source for {row.STATION_ID}')
+                'No overlapping data between gridded and station source '
+                f'for {row.STATION_ID}')
             continue
 
         # remove all pairs where one var missing
@@ -503,7 +522,8 @@ def monthly_comparison(
         # loop through and create figures for each variable using vars
         # and plot labels from lists above
         first_plot = True
-        for i, (x_var, y_var, title, ts_ylabel, xlabel, ylabel, legendx, legendy) in enumerate(zip(
+        for i, (x_var, y_var, title, ts_ylabel, xlabel, 
+                ylabel, legendx, legendy) in enumerate(zip(
             x_var_list, y_var_list, MONTHLY_TITLES_LIST, ts_ylabel_list,
                 xlabel_list, ylabel_list, legendx_list, legendy_list)):
 
@@ -562,10 +582,14 @@ def monthly_comparison(
             p2.scatter(monthly2[x_var, stat], monthly2[y_var, stat],
                        size=15, color="navy", alpha=0.5)
             p2.line(
-                [int(np.min([monthly2[y_var, stat], monthly2[x_var, stat]]) - 2),
-                 int(np.max([monthly2[y_var, stat], monthly2[x_var, stat]]) + 2)],
-                [int(np.min([monthly2[y_var, stat], monthly2[x_var, stat]]) - 2),
-                 int(np.max([monthly2[y_var, stat], monthly2[x_var, stat]]) + 2)],
+                [int(np.min([monthly2[y_var, stat], 
+                    monthly2[x_var, stat]]) - 2),
+                 int(np.max([monthly2[y_var, stat], 
+                     monthly2[x_var, stat]]) + 2)],
+                [int(np.min([monthly2[y_var, stat], 
+                    monthly2[x_var, stat]]) - 2),
+                 int(np.max([monthly2[y_var, stat], 
+                     monthly2[x_var, stat]]) + 2)],
                 color="black", legend_label='1 to 1 line')
             p2.line(r_x, r_y, color="red", legend_label='Reg thru zero')
             p2.legend.location = "top_left"
@@ -589,48 +613,58 @@ def station_bar_plot(
         subtitle=None,
         year_subtitle=True):
     """
-        Produce an interactive bar chart comparing multiple climate stations to each other for a particular variable,
-        e.g. bias ratios or interpolated residuals.
+    Produce an interactive bar chart comparing multiple climate stations to 
+    each other for a particular variable, e.g. bias ratios or interpolated 
+    residuals.
 
-        This function may also be used for any numerical data in the summary CSV
-        files that are created by :func:`gridwxcomp.interpolate` in addition to
-        those created by :func:`gridwxcomp.calc_bias_ratios`.
-        The main requirement is that ``summary_csv`` must contain the column 'STATION_ID'
-        and the ``bar_plot_layer`` keyword argument.
+    This function may also be used for any numerical data in the summary CSV
+    files that are created by :func:`gridwxcomp.interpolate` in addition to
+    those created by :func:`gridwxcomp.calc_bias_ratios`.  The main requirement
+    is that ``summary_csv`` must contain the column 'STATION_ID' and the
+    ``bar_plot_layer`` keyword argument.
 
-        Arguments:
-            summary_csv (str, Path): path to summary CSV produced by either :func:`gridwxcomp.calc_bias_ratios`
-                or by :func:`gridwxcomp.interpolate`. Should contain ``bar_plot_layer`` data for plot.
-            bar_plot_layer (str): name of variable to plot.
-            out_dir (str or None): default None. Output directory path, default is
-                'station_bar_plots' in parent directory of ``summary_csv``.
-            y_label (str or None): default None. Label for y-axis, defaults to ``bar_plot_layer``.
-            title (str or None): default None. Title of plot.
-            subtitle (str, list, or None): default None. Additional subtitle(s) for plot.
-            year_subtitle (bool): default True. If true print subtitle on plot with
-                the max year range used for station data, e.g. 'years: 1995-2005'
+    Arguments:
+        summary_csv (str, Path): path to summary CSV produced by either 
+            :func:`gridwxcomp.calc_bias_ratios` or by 
+            :func:`gridwxcomp.interpolate`. Should contain ``bar_plot_layer`` 
+            data for plot.
+        bar_plot_layer (str): name of variable to plot.
+        out_dir (str or None): default None. Output directory path, default is
+            'station_bar_plots' in parent directory of ``summary_csv``.
+        y_label (str or None): default None. Label for y-axis, defaults 
+            to ``bar_plot_layer``.
+        title (str or None): default None. Title of plot.
+        subtitle (str, list, or None): default None. Additional subtitle(s) 
+            for plot.
+        year_subtitle (bool): default True. If true print subtitle on plot with
+            the max year range used for station data, e.g. 'years: 1995-2005'
 
-        Example:
-            Let's say we want to compare the mean growing seasion bias ratios of
-            reference evapotranspiration (ETr) for the selection of stations we
-            used to calculate bias ratios.
+    Example:
+        Let's say we want to compare the mean growing seasion bias ratios of
+        reference evapotranspiration (ETr) for the selection of stations we
+        used to calculate bias ratios.
 
-            The summary CSV file containing the ratios should be first
-            created using :func:`gridwxcomp.calc_bias_ratios`.
-                >>> from gridwxcomp.plot import station_bar_plot
-                >>> # path to summary CSV with station data
-                >>> in_file = 'monthly_ratios/etr_mm_summary_all_yrs.csv'
-                >>> example_layer = 'grow_mean'
-                >>> station_bar_plot(in_file, example_layer)
-            The resulting file will be saved using the bar_plot_layer name as a file name::
-            'monthly_ratios/station_bar_plots/grow_mean.html'
-            The plot file will contain the mean growing season bias ratios
-            of ETr for each station, sorted from smallest to largest values.
+        The summary CSV file containing the ratios should be first
+        created using :func:`gridwxcomp.calc_bias_ratios`.
 
-        Raises:
-            FileNotFoundError: if ``summary_csv`` is not found.
-            KeyError: if ``bar_plot_layer`` does not exist as a column name in ``summary_csv``.
-        """
+            >>> from gridwxcomp.plot import station_bar_plot
+            >>> # path to summary CSV with station data
+            >>> in_file = 'monthly_ratios/etr_mm_summary_all_yrs.csv'
+            >>> example_layer = 'grow_mean'
+            >>> station_bar_plot(in_file, example_layer)
+        
+        The resulting file will be saved using the bar_plot_layer name as a
+        file name::
+        
+        'monthly_ratios/station_bar_plots/grow_mean.html'
+        
+        The plot file will contain the mean growing season bias ratios
+        of ETr for each station, sorted from smallest to largest values.
+
+    Raises:
+        FileNotFoundError: if ``summary_csv`` is not found.
+        KeyError: if ``bar_plot_layer`` does not exist as a column name in ``summary_csv``.
+    """
 
     if not Path(summary_csv).is_file():
         err_msg = '\n{} is not a valid path to a summary CSV file!'.\

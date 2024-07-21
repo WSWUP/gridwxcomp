@@ -126,6 +126,8 @@ def data(request):
     return d
 
 class TestUtil(object):
+    # most util functions are tested throughout package as they are used 
+    # by most submodules
     def setup_method(self):
         # for util.parse_yr_filter
         df = pd.DataFrame(index=pd.date_range('2000', '2015'))
@@ -271,7 +273,6 @@ class TestEEDownload(object):
         assert df.notna().all().all()
         assert df.T2_MAX.dtype == 'float'
     
-        
 
 
 class TestCalcBiasRatios(object): 
@@ -448,7 +449,7 @@ class TestSpatial(object):
         output_root_dir = data.get('conus404_output_dir')
 
         # run interpolation on all default layers with zonal stats and residuals 
-        spatial.interpolate(input_path, config_path)
+        spatial.interpolate(input_path, config_path, z_stats=True)
         
         spatial_dir = output_root_dir/'spatial'
         assert spatial_dir.is_dir()
@@ -528,4 +529,15 @@ class TestSpatial(object):
             interp_val = [v for v in proj_tif.sample(
                 [(reproj_x, reproj_y)])][0][0]
             assert np.isclose(saved_val, interp_val)
+            
+        ####
+        # check zonal stats
+        ####
+        zonal_stats_file = interp_dir/'zonal_stats.csv'
+        assert zonal_stats_file.is_file()
+
+        df = pd.read_csv(zonal_stats_file)
+        assert set(self.default_layers).issubset(df.columns)
+        assert df.loc[0,'GRID_ID'] == 1000000
+        assert df.notna().any().all()
 

@@ -208,7 +208,9 @@ this section from the provided example data:
    station_et_units = mm
    gridded_et_units = mm
 
+
 .. _variable_list:
+
 Weather variables processed by ``gridwxcomp``
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
@@ -415,6 +417,7 @@ working space for running this tutorial:
    └── Station_Data.txt
 
 At this step in the normal workflow of ``gridwxcomp`` the output file created by :func:`gridwxcomp.ee_download.download_grid_data` can be used for making interactive daily and monthly time series and scatter plots of paired station and gridded weather data using the :mod:`gridwxcomp.plot` module.
+Skip to :ref:`Interactive graphics of paired station:gridded weather data` for examples.
 
 Step 3: Calculate monthly, seasonal, and annual station:gridded biases and statistics
 -------------------------------------------------------------------------------------
@@ -516,8 +519,8 @@ differences (suffix “stdev”), and the coefficient of variation (suffix
 
 At this step in the normal workflow of ``gridwxcomp`` the output file created by :func:`gridwxcomp.calc_bias_ratios` can be used for spatial mapping of point data and interpolation of the results using the :mod:`gridwxcomp.spatial` module.
 
-Spatial mapping and interpolation of station:grid bias results
---------------------------------------------------------------
+Spatial mapping and interpolation of station:gridded bias results
+-----------------------------------------------------------------
 
 One of the key functionalities of ``gridwxcomp`` is the ability to
 spatially map and interpolate point data of station:gridded bias. The
@@ -1232,10 +1235,177 @@ Note that the initial run with default parameters contains all the new sub direc
 That initial run also included zonal statistics, but the three new interpolations did not, hence they do
 not contain their own zonal_stats.csv file. Also, since the point residuals will change with each new 
 interpolation method, copies of the summary CSV, residual bar charts, and the projected point shapefiles 
-are made to each subfolder in addition to the newly generated interpolated surfaces.
+are made to each sub directory in addition to the newly generated interpolated surfaces.
+
+
+Interactive graphics of paired station:gridded weather data
+-----------------------------------------------------------
+
+Once the data pairing had been completed between station and downloaded
+gridded data, ``gridwxcomp`` offers tools for generating time series and
+scatter plots of the paired data at daily and monthly timescales. These
+plots utilize the :mod:`Bokeh` Python package and allow the user to
+pan and zoom into the plots and are in HTML format. The timeseries plots
+of a set of variables (e.g., air temperature, solar radiation, wind
+speed, humidity, etc.) are ties to one another so that if one time
+series plot is zoomed in to a shorter time period, all the other
+variables will also zoom to the same scale. This is useful for
+identifying the interelationship between different climate variables and
+how they correspond with the station:gridded data bias.
+
+.. hint:: 
+    The daily and monthly comparison plots can be run after
+    downloading gridded data using the
+    :func:`gridwxcomp.ee_download.download_grid_data` and before running
+    spatial mapping functions.
+
+The daily plots are grouped by month, for example, all days in the month
+of January are concatenated from the starting date through the ending
+date in the paired time series. Here is an example.
+
+.. code:: python3
+
+    # daily timeseries and scatter plots of all variables for each month of the year for all stations
+    plot.daily_comparison(formatted_input_file, conus404_config, gridded_dataset_name)
+
+
+The above plot function would have generated the following file
+structure from the working directory:
+
+::
+
+       daily_comp_plots/
+       ├── Bedrock
+       │   ├── Bedrock_01_2013_2018.html
+       │   ├── Bedrock_02_2013_2018.html
+       │   ├── Bedrock_03_2013_2018.html
+       │   ├── Bedrock_04_2013_2018.html
+       │   ├── Bedrock_05_2013_2018.html
+       │   ├── Bedrock_06_2013_2018.html
+       │   ├── Bedrock_07_2013_2018.html
+       │   ├── Bedrock_08_2013_2018.html
+       │   ├── Bedrock_09_2013_2018.html
+       │   ├── Bedrock_10_2013_2018.html
+       │   ├── Bedrock_11_2013_2018.html
+       │   └── Bedrock_12_2013_2018.html
+       ├── Bluebell(NeolaArea)
+       │   ├── Bluebell(NeolaArea)_01_2016_2018.html
+       │   ├── Bluebell(NeolaArea)_02_2016_2018.html
+       │   ├── Bluebell(NeolaArea)_03_2016_2018.html
+       │   ├── Bluebell(NeolaArea)_04_2016_2018.html
+       │   ├── Bluebell(NeolaArea)_05_2016_2018.html
+       │   ├── Bluebell(NeolaArea)_06_2016_2018.html
+       │   ├── Bluebell(NeolaArea)_07_2016_2018.html
+       │   ├── Bluebell(NeolaArea)_08_2016_2018.html
+       │   ├── Bluebell(NeolaArea)_09_2016_2018.html
+       │   ├── Bluebell(NeolaArea)_10_2016_2018.html
+       │   ├── Bluebell(NeolaArea)_11_2016_2018.html
+       │   └── Bluebell(NeolaArea)_12_2016_2018.html
+       ├── CastleValleynearMoab
+       │   ├── CastleValleynearMoab_01_2015_2018.html
+       │   ├── CastleValleynearMoab_02_2015_2018.html
+       │   ├── CastleValleynearMoab_03_2015_2018.html
+       │   ├── CastleValleynearMoab_04_2015_2018.html
+       │   ├── CastleValleynearMoab_05_2015_2018.html
+       │   ├── CastleValleynearMoab_06_2015_2018.html
+       │   ├── CastleValleynearMoab_07_2015_2018.html
+       │   ├── CastleValleynearMoab_08_2015_2018.html
+       │   ├── CastleValleynearMoab_09_2015_2018.html
+       │   ├── CastleValleynearMoab_10_2015_2018.html
+       │   ├── CastleValleynearMoab_11_2015_2018.html
+       │   └── CastleValleynearMoab_12_2015_2018.html
+       └── Loa
+           ├── Loa_01_2016_2018.html
+           ├── Loa_02_2016_2018.html
+           ├── Loa_03_2016_2018.html
+           ├── Loa_04_2016_2018.html
+           ├── Loa_05_2016_2018.html
+           ├── Loa_06_2016_2018.html
+           ├── Loa_07_2016_2018.html
+           ├── Loa_08_2016_2018.html
+           ├── Loa_09_2016_2018.html
+           ├── Loa_10_2016_2018.html
+           ├── Loa_11_2016_2018.html
+           └── Loa_12_2016_2018.html
+
+Note that for each station there is a sub directory and for each station
+there are 12 files, one for each month of the year, and the start and end
+years of the paired data used for each plot are part of the file name,
+i.e., “[station]\_[month]\_[start_year]\_[end_year].html”.
+
+Here is what the Castle Valley near Moab sites plot looks like for the
+month of June (“CastleValleynearMoab_06_2015_2018.html”):
+
+.. raw:: html
+   :file: _static/CastleValleynearMoab_06_2015_2018.html
+   
+.. note:: 
+    The daily and monthly comparison plots include scatter plots
+    of the paired variables supported, including the least squares linear
+    regression slope forced through the origin as a measure of bias between
+    the station and gridded data.
+
+In addition to the daily comparison plots, ``gridwxcomp`` offers a
+similar plotting function which compared aggregated monthly data from
+the paired station:gridded time series, for a variety of weather
+variables. These plots include each month of the year in them, in other
+words they do not only show the paired data for a given month per plot
+like the daily plots do. These plots thus show the seasonal variability
+in the bias at the monthly scale.
+
+.. code:: python3
+
+    plot.monthly_comparison(formatted_input_file, conus404_config, gridded_dataset_name)
 
 
 
+In this case the following files are generated:
+
+::
+
+   monthly_comp_plots/
+   ├── Bedrock.html
+   ├── Bluebell(NeolaArea).html
+   ├── CastleValleynearMoab.html
+   └── Loa.html
+
+And here is what the Castle Valley near Moab monthly plot file looks
+like:
+
+.. raw:: html
+   :file: _static/CastleValleynearMoab.html
+
+In addition to the daily and monthly comparisons, the
+:mod:`gridwxcomp.plot` submodule has a tool for comparing station bias
+results using a bar chart. This is the
+:func:`gridwxcomp.plot.station_bar_plot` function and it allows one to
+compare any of the statistics computed by the
+:func:`gridwxcomp.calc_bias_ratios.calc_bias_ratios` function across
+stations. It is also used by the
+:func:`gridwxcomp.spatial.interpolate` function for showing the
+station residuals. Here is an example comparing the standard deviation
+of annual March station:gridded bias:
+
+.. code:: python3
+
+    plot.station_bar_plot(bias_ratios_file, 'Mar_stdev')
+
+
+
+This file was saved to
+
+::
+
+   'test_data_bias_results/station_bar_plots/Mar_stdev.html'
+
+and here it is:
+
+.. raw:: html
+   :file: _static/Mar_stdev.html
+
+This concludes the tutorial for ``gridwxcomp``, please see the
+:ref:`API Reference` for detailed information on individual functions and
+classes and their parameters.
 
 References
 ----------

@@ -4,7 +4,7 @@ Change Log
 Version 0.2.0
 =============
 
-Added new functionality to download gridded datasets from the Google Earth Engine (GEE) platform, use of configuration files (.INI) for setting GEE collection paths, and the ability to conduct spatial interpolation in specified coordinate reference systems using ERSI codes.
+Added new functionality to download gridded datasets from the Google Earth Engine (GEE) platform, use of configuration files (.INI) for setting GEE collection paths, specifying units and names of station and gridded data, and the ability to conduct spatial interpolation in a specified resolution and coordinate reference systems using EPSG or ERSI codes.
 
 The command line interface was removed, it may be returned in future updates. Also, functionality to downloading gridMET data from the OpenDAP server was removed and replaced with GEE data downloads. The functionality of snapping interpolation of bias results to the gridded data resolution and transform has also been removed. The snapping of interpolated rasters to gridded data's native geotransform was removed because Google Earth Engine data assets and image collections do not provide a reliable method for accessing the necessary information. Now a user can specify the bounding coordinates and resolution to conduct spatial interpolation, and achieve the same results in that manner. Also removed were options for spatial interpolation methods provided by the `SciPy radial basis functions <https://docs.scipy.org/doc/scipy/reference/generated/scipy.interpolate.Rbf.html>`_. 
 

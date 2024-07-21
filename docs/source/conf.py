@@ -62,6 +62,7 @@ extensions = [
     'sphinx.ext.ifconfig',
     'sphinx.ext.viewcode',
     'sphinx.ext.githubpages',
+    'bokeh.sphinxext.bokeh_plot'
 ]
 # Add any paths that contain templates here, relative to this directory.
 templates_path = ['_templates']
@@ -120,8 +121,10 @@ html_theme_options = {
     'sticky_navigation': True,
     'navigation_depth': 4,
     'includehidden': True,
-    'titles_only': False
+    'titles_only': False,
+    'body_max_width' : 'none',
 }
+
 
 # html_logo = '_static/gridwxcomp-200x.png'
 
@@ -129,6 +132,8 @@ html_theme_options = {
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
+
+html_css_files = ['custom.css']
 
 templates_path = ['_templates']
 # Custom sidebar templates, must be a dictionary that maps document names
@@ -239,11 +244,11 @@ intersphinx_mapping = {
 
 # If true, `todo` and `todoList` produce output, else they produce nothing.
 todo_include_todos = False
-
+    
 # toggle on code blocks to remove prompt ">>> "
 def setup(app):
     app.add_js_file('copybutton.js')
-    app.add_js_file('custom.css')
+    app.add_css_file('custom.css')
     app.add_js_file("custom.js")
     app.add_js_file("https://cdn.jsdelivr.net/npm/clipboard@1/dist/clipboard.min.js")
 
