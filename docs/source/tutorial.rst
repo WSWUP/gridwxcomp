@@ -833,15 +833,15 @@ One additional computation that occurs each time the
 :func:`gridwxcomp.spatial.interpolate` function is used, is the
 calculation of point estimates and residuals for the monthly, seasonal,
 and annual bias ratios with respect to the interpolated rasters. In
-other words the bias ratios (or temperature differences) that were
+other words, the bias ratios (or temperature differences) that were
 calculated by the :func:`gridwxcomp.calc_bias_ratios` function at the
-point locations are compared to the interpolated surfaces and their
+point locations are compared to the interpolated surfaces, and at the
 point locations, the interpolated values are extracted from the raster
-surfaces and the residuals:
+surfaces and the residuals are calculated:
 
-.. math:: residual = interpolated - station~ calculation 
+.. math:: residual = interpolated - station~ calculation. 
 
-are calculated. The point estimates and residuals are then added 
+The point estimates and residuals are then added 
 to the summary CSV file that is within the interpolation folder 
 and in the copy of the reprojected point shapefile. In this 
 case these are the files:
@@ -1230,7 +1230,9 @@ Now we get the following file structure:
 
 Note that the initial run with default parameters contains all the new sub directories that were named. 
 That initial run also included zonal statistics, but the three new interpolations did not, hence they do
-not contain their own zonal_stats.csv file.
+not contain their own zonal_stats.csv file. Also, since the point residuals will change with each new 
+interpolation method, copies of the summary CSV, residual bar charts, and the projected point shapefiles 
+are made to each subfolder in addition to the newly generated interpolated surfaces.
 
 
 

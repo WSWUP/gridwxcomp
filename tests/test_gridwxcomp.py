@@ -3,6 +3,8 @@
 import os
 import pkg_resources
 import pytest
+import rasterio
+import fiona
 from datetime import datetime
 from pathlib import Path
 from shutil import move, copy, rmtree
@@ -10,7 +12,7 @@ from shutil import move, copy, rmtree
 import numpy as np
 import pandas as pd
 
-from gridwxcomp.util import read_config, parse_yr_filter
+from gridwxcomp.util import read_config, parse_yr_filter, reproject_crs_for_point
 from gridwxcomp.prep_metadata import prep_metadata, _read_station_list
 #from gridwxcomp.download_gridmet_opendap import download_gridmet_opendap
 from gridwxcomp.ee_download import download_grid_data
@@ -48,7 +50,49 @@ def data(request):
         'STATION_FILE_PATH',
         'STATION_ID',
         ]
-    
+    # names of variables in summary CSV file from calc_bias_ratios func
+    d['comp_header'] = (
+           'Jan_mean', 'Feb_mean', 'Mar_mean', 'Apr_mean', 'May_mean', 
+           'Jun_mean', 'Jul_mean', 'Aug_mean', 'Sep_mean', 'Oct_mean', 
+           'Nov_mean', 'Dec_mean', 'Jan_count', 'Feb_count', 'Mar_count', 
+           'Apr_count', 'May_count', 'Jun_count', 'Jul_count', 'Aug_count', 
+           'Sep_count', 'Oct_count', 'Nov_count', 'Dec_count', 'Jan_stdev', 
+           'Feb_stdev', 'Mar_stdev', 'Apr_stdev', 'May_stdev', 'Jun_stdev', 
+           'Jul_stdev', 'Aug_stdev', 'Sep_stdev', 'Oct_stdev', 'Nov_stdev', 
+           'Dec_stdev', 'Jan_cv', 'Feb_cv', 'Mar_cv', 'Apr_cv', 'May_cv', 
+           'Jun_cv', 'Jul_cv', 'Aug_cv', 'Sep_cv', 'Oct_cv', 'Nov_cv', 'Dec_cv',
+           'grow_mean', 'summer_mean', 'annual_mean', 'grow_count', 
+           'summer_count', 'annual_count', 'grow_stdev', 'summer_stdev', 
+           'annual_stdev', 'grow_cv', 'summer_cv', 'annual_cv', 
+           'start_year', 'end_year', 'GRIDMET_ID', 'FID', 'OBJECTID', 'Id', 
+           'State', 'Source', 'Status', 'STATION_LAT', 'STATION_LON', 'Date', 
+           'Station_ID', 'STATION_ELEV_FT', 'Comments', 'Location', 
+           'STATION_FILE_PATH', 'Irrigation', 'Website', 'STATION_ELEV_M', 
+           'LAT', 'LON', 'ELEV_M', 'ELEV_FT', 'FIPS_C', 'STPO', 'COUNTYNAME', 
+           'CNTYCATEGO', 'STATENAME', 'HUC8', 'GRID_FILE_PATH'
+        )
+    # default names of calculated variables added to point shapefiles
+    d['calculated_shp_vars'] = (
+		'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep',
+		'Oct', 'Nov', 'Dec', 'summer', 'grow', 'annual', 'Jan_cnt',
+		'Feb_cnt', 'Mar_cnt', 'Apr_cnt', 'May_cnt', 'Jun_cnt', 'Jul_cnt',
+		'Aug_cnt', 'Sep_cnt', 'Oct_cnt', 'Nov_cnt', 'Dec_cnt',
+		'summer_cnt', 'grow_cnt', 'annual_cnt', 'Jan_std', 'Feb_std',
+		'Mar_std', 'Apr_std', 'May_std', 'Jun_std', 'Jul_std', 'Aug_std',
+		'Sep_std', 'Oct_std', 'Nov_std', 'Dec_std', 'summer_std',
+		'grow_std', 'annual_std', 'Jan_cv', 'Feb_cv', 'Mar_cv', 'Apr_cv',
+		'May_cv', 'Jun_cv', 'Jul_cv', 'Aug_cv', 'Sep_cv', 'Oct_cv',
+		'Nov_cv', 'Dec_cv', 'summer_cv', 'grow_cv', 'annual_cv',
+		'STATION_ID', 'GRID_ID')
+    # variable names computed from interpolation point estimates and residuals
+    d['added_residual_vars'] = (
+		'Jan_est', 'Jan_res', 'Feb_est', 'Feb_res', 'Mar_est', 'Mar_res',
+		'Apr_est', 'Apr_res', 'May_est', 'May_res', 'Jun_est', 'Jun_res',
+		'Jul_est', 'Jul_res', 'Aug_est', 'Aug_res', 'Sep_est', 'Sep_res',
+		'Oct_est', 'Oct_res', 'Nov_est', 'Nov_res', 'Dec_est', 'Dec_res',
+		'grow_est', 'grow_res', 'annual_est', 'annual_res', 'summer_est',
+		'summer_res')
+
     d['prep_metadata_outpath'] =\
         d.get('station_meta_path').parent.parent/'merged_input.csv'
     d['prep_metadata_outpath_copy'] =\
@@ -230,30 +274,8 @@ class TestEEDownload(object):
         
 
 
-class TestCalcBiasRatios(object):
-
-    def setup_method(self):
-        # header of station metadata file should carry through plus ratio stats 
-        self.comp_header = (
-           'Jan_mean', 'Feb_mean', 'Mar_mean', 'Apr_mean', 'May_mean', 
-           'Jun_mean', 'Jul_mean', 'Aug_mean', 'Sep_mean', 'Oct_mean', 
-           'Nov_mean', 'Dec_mean', 'Jan_count', 'Feb_count', 'Mar_count', 
-           'Apr_count', 'May_count', 'Jun_count', 'Jul_count', 'Aug_count', 
-           'Sep_count', 'Oct_count', 'Nov_count', 'Dec_count', 'Jan_stdev', 
-           'Feb_stdev', 'Mar_stdev', 'Apr_stdev', 'May_stdev', 'Jun_stdev', 
-           'Jul_stdev', 'Aug_stdev', 'Sep_stdev', 'Oct_stdev', 'Nov_stdev', 
-           'Dec_stdev', 'Jan_cv', 'Feb_cv', 'Mar_cv', 'Apr_cv', 'May_cv', 
-           'Jun_cv', 'Jul_cv', 'Aug_cv', 'Sep_cv', 'Oct_cv', 'Nov_cv', 'Dec_cv',
-           'grow_mean', 'summer_mean', 'annual_mean', 'grow_count', 
-           'summer_count', 'annual_count', 'grow_stdev', 'summer_stdev', 
-           'annual_stdev', 'grow_cv', 'summer_cv', 'annual_cv', 
-           'start_year', 'end_year', 'GRIDMET_ID', 'FID', 'OBJECTID', 'Id', 
-           'State', 'Source', 'Status', 'STATION_LAT', 'STATION_LON', 'Date', 
-           'Station_ID', 'STATION_ELEV_FT', 'Comments', 'Location', 
-           'STATION_FILE_PATH', 'Irrigation', 'Website', 'STATION_ELEV_M', 
-           'LAT', 'LON', 'ELEV_M', 'ELEV_FT', 'FIPS_C', 'STPO', 'COUNTYNAME', 
-           'CNTYCATEGO', 'STATENAME', 'HUC8', 'GRID_FILE_PATH'
-        )
+class TestCalcBiasRatios(object): 
+        
 
     def test_calc_bias_ratios_default_options(self, data):
         comp_out_file = data.get(
@@ -274,7 +296,7 @@ class TestCalcBiasRatios(object):
             index_col='STATION_ID', 
             na_values=[-999]
         )
-        assert not set(df.columns).isdisjoint(self.comp_header)
+        assert not set(df.columns).isdisjoint(data.get('comp_header'))
 
         assert df.loc[df.Station_ID == 'loau', 'ratio_method'].values[0]\
             == 'long_term_mean'
@@ -301,7 +323,7 @@ class TestCalcBiasRatios(object):
             index_col='STATION_ID', 
             na_values=[-999]
         )
-        assert not set(df.columns).isdisjoint(self.comp_header)
+        assert not set(df.columns).isdisjoint(data.get('comp_header'))
 
         assert df.loc[df.Station_ID == 'loau', 'ratio_method'].values[0]\
             == 'mean_of_annual'
@@ -355,6 +377,11 @@ class TestPlot(object):
 
 class TestSpatial(object):
 
+    def setup_method(self):
+        self.default_layers = (
+            'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep',
+		    'Oct', 'Nov', 'Dec', 'summer', 'grow', 'annual')
+
     def test_make_points_file(self, data):
         input_path = data.get(
             'conus404_output_dir')/'etr_summary_comp_all_yrs.csv'
@@ -364,26 +391,141 @@ class TestSpatial(object):
 
         spatial.make_points_file(input_path, config_path)
         
-        point_file = data.get(
+        point_file_wgs84 = data.get(
             'conus404_output_dir')/'spatial'/'etr_summary_pts_wgs84.shp'
-        assert point_file.is_file()
-
+        assert point_file_wgs84.is_file()
+        
+        # check CRS and attributes in shapefile
+        shp = fiona.open(point_file_wgs84)
+        # carry over calculated variables
+        assert set(data.get('calculated_shp_vars')).issubset(
+            shp.schema.get('properties').keys()) 
+        # projected CRS
+        assert shp.crs.to_authority() == ('EPSG', '4326')
+        shp.close()
+        
+        # same for projected shapefile
         crs_proj = config_dict.get('interpolation_projection')
         projected_point_file = data.get(
             'conus404_output_dir'
                 )/'spatial'/f'etr_summary_pts_{crs_proj.replace(":","_")}.shp'
         assert projected_point_file.is_file()
+        # open file
+        shp = fiona.open(projected_point_file)
+        # carry over calculated variables
+        assert set(data.get('calculated_shp_vars')).issubset(
+            shp.schema.get('properties').keys()) 
+        # projected CRS
+        assert shp.crs.to_authority() == ('ESRI', '102004')
+        shp.close()
 
     def test_make_grid(self, data):
         config_path = data['conus404_config_path']
-
+        config_dict = read_config(config_path)
+		
         input_path = data.get(
             'conus404_output_dir')/'etr_summary_comp_all_yrs.csv'
 
-        spatial.make_grid(
-            input_path, 
-            config_path
-        )
+        spatial.make_grid(input_path, config_path)
 
-        grid_path = data.get('conus404_output_dir')/'spatial'/'grid.shp'
-        assert grid_path.is_file()
+        grid_file = data.get('conus404_output_dir')/'spatial'/'grid.shp'
+        assert grid_file.is_file()
+        
+        # open grid, test crs and bounding coords
+        shp = fiona.open(grid_file)
+        assert shp.crs.to_authority() == ('EPSG', '4326')
+        config_bounds = sorted(config_dict.get('input_bounds').values())
+        grid_bounds = sorted(shp.bounds)
+        shp.close()
+        for i,j in zip(config_bounds, grid_bounds):
+            assert np.isclose(i,j)
+
+    def test_interpolate(self, data):
+        config_path = data['conus404_config_path']
+        config_dict = read_config(config_path)
+        input_path = data.get(
+            'conus404_output_dir')/'etr_summary_comp_all_yrs.csv'
+        output_root_dir = data.get('conus404_output_dir')
+
+        # run interpolation on all default layers with zonal stats and residuals 
+        spatial.interpolate(input_path, config_path)
+        
+        spatial_dir = output_root_dir/'spatial'
+        assert spatial_dir.is_dir()
+
+        interp_dir = spatial_dir/'etr_invdist_1000_meters'
+        assert interp_dir.is_dir()
+        
+        ####
+        # summary file should have added point estimates/residuals
+        ####
+        updated_summary_file = interp_dir/input_path.name
+        assert updated_summary_file.is_file()
+
+        df = pd.read_csv(updated_summary_file)
+        assert set(data.get('added_residual_vars')).issubset(df.columns)
+
+        # check values of interpolated estimates and residuals
+        for index, row in df.iterrows():
+            assert np.isclose(
+                row['annual_est'] - row['annual_mean'], row['annual_res'], 
+                atol=0.001)
+        ####
+        # check updated point shapefile
+        ####
+        updated_point_shapefile =\
+            interp_dir/'etr_summary_pts_ESRI_102004.shp'
+
+        assert updated_point_shapefile.is_file()
+        shp = fiona.open(updated_point_shapefile)
+        # carry over calculated variables
+        assert set(data.get('calculated_shp_vars')).issubset(
+            shp.schema.get('properties').keys()) 
+        # updated with point estimated and residuals from interpolation
+        assert set(data.get('added_residual_vars')).issubset(
+            shp.schema.get('properties').keys()) 
+        # projected CRS
+        assert shp.crs.to_authority() == ('ESRI', '102004')
+        shp.close()
+
+        ####
+        # check interpolated surfaces
+        ####
+        # check each raster exists, CRS, bounds
+        for layer in self.default_layers:
+            wgs84_tif_file = interp_dir/f'{layer}.tiff'
+            assert wgs84_tif_file.is_file()
+            wgs84_tif = rasterio.open(wgs84_tif_file)
+            assert wgs84_tif.crs.to_epsg() == 4326
+            # checking bounds and resolution against config file
+            assert np.isclose(
+                wgs84_tif.get_transform()[0], 
+                config_dict.get('input_bounds').get('xmin'))
+            assert np.isclose(
+                    wgs84_tif.get_transform()[3], 
+                    config_dict.get('input_bounds').get('ymax'))
+            assert np.isclose(
+                    wgs84_tif.get_transform()[1], 
+                    config_dict.get('output_data_resolution'))
+
+            # similar for projected raster
+            proj_tif_file = interp_dir/f'{layer}_ESRI_102004.tiff'
+            assert proj_tif_file.is_file()
+
+            proj_tif = rasterio.open(proj_tif_file)
+            assert proj_tif.crs.to_authority() == ('ESRI', '102004')
+
+        # open interpolated rasters and check point data at station locations 
+        # are correct by comparing to saved point estimated in CSV file
+        for index, row in df[
+                    ['STATION_LAT_WGS84','STATION_LON_WGS84', f'{layer}_est']
+                ].iterrows():
+
+            lat, lon, saved_val = row.values
+            reproj_x, reproj_y = reproject_crs_for_point(
+                lon, lat, 'EPSG:4326', 'ESRI:102004')
+            
+            interp_val = [v for v in proj_tif.sample(
+                [(reproj_x, reproj_y)])][0][0]
+            assert np.isclose(saved_val, interp_val)
+
