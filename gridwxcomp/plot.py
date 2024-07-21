@@ -599,7 +599,7 @@ def monthly_comparison(
 
         # Plot all figures in list
         fig = gridplot(figure_list, toolbar_location="left")
-
+        
         # Save the figure
         save(fig)
 

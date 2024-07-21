@@ -1336,14 +1336,22 @@ i.e., “[station]\_[month]\_[start_year]\_[end_year].html”.
 Here is what the Castle Valley near Moab sites plot looks like for the
 month of June (“CastleValleynearMoab_06_2015_2018.html”):
 
+.. image:: _static/CastleValleynearMoab_06_2015_2018.png
+   :align: center
+
 .. raw:: html
-   :file: _static/CastleValleynearMoab_06_2015_2018.html
+
+       <br />
+
+.. note::
+    The daily and monthly scatter plots shown in the tutorial have been
+    converted to png images and have lost their interactive functions in
+    order to avoid the contents running off the page in web browsers. 
    
-.. note:: 
-    The daily and monthly comparison plots include scatter plots
-    of the paired variables supported, including the least squares linear
-    regression slope forced through the origin as a measure of bias between
-    the station and gridded data.
+As seen above, the daily and monthly comparison plots include scatter plots 
+of the paired variables supported, including the least squares linear 
+regression slope forced through the origin as a measure of bias between 
+the station and gridded data.
 
 In addition to the daily comparison plots, ``gridwxcomp`` offers a
 similar plotting function which compared aggregated monthly data from
@@ -1371,9 +1379,13 @@ In this case the following files are generated:
 
 And here is what the Castle Valley near Moab monthly plot file looks
 like:
+   
+.. image:: _static/CastleValleynearMoab.png
+   :align: center
 
 .. raw:: html
-   :file: _static/CastleValleynearMoab.html
+
+       <br />
 
 In addition to the daily and monthly comparisons, the
 :mod:`gridwxcomp.plot` submodule has a tool for comparing station bias
