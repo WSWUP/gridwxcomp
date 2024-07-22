@@ -354,6 +354,17 @@ data to and the local folder to download the same data to.
     <https://developers.google.com/earth-engine/guides/python_install>`__, one
     can initialize Earth Engine in Python using the following line:
 
+
+.. note::
+   The example data used in this tutorial downloads gridded data from the 
+   `CONUS404 dataset <https://support.climateengine.org/article/117-conus404>`__ which 
+   is hosted by OpenET on Google Earth Engine, it is a public asset and as long as you 
+   have access to Google Earth Engine you should have no issues accessing the data. 
+   The export path that is specified in the tests will be automatically created and 
+   you must have authenticated and initialized Google Earth Engine for Python before 
+   running the tests. 
+
+
 .. code:: python3
 
    import ee
@@ -373,12 +384,14 @@ Now we can download gridded data:
     download_grid_data(
         formatted_input_file, 
         conus404_config, 
-        export_bucket='openet', # bucket root to export to
-        export_path=f'bias_correction_gridwxcomp_testing/gridwxcomp_conus404/', # path to export data to
+        export_bucket='your_bucket_root_to_export', # Google bucket root to export to on 
+        export_path='path_within_bucket_to_export', # path to export data to
         local_folder=None, # If not specified then the gridded data will be downloaded to a new folder
         force_download=False, # if False check if data already exists locally, if True overwrite
     )
 
+The export bucket and paths will be created if they do not already exist in 
+your Google Cloud storage. 
 
 .. Note::
     If the start and end dates for downloading gridded weather data are not

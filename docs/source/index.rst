@@ -29,6 +29,7 @@ Bias ratios calculated by ``gridwxcomp`` can be used to correct bias of grid to 
    tutorial
    faq
    api
+   Tests <software_tests>
    changelog
 
 
