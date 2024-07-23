@@ -357,6 +357,8 @@ def convert_units(config_dictionary, version, df):
             elif units_list[i] == 'ea':
                 if var_units == 'kpa':
                     converted_data = np.array(df[var_list[i]])
+                elif var_units == 'hpa':
+                    converted_data = np.array(df[var_list[i]] * 0.1)  # hPa to kPa
                 elif var_units == 'torr':
                     converted_data = np.array(df[var_list[i]] * 0.133322)  # Torr to kPa
                 elif var_units == 'mbar':

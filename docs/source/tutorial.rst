@@ -131,6 +131,13 @@ file that was built to download gridded data from the CONUS404 dataset:
     needed so that the wind speed data can both be scaled to 2 m using the
     logarithmic vertical velocity profile, see equation 33 in [Allen2005]_.
 
+.. seealso::
+    There is another configuration file provided with the example station data
+    and that version points to the `AgERA5 dataset
+    <https://gee-community-catalog.org/projects/agera5_datasets/>`__ as opposed
+    to CONUS404. It also specifies a different coordinate reference system and
+    resolution for spatial interpolation.
+
 The second section of the configuration file is called **DATA**; this
 section is exclusivly for the user to specify the names of the station
 and gridded weather data as they are found in the station weather data
@@ -356,14 +363,21 @@ data to and the local folder to download the same data to.
 
 
 .. note::
-   The example data used in this tutorial downloads gridded data from the 
-   `CONUS404 dataset <https://support.climateengine.org/article/117-conus404>`__ which 
-   is hosted by OpenET on Google Earth Engine, it is a public asset and as long as you 
-   have access to Google Earth Engine you should have no issues accessing the data. 
-   The export path that is specified in the tests will be automatically created and 
-   you must have authenticated and initialized Google Earth Engine for Python before 
-   running the tests. 
+   The example data used in this tutorial downloads gridded data from the
+   `CONUS404 dataset
+   <https://support.climateengine.org/article/117-conus404>`__ which is hosted
+   by OpenET on Google Earth Engine, it is a public asset and as long as you
+   have access to Google Earth Engine you should have no issues accessing the
+   data.  The export path that is specified in the tests will be automatically
+   created and you must have authenticated and initialized Google Earth Engine
+   for Python before running the tests. 
 
+.. seealso::
+    There is another configuration file provided with the example station data
+    and that version points to the `AgERA5 dataset
+    <https://gee-community-catalog.org/projects/agera5_datasets/>`__ as opposed
+    to CONUS404. It also specifies a different coordinate reference system and
+    resolution for spatial interpolation.
 
 .. code:: python3
 
@@ -713,7 +727,7 @@ for the grid shapefile generation. Being in the same geographic
 coordinate reference system allows for using the grid to be used 
 for computing zonal statistics. The WGS 84 resampled raster files can be 
 distinguished from the interpolated files as they do not have 
-a suffix signifying a coordinate reference system code such as 
+a suffix signifying a coordinate reference system authority and code such as 
 “..._ESRI_XXXXX.tif” or “..._EPSG_XXXX.tif”. 
 
 Here is a screenshot of the fishnet grid produced eariler in the tutorial
