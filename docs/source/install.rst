@@ -13,13 +13,13 @@ To activate the environment before using ``gridwxcomp`` run
 
     $ conda activate gridwxcomp
 
-Optionally, install using `pip <https://pip.pypa.io/en/stable/installing/>`_,
+After installing all the dependencies using conda, install ``gridwxcomp`` using `pip <https://pip.pypa.io/en/stable/installing/>`_,
 
 .. code-block:: bash
 
     $ pip install gridwxcomp
 
-Due to dependency conflicts you may have issues directly installing with pip before activating the conda environment.
+Due to dependency conflicts you may have issues directly installing with pip before activating the conda environment. This is because the package includes several modules that are not pure Python such as GDAL and pyproj which seem to be better handled by conda. 
 
 Alternatively, or if there are installation issues, you can manually install. First activate the ``gridwxcomp`` conda environment (above). Next, clone or download the package from `GitHub <https://github.com/WSWUP/gridwxcomp>`_ or `PyPI <https://pypi.org/project/gridwxcomp/>`_ and then install locally with pip in "editable" mode. For example with cloning,
 

@@ -1,6 +1,6 @@
 bokeh==3.4.1
 earthengine_api==0.1.398
-fiona==1.9.6
+fiona
 GDAL
 geopandas==0.14.3
 numpy==1.26.4
