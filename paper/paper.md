@@ -57,7 +57,7 @@ The most significant application of ``gridwxcomp`` was the development of bias c
 
 # Acknowledgments
 
-We would like to thank the Bureau of Reclamation, NASA Applied Sciences Program, and the Western States Water Use Program at the Desert Research Institute for providing funding for the development of this software.
+We would like to thank the Bureau of Reclamation, NASA Applied Sciences Program, and the Western States Water Use Program at the Desert Research Institute for providing funding for the development of this software. We also thank Sayantan Majumdar for his edits and suggestions.
 
 # References
 
