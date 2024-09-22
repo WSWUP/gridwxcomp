@@ -1,16 +1,22 @@
 # -*- coding: utf-8 -*-
 """
-This module has tools to download timeseries climate data from gridded climate data collections that are hosted on the Google Earth Engine. It reads the formatted file that was prepared using the :mod:`gridwxcomp.prep_metadata` module and uses the coordinate information there along with the variable names specified in the configuartion .INI file to know which data to download and for which geographic locations which are paired with the station locations.
+This module has tools to download timeseries climate data from gridded climate
+data collections that are hosted on Google's Earth Engine. It reads the
+formatted file that was prepared using the  :mod:`gridwxcomp.prep_metadata`
+module and uses the coordinate information there along with the variable names
+specified in the configuration .INI file to know which data to download and
+for which geographic locations which are paired with the station locations.
 """
-import datetime
+
 import ee
 import os
 import pandas as pd
 import re
-
-from google.cloud import storage
-from pathlib import Path
+import time
 from gridwxcomp.util import read_config
+from pathlib import Path
+from multiprocessing.pool import ThreadPool as Pool
+
 
 def _get_collection_date_range(path):
     """
@@ -35,82 +41,81 @@ def _get_collection_date_range(path):
     end_date = end_date[:7] + '-' + end_date[7:]
     return start_date, end_date
 
-def _download_point_data(
-        start_date,
-        end_date,
-        lat,
-        lon,
-        station_name,
-        dataset_path,
-        dataset_name,
-        bucket,
-        path):
 
-    start_name = start_date.replace('-', '')
-    end_name = (
-        datetime.datetime.strptime(
-            end_date,
-            "%Y-%m-%d") -
-        datetime.timedelta(
-            days=1)).strftime('%Y%m%d')
+def _download_point_data(param_dict):
+    """
+    Makes reduceRegion call to Earth Engine to extract timeseries for a station.
+    Data is obtained via getInfo call and then saved locally.
+    Called from :func:`download_grid_data` using a ThreadPool.
+    Arguments:
+        param_dict (dict): dictionary of parameters for reduceRegion call.
+
+    Returns:
+        None
+
+    Note: You must authenticate with Google Earth Engine before using
+        this function.
+    """
+    # todo: change force_download (bool) to download_method (string)
+    #   and provide option for appending latest data
+    # Don't re-download file unless force_download is True
+    if (os.path.exists(param_dict['GRID_FILE_PATH']) and
+            not param_dict['FORCE_DOWNLOAD']):
+        print(f'{param_dict["GRID_FILE_PATH"]} already exists,'
+              f' skipping download.\n')
+        return
+
+    # Time download process
+    start_time = time.time()
+
+    # get image properties
+    ic = (ee.ImageCollection(param_dict['DATASET_PATH']).
+          filterDate(param_dict['START_DATE'], param_dict['END_DATE']))
+    bands = ic.first().bandNames().getInfo()
+    scale = ic.first().projection().nominalScale().getInfo() / 10  # in meters
 
     # Create point to reduce over
-    point = ee.Geometry.Point([lon, lat])
-
-    ic = ee.ImageCollection(dataset_path).filterDate(start_date, end_date)
-
-    station_string = station_name
-    station_name = ee.String(station_name)
-    file_description = '{}_{}_{}_{}'.format(
-        dataset_name, station_string, start_name, end_name)
-    complete_path = path + file_description + '_all_vars'
+    point = ee.Geometry.Point([param_dict['STATION_LON_WGS84'],
+                               param_dict['STATION_LAT_WGS84']])
 
     def _reduce_point_img(img):
         date_str = img.date()
         date_mean = date_str.format("YYYYMMdd")
-        # TODO add nominal scale call and set reducing scale to it
         reduce_mean = img.reduceRegion(geometry=point,
                                        reducer=ee.Reducer.mean(),
-                                       crs='EPSG:4326',
-                                       scale=1000)
+                                       crs='EPSG:4326', scale=scale)
 
         return ee.Feature(None, reduce_mean).set(
-            {"date": date_mean, 'station_name': station_name})
+            {"date": date_mean, 'station_name': param_dict['STATION_ID']})
 
-    output = ee.FeatureCollection(ic.map(_reduce_point_img))
+    # function to create output stats list
+    def _summary_feature_col(ftr):
+        output_list = [ftr.get('date'), ftr.get('station_name')]
+        for band in bands:
+            output_list.append(ftr.get(band))
 
-    # Export Summary Table
-    task = ee.batch.Export.table.toCloudStorage(
-        collection=ee.FeatureCollection(output),
-        description=file_description,
-        bucket=bucket, fileNamePrefix=complete_path, fileFormat='CSV',
-    )
+        return ftr.set({'output': output_list})
 
-    task.start()
+    output_stats = (ee.FeatureCollection(ic.map(_reduce_point_img))
+                    .map(_summary_feature_col))
+    output_timeseries = output_stats.aggregate_array('output').getInfo()
 
-    print(
-        'Request submitted for {}_{}_{}_{}'.format(
-            dataset_name,
-            station_string,
-            start_name,
-            end_name))
-    print(f'Waiting for task (id: {task.id}) to complete ...')
-    while task.active():
-        continue
+    column_names = ['date', 'station_name'] + bands
+    output_df = pd.DataFrame(data=output_timeseries, columns=column_names)
+    output_df.to_csv(param_dict['GRID_FILE_PATH'], index=False)
+
+    execution_minutes = (time.time() - start_time) / 60
+    print(f'\n{param_dict["GRID_FILE_PATH"]} downloaded in '
+          f'{execution_minutes:.2f} minutes.')
 
 
-def download_grid_data(
-        metadata_path,
-        config_path,
-        export_bucket,
-        export_path,
-        local_folder=None,
-        force_download=False):
+def download_grid_data(metadata_path, config_path,
+                       local_folder=None, force_download=False):
     """
     Takes in the metadata file generated by :func:`gridwxcomp.prep_metadata`
     and downloads the corresponding point data for all stations within. This
-    function requires the dataset be accesible in the user's Google Earth Engine
-    account, and the Google data collection name and path should be specified 
+    function requires the dataset be accessible in the user's Google Earth Engine
+    account, and the image collection name and path should be specified
     in the configuration .INI file (i.e., in the ``config_path`` file). 
 
     The metadata file will be updated for the path the gridded data files 
@@ -120,20 +125,16 @@ def download_grid_data(
         metadata_path (str): path to the metadata path generated by 
             :func:`gridwxcomp.prep_metadata`
         config_path (str): path to config file containing catalog info
-        export_bucket (str): name of the Google cloud bucket for export
-        export_path (str): path within bucket where data is going to be saved
         local_folder (str): folder to download point data to
-        force_download (bool): will re-download all data even if bucket already 
-            exists
+        force_download (bool): will re-download all data even if local file
+            already exists
 
     Returns:
         None
 
     Note: You must authenticate with Google Earth Engine before using
         this function.
-
     """
-
     config = read_config(config_path)  # Read config
     # Pull relevant metadata from dictionary
     dataset = config['collection_info']['name']
@@ -149,66 +150,43 @@ def download_grid_data(
     if gridded_dataset_date_end == '':
         gridded_dataset_date_end = collection_end_date
 
-    gridded_dataset_end_name = (
-        datetime.datetime.strptime(
-            gridded_dataset_date_end,
-            "%Y-%m-%d") -
-        datetime.timedelta(
-            days=1)).strftime('%Y%m%d')
-
     # Open gridwxcomp station metadata file
     metadata_df = pd.read_csv(metadata_path)
     metadata_df['GRID_FILE_PATH'] = ''
 
-    # Connect to google bucket to check which files have been downloaded
-    storage_client = storage.Client()
-    storage_bucket = storage_client.bucket(export_bucket)
-
-    # Iterate over metadata_df
+    # Iterate over metadata_df to fill in other columns
     for index, row in metadata_df.iterrows():
-        print(f'Extracting {dataset} data for: {row["STATION_ID"]}')
         formatted_station_id = re.sub(
             r'\W+', '',
             row["STATION_ID"].replace(' ', '_')).lower()
-        print(f'Formatted Station_ID: {formatted_station_id}')
 
         if local_folder:
             Path(f'{local_folder}/{dataset}').mkdir(parents=True, exist_ok=True)
             local_path = (f'{local_folder}/{dataset}/{dataset}_'
-                          f'{formatted_station_id}_'
-                          f'{gridded_dataset_date_start.replace("-", "")}_'
-                          f'{gridded_dataset_end_name}_all_vars.csv')
+                          f'{formatted_station_id}.csv')
         else:
             Path(f'{dataset}').mkdir(parents=True, exist_ok=True)
-            local_path = f'{dataset}/{dataset}_{formatted_station_id}_' \
-                f'{gridded_dataset_date_start.replace("-", "")}_{gridded_dataset_end_name}_all_vars.csv'
+            local_path = f'./{dataset}/{dataset}_{formatted_station_id}.csv'
 
-        cloud_path = f'{export_path}{dataset}_{formatted_station_id}_' \
-            f'{gridded_dataset_date_start.replace("-", "")}_{gridded_dataset_end_name}_all_vars.csv'
+        absolute_file_path = Path(local_path).absolute()
+        metadata_df.loc[index, 'GRID_FILE_PATH'] = absolute_file_path
 
-        metadata_df.loc[index, 'GRID_FILE_PATH'] = Path(local_path).absolute()
+    # restructure metadata to make iterating simpler
+    iterable_df = metadata_df[
+        ['STATION_ID', 'STATION_LAT_WGS84',
+         'STATION_LON_WGS84', 'GRID_FILE_PATH']].copy(deep=True)
+    iterable_df['START_DATE'] = gridded_dataset_date_start
+    iterable_df['END_DATE'] = gridded_dataset_date_end
+    iterable_df['DATASET_PATH'] = gridded_dataset_path
+    iterable_df['FORCE_DOWNLOAD'] = force_download
+    iterable_list = iterable_df.to_dict('records')
 
-        # Check if file exists on the cloud and skip unless force_download is
-        # true
-        gcloud_blob = storage.Blob(bucket=storage_bucket, name=cloud_path)
-        cloud_file_exists = gcloud_blob.exists(storage_client)
-        if cloud_file_exists and not force_download:
-            print(
-                f'gs://{export_bucket}/{cloud_path} already exists, skipping.')
-        else:
-            _download_point_data(
-                start_date=gridded_dataset_date_start,
-                end_date=gridded_dataset_date_end,
-                lat=row['STATION_LAT_WGS84'],
-                lon=row['STATION_LON_WGS84'],
-                station_name=str(formatted_station_id),
-                dataset_path=gridded_dataset_path,
-                dataset_name=dataset,
-                bucket=export_bucket,
-                path=export_path)
-        if not os.path.exists(local_path):
-            print('Downloading', local_path, '...')
-            gcloud_blob.download_to_filename(local_path)
+    # open multiprocessing pool
+    thread_count = int(os.cpu_count() / 2)
+    pool = Pool(thread_count)
+    pool.map(_download_point_data, iterable_list)
+    pool.close()
+    pool.join()
 
     metadata_df.to_csv(metadata_path, index=False)
     print(
