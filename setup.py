@@ -9,7 +9,7 @@ with io.open("gridwxcomp/__init__.py", "rt", encoding="utf8") as f:
 
 requires = [
     'bokeh>=1.0.4',
-    'fiona>=1.7.13',
+    'fiona>=1.7.13,<1.10.0',
     'gdal',
     'netCDF4',
     'numpy>=1.15',
