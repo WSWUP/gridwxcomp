@@ -1,7 +1,7 @@
-How to Contribute to `gridwxcomp`
-=================================
+How to Contribute to ``gridwxcomp``
+===================================
 
-We welcome community involvement and contributions aimed to improve `gridwxcomp`. This includes spotting and fixing bugs, adding new features, or improving documentation, all contributions are much appreciated. Please follow the guidelines below to ensure that your contributions are well-received and incorporated efficiently.
+We welcome community involvement and contributions aimed to improve ``gridwxcomp``. This includes spotting and fixing bugs, adding new features, or improving documentation, all contributions are much appreciated. Please follow the guidelines below to ensure that your contributions are well-received and incorporated efficiently.
 
 Reporting Issues
 ----------------
@@ -16,9 +16,9 @@ If you encounter a bug or unexpected behavior, please report it by creating an i
 Contributing Code
 -----------------
 
-**Note**: If you would like to propose a major change or add significant features to gridwxcomp, please reach out to the developers before you begin. Start by creating an issue with a "new feature" tag in the repository. This allows us to give feedback and guidance during the development process, and will keep your work aligned with the project's goals.
+**Note**: If you would like to propose a major change or add significant features to ``gridwxcomp``, please reach out to the developers before you begin. Start by creating an issue with a "new feature" tag in the repository. This allows us to give feedback and guidance during the development process, and will keep your work aligned with the project's goals.
 
-1. **Fork the Repository**: Start by forking the `gridwxcomp` repository to your GitHub account. This will allow you to work on your own copy of the project.
+1. **Fork the Repository**: Start by forking the ``gridwxcomp`` repository to your GitHub account. This will allow you to work on your own copy of the project.
    
 2. **Create a Branch**: Always create a new branch for your changes. Avoid making changes directly on the `master` branch. Branches should be named descriptively based on the feature or bug you're addressing (e.g., `fix-typo-in-docs`, `add-rainfall-forecast`).
 
