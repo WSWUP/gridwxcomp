@@ -64,7 +64,9 @@ If you are experiencing errors on installing the ``gridwxcomp`` conda environmen
 
 More help with installation issues related to dependency conflicts can be found in the ``gridwxcomp`` `issues <https://github.com/WSWUP/gridwxcomp/issues>`_ on GitHub, be sure to check the closed issues as well.
 
-
+How to contribute
+-----------------
+We welcome contributions, big or small, from the community to ``gridwxcomp``! Please review our `Contribution and community guidelines <https://gridwxcomp.readthedocs.io/en/latest/contribute.html>`_ for more information. 
 
 
 .. |Build| image:: https://github.com/WSWUP/gridwxcomp/actions/workflows/gridwxcomp_tests.yml/badge.svg
