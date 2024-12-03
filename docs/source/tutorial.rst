@@ -354,13 +354,9 @@ function, such as the bucket to export the extracted point time series
 data to and the local folder to download the same data to.
 
 .. important::
-    Before downloading data using the Earth Engine Python API, the use must
-    initialize Earth Engine locally and have permissions to access the
-    requested data as well as to export data on the Google Cloud. After setting
-    up Google Earth Engine locally following the `online instructions
-    <https://developers.google.com/earth-engine/guides/python_install>`__, one
-    can initialize Earth Engine in Python using the following line:
-
+    If you haven't set up your Google Earth Engine Python API, and authenticated
+    your account, this must be done before proceeding with the tutorial. 
+    Please see the instructions in the ::ref::`Google Earth Engine setup section <gee>`.
 
 .. note::
    The example data used in this tutorial downloads gridded data from the
@@ -379,12 +375,6 @@ data to and the local folder to download the same data to.
     to CONUS404. It also specifies a different coordinate reference system and
     resolution for spatial interpolation.
 
-.. code:: python3
-
-   import ee
-   ee.Authenticate()
-   ee.Initialize(project='my-project')
-
 Now we can download gridded data:
 
 .. code:: python3
@@ -393,7 +383,7 @@ Now we can download gridded data:
     formatted_input_file = '/path/to/gridwxcomp/gridwxcomp/example_data/formatted_input.csv'
     
     import ee
-    ee.Initialize()
+    ee.Initialize(project='my-project-id') # replace with your GEE project
     # download the gridded data
     download_grid_data(
         formatted_input_file, 

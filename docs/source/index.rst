@@ -26,6 +26,7 @@ Bias ratios calculated by ``gridwxcomp`` can be used to correct bias of grid to 
    :caption: Contents:
    
    install
+   Google Earth Engine set up <gee>
    tutorial
    faq
    api
