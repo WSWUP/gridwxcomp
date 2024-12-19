@@ -218,8 +218,6 @@ class TestEEDownload(object):
         download_grid_data(
             data['prep_metadata_outpath'],
             config_path=data['conus404_config_path'],
-            export_bucket='openet',
-            export_path=self.export_path,
             local_folder='tests',
             force_download=False)
 
@@ -248,8 +246,6 @@ class TestEEDownload(object):
         download_grid_data(
             data['prep_metadata_outpath'],
             config_path=data['conus404_config_path'],
-            export_bucket='openet',
-            export_path=self.export_path,
             local_folder='tests',
             force_download=True)
 

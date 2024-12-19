@@ -9,7 +9,6 @@ for which geographic locations which are paired with the station locations.
 """
 
 import ee
-import googleapiclient
 import os
 import pandas as pd
 import re
@@ -110,6 +109,7 @@ def _download_point_data(param_dict):
     execution_minutes = (time.time() - start_time) / 60
     print(f'\n{param_dict["GRID_FILE_PATH"]} downloaded in '
           f'{execution_minutes:.2f} minutes.')
+
 
 def download_grid_data(metadata_path, config_path,
                        local_folder=None, force_download=False):
