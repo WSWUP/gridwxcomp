@@ -1,6 +1,13 @@
 Change Log
 **********
 
+Version 0.2.1
+=============
+
+Improve speed of download of gridded data by using the GEE high volume API.
+
+Add (re-add) precipitation as a optional variable to evaluate and include it in all major functionalities as well as example data. 
+
 Version 0.2.0
 =============
 

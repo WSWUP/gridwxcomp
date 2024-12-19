@@ -1,6 +1,6 @@
 __name__ = 'gridwxcomp'
 __author__ = 'John Volk, Christian Dunkerly, and Chris Pearson'
-__version__ = '0.2.0'
+__version__ = '0.2.1'
 
 
 from gridwxcomp.prep_metadata import prep_metadata
