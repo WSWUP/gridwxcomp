@@ -388,8 +388,6 @@ Now we can download gridded data:
     download_grid_data(
         formatted_input_file, 
         conus404_config, 
-        export_bucket='your_bucket_root_to_export', # Google bucket root to export to on 
-        export_path='path_within_bucket_to_export', # path to export data to
         local_folder=None, # If not specified then the gridded data will be downloaded to a new folder
         force_download=False, # if False check if data already exists locally, if True overwrite
     )

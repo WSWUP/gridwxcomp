@@ -3,12 +3,28 @@
 Utility functions or classes for ``gridwxcomp`` package
 """
 import configparser as cp
+import ee
 import numpy as np
 import os
 import pandas as pd
 import pathlib as pl
 import pkg_resources
 import pyproj
+
+
+def affine_transform(img):
+    """
+    Get the affine transform of the image as an EE object
+
+    Arguments:
+        img: ee.Image object
+
+    Returns
+        ee.List object
+
+    """
+    return ee.List(ee.Dictionary(
+        ee.Algorithms.Describe(img.projection())).get('transform'))
 
 
 def parse_yr_filter(dt_df, years, label):
@@ -255,7 +271,7 @@ def read_data(config_dictionary, version, filepath):
         raw_file_data.set_index('date', drop=True, inplace=True)
 
     # iterate through an expected list of vars and append a column should one be missing, to prevent a key error later
-    var_list = ['tmax', 'tmin', 'tdew', 'rs', 'wind', 'rhmax', 'rhmin', 'rhavg', 'ea', 'eto', 'etr']
+    var_list = ['tmax', 'tmin', 'tdew', 'rs', 'wind', 'rhmax', 'rhmin', 'rhavg', 'ea', 'eto', 'etr', 'prcp']
     for var in var_list:
         var_col = version + var + '_col'
 
@@ -297,8 +313,8 @@ def convert_units(config_dictionary, version, df):
     converted_df = df.copy(deep=True)
     # iterate through list of vars to convert each
     # todo make these lists into a dict, and allow for column order parameters in the config file instead of names
-    var_list = ['tmax', 'tmin', 'tdew', 'rs', 'wind', 'ea', 'rhmax', 'rhmin', 'rhavg', 'eto', 'etr']
-    units_list = ['temp', 'temp', 'temp', 'solar', 'wind', 'ea', 'rh', 'rh', 'rh', 'et', 'et']
+    var_list = ['tmax', 'tmin', 'tdew', 'rs', 'wind', 'ea', 'rhmax', 'rhmin', 'rhavg', 'eto', 'etr', 'prcp']
+    units_list = ['temp', 'temp', 'temp', 'solar', 'wind', 'ea', 'rh', 'rh', 'rh', 'et', 'et', 'prcp']
     for i in range(len(var_list)):
         var_col = version + var_list[i] + '_col'
         var_units_key = version + units_list[i] + '_units'
@@ -378,7 +394,7 @@ def convert_units(config_dictionary, version, df):
                         '\n\n\'{}\' was specified in the config file as having units \'{}\' which is not a valid option.'
                         .format(var_units_key, config_dictionary[var_units_key]))
 
-            elif units_list[i] == 'et':
+            elif units_list[i] == 'et' or units_list[i] == 'prcp':
                 if var_units == 'mm':
                     converted_data = np.array(df[var_list[i]])
                 elif var_units == 'inches' or var_units == 'in':
