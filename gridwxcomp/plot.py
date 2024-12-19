@@ -28,11 +28,12 @@ VAR_LIST = [
     'rhmin',
     'rhavg',
     'eto',
-    'etr']
+    'etr',
+    'prcp']
 UNITS_DICT = {'tmax': '(C)', 'tmin': '(C)', 'tdew': '(C)',
 	'rs': '(w/m2)', 'wind': '(m/s)', 'ea': '(kpa)',
 	'rhmax': '(%)', 'rhmin': '(%)', 'rhavg': '(%)',
-	'eto': '(mm)', 'etr': '(mm)'}
+	'eto': '(mm)', 'etr': '(mm)', 'prcp': '(mm)'}
 
 # TITLES_LIST and MONTHLY_TITLES_LIST are formatted as LaTeX
 TITLES_LIST = [
@@ -46,7 +47,8 @@ TITLES_LIST = [
     '$$RH\\:Minimum$$',
     '$$RH\\:Average$$',
     '$$ET_{O}$$',
-    '$$ET_{r}$$']
+    '$$ET_{r}$$',
+    '$$Precipitation$$']
 
 MONTHLY_TITLES_LIST = [
     '$$Maximum\\:Temperature\\:Monthly\\:Averages$$',
@@ -59,7 +61,8 @@ MONTHLY_TITLES_LIST = [
     '$$RH\\:Minimum\\:Monthly\\:Averages$$',
     '$$RH\\:Average\\:Monthly\\:Averages$$',
     '$$ET_{O}\\:Monthly\\:Averages$$',
-    '$$ET_{r}\\:Monthly\\:Averages$$']
+    '$$ET_{r}\\:Monthly\\:Averages$$',
+    '$$Precipitation\\:Monthly\\:Averages$$']
 
 
 # list of x (station), y (gridded) variables

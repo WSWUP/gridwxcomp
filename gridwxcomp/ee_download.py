@@ -9,11 +9,12 @@ for which geographic locations which are paired with the station locations.
 """
 
 import ee
+import googleapiclient
 import os
 import pandas as pd
 import re
 import time
-from gridwxcomp.util import read_config
+from gridwxcomp.util import read_config, affine_transform
 from pathlib import Path
 from multiprocessing.pool import ThreadPool as Pool
 
@@ -58,6 +59,7 @@ def _download_point_data(param_dict):
     """
     # todo: change force_download (bool) to download_method (string)
     #   and provide option for appending latest data
+
     # Don't re-download file unless force_download is True
     if (os.path.exists(param_dict['GRID_FILE_PATH']) and
             not param_dict['FORCE_DOWNLOAD']):
@@ -72,7 +74,8 @@ def _download_point_data(param_dict):
     ic = (ee.ImageCollection(param_dict['DATASET_PATH']).
           filterDate(param_dict['START_DATE'], param_dict['END_DATE']))
     bands = ic.first().bandNames().getInfo()
-    scale = ic.first().projection().nominalScale().getInfo() / 10  # in meters
+    projection = ic.first().projection()
+    transform = affine_transform(ic.first())
 
     # Create point to reduce over
     point = ee.Geometry.Point([param_dict['STATION_LON_WGS84'],
@@ -81,9 +84,10 @@ def _download_point_data(param_dict):
     def _reduce_point_img(img):
         date_str = img.date()
         date_mean = date_str.format("YYYYMMdd")
+
         reduce_mean = img.reduceRegion(geometry=point,
                                        reducer=ee.Reducer.mean(),
-                                       crs='EPSG:4326', scale=scale)
+                                       crs=projection, crsTransform=transform)
 
         return ee.Feature(None, reduce_mean).set(
             {"date": date_mean, 'station_name': param_dict['STATION_ID']})
@@ -99,7 +103,6 @@ def _download_point_data(param_dict):
     output_stats = (ee.FeatureCollection(ic.map(_reduce_point_img))
                     .map(_summary_feature_col))
     output_timeseries = output_stats.aggregate_array('output').getInfo()
-
     column_names = ['date', 'station_name'] + bands
     output_df = pd.DataFrame(data=output_timeseries, columns=column_names)
     output_df.to_csv(param_dict['GRID_FILE_PATH'], index=False)
@@ -107,7 +110,6 @@ def _download_point_data(param_dict):
     execution_minutes = (time.time() - start_time) / 60
     print(f'\n{param_dict["GRID_FILE_PATH"]} downloaded in '
           f'{execution_minutes:.2f} minutes.')
-
 
 def download_grid_data(metadata_path, config_path,
                        local_folder=None, force_download=False):

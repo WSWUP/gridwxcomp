@@ -23,7 +23,7 @@ from refet.calcs import _wind_height_adjust
 from .util import parse_yr_filter, read_config, read_data, convert_units
 
 
-VAR_LIST = ['tmax', 'tmin', 'tdew', 'rs', 'wind', 'ea', 'rhmax', 'rhmin', 'rhavg', 'eto', 'etr']
+VAR_LIST = ['tmax', 'tmin', 'tdew', 'rs', 'wind', 'ea', 'rhmax', 'rhmin', 'rhavg', 'eto', 'etr', 'prcp']
 GROW_THRESH = 65
 SUM_THRESH = 35
 ANN_THRESH = 125

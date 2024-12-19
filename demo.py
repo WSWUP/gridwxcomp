@@ -8,16 +8,15 @@ from gridwxcomp.util import reproject_crs_for_bounds
 
 
 # name of the dataset comparison is being made with
-gridded_dataset_name = 'era5land'
+gridded_dataset_name = 'conus404'
 # local path for config file
-config_path = f'gridwxcomp_config_{gridded_dataset_name}.ini'
+config_path = f'gridwxcomp/example_data/gridwxcomp_config_{gridded_dataset_name}.ini'
+# Path to station metadata file with lat/long coords
+station_meta_path = 'gridwxcomp/example_data/Station_Data.txt'
 
 # initialize earth engine
 ee.Authenticate()
 ee.Initialize(opt_url='https://earthengine-highvolume.googleapis.com')
-
-# Path to station metadata file with lat/long coords
-station_meta_path = 'openet_station_data/conus_comparison_station_list.csv'
 
 # local path for prep_metadata output
 gridwxcomp_input = f'{gridded_dataset_name}_gridwxcomp_metadata.csv'
@@ -130,8 +129,8 @@ daily_comparison(
     config_path,
     dataset_name=gridded_dataset_name)
 
-for var in ['etr', 'eto']:  # Iterate over vars in list. Valid entries found in calc_bias_ratios.py VAR_LIST
-    ratio_filepath = f'{output_dir}/gridded_{var}_summary_comp_1980_2020.csv' # path to bias ratios output file
+for var in ['prcp', 'etr', 'eto']:  # Iterate over vars in list. Valid entries found in calc_bias_ratios.py VAR_LIST
+    ratio_filepath = f'{output_dir}/{var}_summary_comp_all_yrs.csv'  # path to bias ratios output file
 
     interpolation_out_path = (f'{var}_invdistnn_p{params["power"]}_'  # directory for interpolation outputs
                               f's{params["smoothing"]}_maxpoints{params["max_points"]}_radius{params["radius"]}')
@@ -169,7 +168,7 @@ for var in ['etr', 'eto']:  # Iterate over vars in list. Valid entries found in 
         Generates boxplots of the bias ratios to visualize overall performance.
         Requires the outputs of calc_bias_ratios as an input.
     '''
-    station_bar_plot(ratio_filepath, bar_plot_layer='growseason_mean')
+    station_bar_plot(ratio_filepath, bar_plot_layer='grow_mean')
 
     '''
     make grid
