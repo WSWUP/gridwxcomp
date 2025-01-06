@@ -381,9 +381,11 @@ Now we can download gridded data:
 
     # Specify the path to the file created by running prep_metadata
     formatted_input_file = '/path/to/gridwxcomp/gridwxcomp/example_data/formatted_input.csv'
-    
+
     import ee
     ee.Initialize(project='my-project-id') # replace with your GEE project
+    # Use the GEE high volumne API if you are downloading data for more than a couple stations
+    ee.Initialize(project='my-project-id', opt_url='https://earthengine-highvolume.googleapis.com')
     # download the gridded data
     download_grid_data(
         formatted_input_file, 
