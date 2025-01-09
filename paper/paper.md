@@ -1,5 +1,5 @@
 ---
-title: 'gridwxcomp: A Python package to evaluate and interpolate biases between station and gridded weather data.'
+title: 'gridwxcomp: A Python package to evaluate and interpolate biases between station and gridded weather data'
 tags:
   - Python
   - hydrology
