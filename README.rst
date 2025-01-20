@@ -1,7 +1,7 @@
 gridwxcomp
 ==========
 
-|Build| |Documentation Status| |Downloads per month| |PyPI version|
+|Build| |Documentation Status| |Downloads per month| |PyPI version| |JOSS|
 
 -----------
 
@@ -68,6 +68,12 @@ How to contribute
 -----------------
 We welcome contributions, big or small, from the community to ``gridwxcomp``! Please review our `Contribution and community guidelines <https://gridwxcomp.readthedocs.io/en/latest/contribute.html>`_ for more information. 
 
+How to cite
+-----------
+If you use ``gridwxcomp`` for research or published works, please use the following citation: 
+
+Volk et al., (2025). *gridwxcomp: A Python package to evaluate and interpolate biases between station and gridded weather data*. Journal of Open Source Software, 10(105), 7178. https://doi.org/10.21105/joss.07178
+
 
 .. |Build| image:: https://github.com/WSWUP/gridwxcomp/actions/workflows/gridwxcomp_tests.yml/badge.svg
    :target: https://github.com/WSWUP/gridwxcomp/actions
@@ -80,3 +86,6 @@ We welcome contributions, big or small, from the community to ``gridwxcomp``! Pl
 
 .. |PyPI version| image:: https://img.shields.io/pypi/v/gridwxcomp.svg
    :target: https://pypi.python.org/pypi/gridwxcomp/
+
+.. |JOSS| image:: https://joss.theoj.org/papers/10.21105/joss.07178/status.svg
+   :target: https://doi.org/10.21105/joss.07178
