@@ -55,7 +55,7 @@ def _read_station_list(station_path):
                 'Filename': 'STATION_FILE_PATH'}, inplace=True)
 
     # get station name only for matching to file name without extension
-    station_list.STATION_FILE_PATH = station_list.STATION_FILE_PATH.str.split('.').str.get(0)
+    # station_list.STATION_FILE_PATH = station_list.STATION_FILE_PATH.str.split('.').str.get(0)
 
     # look at path for station CSV, look for time series files in same directory
     station_path_tuple = os.path.split(station_path)
@@ -156,7 +156,7 @@ def prep_metadata(station_path, config_path, grid_name,
     config = read_config(config_path)
 
     stations = _read_station_list(station_path)
-    stations[f'GRID_ID'] = f'{grid_name}_' + stations['STATION_ID']
+    stations[f'GRID_ID'] = f'{grid_name}_' + stations['STATION_ID'].apply(str)
 
     if 'ELEV_M' in stations.columns:
         stations['ELEV_FT'] = stations.ELEV_M * 3.28084  # m to ft

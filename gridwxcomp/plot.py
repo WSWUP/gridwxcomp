@@ -507,7 +507,7 @@ def monthly_comparison(
             continue
 
         # Output Folder
-        out_folder = os.path.join(out_dir, 'monthly_comp_plots')
+        out_folder = os.path.join(out_dir, f'monthly_comp_plots_{dataset_name}')
 
         # Create path if it doesn't exist
         if not os.path.exists(out_folder):

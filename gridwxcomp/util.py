@@ -233,6 +233,8 @@ def read_data(config_dictionary, version, filepath):
         filtered_df: a dataframe containing only the variable we want to plot, with a standardized naming convention
 
     """
+    if pd.isnull(filepath):
+        raise IOError
 
     # Generate vars corresponding to config_dict keys
     version = version + '_'
@@ -288,7 +290,11 @@ def read_data(config_dictionary, version, filepath):
                 .format(var_col, config_dictionary[var_col], filepath))
 
         else:  # var was provided, so just rename it to the standard naming convention
-            raw_file_data.rename(columns={config_dictionary[var_col]: var}, inplace=True)
+            # handle only one ET column for both ETr and ETo
+            if var in ['eto', 'etr']:
+                raw_file_data[var] = raw_file_data[config_dictionary[var_col]]
+            else:
+                raw_file_data.rename(columns={config_dictionary[var_col]: var}, inplace=True)
 
     filtered_df = pd.DataFrame(data=raw_file_data[var_list])
 
@@ -397,6 +403,8 @@ def convert_units(config_dictionary, version, df):
             elif units_list[i] == 'et' or units_list[i] == 'prcp':
                 if var_units == 'mm':
                     converted_data = np.array(df[var_list[i]])
+                elif var_units == 'm':
+                    converted_data = np.array(df[var_list[i]] * 1000)
                 elif var_units == 'inches' or var_units == 'in':
                     converted_data = np.array(df[var_list[i]] * 25.4)  # inches to mm
                 else:

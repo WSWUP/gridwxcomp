@@ -31,14 +31,23 @@ def _get_collection_date_range(path):
             end_date (str): date of last image as YYYY-MM-DD
     """
     dataset = ee.ImageCollection(path)
+
     start_img = dataset.limit(1, 'system:index', True).first()
-    start_text = start_img.getInfo()['properties']['system:index']
-    start_date = start_text[:4] + '-' + start_text[4:]
-    start_date = start_date[:7] + '-' + start_date[7:]
+    start_text = start_img.getInfo()['properties']['system:time_start']
+    if isinstance(start_text, int):
+        start_date = start_text
+    else:
+        start_date = start_text[:4] + '-' + start_text[4:]
+        start_date = start_date[:7] + '-' + start_date[7:]
+
     end_img = dataset.limit(1, 'system:index', False).first()
-    end_text = end_img.getInfo()['properties']['system:index']
-    end_date = end_text[:4] + '-' + end_text[4:]
-    end_date = end_date[:7] + '-' + end_date[7:]
+    end_text = end_img.getInfo()['properties']['system:time_start']
+    if isinstance(end_text, int):
+        end_date = end_text
+    else:
+        end_date = end_text[:4] + '-' + end_text[4:]
+        end_date = end_date[:7] + '-' + end_date[7:]
+
     return start_date, end_date
 
 
@@ -63,7 +72,7 @@ def _download_point_data(param_dict):
     if (os.path.exists(param_dict['GRID_FILE_PATH']) and
             not param_dict['FORCE_DOWNLOAD']):
         print(f'{param_dict["GRID_FILE_PATH"]} already exists,'
-              f' skipping download.\n')
+              f' skipping download.\n', flush=True)
         return
 
     # Time download process
@@ -107,8 +116,8 @@ def _download_point_data(param_dict):
     output_df.to_csv(param_dict['GRID_FILE_PATH'], index=False)
 
     execution_minutes = (time.time() - start_time) / 60
-    print(f'\n{param_dict["GRID_FILE_PATH"]} downloaded in '
-          f'{execution_minutes:.2f} minutes.')
+    print(f'{param_dict["GRID_FILE_PATH"]} downloaded in '
+          f'{execution_minutes:.2f} minutes.\n', flush=True)
 
 
 def download_grid_data(metadata_path, config_path,
@@ -152,6 +161,14 @@ def download_grid_data(metadata_path, config_path,
     if gridded_dataset_date_end == '':
         gridded_dataset_date_end = collection_end_date
 
+    # Convert start and end dates to ints if they happen to be in milliseconds
+    if isinstance(gridded_dataset_date_start, str):
+        if str.isnumeric(gridded_dataset_date_start):
+            gridded_dataset_date_start = int(gridded_dataset_date_start)
+    if isinstance(gridded_dataset_date_end, str):
+        if str.isnumeric(gridded_dataset_date_end):
+            gridded_dataset_date_end = int(gridded_dataset_date_end)
+
     # Open gridwxcomp station metadata file
     metadata_df = pd.read_csv(metadata_path)
     metadata_df['GRID_FILE_PATH'] = ''
@@ -184,7 +201,7 @@ def download_grid_data(metadata_path, config_path,
     iterable_list = iterable_df.to_dict('records')
 
     # open multiprocessing pool
-    thread_count = int(os.cpu_count() / 2)
+    thread_count = int(os.cpu_count() / 4)
     pool = Pool(thread_count)
     pool.map(_download_point_data, iterable_list)
     pool.close()
